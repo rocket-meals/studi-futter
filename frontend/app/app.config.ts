@@ -23,7 +23,7 @@ function getIosBuildNumber() { // "ios.buildNumber" must be a string
 }
 
 export function getCustomerConfig(): CustomerConfig {
-    return devConfig;
+    return studiFutterConfig;
 }
 
 const devConfig: CustomerConfig = {
