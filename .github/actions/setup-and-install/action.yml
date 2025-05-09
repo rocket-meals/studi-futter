@@ -1,0 +1,30 @@
+name: Setup and Install
+description: Gemeinsamer Setup-Schritt für Frontend-Projekte
+
+inputs:
+  EXPO_TOKEN:
+    required: true
+    description: Expo Access Token (für EAS CLI Login)
+
+runs:
+  using: "composite"
+  steps:
+    - name: 🔄 Checkout repository
+      uses: actions/checkout@v3
+
+    - name: ⚙️ Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.19.1'
+        registry-url: 'https://registry.npmjs.org'
+
+    - name: ⚙️ Setup EAS CLI
+      uses: expo/expo-github-action@v8
+      with:
+        eas-version: latest
+        token: ${{ inputs.EXPO_TOKEN }}
+
+    - name: 📦 Install dependencies
+      run: yarn install --frozen-lockfile
+      shell: bash
+      working-directory: ./frontend/app

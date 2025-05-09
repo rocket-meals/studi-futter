@@ -1,0 +1,21 @@
+**/*.DS_Store
+.idea/**
+
+backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/coverage/
+backend/Backend/directusExtensions/.registry/
+
+!secrets/.keep
+secrets/**
+backend/database_backups/
+
+# Ignore all ios generated files
+frontend/app/ios
+
+# Ignore all android generated files
+frontend/app/android
+
+tools/screenshotGenerator/dist/
+secrets/
+
+# Virtual environment folder
+**/venv/

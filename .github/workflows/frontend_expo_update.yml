@@ -1,0 +1,27 @@
+name: 🤖 Expo Update
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'frontend/app/**'
+      - '.github/workflows/**'
+
+jobs:
+  update:
+    name: 🏗 EAS Update Production
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔄 Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: 🧰 Setup Node.js, Yarn & Dependencies
+        uses: ./.github/actions/setup-and-install
+        with:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 🚀 Publish update
+        run: eas update --auto --platform all --non-interactive --channel production
+        working-directory: ./frontend/app
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
