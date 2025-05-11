@@ -6,6 +6,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useSelector } from 'react-redux';
 import { excerpt } from '@/constants/HelperFunctions';
+import { RootState } from '@/redux/reducer';
 
 type FeedbackItemProps = {
   icon?: string;
@@ -31,7 +32,7 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({
   setInputValues,
 }) => {
   const { translate } = useLanguage();
-  const { primaryColor } = useSelector((state: any) => state.settings);
+  const { primaryColor } = useSelector((state: RootState) => state.settings);
 
   const IconSelector: React.FC<{
     name: string;

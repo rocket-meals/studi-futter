@@ -19,6 +19,7 @@ import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import styles from './styles';
 import { useSelector } from 'react-redux';
 import { router, useFocusEffect } from 'expo-router';
+import { RootState } from '@/redux/reducer';
 
 const FoodPlanList = ({
   data,
@@ -60,7 +61,9 @@ const FoodPlanList = ({
     setToggleStates(updatedStates);
   };
 
-  const { selectedCanteen } = useSelector((state: any) => state.canteenReducer);
+  const { selectedCanteen } = useSelector(
+    (state: RootState) => state.canteenReducer
+  );
 
   return (
     <View
@@ -107,7 +110,7 @@ const FoodPlanList = ({
                 onValueChange={() => handleToggleChange(index)}
                 thumbColor={theme.screen.icon}
                 trackColor={{
-                  false: theme.screen.card,
+                  false: theme.screen.iconBg,
                   true: theme.screen.iconBg,
                 }}
               />
@@ -119,14 +122,14 @@ const FoodPlanList = ({
                       styles.textInput,
                       {
                         color: theme.screen.text,
-                        backgroundColor: theme.screen.card,
+                        backgroundColor: theme.screen.iconBg,
                         fontSize: windowWidth > 600 ? 18 : 16,
                         width: windowWidth > 600 ? 200 : 120,
                       },
                     ]}
                     editable={false}
                     pointerEvents='none'
-                    value={selectedCanteen.alias}
+                    value={selectedCanteen?.alias}
                   />
                 )}
 
@@ -136,7 +139,7 @@ const FoodPlanList = ({
                       styles.textInput,
                       {
                         color: theme.screen.text,
-                        backgroundColor: theme.screen.card,
+                        backgroundColor: theme.screen.iconBg,
                         fontSize: windowWidth > 600 ? 18 : 16,
                         width: windowWidth > 600 ? 200 : 120,
                       },
@@ -153,7 +156,7 @@ const FoodPlanList = ({
                       styles.textInput,
                       {
                         color: theme.screen.text,
-                        backgroundColor: theme.screen.card,
+                        backgroundColor: theme.screen.iconBg,
                         fontSize: windowWidth > 600 ? 18 : 16,
                         width: windowWidth > 600 ? 200 : 120,
                       },

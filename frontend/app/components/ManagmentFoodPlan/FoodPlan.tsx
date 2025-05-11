@@ -11,6 +11,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import styles from './styles';
 import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/reducer';
 
 const FoodPlan = ({
   data,
@@ -58,7 +59,9 @@ const FoodPlan = ({
     setToggleStates(updatedStates);
   };
 
-  const { selectedCanteen } = useSelector((state: any) => state.canteenReducer);
+  const { selectedCanteen } = useSelector(
+    (state: RootState) => state.canteenReducer
+  );
 
   return (
     <View
@@ -105,7 +108,7 @@ const FoodPlan = ({
                 onValueChange={() => handleToggleChange(index)}
                 thumbColor={theme.screen.icon}
                 trackColor={{
-                  false: theme.screen.card,
+                  false: theme.screen.icon,
                   true: theme.screen.iconBg,
                 }}
               />
@@ -117,14 +120,14 @@ const FoodPlan = ({
                       styles.textInput,
                       {
                         color: theme.screen.text,
-                        backgroundColor: theme.screen.card,
+                        backgroundColor: theme.screen.icon,
                         fontSize: windowWidth > 600 ? 18 : 16,
                         width: windowWidth > 600 ? 200 : 120,
                       },
                     ]}
                     editable={false}
                     pointerEvents='none'
-                    value={selectedCanteen.alias}
+                    value={selectedCanteen?.alias}
                   />
                 )}
                 {item.name === 'Speiseangebot Kategorie (optional)' && (
@@ -133,7 +136,7 @@ const FoodPlan = ({
                       styles.textInput,
                       {
                         color: theme.screen.text,
-                        backgroundColor: theme.screen.card,
+                        backgroundColor: theme.screen.iconBg,
                         fontSize: windowWidth > 600 ? 18 : 16,
                         width: windowWidth > 600 ? 200 : 120,
                       },
@@ -146,7 +149,7 @@ const FoodPlan = ({
                 {item.name === 'Speise Kategorie (optional)' && (
                   <TextInput
                     style={{
-                      backgroundColor: theme.screen.card,
+                      backgroundColor: theme.screen.iconBg,
                       marginRight: 10,
                       textAlign: 'right',
                       color: theme.screen.text,
@@ -164,7 +167,7 @@ const FoodPlan = ({
                       styles.textInput,
                       {
                         color: theme.screen.text,
-                        backgroundColor: theme.screen.card,
+                        backgroundColor: theme.screen.iconBg,
                         fontSize: windowWidth > 600 ? 18 : 16,
                         width: windowWidth > 600 ? 200 : 120,
                       },
@@ -180,7 +183,7 @@ const FoodPlan = ({
                       styles.textInput,
                       {
                         color: theme.screen.text,
-                        backgroundColor: theme.screen.card,
+                        backgroundColor: theme.screen.iconBg,
                         fontSize: windowWidth > 600 ? 18 : 16,
                         width: windowWidth > 600 ? 200 : 120,
                       },

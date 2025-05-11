@@ -16,6 +16,7 @@ import { isWeb } from '@/constants/Constants';
 import { useLanguage } from '@/hooks/useLanguage';
 import * as FileSystem from 'expo-file-system';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 // Import libraries based on platform
 const SignatureCanvas =
@@ -42,7 +43,7 @@ const SignatureInterface = ({
 }) => {
   const { translate } = useLanguage();
   const { theme } = useTheme();
-  const { primaryColor } = useSelector((state: any) => state.settings);
+  const { primaryColor } = useSelector((state: RootState) => state.settings);
   const signatureRef = useRef<any>(null);
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width

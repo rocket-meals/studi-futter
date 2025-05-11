@@ -70,6 +70,7 @@ import { Buffer } from 'buffer';
 import FilterFormSheet from '@/components/FilterFormSheet/FilterFormSheet';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { RootState } from '@/redux/reducer';
 
 const index = () => {
   const toast = useToast();
@@ -93,8 +94,8 @@ const index = () => {
   const [loadingCollection, setLoadingCollection] = useState(false);
   const [collectionData, setCollectionData] = useState<any>([]);
   const [selectedState, setSelectedState] = useState('');
-  const { formSubmission } = useSelector((state: any) => state.form);
-  const { user } = useSelector((state: any) => state.authReducer);
+  const { formSubmission } = useSelector((state: RootState) => state.form);
+  const { user } = useSelector((state: RootState) => state.authReducer);
   const [submissionLoading, setSubmissionLoading] = useState(false);
   const [formData, setFormData] = useState<{
     [key: string]: { value: any; error: string; custom_type: string };
@@ -103,7 +104,7 @@ const index = () => {
     Dimensions.get('window').width
   );
   const { language, drawerPosition, primaryColor } = useSelector(
-    (state: any) => state.settings
+    (state: RootState) => state.settings
   );
 
   // Set Page Title

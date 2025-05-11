@@ -43,19 +43,22 @@ import {
   ON_LOGOUT,
 } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const index = () => {
   const { translate } = useLanguage();
   const { theme } = useTheme();
   const toast = useToast();
   const dispatch = useDispatch();
-  const { profile, user } = useSelector((state: any) => state.authReducer);
+  const { profile, user } = useSelector(
+    (state: RootState) => state.authReducer
+  );
   const [projectName, setProjectName] = useState('');
   const [windowWidth, setWindowWidth] = useState(
     Dimensions.get('window').width
   );
   const { serverInfo, appSettings, primaryColor } = useSelector(
-    (state: any) => state.settings
+    (state: RootState) => state.settings
   );
   const [animationJson, setAmimationJson] = useState<any>(null);
   const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);

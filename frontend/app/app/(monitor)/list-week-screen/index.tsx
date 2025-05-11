@@ -15,6 +15,7 @@ import { useRouter } from 'expo-router';
 import { SET_WEEK_PLAN } from '@/redux/Types/types';
 import { myContrastColor } from '@/helper/colorHelper';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { RootState } from '@/redux/reducer';
 
 const index = () => {
   useSetPageTitle('FoodPlan:Week');
@@ -29,15 +30,16 @@ const index = () => {
     currentYear + 1,
   ]);
   const [selectedYear, setSelectedYear] = useState<number>(currentYear);
-  const { weekPlan } = useSelector((state: any) => state.management);
+  const { weekPlan } = useSelector((state: RootState) => state.management);
   const [weeks, setWeeks] = useState<
     { weekNumber: number; dateRange: string }[]
   >(generateWeeks(currentYear));
   const [selectedWeek, setSelectedWeek] = useState<number>(moment().isoWeek());
-  const { foods_area_color: projectColor, appSettings } = useSelector(
-    (state: any) => state.settings
-  );
-  const mode = useSelector((state: any) => state.settings.theme);
+  const {
+    primaryColor: projectColor,
+    appSettings,
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
   const foods_area_color = appSettings?.foods_area_color
     ? appSettings?.foods_area_color
     : projectColor;

@@ -11,6 +11,7 @@ import { FoodoffersMarkings, Markings } from '@/constants/types';
 import { createSelector } from 'reselect';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 interface LabelsProps {
   foodDetails: any;
@@ -19,11 +20,11 @@ interface LabelsProps {
   color: string;
 }
 
-const selectMarkings = (state: any) => state.food.markings;
+const selectMarkings = (state: RootState) => state.food.markings;
 
 export const selectFoodOffer = (offerId: string) =>
   createSelector(
-    [(state: any) => state.canteenReducer.selectedCanteenFoodOffers],
+    [(state: RootState) => state.canteenReducer.selectedCanteenFoodOffers],
     (foodOffers) => getFoodOffer(foodOffers, offerId)
   );
 
@@ -31,11 +32,13 @@ const Labels: React.FC<LabelsProps> = ({
   foodDetails,
   offerId,
   handleMenuSheet,
-  color
+  color,
 }) => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
-  const {primaryColor,appSettings} = useSelector((state: any) => state.settings);
+  const { primaryColor, appSettings } = useSelector(
+    (state: RootState) => state.settings
+  );
   const foods_area_color = appSettings?.foods_area_color
     ? appSettings?.foods_area_color
     : primaryColor;

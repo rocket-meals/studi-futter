@@ -29,6 +29,7 @@ import { excerpt } from '@/constants/HelperFunctions';
 import { filterOptions } from './constants';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { RootState } from '@/redux/reducer';
 
 const index = () => {
   useSetPageTitle(TranslationKeys.select_a_form_submission);
@@ -46,7 +47,7 @@ const index = () => {
   const formsSubmissionsHelper = new FormsSubmissionsHelper();
   const [formSubmissions, setFormSubmissions] = useState<FormSubmissions[]>([]);
   const [selectedOption, setSelectedOption] = useState<string>('draft');
-  const { drawerPosition } = useSelector((state: any) => state.settings);
+  const { drawerPosition } = useSelector((state: RootState) => state.settings);
 
   const openFilterSheet = () => {
     sheetRef.current?.expand();

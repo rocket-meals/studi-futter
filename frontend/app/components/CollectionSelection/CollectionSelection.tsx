@@ -11,6 +11,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
 import { isWeb } from '@/constants/Constants';
+import { RootState } from '@/redux/reducer';
 
 const CollectionSelection = ({
   id,
@@ -32,7 +33,7 @@ const CollectionSelection = ({
   custom_type: string;
 }) => {
   const { theme } = useTheme();
-  const { primaryColor } = useSelector((state: any) => state.settings);
+  const { primaryColor } = useSelector((state: RootState) => state.settings);
   const parseValue = value ? value : null;
   const itemId = parseValue?.id;
 

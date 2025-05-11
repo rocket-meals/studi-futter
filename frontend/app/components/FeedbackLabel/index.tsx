@@ -21,6 +21,7 @@ import { myContrastColor } from '@/helper/colorHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 const FeedbackLabel: React.FC<FeedbackLabelProps> = ({
   label,
   icon,
@@ -32,14 +33,20 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({
   const { theme } = useTheme();
   const dispatch = useDispatch();
   const { translate } = useLanguage();
-  const { primaryColor, language, appSettings } = useSelector(
-    (state: any) => state.settings
-  );
-  const mode = useSelector((state: any) => state.settings.theme);
+  const {
+    primaryColor,
+    language,
+    appSettings,
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
   const [warning, setWarning] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
-  const { user, profile } = useSelector((state: any) => state.authReducer);
-  const { selectedCanteen } = useSelector((state: any) => state.canteenReducer);
+  const { user, profile } = useSelector(
+    (state: RootState) => state.authReducer
+  );
+  const { selectedCanteen } = useSelector(
+    (state: RootState) => state.canteenReducer
+  );
   const foodFeedbackLabelEntryHelper = new FoodFeedbackLabelEntryHelper();
   const foods_area_color = appSettings?.foods_area_color
     ? appSettings?.foods_area_color
@@ -195,7 +202,9 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({
           <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
             <TooltipText fontSize='$sm' color={theme.tooltip.text}>
               {`${translate(TranslationKeys.i_dislike_that)}: ${translate(
-                like === false ? TranslationKeys.active : TranslationKeys.inactive
+                like === false
+                  ? TranslationKeys.active
+                  : TranslationKeys.inactive
               )}: ${getTextFromTranslation(label, language)}`}
             </TooltipText>
           </TooltipContent>

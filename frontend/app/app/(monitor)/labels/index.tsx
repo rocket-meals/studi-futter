@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, DimensionValue } from 'react-native';
 import styles from './styles';
 import { useSelector } from 'react-redux';
 import { getImageUrl } from '@/constants/HelperFunctions';
@@ -11,6 +11,7 @@ import LabelHeader from '@/components/LabelHeader/LabelHeader';
 import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { RootState } from '@/redux/reducer';
 
 const index = () => {
   const { theme } = useTheme();
@@ -18,9 +19,10 @@ const index = () => {
 
   const [currentTime, setCurrentTime] = useState('');
 
-  const { markings } = useSelector((state: any) => state.food);
-  const mode = useSelector((state: any) => state.settings.theme);
-  const { language } = useSelector((state: any) => state.settings);
+  const { markings } = useSelector((state: RootState) => state.food);
+  const { language, selectedTheme: mode } = useSelector(
+    (state: RootState) => state.settings
+  );
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -57,7 +59,7 @@ const index = () => {
               {chunk.map((marking, index) => {
                 const markingImage = marking?.image_remote_url
                   ? { uri: marking?.image_remote_url }
-                  : { uri: getImageUrl(marking?.image) };
+                  : { uri: getImageUrl(String(marking?.image)) };
                 const markingText = getTextFromTranslation(
                   marking?.translations,
                   language
@@ -78,10 +80,10 @@ const index = () => {
                         source={markingImage}
                         style={[
                           styles.logoImage,
-                          markingImage.uri && {
-                            backgroundColor:
-                              marking?.background_color &&
-                              marking?.background_color,
+                          markingImage?.uri && {
+                            backgroundColor: marking?.background_color
+                              ? marking?.background_color
+                              : 'transparent',
                             borderRadius: marking?.background_color ? 8 : 0,
                           },
                         ]}
@@ -93,7 +95,8 @@ const index = () => {
                         <View
                           style={{
                             ...styles.shortCode,
-                            backgroundColor: MarkingBackgroundColor,
+                            backgroundColor:
+                              MarkingBackgroundColor || 'transparent',
                             borderWidth: marking?.hide_border ? 0 : 1,
                             borderColor: MarkingColor,
                           }}
@@ -113,7 +116,8 @@ const index = () => {
                       <View
                         style={{
                           ...styles.iconMarking,
-                          backgroundColor: MarkingBackgroundColor,
+                          backgroundColor:
+                            MarkingBackgroundColor || 'transparent',
                           borderWidth: marking?.hide_border ? 0 : 1,
                           borderColor: MarkingColor,
                         }}

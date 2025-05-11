@@ -14,6 +14,7 @@ import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { ApartmentsHelper } from '@/redux/actions/Apartments/Apartments';
+import { RootState } from '@/redux/reducer';
 
 const WashingMachines: React.FC<any> = ({ campusDetails }) => {
   const { translate } = useLanguage();
@@ -24,7 +25,7 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
   >();
   const [loading, setLoading] = useState(false);
   const { primaryColor, appSettings } = useSelector(
-    (state: any) => state.settings
+    (state: RootState) => state.settings
   );
   const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
   const animationRef = useRef<LottieView>(null);

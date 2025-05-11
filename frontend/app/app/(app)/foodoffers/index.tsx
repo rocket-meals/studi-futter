@@ -8,8 +8,6 @@ import {
   RefreshControl,
   View,
   Platform,
-  Linking,
-  Image,
 } from 'react-native';
 import React, {
   useCallback,
@@ -36,6 +34,7 @@ import {
   SET_SELECTED_CANTEEN_FOOD_OFFERS,
   SET_SELECTED_CANTEEN_FOOD_OFFERS_LOCAL,
   SET_SELECTED_DATE,
+  UPDATE_PROFILE,
 } from '@/redux/Types/types';
 import {
   Businesshours,
@@ -76,14 +75,13 @@ import { format } from 'date-fns';
 import { BusinessHoursHelper } from '@/redux/actions/BusinessHours/BusinessHours';
 import PopupEventSheet from '@/components/PopupEventSheet/PopupEventSheet';
 import { getAppElementTranslation } from '@/helper/resourceHelper';
-import CustomCollapsible from '@/components/CustomCollapsible/CustomCollapsible';
-import RedirectButton from '@/components/RedirectButton';
-import { myContrastColor } from '@/helper/colorHelper';
 import noFoodOffersFound from '@/assets/animations/noFoodOffersFound.json';
 import LottieView from 'lottie-react-native';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
+import { RootState } from '@/redux/reducer';
 
 export const SHEET_COMPONENTS = {
   canteen: CanteenSelectionSheet,
@@ -127,7 +125,6 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const [selectedFoodId, setSelectedFoodId] = useState('');
   const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
   const [feedbackLabelsLoading, setFeedbackLabelsLoading] = useState(true);
-
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
@@ -135,33 +132,28 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     keyof typeof SHEET_COMPONENTS | null
   >(null);
 
-  const mode = useSelector((state: any) => state.settings.theme);
   const {
     sortBy,
     language: languageCode,
     drawerPosition,
     appSettings,
     primaryColor,
-  } = useSelector((state: any) => state.settings);
+  } = useSelector((state: RootState) => state.settings);
   const { ownFoodFeedbacks, popupEvents, selectedDate } = useSelector(
-    (state: any) => state.food
+    (state: RootState) => state.food
   );
   const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
   const animationRef = useRef<LottieView>(null);
   const [animationJson, setAmimationJson] = useState<any>(null);
-  const { profile } = useSelector((state: any) => state.authReducer);
-  const { appElements } = useSelector((state: any) => state.appElements);
+  const { profile, user } = useSelector(
+    (state: RootState) => state.authReducer
+  );
+  const { appElements } = useSelector((state: RootState) => state.appElements);
   const { selectedCanteen, selectedCanteenFoodOffers, canteenFeedbackLabels } =
-    useSelector((state: any) => state.canteenReducer);
+    useSelector((state: RootState) => state.canteenReducer);
   const foods_area_color = appSettings?.foods_area_color
     ? appSettings?.foods_area_color
     : primaryColor;
-
-  const contrastColor = myContrastColor(
-    foods_area_color,
-    theme,
-    mode === 'dark'
-  );
 
   // Set Page Title
   useSetPageTitle(selectedCanteen?.alias || TranslationKeys.food_offers);
@@ -202,12 +194,25 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
           source={animationJson}
           resizeMode='contain'
           style={{ width: '100%', height: '100%' }}
-          autoPlay={autoPlay}
+          autoPlay={autoPlay || false}
           loop={false}
         />
       );
     }
   }, [autoPlay, animationJson]);
+
+  const setDefaultPriceGroupForAnonymousUser = () => {
+    dispatch({
+      type: UPDATE_PROFILE,
+      payload: { ...profile, price_group: 'student' },
+    });
+  };
+
+  useEffect(() => {
+    if (!user.id) {
+      setDefaultPriceGroupForAnonymousUser();
+    }
+  }, [user]);
 
   useEffect(() => {
     if (!appElements || !appSettings) return;
@@ -225,8 +230,10 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
       };
     };
 
-    const before = getElement(appSettings.foodoffers_list_before_element);
-    const after = getElement(appSettings.foodoffers_list_after_element);
+    const before = getElement(
+      String(appSettings.foodoffers_list_before_element)
+    );
+    const after = getElement(String(appSettings.foodoffers_list_after_element));
 
     setBeforeElement(before);
     setAfterElement(after);
@@ -511,278 +518,6 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
   const SheetComponent = selectedSheet ? SHEET_COMPONENTS[selectedSheet] : null;
 
-  const getContent = (element: string) => {
-    // Regex patterns for different content types
-    const contentPatterns = {
-      email: /\[([^\]]+)]\((mailto:[^\)]+)\)/,
-      link: /\[([^\]]+)]\((https?:\/\/[^\)]+)\)/,
-      image: /!\[([^\]]*)]\(([^)]+)\)/,
-      heading: /^#{1,3}\s*(.*)$/,
-    };
-
-    if (element) {
-      const rawText = element;
-      const lines = rawText.split('\n').filter((line) => line.trim() !== '');
-
-      // Process content into a structured format
-      const processContent = (lines: string[]) => {
-        const result: any[] = [];
-        let stack = [{ level: 0, items: result }];
-        let currentText = '';
-
-        const flushTextContent = () => {
-          if (currentText.trim()) {
-            stack[stack.length - 1].items.push({
-              type: 'text',
-              content: currentText.trim(),
-            });
-            currentText = '';
-          }
-        };
-
-        lines.forEach((line) => {
-          // Check for headings first
-          const headingMatch = line.match(contentPatterns.heading);
-          if (headingMatch) {
-            flushTextContent();
-
-            const level = headingMatch[0].match(/#/g)?.length || 1;
-            const headerText = headingMatch[1].trim();
-
-            // Close previous sections at this level or higher
-            while (stack.length > 1 && stack[stack.length - 1].level >= level) {
-              stack.pop();
-            }
-
-            const newSection = {
-              type: 'collapsible',
-              header: headerText,
-              items: [],
-              level,
-            };
-
-            stack[stack.length - 1].items.push(newSection);
-            stack.push({ level, items: newSection.items });
-            return;
-          }
-
-          // Check for other content types
-          if (contentPatterns.image.test(line)) {
-            flushTextContent();
-            const match = line.match(contentPatterns.image);
-            stack[stack.length - 1].items.push({
-              type: 'image',
-              altText: match?.[1] || '',
-              url: match?.[2] || '',
-            });
-          } else if (contentPatterns.email.test(line)) {
-            flushTextContent();
-            const match = line.match(contentPatterns.email);
-            stack[stack.length - 1].items.push({
-              type: 'email',
-              displayText: match?.[1],
-              email: match?.[2],
-            });
-          } else if (contentPatterns.link.test(line)) {
-            flushTextContent();
-            const match = line.match(contentPatterns.link);
-            stack[stack.length - 1].items.push({
-              type: 'link',
-              displayText: match?.[1],
-              url: match?.[2],
-            });
-          } else {
-            currentText += `${line}\n`;
-          }
-        });
-
-        flushTextContent();
-        return result;
-      };
-
-      // Component for rendering text with proper formatting
-      const TextContent = ({
-        text,
-        level,
-      }: {
-        text: string;
-        level: number;
-      }) => (
-        <Text
-          style={{
-            fontSize: 16,
-            fontFamily: 'Poppins_400Regular',
-            color: theme.screen.text,
-            marginLeft: level * 16,
-            lineHeight: 24,
-          }}
-        >
-          {text}
-        </Text>
-      );
-
-      // Component for rendering images
-      const ImageContent = ({
-        url,
-        altText,
-        level,
-      }: {
-        url: string;
-        altText: string;
-        level: number;
-      }) => {
-        const [error, setError] = useState(false);
-
-        return (
-          <View
-            style={{
-              width: '100%',
-              alignItems: 'center',
-              marginLeft: level * 16,
-              marginVertical: 10,
-              borderRadius: 8,
-              overflow: 'hidden',
-              marginTop: 20,
-            }}
-          >
-            {error ? (
-              <View
-                style={{
-                  borderWidth: 1,
-                  borderColor: theme.screen.text,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: 10,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 12,
-                    color: theme.screen.text,
-                    fontFamily: 'Poppins_400Regular',
-                    textAlign: 'center',
-                    fontStyle: 'italic',
-                  }}
-                >
-                  {altText}
-                </Text>
-              </View>
-            ) : (
-              <View
-                style={{
-                  width: 440,
-                  height: 293,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: 10,
-                }}
-              >
-                <Image
-                  source={{ uri: url }}
-                  style={{
-                    width: 440,
-                    height: 293,
-                    resizeMode: 'cover',
-                  }}
-                  onError={() => setError(true)}
-                />
-              </View>
-            )}
-          </View>
-        );
-      };
-
-      // Main renderer for content items
-      const renderContentItem = (item: any, level: number, index: number) => {
-        switch (item.type) {
-          case 'text':
-            return (
-              <TextContent
-                key={`text-${level}-${index}`}
-                text={item.content}
-                level={level}
-              />
-            );
-
-          case 'email':
-            return (
-              <View
-                key={`email-${level}-${index}`}
-                style={{ marginLeft: level * 16, marginBottom: 10 }}
-              >
-                <RedirectButton
-                  type='email'
-                  label={item.displayText}
-                  onClick={() => Linking.openURL(`mailto:${item.email}`)}
-                  backgroundColor={foods_area_color}
-                  color={contrastColor}
-                />
-              </View>
-            );
-
-          case 'link':
-            return (
-              <View
-                key={`link-${level}-${index}`}
-                style={{ marginLeft: level * 16, marginBottom: 10 }}
-              >
-                <RedirectButton
-                  type='link'
-                  label={item.displayText}
-                  onClick={() => Linking.openURL(item.url)}
-                  backgroundColor={foods_area_color}
-                  color={contrastColor}
-                />
-              </View>
-            );
-
-          case 'image':
-            return (
-              <ImageContent
-                key={`image-${level}-${index}`}
-                url={item.url}
-                altText={item.altText}
-                level={level}
-              />
-            );
-
-          case 'collapsible':
-            return (
-              <View
-                key={`collapsible-${level}-${index}`}
-                style={{ marginTop: level > 0 ? 5 : 10 }}
-              >
-                <CustomCollapsible
-                  headerText={item.header}
-                  customColor={foods_area_color}
-                >
-                  {renderContent(item.items, level + 1)}
-                </CustomCollapsible>
-              </View>
-            );
-
-          default:
-            return null;
-        }
-      };
-
-      // Recursive content renderer
-      const renderContent = (items: any[], level = 0) => {
-        return items.map((item, index) =>
-          renderContentItem(item, level, index)
-        );
-      };
-
-      const hierarchicalContent = processContent(lines);
-      return (
-        <View style={{ paddingBottom: 20 }}>
-          {renderContent(hierarchicalContent)}
-        </View>
-      );
-    }
-
-    return null;
-  };
   return (
     <>
       <SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.iconBg }}>
@@ -1142,7 +877,14 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
             }
           >
             <View style={styles.elementContainer}>
-              {beforeElement && getContent(beforeElement?.content)}
+              {beforeElement && (
+                <CustomMarkdown
+                  content={beforeElement?.content || ''}
+                  backgroundColor={foods_area_color}
+                  imageWidth={440}
+                  imageHeight={293}
+                />
+              )}
             </View>
             <View
               style={{
@@ -1188,7 +930,14 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
               )}
             </View>
             <View style={styles.elementContainer}>
-              {afterElement && getContent(afterElement?.content)}
+              {afterElement && (
+                <CustomMarkdown
+                  content={afterElement?.content || ''}
+                  backgroundColor={foods_area_color}
+                  imageWidth={440}
+                  imageHeight={293}
+                />
+              )}
             </View>
             {!feedbackLabelsLoading && (
               <View style={styles.feebackContainer}>

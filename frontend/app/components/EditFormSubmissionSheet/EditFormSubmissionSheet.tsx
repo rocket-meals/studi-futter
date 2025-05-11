@@ -18,17 +18,18 @@ import { FormsSubmissionsHelper } from '@/redux/actions/Forms/FormSubmitions';
 import { FormSubmissions } from '@/constants/types';
 import { SET_FORM_SUBMISSION } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const EditFormSubmissionSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
   const dispatch = useDispatch();
-  const { formSubmission } = useSelector((state: any) => state.form);
+  const { formSubmission } = useSelector((state: RootState) => state.form);
   const [alias, setAlias] = useState(
     formSubmission ? formSubmission?.alias : ''
   );
   const [loading, setLoading] = useState(false);
-  const { primaryColor } = useSelector((state: any) => state.settings);
+  const { primaryColor } = useSelector((state: RootState) => state.settings);
   const formsSubmissionsHelper = new FormsSubmissionsHelper();
 
   const handleChangeAlias = async () => {

@@ -21,6 +21,7 @@ import ImageManagementSheet from '@/components/ImageManagementSheet/ImageManagem
 import { useFocusEffect } from 'expo-router';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const index = () => {
   useSetPageTitle(TranslationKeys.statistiken);
@@ -32,7 +33,7 @@ const index = () => {
   const imageManagementPoints = useMemo(() => ['70%'], []);
 
   const { mostLikedFoods, mostDislikedFoods } = useSelector(
-    (state: any) => state.food
+    (state: RootState) => state.food
   );
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width

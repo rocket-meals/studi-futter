@@ -7,6 +7,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { CustomCollapsibleProps } from './types';
 import { useSelector } from 'react-redux';
 import { myContrastColor } from '@/helper/colorHelper';
+import { RootState } from '@/redux/reducer';
 
 const CustomCollapsible: React.FC<CustomCollapsibleProps> = ({
   headerText,
@@ -15,8 +16,9 @@ const CustomCollapsible: React.FC<CustomCollapsibleProps> = ({
 }) => {
   const [collapsed, setCollapsed] = useState(true);
   const { theme } = useTheme();
-  const { primaryColor } = useSelector((state: any) => state.settings);
-  const mode = useSelector((state: any) => state.settings.theme);
+  const { primaryColor, selectedTheme: mode } = useSelector(
+    (state: RootState) => state.settings
+  );
   const resolvedColor = customColor || primaryColor;
   const contrastColor = myContrastColor(
     resolvedColor,

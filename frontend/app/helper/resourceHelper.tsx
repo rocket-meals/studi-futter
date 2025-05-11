@@ -7,7 +7,9 @@ import {
   FormCategoriesTranslations,
   FormFieldsTranslations,
   FormsTranslations,
+  MarkingsTranslations,
   NewsTranslations,
+  WikisTranslations,
 } from '@/constants/types';
 import { StringHelper } from './stringHelper';
 
@@ -117,30 +119,31 @@ export const getFromDescriptionTranslation = (
 };
 
 export const getTitleFromTranslation = (
-  translations: Array<Translation>,
+  translations: Array<Translation | WikisTranslations>,
   languageCode: string
 ): string => {
   if (!translations || translations.length === 0) return '';
   const translation = translations.find(
-    (t) => t.languages_code?.split('-')[0] === languageCode
+    (t) => t.languages_code?.toString()?.split('-')[0] === languageCode
   );
   return translation?.title || '';
 };
 
-
 const getDescriptionFromTranslation = (
-  translations: Array<Translation>,
+  translations: Array<Translation | MarkingsTranslations>,
   languageCode: string
 ): string => {
   if (!translations || translations.length === 0) return '';
 
   const prioritizedTranslation = translations.find(
-    (t) => t.languages_code?.split('-')[0] === languageCode && t.description
+    (t) =>
+      t.languages_code?.toString()?.split('-')[0] === languageCode &&
+      t.description
   );
 
   // Fall back to any translation matching the language code
   const fallbackTranslation = translations.find(
-    (t) => t.languages_code?.split('-')[0] === languageCode
+    (t) => t.languages_code?.toString()?.split('-')[0] === languageCode
   );
 
   const translation = prioritizedTranslation || fallbackTranslation;

@@ -12,6 +12,7 @@ import { getDistanceUnit } from '@/helper/distanceHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const BuildingItem: React.FC<BuildingItemProps> = ({
   campus,
@@ -20,12 +21,11 @@ const BuildingItem: React.FC<BuildingItemProps> = ({
 }) => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
-  const { primaryColor, serverInfo } = useSelector(
-    (state: any) => state.settings
+  const { amountColumnsForcard, primaryColor, serverInfo } = useSelector(
+    (state: RootState) => state.settings
   );
   const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
-  const { amountColumnsForcard } = useSelector((state: any) => state.settings);
-  const { isManagement } = useSelector((state: any) => state.authReducer);
+  const { isManagement } = useSelector((state: RootState) => state.authReducer);
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
@@ -141,7 +141,9 @@ const BuildingItem: React.FC<BuildingItemProps> = ({
                 >
                   <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                     <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                      {`${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.image)}`}
+                      {`${translate(TranslationKeys.edit)}: ${translate(
+                        TranslationKeys.image
+                      )}`}
                     </TooltipText>
                   </TooltipContent>
                 </Tooltip>

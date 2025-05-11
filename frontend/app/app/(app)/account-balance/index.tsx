@@ -33,9 +33,7 @@ import { useFocusEffect } from 'expo-router';
 import { AntDesign } from '@expo/vector-icons';
 import useToast from '@/hooks/useToast';
 import { UPDATE_PROFILE } from '@/redux/Types/types';
-import CustomCollapsible from '@/components/CustomCollapsible/CustomCollapsible';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
-import RedirectButton from '@/components/RedirectButton';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import moneyConfused from '@/assets/animations/accountBalance/moneyConfused.json';
 import moneyFitness from '@/assets/animations/accountBalance/moneyFitness.json';
@@ -43,6 +41,8 @@ import moneySad from '@/assets/animations/accountBalance/moneySad.json';
 import moneyConfident from '@/assets/animations/accountBalance/moneyConfident.json';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
+import { RootState } from '@/redux/reducer';
 
 enum BalanceStateLowerBound {
   CONFIDENT = 10,
@@ -57,9 +57,9 @@ const AccountBalanceScreen = () => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
   const dispatch = useDispatch();
-  const { profile } = useSelector((state: any) => state.authReducer);
+  const { profile } = useSelector((state: RootState) => state.authReducer);
   const { appSettings, language, primaryColor } = useSelector(
-    (state: any) => state.settings
+    (state: RootState) => state.settings
   );
   const balance_area_color = appSettings?.balance_area_color
     ? appSettings?.balance_area_color
@@ -191,270 +191,6 @@ const AccountBalanceScreen = () => {
       checkNfcStatus();
     }, [])
   );
-
-  const getContent = () => {
-    const emailRegex = /\[([^\]]+)]\((mailto:[^\)]+)\)/;
-    const urlRegex = /\[([^\]]+)]\((https?:\/\/[^\)]+)\)/;
-
-    if (appSettings?.balance_translations) {
-      const rawText = getTextFromTranslation(
-        appSettings?.balance_translations,
-        language
-      );
-      const lines = rawText.split('\n').filter((line) => line.trim() !== '');
-
-      // Function to get heading level (returns 1 for #, 2 for ##, 3 for ###)
-      const getHeadingLevel = (line: any) => {
-        const trimmedLine = line.trim();
-        if (!trimmedLine.startsWith('#')) return 0;
-        const matches = trimmedLine.match(/^#{1,3}/);
-        return matches ? matches[0].length : 0;
-      };
-
-      // Function to process content into hierarchical structure
-      const processContent = (lines: any) => {
-        const result: any[] = [];
-        let stack = [{ level: 0, items: result }];
-        let currentContent = '';
-
-        lines.forEach((line: any) => {
-          const level = getHeadingLevel(line);
-          if (level > 0) {
-            if (currentContent.trim()) {
-              stack[stack.length - 1].items.push({
-                type: 'text',
-                content: currentContent.trim(),
-              });
-              currentContent = '';
-            }
-
-            // Find appropriate parent level
-            while (stack.length > 1 && stack[stack.length - 1].level >= level) {
-              stack.pop();
-            }
-
-            const newSection = {
-              type: 'collapsible',
-              header: line.replace(/#/g, '').trim(),
-              items: [],
-              level,
-            };
-            stack[stack.length - 1].items.push(newSection);
-            stack.push({ level, items: newSection.items });
-          } else if (/(\t{1,2})/.test(line)) {
-            // Add indented content to current section
-            currentContent += `${line}\n`;
-          } else {
-            if (emailRegex.test(line)) {
-              stack[stack.length - 1].items.push({
-                type: 'email',
-                content: line,
-              });
-            } else if (urlRegex.test(line)) {
-              stack[stack.length - 1].items.push({
-                type: 'link',
-                content: line,
-              });
-            } else {
-              stack[stack.length - 1].items.push({
-                type: 'text',
-                content: `${line}\n`,
-              });
-            }
-          }
-        });
-
-        // Add any remaining content
-        if (currentContent.trim()) {
-          stack[stack.length - 1].items.push({
-            type: 'text',
-            content: currentContent.trim(),
-          });
-        }
-
-        return result;
-      };
-      const renderTextWithLinks = (text: any, level: any, index: any) => {
-        const parts = [];
-        let currentText = text;
-        let offset = 0;
-
-        // Find all matches first
-        const allMatches = [];
-
-        // Find markdown links
-        const linkRegex = /\[([^\]]+)]\((https?:\/\/[^\)]+)\)/g;
-        let linkMatch;
-        while ((linkMatch = linkRegex.exec(text)) !== null) {
-          allMatches.push({
-            type: 'link',
-            text: linkMatch[1],
-            url: linkMatch[2],
-            index: linkMatch.index,
-            length: linkMatch[0].length,
-          });
-        }
-
-        // Find markdown emails
-        const emailRegex = /\[([^\]]+)]\(mailto:([^\)]+)\)/g;
-        let emailMatch;
-        while ((emailMatch = emailRegex.exec(text)) !== null) {
-          allMatches.push({
-            type: 'email',
-            text: emailMatch[1],
-            email: emailMatch[2],
-            index: emailMatch.index,
-            length: emailMatch[0].length,
-          });
-        }
-
-        // Sort matches by index
-        allMatches.sort((a, b) => a.index - b.index);
-
-        // Process matches in order
-        let lastIndex = 0;
-        allMatches.forEach((match) => {
-          // Add text before match
-          if (match.index > lastIndex) {
-            parts.push(text.slice(lastIndex, match.index));
-          }
-
-          if (match.type === 'link') {
-            parts.push({
-              type: 'link',
-              linkText: match.text,
-              url: match.url,
-            });
-          } else {
-            parts.push({
-              type: 'email',
-              emailText: match.text,
-              email: match.email,
-            });
-          }
-
-          lastIndex = match.index + match.length;
-        });
-
-        // Add remaining text
-        if (lastIndex < text.length) {
-          parts.push(text.slice(lastIndex));
-        }
-
-        return (
-          <Text
-            style={{
-              fontSize: 16,
-              fontFamily: 'Poppins_400Regular',
-              color: theme.screen.text,
-              marginLeft: level * 16,
-            }}
-          >
-            {parts.map((part, idx) => {
-              if (typeof part === 'object') {
-                if (part.type === 'link') {
-                  return (
-                    <TouchableOpacity key={`link-${level}-${index}-${idx}`}>
-                      <RedirectButton
-                        type='link'
-                        label={part.linkText}
-                        onClick={() => Linking.openURL(part.url)}
-                      />
-                    </TouchableOpacity>
-                  );
-                }
-                if (part.type === 'email') {
-                  console.log(part, 'letemail');
-                  return (
-                    <TouchableOpacity key={`email-${level}-${index}-${idx}`}>
-                      <RedirectButton
-                        type='email'
-                        label={part.emailText}
-                        onClick={() => Linking.openURL(`mailto:${part.email}`)}
-                      />
-                    </TouchableOpacity>
-                  );
-                }
-              }
-              return part;
-            })}
-          </Text>
-        );
-      };
-
-      const renderContent = (items: any, level = 0) => {
-        return items.map((item: any, index: number) => {
-          if (item.type === 'text') {
-            const urlRegex = /(https?:\/\/[^\s]+)/g;
-
-            // Extract links from the text
-            const links = item.content.match(urlRegex) || [];
-
-            // Split the item.content to separate links and non-links
-            const parts = item.content.split(urlRegex); // This will split the text into an array of regular text and links.
-
-            return (
-              <View key={`text-wrapper-${level}-${index}`}>
-                {renderTextWithLinks(item.content, level, index)}
-              </View>
-            );
-          } else if (item.type === 'email') {
-            const matches = item.content.match(emailRegex);
-            const emailDisplay = matches[1];
-            const mailtoLink = matches[2];
-            return (
-              <TouchableOpacity
-                key={`email-${level}-${index}`}
-                style={{ marginLeft: level * 16 }}
-              >
-                <RedirectButton
-                  type={'email'}
-                  label={emailDisplay}
-                  onClick={() => Linking.openURL(mailtoLink)}
-                />
-              </TouchableOpacity>
-            );
-          } else if (item.type === 'link') {
-            const matches = item.content.match(urlRegex);
-            const displayText = matches[1];
-            const url = matches[2];
-            return (
-              <TouchableOpacity
-                key={`link-${level}-${index}`}
-                style={{ marginLeft: level * 16 }}
-              >
-                <RedirectButton
-                  type={'link'}
-                  label={displayText}
-                  onClick={() => Linking.openURL(url)}
-                />
-              </TouchableOpacity>
-            );
-          } else if (item.type === 'collapsible') {
-            return (
-              <View
-                key={`collapsible-${level}-${index}`}
-                style={{ marginTop: 10 }}
-              >
-                <CustomCollapsible
-                  headerText={item.header}
-                  customColor={balance_area_color}
-                >
-                  {renderContent(item.items, level + 1)}
-                </CustomCollapsible>
-              </View>
-            );
-          }
-        });
-      };
-
-      const hierarchicalContent = processContent(lines);
-
-      return <View>{renderContent(hierarchicalContent)}</View>;
-    }
-
-    return null;
-  };
 
   useFocusEffect(
     useCallback(() => {
@@ -612,7 +348,21 @@ const AccountBalanceScreen = () => {
               : ''}
           </Text>
         </View>
-        <View style={styles.additionalInfoContainer}>{getContent()}</View>
+        <View style={styles.additionalInfoContainer}>
+          {appSettings && appSettings?.balance_translations && (
+            <CustomMarkdown
+              content={
+                getTextFromTranslation(
+                  appSettings?.balance_translations,
+                  language
+                ) || ''
+              }
+              backgroundColor={balance_area_color}
+              imageWidth={'100%'}
+              imageHeight={400}
+            />
+          )}
+        </View>
       </View>
       {isActive && (
         <BottomSheet

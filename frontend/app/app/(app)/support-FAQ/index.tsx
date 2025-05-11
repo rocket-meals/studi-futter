@@ -17,19 +17,20 @@ import useToast from '@/hooks/useToast';
 import { useSelector } from 'react-redux';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { RootState } from '@/redux/reducer';
 
 const supportfaq = () => {
   useSetPageTitle(TranslationKeys.feedback_support_faq);
   const { translate } = useLanguage();
   const { theme } = useTheme();
   const toast = useToast();
-  const { profile } = useSelector((state: any) => state.authReducer);
+  const { profile } = useSelector((state: RootState) => state.authReducer);
   const [projectName, setProjectName] = useState('');
   const [windowWidth, setWindowWidth] = useState(
     Dimensions.get('window').width
   );
   const { serverInfo, appSettings } = useSelector(
-    (state: any) => state.settings
+    (state: RootState) => state.settings
   );
 
   useEffect(() => {

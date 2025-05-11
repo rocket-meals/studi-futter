@@ -11,10 +11,12 @@ import { useSelector } from 'react-redux';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
+
 const CustomMenuHeader: React.FC<CustomMenuHeaderProps> = ({ label }) => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
-  const { drawerPosition } = useSelector((state: any) => state.settings);
+  const { drawerPosition } = useSelector((state: RootState) => state.settings);
   const navigation = useNavigation<DrawerNavigationProp<DrawerParamList>>();
 
   return (

@@ -19,26 +19,30 @@ import { intelligentSort, sortByEatingHabits, sortByFoodName, sortByOwnFavorite,
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/colorHelper';
 import { TranslationKeys } from '@/locales/keys';
-
+import { RootState } from '@/redux/reducer';
 
 const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
   const { theme } = useTheme();
-  const { translate } = useLanguage()
-  
+  const { translate } = useLanguage();
+
   const dispatch = useDispatch();
   const { canteenFoodOffers } = useSelector(
-    (state: any) => state.canteenReducer
+    (state: RootState) => state.canteenReducer
   );
-  const { primaryColor, language: languageCode } = useSelector((state: any) => state.settings);
-  const { sortBy ,appSettings} = useSelector((state: any) => state.settings);
-  const { ownFoodFeedbacks } = useSelector((state: any) => state.food);
-  const { profile } = useSelector((state: any) => state.authReducer);
-  const mode = useSelector((state: any) => state.settings.theme);
+  const {
+    primaryColor,
+    language: languageCode,
+    sortBy,
+    appSettings,
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
+  const { ownFoodFeedbacks } = useSelector((state: RootState) => state.food);
+  const { profile } = useSelector((state: RootState) => state.authReducer);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const foods_area_color = appSettings?.foods_area_color
-  ? appSettings?.foods_area_color
-  : primaryColor;
-     const contrastColor = myContrastColor(
+    ? appSettings?.foods_area_color
+    : primaryColor;
+  const contrastColor = myContrastColor(
     foods_area_color,
     theme,
     mode === 'dark'
@@ -90,10 +94,16 @@ const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
         copiedFoodOffers = sortByFoodName(copiedFoodOffers, languageCode);
         break;
       case 'favorite':
-        copiedFoodOffers = sortByOwnFavorite(copiedFoodOffers, ownFoodFeedbacks);
+        copiedFoodOffers = sortByOwnFavorite(
+          copiedFoodOffers,
+          ownFoodFeedbacks
+        );
         break;
       case 'eating':
-        copiedFoodOffers = sortByEatingHabits(copiedFoodOffers, profile.markings);
+        copiedFoodOffers = sortByEatingHabits(
+          copiedFoodOffers,
+          profile.markings
+        );
         break;
       case 'rating':
         copiedFoodOffers = sortByPublicFavorite(copiedFoodOffers);
@@ -112,7 +122,10 @@ const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
     }
 
     // Dispatch updated food offers and close the sheet
-    dispatch({ type: SET_SELECTED_CANTEEN_FOOD_OFFERS, payload: copiedFoodOffers });
+    dispatch({
+      type: SET_SELECTED_CANTEEN_FOOD_OFFERS,
+      payload: copiedFoodOffers,
+    });
     closeSheet();
   };
 

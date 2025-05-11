@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/colorHelper';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const BuildingSortSheet: React.FC<BuildingSortSheetProps> = ({
   closeSheet,
@@ -33,9 +34,9 @@ const BuildingSortSheet: React.FC<BuildingSortSheetProps> = ({
     apartmentsSortBy,
     primaryColor: projectColor,
     appSettings,
-  } = useSelector((state: any) => state.settings);
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const mode = useSelector((state: any) => state.settings.theme);
   const housing_area_color = appSettings?.housing_area_color
     ? appSettings?.housing_area_color
     : projectColor;

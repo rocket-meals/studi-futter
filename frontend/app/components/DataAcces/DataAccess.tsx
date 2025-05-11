@@ -14,8 +14,9 @@ import { useSelector } from 'react-redux';
 import { Entypo } from '@expo/vector-icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
-const parseMarkdown = (text, theme) => {
+const parseMarkdown = (text: string, theme: any) => {
   return text.split('\n').map((line, index) => {
     if (line.startsWith('## ')) {
       return (
@@ -48,17 +49,18 @@ const parseMarkdown = (text, theme) => {
 const DataAccess = ({ onOpenBottomSheet }: any) => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
-  const { user, profile } = useSelector((state: any) => state.authReducer);
+  const { user, profile } = useSelector(
+    (state: RootState) => state.authReducer
+  );
   const {
     canteens,
     buildings,
-    foodOffers,
     selectedCanteenFoodOffers,
     canteenFoodOffers,
     businessHours,
     canteenFeedbackLabels,
     ownCanteenFeedBackLabelEntries,
-  } = useSelector((state: any) => state.canteenReducer.canteens);
+  } = useSelector((state: RootState) => state.canteenReducer);
 
   const {
     foodFeedbackLabels,
@@ -69,7 +71,7 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
     foodCategories,
     foodOfferCategories,
     markingDetails,
-  } = useSelector((state: any) => state.food);
+  } = useSelector((state: RootState) => state.food);
 
   const [windowWidth, setWindowWidth] = useState(
     Dimensions.get('window').width
@@ -97,7 +99,6 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
   const dataDevice = [
     { label: 'canteens', value: canteens },
     { label: 'buildings', value: buildings },
-    { label: 'food Offers', value: foodOffers },
     { label: 'Selected Canteen FoodOffers', value: selectedCanteenFoodOffers },
     { label: 'Canteen FoodOffers', value: canteenFoodOffers },
     { label: 'Business Hours', value: businessHours },
@@ -151,7 +152,9 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
               <Text
                 style={{ ...styles.labelParagraph, color: theme.header.text }}
               >
-                {translate(TranslationKeys.your_data_which_we_know_if_you_have_a_profile)}
+                {translate(
+                  TranslationKeys.your_data_which_we_know_if_you_have_a_profile
+                )}
               </Text>
             </View>
             {/* Info Items List */}
@@ -199,7 +202,9 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
                     color: theme.header.text,
                   }}
                 >
-                  {translate(TranslationKeys.translation_all_on_device_saved_data)}
+                  {translate(
+                    TranslationKeys.translation_all_on_device_saved_data
+                  )}
                 </Text>
               </View>
               {dataDevice.map((data, index) => {

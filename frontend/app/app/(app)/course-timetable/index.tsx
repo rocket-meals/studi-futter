@@ -23,6 +23,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/colorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { RootState } from '@/redux/reducer';
 
 const extractTextAndLink = (description: string) => {
   // Remove unintended spaces between `]` and `(`
@@ -48,11 +49,13 @@ const TimetableScreen = () => {
   const { theme } = useTheme();
   const toast = useToast();
   const { translate } = useLanguage();
-  const { primaryColor, language, appSettings } = useSelector(
-    (state: any) => state.settings
-  );
-  const mode = useSelector((state: any) => state.settings.theme);
-  const { profile } = useSelector((state: any) => state.authReducer);
+  const {
+    primaryColor,
+    language,
+    appSettings,
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
+  const { profile } = useSelector((state: RootState) => state.authReducer);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['90%'], []);
   const [events, setEvents] = useState<EventTypes[]>([]);

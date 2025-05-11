@@ -29,6 +29,7 @@ import { myContrastColor } from '@/helper/colorHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({
   label,
@@ -40,15 +41,18 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({
   const canteenFeedbackLabelEntryHelper = new CanteenFeedbackLabelEntryHelper();
   const [warning, setWarning] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
-  const { primaryColor, language, appSettings } = useSelector(
-    (state: any) => state.settings
-  );
-  const mode = useSelector((state: any) => state.settings.theme);
-
+  const {
+    primaryColor,
+    language,
+    appSettings,
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
   const [count, setCount] = useState({ likes: 0, dislikes: 0 });
-  const { user, profile } = useSelector((state: any) => state.authReducer);
+  const { user, profile } = useSelector(
+    (state: RootState) => state.authReducer
+  );
   const { selectedCanteen, ownCanteenFeedBackLabelEntries } = useSelector(
-    (state: any) => state.canteenReducer
+    (state: RootState) => state.canteenReducer
   );
   const foods_area_color = appSettings?.foods_area_color
     ? appSettings?.foods_area_color
@@ -65,7 +69,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({
       ownCanteenFeedBackLabelEntries?.find(
         (entry: CanteensFeedbacksLabelsEntries) =>
           entry.label === label?.id &&
-          entry.canteen === selectedCanteen.id &&
+          entry.canteen === selectedCanteen?.id &&
           isSameDay(entry.date, date)
       ) || ({} as FoodsFeedbacksLabelsEntries)
     );

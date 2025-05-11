@@ -6,7 +6,6 @@ import {
   SET_BUSINESS_HOURS_GROUPS,
   SET_CANTEENS,
   SET_CANTEEN_FEEDBACK_LABELS,
-  SET_FOOD_OFFERS,
   SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES,
   SET_SELECTED_CANTEEN,
   SET_SELECTED_CANTEEN_FOOD_OFFERS,
@@ -18,7 +17,6 @@ const initialState = {
   canteens: [],
   buildings: [],
   selectedCanteen: null,
-  foodOffers: [],
   selectedCanteenFoodOffers: [],
   canteenFoodOffers: [],
   businessHours: [],
@@ -45,12 +43,6 @@ const canteensReducer = (state = initialState, actions: any) => {
       return {
         ...state,
         selectedCanteen: actions.payload,
-      };
-    }
-    case SET_FOOD_OFFERS: {
-      return {
-        ...state,
-        foodOffers: actions.payload,
       };
     }
     case SET_SELECTED_CANTEEN_FOOD_OFFERS: {

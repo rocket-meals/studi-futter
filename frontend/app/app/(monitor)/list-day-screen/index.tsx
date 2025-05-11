@@ -34,6 +34,7 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { FoodsAttributes, FoodsCategories } from '@/constants/types';
 import { ColumnPercentages } from './types';
+import { RootState } from '@/redux/reducer';
 const index = () => {
   useSetPageTitle('list-day-screen');
   const {
@@ -47,8 +48,7 @@ const index = () => {
   const { theme } = useTheme();
   const rowHeight = 80;
   const foodCategoriesHelper = new FoodCategoriesHelper();
-  const { markings } = useSelector((state: any) => state.food);
-  const mode = useSelector((state: any) => state.settings.theme);
+  const { markings } = useSelector((state: RootState) => state.food);
   const [foods, setFoods] = useState([]);
   const [optionalFoods, setOptionalFoods] = useState([]);
   const [foodMarkings, setFoodMarkings] = useState<any>({});
@@ -58,14 +58,15 @@ const index = () => {
   const [foodCategories, setFoodCategories] = useState<any>({});
   const [optionalFoodCategories, setOptionalFoodCategories] = useState<any>({});
   const [selectedCanteen, setSelectedCanteen] = useState<any>(null);
-  const { canteens } = useSelector((state: any) => state.canteenReducer);
+  const { canteens } = useSelector((state: RootState) => state.canteenReducer);
   const {
     primaryColor: projectColor,
     language,
     appSettings,
-  } = useSelector((state: any) => state.settings);
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
   const { foodAttributesDict } = useSelector(
-    (state: any) => state.foodAttributes
+    (state: RootState) => state.foodAttributes
   );
   const progressAnim = useRef(new Animated.Value(0)).current;
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -210,7 +211,7 @@ const index = () => {
       // Create a map for quick lookup of sort order by attribute id
       const attributeSortMap: Record<string, { index: number; alias: string }> =
         {};
-      foodAttributesDataFull?.forEach((attr, index) => {
+      foodAttributesDataFull?.forEach((attr, index: number) => {
         attributeSortMap[attr.id] = { index, alias: attr.alias };
       });
 

@@ -19,6 +19,7 @@ import { BusinessHoursHelper } from '@/redux/actions/BusinessHours/BusinessHours
 import { BusinessHour, HourSheetProps } from './types';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
   const { theme } = useTheme();
@@ -29,10 +30,10 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
   > | null>(null);
   const [loading, setLoading] = useState(false);
   const { language, firstDayOfTheWeek } = useSelector(
-    (state: any) => state.settings
+    (state: RootState) => state.settings
   );
   const { selectedCanteen, businessHoursGroups } = useSelector(
-    (state: { canteenReducer: any }) => state.canteenReducer
+    (state: RootState) => state.canteenReducer
   );
   const ScreenWidth = Dimensions.get('window').width;
   const buildingsHelper = new BuildingsHelper();

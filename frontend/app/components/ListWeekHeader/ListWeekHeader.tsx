@@ -19,11 +19,12 @@ import { useSelector } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
 import { isWeb } from '@/constants/Constants';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const FoodPlanHeader = ({ handlePrint }: any) => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
-  const { weekPlan } = useSelector((state: any) => state.management);
+  const { weekPlan } = useSelector((state: RootState) => state.management);
   const [headerVisible, setHeaderVisible] = useState(true);
   const [secondaryVisible, setSecondaryVisible] = useState(false);
   const [screenWidth, setScreenWidth] = useState(
@@ -129,7 +130,9 @@ const FoodPlanHeader = ({ handlePrint }: any) => {
             </View>
             <View>
               <Text style={[styles.title, { color: theme.header.text }]}>
-                {`${translate(TranslationKeys.week)} ${weekPlan?.selectedWeek?.week}`}
+                {`${translate(TranslationKeys.week)} ${
+                  weekPlan?.selectedWeek?.week
+                }`}
               </Text>
             </View>
           </View>
@@ -145,7 +148,9 @@ const FoodPlanHeader = ({ handlePrint }: any) => {
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
             <Text style={[styles.title, { color: theme.header.text }]}>
-              {`${translate(TranslationKeys.week)} ${weekPlan?.selectedWeek?.week}`}
+              {`${translate(TranslationKeys.week)} ${
+                weekPlan?.selectedWeek?.week
+              }`}
             </Text>
             <TouchableOpacity onPress={handleSecondaryClick}>
               <Feather name='minimize' size={24} color={theme.screen.icon} />

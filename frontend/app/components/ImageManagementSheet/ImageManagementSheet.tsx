@@ -26,6 +26,7 @@ import { useSelector } from 'react-redux';
 import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({
   closeSheet,
@@ -45,7 +46,7 @@ const ImageManagementSheet: React.FC<ImageManagementSheetProps> = ({
     Dimensions.get('window').width
   );
   const MAX_IMAGE_DIMENSION = 6000;
-  const { foodCollection } = useSelector((state: any) => state.food);
+  const { foodCollection } = useSelector((state: RootState) => state.food);
   const [selectedImage, setSelectedImage] = useState<string | undefined>(
     undefined
   );

@@ -22,6 +22,7 @@ import { daysData } from '@/constants/SettingData';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 const CourseTimetable: React.FC<CourseTimetableProps> = ({
   events,
   openSheet,
@@ -36,7 +37,9 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({
   );
   const [currentTimeOffset, setCurrentTimeOffset] = useState(0);
   const [showCurrentTimeOffset, setShowCurrentTimeOffset] = useState(false);
-  const { firstDayOfTheWeek } = useSelector((state: any) => state.settings);
+  const { firstDayOfTheWeek } = useSelector(
+    (state: RootState) => state.settings
+  );
   useEffect(() => {
     const handleResize = () => {
       setScreenWidth(Dimensions.get('window').width);
@@ -329,13 +332,13 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({
                         (e, i) =>
                           i !== eventIndex &&
                           new Date(`1970-01-01T${e.startTime}:00Z`).getTime() <
-                          new Date(
-                            `1970-01-01T${event.endTime}:00Z`
-                          ).getTime() &&
+                            new Date(
+                              `1970-01-01T${event.endTime}:00Z`
+                            ).getTime() &&
                           new Date(`1970-01-01T${e.endTime}:00Z`).getTime() >
-                          new Date(
-                            `1970-01-01T${event.startTime}:00Z`
-                          ).getTime()
+                            new Date(
+                              `1970-01-01T${event.startTime}:00Z`
+                            ).getTime()
                       );
 
                       // Calculate horizontal position and width
@@ -380,7 +383,9 @@ const CourseTimetable: React.FC<CourseTimetableProps> = ({
                               fontSize='$sm'
                               color={theme.tooltip.text}
                             >
-                              {`${translate(TranslationKeys.event)}: ${translate(TranslationKeys.edit)}`}
+                              {`${translate(
+                                TranslationKeys.event
+                              )}: ${translate(TranslationKeys.edit)}`}
                             </TooltipText>
                           </TooltipContent>
                         </Tooltip>

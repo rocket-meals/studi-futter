@@ -1,5 +1,6 @@
 import { SET_COLOR, SET_SERVER_INFO } from '@/redux/Types/types';
 import { ServerAPI, ServerInfo } from '@/redux/actions';
+import { RootState } from '@/redux/reducer';
 import { darkTheme, lightTheme } from '@/styles/themes';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,7 +13,7 @@ export const ServerStatusLoader: React.FC<ServerStatusFlowLoaderProps> = ({
   children,
 }) => {
   const dispatch = useDispatch();
-  const { primaryColor } = useSelector((state: any) => state.settings);
+  const { primaryColor } = useSelector((state: RootState) => state.settings);
 
   async function loadServerInfo(): Promise<ServerInfo | null> {
     try {

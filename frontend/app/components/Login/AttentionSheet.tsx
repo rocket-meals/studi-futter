@@ -13,6 +13,7 @@ import { replaceLottieColors } from '@/helper/animationHelper';
 import animationJson from '@/assets/animations/astronaut-computer.json';
 import { useFocusEffect } from 'expo-router';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const AttentionSheet: React.FC<AttentionSheetProps> = ({
   closeSheet,
@@ -22,7 +23,7 @@ const AttentionSheet: React.FC<AttentionSheetProps> = ({
   const { translate } = useLanguage();
   const { theme } = useTheme();
   const { primaryColor, appSettings } = useSelector(
-    (state: any) => state.settings
+    (state: RootState) => state.settings
   );
   const updatedAnimationJson = replaceLottieColors(animationJson, primaryColor);
   const animationRef = useRef<LottieView>(null);
@@ -95,7 +96,9 @@ const AttentionSheet: React.FC<AttentionSheetProps> = ({
             </Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.cancleButton} onPress={closeSheet}>
-            <Text style={styles.confirmLabel}>{translate(TranslationKeys.cancel)}</Text>
+            <Text style={styles.confirmLabel}>
+              {translate(TranslationKeys.cancel)}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

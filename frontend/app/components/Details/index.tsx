@@ -15,14 +15,17 @@ import { iconLibraries } from '../Drawer/CustomDrawerContent';
 import { useMyContrastColor } from '@/helper/colorHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
   const { translate } = useLanguage();
   const { theme } = useTheme();
-  const { primaryColor, appSettings, language, mode } = useSelector(
-    (state: any) => state.settings
-  );
-  console.log('groupedAttributes', groupedAttributes);
+  const {
+    primaryColor,
+    appSettings,
+    language,
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
 
   const foods_area_color = appSettings?.foods_area_color
     ? appSettings?.foods_area_color

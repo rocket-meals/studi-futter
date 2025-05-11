@@ -33,6 +33,7 @@ import {
 } from '@/helper/resourceHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { RootState } from '@/redux/reducer';
 
 export default function Login() {
   useSetPageTitle(TranslationKeys.sign_in);
@@ -54,7 +55,9 @@ export default function Login() {
   const [isWebVisible, setIsWebVisible] = useState(
     Dimensions.get('window').width > 500
   );
-  const { appSettings, language } = useSelector((state: any) => state.settings);
+  const { appSettings, language } = useSelector(
+    (state: RootState) => state.settings
+  );
   const intro_description =
     appSettings?.login_screen_translations &&
     getIntroDescriptionTranslation(

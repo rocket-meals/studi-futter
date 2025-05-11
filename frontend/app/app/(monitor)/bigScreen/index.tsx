@@ -25,6 +25,7 @@ import NetInfo from '@react-native-community/netinfo';
 import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { RootState } from '@/redux/reducer';
 
 const Index = () => {
   useSetPageTitle(TranslationKeys.big_screen);
@@ -35,7 +36,7 @@ const Index = () => {
   const imageSize = width / 2;
   const [currentTime, setCurrentTime] = useState('');
   const { markings, foodCategories, foodOfferCategories } = useSelector(
-    (state: any) => state.food
+    (state: RootState) => state.food
   );
   const [logoStyle, setLogoStyle] = useState(styles.logo);
   const {
@@ -43,11 +44,11 @@ const Index = () => {
     primaryColor: projectColor,
     appSettings,
     serverInfo,
-  } = useSelector((state: any) => state.settings);
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
   const [foods, setFoods] = useState([]);
   const [currentFoodIndex, setCurrentFoodIndex] = useState(0);
   const [currentFood, setCurrentFood] = useState<any>(null);
-  const mode = useSelector((state: any) => state.settings.theme);
   const [currentMarking, setCurrentMarking] = useState([]);
   const [currentFoodCategory, setCurrentFoodCategory] = useState<any>(null);
   const [currentFoodOfferCategory, setCurrentFoodOfferCategory] =
@@ -58,17 +59,17 @@ const Index = () => {
   const [isConnected, setIsConnected] = useState(true);
   const progressAnim = useRef(new Animated.Value(0)).current;
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const { canteens } = useSelector((state: any) => state.canteenReducer);
+  const { canteens } = useSelector((state: RootState) => state.canteenReducer);
   const [selectedCanteen, setSelectedCanteen] = useState<any>(null);
   const companyImage =
     appSettings?.company_image &&
-    getImageUrl(appSettings?.company_image)?.split('?')[0];
+    getImageUrl(String(appSettings?.company_image))?.split('?')[0];
   const foods_area_color = appSettings?.foods_area_color
     ? appSettings?.foods_area_color
     : projectColor;
 
   const defaultImage =
-    getImageUrl(appSettings.foods_placeholder_image) ||
+    getImageUrl(String(appSettings.foods_placeholder_image)) ||
     appSettings.foods_placeholder_image_remote_url ||
     getImageUrl(serverInfo?.info?.project?.project_logo);
 

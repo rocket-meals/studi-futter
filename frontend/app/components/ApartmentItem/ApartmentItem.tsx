@@ -13,6 +13,7 @@ import { myContrastColor } from '@/helper/colorHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const ApartmentItem: React.FC<BuildingItemProps> = ({
   apartment,
@@ -25,10 +26,11 @@ const ApartmentItem: React.FC<BuildingItemProps> = ({
     primaryColor: projectColor,
     appSettings,
     serverInfo,
-  } = useSelector((state: any) => state.settings);
+    selectedTheme: mode,
+    amountColumnsForcard,
+  } = useSelector((state: RootState) => state.settings);
   const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
-  const mode = useSelector((state: any) => state.settings.theme);
-  const { isManagement } = useSelector((state: any) => state.authReducer);
+  const { isManagement } = useSelector((state: RootState) => state.authReducer);
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
@@ -75,8 +77,6 @@ const ApartmentItem: React.FC<BuildingItemProps> = ({
     else if (screenWidth > 280) return 130;
     else return 120;
   };
-
-  const { amountColumnsForcard } = useSelector((state: any) => state.settings);
 
   const getCardWidth = () => {
     if (screenWidth < 500) {
@@ -154,7 +154,9 @@ const ApartmentItem: React.FC<BuildingItemProps> = ({
                 >
                   <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
                     <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                      {`${translate(TranslationKeys.edit)}: ${translate(TranslationKeys.image)}`}
+                      {`${translate(TranslationKeys.edit)}: ${translate(
+                        TranslationKeys.image
+                      )}`}
                     </TooltipText>
                   </TooltipContent>
                 </Tooltip>

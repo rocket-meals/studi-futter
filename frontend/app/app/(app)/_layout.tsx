@@ -39,6 +39,7 @@ import {
   SET_FOOD_OFFERS_CATEGORIES,
   SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES,
   SET_POPUP_EVENTS,
+  SET_SELECTED_DATE,
   SET_WIKIS,
   UPDATE_FOOD_FEEDBACK_LABELS,
   UPDATE_MARKINGS,
@@ -74,6 +75,7 @@ import { CollectionLastUpdateHelper } from '@/redux/actions/CollectionLastUpdate
 import { transformUpdateDatesToMap } from '@/helper/dateMap';
 import { shouldFetch } from '@/helper/shouldFetch';
 import { CollectionKeys } from '@/constants/collectionKeys';
+import { RootState } from '@/redux/reducer';
 
 export default function Layout() {
   const { theme } = useTheme();
@@ -98,10 +100,14 @@ export default function Layout() {
   const collectionLastUpdateHelper = new CollectionLastUpdateHelper();
   const foodFeedbackLabelEntryHelper = new FoodFeedbackLabelEntryHelper();
   const canteenFeedbackLabelEntryHelper = new CanteenFeedbackLabelEntryHelper();
-  const { popupEvents } = useSelector((state: any) => state.food);
-  const { lastUpdatedMap } = useSelector((state: any) => state.lastUpdated);
-  const { drawerPosition } = useSelector((state: any) => state.settings);
-  const { loggedIn, user } = useSelector((state: any) => state.authReducer);
+  const { popupEvents } = useSelector((state: RootState) => state.food);
+  const { lastUpdatedMap } = useSelector(
+    (state: RootState) => state.lastUpdated
+  );
+  const { drawerPosition } = useSelector((state: RootState) => state.settings);
+  const { loggedIn, user } = useSelector(
+    (state: RootState) => state.authReducer
+  );
 
   if (!loggedIn) {
     return <Redirect href='/(auth)/login' />;
@@ -311,7 +317,7 @@ export default function Layout() {
             acc[attr.id] = attr;
           }
           return acc;
-        }, {} as Record<string, any>);
+        }, {} as Record<string, FoodsAttributes>);
         dispatch({ type: SET_FOOD_ATTRIBUTES, payload: result });
         dispatch({ type: SET_FOOD_ATTRIBUTES_DICT, payload: attributesDict });
       }
@@ -429,7 +435,7 @@ export default function Layout() {
     try {
       const result = (await appElementsHelper.fetchAllAppElements(
         {}
-      )) as AppElements;
+      )) as AppElements[];
       if (result) {
         dispatch({ type: SET_APP_ELEMENTS, payload: result });
       }
@@ -501,10 +507,18 @@ export default function Layout() {
     }
   };
 
+  const resetCalendarSelectedDate = () => {
+    dispatch({
+      type: SET_SELECTED_DATE,
+      payload: new Date().toISOString().split('T')[0],
+    });
+  };
+
   useEffect(() => {
     if (user?.id) {
       fetchProfile();
     }
+    resetCalendarSelectedDate();
     getAllCollectionDatesLastUpdate();
   }, [user]);
 

@@ -32,6 +32,7 @@ import { MarkingHelper } from '@/redux/actions/Markings/Markings';
 import { UPDATE_MARKINGS } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { RootState } from '@/redux/reducer';
 
 const index = () => {
   const printRef = useRef<HTMLElement | null>(null);
@@ -49,13 +50,12 @@ const index = () => {
   const [foods, setFoods] = useState<any>({});
   const [categories, setCategories] = useState({});
   const [foodMarkings, setFoodMarkings] = useState<any>({});
-  const { markings } = useSelector((state: any) => state.food);
+  const { markings } = useSelector((state: RootState) => state.food);
   const [loading, setLoading] = useState(true);
-  const mode = useSelector((state: any) => state.settings.theme);
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
-  const { weekPlan } = useSelector((state: any) => state.management);
+  const { weekPlan } = useSelector((state: RootState) => state.management);
   useSetPageTitle(
     weekPlan?.selectedCanteen?.alias +
       ` - ${translate(TranslationKeys.week)} ${weekPlan?.selectedWeek?.week}`
@@ -65,7 +65,8 @@ const index = () => {
     primaryColor: projectColor,
     language,
     appSettings,
-  } = useSelector((state: any) => state.settings);
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
   const foods_area_color = appSettings?.foods_area_color
     ? appSettings?.foods_area_color
     : projectColor;

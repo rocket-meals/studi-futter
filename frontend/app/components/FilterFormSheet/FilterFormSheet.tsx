@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
 import { SET_FORM_FILTER } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const iconLibraries: any = {
   MaterialIcons,
@@ -32,7 +33,7 @@ const FilterFormSheet: React.FC<FilterFormSheetProps> = ({
   const { theme } = useTheme();
   const { translate } = useLanguage();
   const dispatch = useDispatch();
-  const { primaryColor } = useSelector((state: any) => state.settings);
+  const { primaryColor } = useSelector((state: RootState) => state.settings);
 
   const updateSort = (option: { id: string }) => {
     setSelectedOption(option.id);

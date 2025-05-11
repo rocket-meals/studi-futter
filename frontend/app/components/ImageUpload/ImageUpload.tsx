@@ -11,6 +11,7 @@ import { FormAnswersHelper } from '@/redux/actions/Forms/FormAnswers';
 import { FormAnswers } from '@/constants/types';
 import { deleteDirectusFile } from '@/constants/HelperFunctions';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const ImageUpload = ({
   id,
@@ -30,7 +31,7 @@ const ImageUpload = ({
   const { translate } = useLanguage();
   const { theme } = useTheme();
   const formAnswersHelper = new FormAnswersHelper();
-  const { primaryColor } = useSelector((state: any) => state.settings);
+  const { primaryColor } = useSelector((state: RootState) => state.settings);
 
   const pickImage = async (fromCamera: boolean) => {
     let result;

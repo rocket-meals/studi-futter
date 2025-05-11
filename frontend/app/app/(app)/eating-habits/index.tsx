@@ -28,14 +28,15 @@ import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { RootState } from '@/redux/reducer';
 
 const index = () => {
   useSetPageTitle(TranslationKeys.eating_habits);
   const { theme } = useTheme();
   const { translate } = useLanguage();
-  const { markings } = useSelector((state: any) => state.food);
+  const { markings } = useSelector((state: RootState) => state.food);
   const { primaryColor, appSettings } = useSelector(
-    (state: any) => state.settings
+    (state: RootState) => state.settings
   );
   const [readMore, setReadMore] = useState(false);
   const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
@@ -79,7 +80,7 @@ const index = () => {
           source={animationJson}
           resizeMode='contain'
           style={{ width: '100%', height: '100%' }}
-          autoPlay={autoPlay}
+          autoPlay={autoPlay || false}
           loop={false}
         />
       );
@@ -154,7 +155,7 @@ const index = () => {
               color={theme.activeText}
             />
             <View style={styles.feedbackLabelsContainer}>
-              {markings?.map((marking: FoodoffersMarkings) => {
+              {markings?.map((marking) => {
                 return (
                   <MarkingLabels key={marking?.id} markingId={marking?.id} />
                 );

@@ -18,6 +18,7 @@ import { Buildings, Canteens } from '@/constants/types';
 import { CanteenHelper } from '@/redux/actions';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const CanteenSelectionSheet: React.FC<CanteenSelectionSheetProps> = ({
   closeSheet,
@@ -27,15 +28,15 @@ const CanteenSelectionSheet: React.FC<CanteenSelectionSheetProps> = ({
   const dispatch = useDispatch();
   const canteenHelper = new CanteenHelper();
   const buildingsHelper = new BuildingsHelper();
-  const { serverInfo } = useSelector((state: any) => state.settings);
-  const canteens = useSelector((state: any) => state.canteenReducer.canteens);
-  const { isManagement } = useSelector((state: any) => state.authReducer);
+  const { serverInfo } = useSelector((state: RootState) => state.settings);
+  const { canteens } = useSelector((state: RootState) => state.canteenReducer);
+  const { isManagement } = useSelector((state: RootState) => state.authReducer);
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
   const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
 
-  const handleSelectCanteen = (canteen: CanteenProps) => {
+  const handleSelectCanteen = (canteen: Canteens) => {
     dispatch({ type: SET_SELECTED_CANTEEN, payload: canteen });
     closeSheet();
   };
@@ -155,7 +156,7 @@ const CanteenSelectionSheet: React.FC<CanteenSelectionSheetProps> = ({
           marginTop: isWeb ? 40 : 20,
         }}
       >
-        {canteens.map((canteen: CanteenProps, index: number) => (
+        {canteens.map((canteen, index: number) => (
           <TouchableOpacity
             style={{
               ...styles.card,

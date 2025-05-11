@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { useSelector } from 'react-redux';
 import { getImageUrl } from '@/constants/HelperFunctions';
+import { RootState } from '@/redux/reducer';
 
 const LabelHeader: React.FC<{ Label: any; isConnected?: Boolean }> = ({
   Label,
@@ -12,10 +13,10 @@ const LabelHeader: React.FC<{ Label: any; isConnected?: Boolean }> = ({
   const [currentTime, setCurrentTime] = useState('');
   const [logoStyle, setLogoStyle] = useState(styles.logo);
   const { width } = Dimensions.get('window');
-  const { appSettings } = useSelector((state: any) => state.settings);
+  const { appSettings } = useSelector((state: RootState) => state.settings);
   const companyImage =
     appSettings?.company_image &&
-    getImageUrl(appSettings?.company_image)?.split('?')[0];
+    getImageUrl(String(appSettings?.company_image))?.split('?')[0];
   const updateLogoStyle = useCallback(() => {
     setLogoStyle({
       width: width < 600 ? 150 : width > 600 ? 300 : 300,

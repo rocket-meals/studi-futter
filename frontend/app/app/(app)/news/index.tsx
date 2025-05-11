@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SET_NEWS } from '@/redux/Types/types';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const index = () => {
   useSetPageTitle(TranslationKeys.news);
@@ -24,7 +25,7 @@ const index = () => {
   const newsHelper = new NewsHelper();
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { news } = useSelector((state: any) => state.news);
+  const { news } = useSelector((state: RootState) => state.news);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);

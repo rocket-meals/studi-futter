@@ -21,6 +21,7 @@ import { useFocusEffect } from 'expo-router';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { UtilizationsEntries } from '@/constants/types';
+import { RootState } from '@/redux/reducer';
 
 const ForecastSheet: React.FC<ForecastSheetProps> = ({
   closeSheet,
@@ -30,7 +31,9 @@ const ForecastSheet: React.FC<ForecastSheetProps> = ({
   const { translate } = useLanguage();
   const utilizationEntryHelper = new UtilizationEntryHelper();
   const [loading, setLoading] = useState(false);
-  const { selectedCanteen } = useSelector((state: any) => state.canteenReducer);
+  const { selectedCanteen } = useSelector(
+    (state: RootState) => state.canteenReducer
+  );
   const scrollViewRef = useRef<ScrollView>(null);
   const [chartData, setChartData] = useState<any>({
     labels: [],

@@ -12,17 +12,19 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/colorHelper';
 import { SET_SELECTED_DATE } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet }) => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
   const dispatch = useDispatch();
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const { primaryColor, appSettings } = useSelector(
-    (state: any) => state.settings
-  );
-  const mode = useSelector((state: any) => state.settings.theme);
-  const { selectedDate } = useSelector((state: any) => state.food);
+  const {
+    primaryColor,
+    appSettings,
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
+  const { selectedDate } = useSelector((state: RootState) => state.food);
   const foods_area_color = appSettings?.foods_area_color
     ? appSettings?.foods_area_color
     : primaryColor;

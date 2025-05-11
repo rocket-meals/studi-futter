@@ -13,12 +13,11 @@ import {
 import useToast from '@/hooks/useToast';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { TranslationKeys } from '@/locales/keys';
+
 const Information: React.FC<any> = ({ campusDetails }) => {
   const { theme } = useTheme();
   const toast = useToast();
   const { translate } = useLanguage();
-
-  console.log('campusDetails', campusDetails);
 
   const copyCordsToClipboard = async () => {
     const coordinates = campusDetails.coordinates?.coordinates;
@@ -29,9 +28,6 @@ const Information: React.FC<any> = ({ campusDetails }) => {
   };
 
   const handleCopyUrlToClipboard = async () => {
-    // const coordinates = campusDetails.coordinates?.coordinates;
-    // const [longitude, latitude] = coordinates;
-    // const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
     const googleMapsUrl = campusDetails?.url;
     const copied = await Clipboard.setStringAsync(googleMapsUrl);
     if (copied) {
@@ -83,7 +79,7 @@ const Information: React.FC<any> = ({ campusDetails }) => {
             <View style={styles.col}>
               <Ionicons name='navigate' size={24} color={theme.screen.icon} />
               <Text style={{ ...styles.body, color: theme.screen.text }}>
-                Open Navigation to Location
+                {translate(TranslationKeys.open_navitation_to_location)}
               </Text>
             </View>
             <Entypo
@@ -117,7 +113,7 @@ const Information: React.FC<any> = ({ campusDetails }) => {
                 color={theme.screen.icon}
               />
               <Text style={{ ...styles.body, color: theme.screen.text }}>
-                Coordinates
+                {translate(TranslationKeys.coordinates)}
               </Text>
             </View>
             <View style={styles.col2}>
@@ -149,7 +145,7 @@ const Information: React.FC<any> = ({ campusDetails }) => {
             color={theme.screen.icon}
           />
           <Text style={{ ...styles.body, color: theme.screen.text }}>
-            Year of Construction
+            {translate(TranslationKeys.year_of_construction)}
           </Text>
         </View>
         <View style={styles.col2}>
@@ -175,7 +171,7 @@ const Information: React.FC<any> = ({ campusDetails }) => {
                   color={theme.screen.icon}
                 />
                 <Text style={{ ...styles.body, color: theme.screen.text }}>
-                  Open URL
+                  {translate(TranslationKeys.copy_url)}
                 </Text>
               </View>
               <View style={styles.col2}>

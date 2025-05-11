@@ -31,6 +31,7 @@ import useToast from '@/hooks/useToast';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { AppFeedbacks } from '@/constants/types';
+import { RootState } from '@/redux/reducer';
 
 const FeedbackScreen = () => {
   useSetPageTitle(TranslationKeys.feedback_and_support);
@@ -39,8 +40,8 @@ const FeedbackScreen = () => {
   const toast = useToast();
   const appFeedback = new AppFeedback();
   const { app_feedbacks_id } = useLocalSearchParams();
-  const { profile } = useSelector((state: any) => state.authReducer);
-  const { primaryColor } = useSelector((state: any) => state.settings);
+  const { profile } = useSelector((state: RootState) => state.authReducer);
+  const { primaryColor } = useSelector((state: RootState) => state.settings);
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedTitle, setSelectedTitle] = useState('');
   const [selectedKey, setSelectedKey] = useState('');

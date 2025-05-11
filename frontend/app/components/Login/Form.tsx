@@ -22,6 +22,7 @@ import { UPDATE_PRIVACY_POLICY_DATE } from '@/redux/Types/types';
 import { format } from 'date-fns';
 import {myContrastColor} from "@/helper/colorHelper";
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const LoginForm: React.FC<FormProps> = ({
   setIsVisible,
@@ -35,12 +36,13 @@ const LoginForm: React.FC<FormProps> = ({
   const dispatch = useDispatch();
   const { isWeb } = usePlatformHelper();
   const { translate } = useLanguage();
-  const { primaryColor } = useSelector((state: any) => state.settings);
-  const mode = useSelector((state: any) => state.settings.theme);
+  const { primaryColor, selectedTheme: mode } = useSelector(
+    (state: RootState) => state.settings
+  );
   const contrastColor = myContrastColor(
-      primaryColor || theme.login.linkButton,
-      theme,
-      mode === 'dark'
+    primaryColor || theme.login.linkButton,
+    theme,
+    mode === 'dark'
   );
 
   const getToken = async (codeVerifier: string, code: string) => {

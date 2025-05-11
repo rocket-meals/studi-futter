@@ -25,6 +25,7 @@ import { CanteenProps } from '@/components/CanteenSelectionSheet/types';
 import { Switch } from '@gluestack-ui/themed';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { RootState } from '@/redux/reducer';
 
 const Index = () => {
   useSetPageTitle(TranslationKeys.food_plan_week);
@@ -32,9 +33,9 @@ const Index = () => {
   const { translate } = useLanguage();
   const dispatch = useDispatch();
   const { primaryColor: projectColor, appSettings } = useSelector(
-    (state: any) => state.settings
+    (state: RootState) => state.settings
   );
-  const { weekPlan } = useSelector((state: any) => state.management);
+  const { weekPlan } = useSelector((state: RootState) => state.management);
   const [isActive, setIsActive] = useState(false);
   const canteenSheetRef = useRef<BottomSheet>(null);
   const canteenPoints = useMemo(() => ['90%'], []);

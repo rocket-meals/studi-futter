@@ -37,6 +37,7 @@ import { getFoodAttributesTranslation } from '@/helper/resourceHelper';
 import { myContrastColor } from '@/helper/colorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { RootState } from '@/redux/reducer';
 
 type FoodAttribute = {
   id: string;
@@ -51,16 +52,16 @@ const Index = () => {
   const { translate } = useLanguage();
   const dispatch = useDispatch();
   const { foodAttributes: initialFoodAttributes } = useSelector(
-    (state: any) => state.foodAttributes
+    (state: RootState) => state.foodAttributes
   );
   const [foodAttributes, setFoodAttributes] = useState<FoodAttribute[]>();
   const {
     primaryColor: projectColor,
     language,
     appSettings,
-  } = useSelector((state: any) => state.settings);
-  const mode = useSelector((state: any) => state.settings.theme);
-  const { foodPlan } = useSelector((state: any) => state.management);
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
+  const { foodPlan } = useSelector((state: RootState) => state.management);
   const [isActive, setIsActive] = useState(false);
   const [value, setValue] = useState('');
   const [selectedCanteenOption, setSelectedCanteenOption] = useState('');

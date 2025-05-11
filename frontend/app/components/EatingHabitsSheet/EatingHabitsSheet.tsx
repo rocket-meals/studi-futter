@@ -10,13 +10,16 @@ import MarkingLabels from '../MarkingLabels/MarkingLabels';
 import { useSelector } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const EatingHabitsSheet: React.FC<EatingHabitsSheetProps> = ({
   closeSheet,
 }) => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
-  const { selectedFoodMarkings } = useSelector((state: any) => state.food);
+  const { selectedFoodMarkings } = useSelector(
+    (state: RootState) => state.food
+  );
   return (
     <BottomSheetScrollView
       style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }}

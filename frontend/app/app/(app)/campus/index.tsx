@@ -46,6 +46,7 @@ import ImageManagementSheet from '@/components/ImageManagementSheet/ImageManagem
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { RootState } from '@/redux/reducer';
 
 const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   useSetPageTitle(TranslationKeys.campus);
@@ -68,12 +69,14 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     Dimensions.get('window').width
   );
   const { drawerPosition, campusesSortBy } = useSelector(
-    (state: any) => state.settings
+    (state: RootState) => state.settings
   );
   const { campuses, campusesLocal, unSortedCampuses } = useSelector(
-    (state: any) => state.campus
+    (state: RootState) => state.campus
   );
-  const { selectedCanteen } = useSelector((state: any) => state.canteenReducer);
+  const { selectedCanteen } = useSelector(
+    (state: RootState) => state.canteenReducer
+  );
   const drawerNavigation =
     useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
 
@@ -124,7 +127,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
           acc[campus.id] = campus;
         }
         return acc;
-      }, {} as Record<string, any>);
+      }, {} as Record<string, Buildings>);
       dispatch({ type: SET_CAMPUSES, payload: campuses });
       dispatch({ type: SET_CAMPUSES_DICT, payload: attributesDict });
       setCampusesDispatched(true);
@@ -214,7 +217,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const fetchSelectedBuilding = async () => {
     if (selectedCanteen?.building) {
       const buildingData = (await buildingsHelper.fetchBuildingById(
-        selectedCanteen.building
+        String(selectedCanteen.building)
       )) as Buildings;
       const building = buildingData || [];
       if (building) {

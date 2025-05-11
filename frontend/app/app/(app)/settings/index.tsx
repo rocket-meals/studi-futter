@@ -77,6 +77,7 @@ import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { Profiles } from '@/constants/types';
+import { RootState } from '@/redux/reducer';
 
 const Settings = () => {
   useSetPageTitle(TranslationKeys.settings);
@@ -104,7 +105,7 @@ const Settings = () => {
     termsAndPrivacyConsentAcceptedDate,
     isManagement,
     isDevMode,
-  } = useSelector((state: any) => state.authReducer);
+  } = useSelector((state: RootState) => state.authReducer);
 
   const {
     primaryColor,
@@ -114,8 +115,10 @@ const Settings = () => {
     firstDayOfTheWeek,
     amountColumnsForcard,
     serverInfo,
-  } = useSelector((state: any) => state.settings);
-  const { selectedCanteen } = useSelector((state: any) => state.canteenReducer);
+  } = useSelector((state: RootState) => state.settings);
+  const { selectedCanteen } = useSelector(
+    (state: RootState) => state.canteenReducer
+  );
   const [windowWidth, setWindowWidth] = useState(
     Dimensions.get('window').width
   );

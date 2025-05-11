@@ -8,8 +8,6 @@ import {
   RefreshControl,
   ActivityIndicator,
   Dimensions,
-  Linking,
-  Image,
 } from 'react-native';
 import React, {
   useCallback,
@@ -46,12 +44,11 @@ import useToast from '@/hooks/useToast';
 import { useLanguage } from '@/hooks/useLanguage';
 import ImageManagementSheet from '@/components/ImageManagementSheet/ImageManagementSheet';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
-import CustomCollapsible from '@/components/CustomCollapsible/CustomCollapsible';
-import { myContrastColor } from '@/helper/colorHelper';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
-import RedirectButton from '@/components/RedirectButton';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
+import { RootState } from '@/redux/reducer';
 
 const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   useSetPageTitle(TranslationKeys.housing);
@@ -76,28 +73,24 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
-  const { selectedCanteen } = useSelector((state: any) => state.canteenReducer);
+  const { selectedCanteen } = useSelector(
+    (state: RootState) => state.canteenReducer
+  );
   const {
     drawerPosition,
     apartmentsSortBy,
     primaryColor: projectColor,
     appSettings,
     language,
-  } = useSelector((state: any) => state.settings);
-  const mode = useSelector((state: any) => state.settings.theme);
+  } = useSelector((state: RootState) => state.settings);
   const { apartments, apartmentsLocal, unSortedApartments } = useSelector(
-    (state: any) => state.apartment
+    (state: RootState) => state.apartment
   );
 
   const housing_area_color = appSettings?.housing_area_color
     ? appSettings?.housing_area_color
     : projectColor;
 
-  const contrastColor = myContrastColor(
-    housing_area_color,
-    theme,
-    mode === 'dark'
-  );
   const drawerNavigation =
     useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
 
@@ -365,255 +358,6 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     return () => subscription?.remove();
   }, []);
 
-  const getContent = () => {
-    // Regex patterns for different content types
-    const contentPatterns = {
-      email: /\[([^\]]+)]\((mailto:[^\)]+)\)/,
-      link: /\[([^\]]+)]\((https?:\/\/[^\)]+)\)/,
-      image: /!\[([^\]]*)]\(([^)]+)\)/,
-      heading: /^#{1,3}\s*(.*)$/,
-    };
-
-    if (appSettings?.housing_translations) {
-      const rawText = getTextFromTranslation(
-        appSettings?.housing_translations,
-        language
-      );
-      const lines = rawText.split('\n').filter((line) => line.trim() !== '');
-
-      // Process content into a structured format
-      const processContent = (lines: string[]) => {
-        const result: any[] = [];
-        let stack = [{ level: 0, items: result }];
-        let currentText = '';
-
-        const flushTextContent = () => {
-          if (currentText.trim()) {
-            stack[stack.length - 1].items.push({
-              type: 'text',
-              content: currentText.trim(),
-            });
-            currentText = '';
-          }
-        };
-
-        lines.forEach((line) => {
-          // Check for headings first
-          const headingMatch = line.match(contentPatterns.heading);
-          if (headingMatch) {
-            flushTextContent();
-
-            const level = headingMatch[0].match(/#/g)?.length || 1;
-            const headerText = headingMatch[1].trim();
-
-            // Close previous sections at this level or higher
-            while (stack.length > 1 && stack[stack.length - 1].level >= level) {
-              stack.pop();
-            }
-
-            const newSection = {
-              type: 'collapsible',
-              header: headerText,
-              items: [],
-              level,
-            };
-
-            stack[stack.length - 1].items.push(newSection);
-            stack.push({ level, items: newSection.items });
-            return;
-          }
-
-          // Check for other content types
-          if (contentPatterns.image.test(line)) {
-            flushTextContent();
-            const match = line.match(contentPatterns.image);
-            stack[stack.length - 1].items.push({
-              type: 'image',
-              altText: match?.[1] || '',
-              url: match?.[2] || '',
-            });
-          } else if (contentPatterns.email.test(line)) {
-            flushTextContent();
-            const match = line.match(contentPatterns.email);
-            stack[stack.length - 1].items.push({
-              type: 'email',
-              displayText: match?.[1],
-              email: match?.[2],
-            });
-          } else if (contentPatterns.link.test(line)) {
-            flushTextContent();
-            const match = line.match(contentPatterns.link);
-            stack[stack.length - 1].items.push({
-              type: 'link',
-              displayText: match?.[1],
-              url: match?.[2],
-            });
-          } else {
-            currentText += `${line}\n`;
-          }
-        });
-
-        flushTextContent();
-        return result;
-      };
-
-      // Component for rendering text with proper formatting
-      const TextContent = ({
-        text,
-        level,
-      }: {
-        text: string;
-        level: number;
-      }) => (
-        <Text
-          style={{
-            fontSize: 16,
-            fontFamily: 'Poppins_400Regular',
-            color: theme.screen.text,
-            marginLeft: level * 16,
-            marginBottom: 10,
-            lineHeight: 24,
-          }}
-        >
-          {text}
-        </Text>
-      );
-
-      // Component for rendering images
-      const ImageContent = ({
-        url,
-        altText,
-        level,
-      }: {
-        url: string;
-        altText: string;
-        level: number;
-      }) => (
-        <View
-          style={{
-            marginLeft: level * 16,
-            marginVertical: 10,
-            backgroundColor: theme.screen.iconBg,
-            borderRadius: 8,
-            overflow: 'hidden',
-          }}
-        >
-          <Image
-            source={{ uri: url }}
-            style={{
-              width: '100%',
-              height: 400,
-              resizeMode: 'cover',
-            }}
-            alt={altText}
-          />
-          {altText && (
-            <Text
-              style={{
-                padding: 8,
-                fontSize: 12,
-                color: theme.screen.text,
-                fontFamily: 'Poppins_400Regular',
-              }}
-            >
-              {altText}
-            </Text>
-          )}
-        </View>
-      );
-
-      // Main renderer for content items
-      const renderContentItem = (item: any, level: number, index: number) => {
-        switch (item.type) {
-          case 'text':
-            return (
-              <TextContent
-                key={`text-${level}-${index}`}
-                text={item.content}
-                level={level}
-              />
-            );
-
-          case 'email':
-            return (
-              <View
-                key={`email-${level}-${index}`}
-                style={{ marginLeft: level * 16, marginBottom: 10 }}
-              >
-                <RedirectButton
-                  type='email'
-                  label={item.displayText}
-                  onClick={() => Linking.openURL(`mailto:${item.email}`)}
-                  backgroundColor={housing_area_color}
-                  color={contrastColor}
-                />
-              </View>
-            );
-
-          case 'link':
-            return (
-              <View
-                key={`link-${level}-${index}`}
-                style={{ marginLeft: level * 16, marginBottom: 10 }}
-              >
-                <RedirectButton
-                  type='link'
-                  label={item.displayText}
-                  onClick={() => Linking.openURL(item.url)}
-                  backgroundColor={housing_area_color}
-                  color={contrastColor}
-                />
-              </View>
-            );
-
-          case 'image':
-            return (
-              <ImageContent
-                key={`image-${level}-${index}`}
-                url={item.url}
-                altText={item.altText}
-                level={level}
-              />
-            );
-
-          case 'collapsible':
-            return (
-              <View
-                key={`collapsible-${level}-${index}`}
-                style={{ marginTop: level > 0 ? 5 : 10 }}
-              >
-                <CustomCollapsible
-                  headerText={item.header}
-                  customColor={housing_area_color}
-                >
-                  {renderContent(item.items, level + 1)}
-                </CustomCollapsible>
-              </View>
-            );
-
-          default:
-            return null;
-        }
-      };
-
-      // Recursive content renderer
-      const renderContent = (items: any[], level = 0) => {
-        return items.map((item, index) =>
-          renderContentItem(item, level, index)
-        );
-      };
-
-      const hierarchicalContent = processContent(lines);
-      return (
-        <View style={{ paddingBottom: 20 }}>
-          {renderContent(hierarchicalContent)}
-        </View>
-      );
-    }
-
-    return null;
-  };
-
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
       <View style={{ ...styles.container }}>
@@ -707,7 +451,19 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
           }
         >
           <View style={{ width: '100%', padding: screenWidth > 600 ? 20 : 5 }}>
-            {getContent()}
+            {appSettings && appSettings?.housing_translations && (
+              <CustomMarkdown
+                content={
+                  getTextFromTranslation(
+                    appSettings?.housing_translations,
+                    language
+                  ) || ''
+                }
+                backgroundColor={housing_area_color}
+                imageWidth={'100%'}
+                imageHeight={400}
+              />
+            )}
           </View>
           <View
             style={{

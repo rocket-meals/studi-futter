@@ -14,6 +14,7 @@ import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { Buildings, Canteens } from '@/constants/types';
 import { SET_BUILDINGS, SET_CANTEENS } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const ManagementCanteensSheet: React.FC<ManagementCanteensSheetProps> = ({
   closeSheet,
@@ -24,9 +25,9 @@ const ManagementCanteensSheet: React.FC<ManagementCanteensSheetProps> = ({
   const dispatch = useDispatch();
   const canteenHelper = new CanteenHelper();
   const buildingsHelper = new BuildingsHelper();
-  const { serverInfo } = useSelector((state: any) => state.settings);
-  const { isManagement } = useSelector((state: any) => state.authReducer);
-  const canteens = useSelector((state: any) => state.canteenReducer.canteens);
+  const { serverInfo } = useSelector((state: RootState) => state.settings);
+  const { isManagement } = useSelector((state: RootState) => state.authReducer);
+  const { canteens } = useSelector((state: RootState) => state.canteenReducer);
   const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
@@ -147,54 +148,55 @@ const ManagementCanteensSheet: React.FC<ManagementCanteensSheetProps> = ({
           marginTop: isWeb ? 40 : 20,
         }}
       >
-        {canteens.map((canteen: CanteenProps, index: number) => (
-          <TouchableOpacity
-            style={{
-              ...styles.card,
-              width: screenWidth > 800 ? 210 : 160,
-              backgroundColor: theme.card.background,
-              marginBottom: 10,
-            }}
-            key={canteen.alias}
-            onPress={() => {
-              handleSelectCanteen(canteen);
-            }}
-          >
-            <View
+        {canteens &&
+          canteens?.map((canteen, index: number) => (
+            <TouchableOpacity
               style={{
-                ...styles.imageContainer,
-                height: screenWidth > 800 ? 210 : 160,
+                ...styles.card,
+                width: screenWidth > 800 ? 210 : 160,
+                backgroundColor: theme.card.background,
+                marginBottom: 10,
+              }}
+              key={canteen.alias}
+              onPress={() => {
+                handleSelectCanteen(canteen);
               }}
             >
-              <Image
-                style={styles.image}
-                source={
-                  canteen?.image_url || canteensData[index]?.image
-                    ? {
-                        uri: canteen?.image_url || canteensData[index]?.image,
-                      }
-                    : { uri: defaultImage }
-                }
-              />
-              {canteen.status === 'archived' && (
-                <View style={styles.archiveContainer}>
-                  <MaterialCommunityIcons
-                    name='archive'
-                    size={18}
-                    color={theme.screen.text}
-                  />
-                </View>
-              )}
-            </View>
-            <Text
-              style={{ ...styles.foodName, color: theme.screen.text }}
-              numberOfLines={3}
-              ellipsizeMode='tail'
-            >
-              {excerpt(String(canteen.alias), 20)}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              <View
+                style={{
+                  ...styles.imageContainer,
+                  height: screenWidth > 800 ? 210 : 160,
+                }}
+              >
+                <Image
+                  style={styles.image}
+                  source={
+                    canteen?.image_url || canteensData[index]?.image
+                      ? {
+                          uri: canteen?.image_url || canteensData[index]?.image,
+                        }
+                      : { uri: defaultImage }
+                  }
+                />
+                {canteen.status === 'archived' && (
+                  <View style={styles.archiveContainer}>
+                    <MaterialCommunityIcons
+                      name='archive'
+                      size={18}
+                      color={theme.screen.text}
+                    />
+                  </View>
+                )}
+              </View>
+              <Text
+                style={{ ...styles.foodName, color: theme.screen.text }}
+                numberOfLines={3}
+                ellipsizeMode='tail'
+              >
+                {excerpt(String(canteen.alias), 20)}
+              </Text>
+            </TouchableOpacity>
+          ))}
       </View>
     </BottomSheetScrollView>
   );

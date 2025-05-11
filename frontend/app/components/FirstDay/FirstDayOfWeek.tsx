@@ -5,6 +5,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useSelector } from 'react-redux';
 import { isWeb } from '@/constants/Constants';
 import { useLanguage } from '@/hooks/useLanguage';
+import { RootState } from '@/redux/reducer';
 
 // Define the type for the theme prop
 type Position = {
@@ -27,7 +28,7 @@ const FirstDayOfWeek: React.FC<FirstDayOfWeekProps> = ({
 }) => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
-  const { primaryColor } = useSelector((state: any) => state.settings);
+  const { primaryColor } = useSelector((state: RootState) => state.settings);
   return (
     <TouchableOpacity
       style={{

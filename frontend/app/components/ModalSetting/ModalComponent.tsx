@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 interface ModalComponentProps {
   isVisible: boolean;
@@ -27,7 +28,7 @@ const ModalComponent: React.FC<ModalComponentProps> = ({
   showButtons = true,
   disableSave,
 }) => {
-  const { primaryColor } = useSelector((state: any) => state.settings);
+  const { primaryColor } = useSelector((state: RootState) => state.settings);
   const { theme } = useTheme();
   const { translate } = useLanguage();
   const [isLargeScreen, setIsLargeScreen] = useState(

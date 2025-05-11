@@ -23,6 +23,7 @@ import { CanteenProps } from '@/components/CanteenSelectionSheet/types';
 import { excerpt, getImageUrl } from '@/constants/HelperFunctions';
 import { Buildings, Canteens } from '@/constants/types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { RootState } from '@/redux/reducer';
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -30,11 +31,11 @@ const Home = () => {
   const { theme } = useTheme();
   const canteenHelper = new CanteenHelper();
   const buildingsHelper = new BuildingsHelper();
-  const { serverInfo } = useSelector((state: any) => state.settings);
-  const { isManagement } = useSelector((state: any) => state.authReducer);
+  const { serverInfo } = useSelector((state: RootState) => state.settings);
+  const { isManagement } = useSelector((state: RootState) => state.authReducer);
   const [loading, setLoading] = useState(false);
   const { canteens, selectedCanteen } = useSelector(
-    (state: any) => state.canteenReducer
+    (state: RootState) => state.canteenReducer
   );
   const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
   const [screenWidth, setScreenWidth] = useState(
@@ -47,7 +48,7 @@ const Home = () => {
     }
   };
 
-  const handleSelectCanteen = (canteen: CanteenProps) => {
+  const handleSelectCanteen = (canteen: Canteens) => {
     dispatch({ type: SET_SELECTED_CANTEEN, payload: canteen });
     router.push('/(app)/foodoffers');
   };
@@ -170,7 +171,7 @@ const Home = () => {
             }}
           >
             {canteens &&
-              canteens.map((canteen: CanteenProps, index: number) => (
+              canteens.map((canteen, index: number) => (
                 <TouchableOpacity
                   style={{
                     ...styles.card,

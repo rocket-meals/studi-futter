@@ -25,6 +25,7 @@ import { iconLibraries } from '../Drawer/CustomDrawerContent';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 const MarkingLabels: React.FC<MarkingLabelProps> = ({
   markingId,
   handleMenuSheet,
@@ -37,17 +38,20 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
   const [showTooltip, setShowTooltip] = useState(false);
   const [likeLoading, setLikeLoading] = useState(false);
   const [dislikeLoading, setDislikeLoading] = useState(false);
-  const { primaryColor, language, appSettings } = useSelector(
-    (state: any) => state.settings
-  );
-  const mode = useSelector((state: any) => state.settings.theme);
+  const {
+    primaryColor,
+    language,
+    appSettings,
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
 
-  // Destructure and memoize selectors
-  const { user, profile } = useSelector((state: any) => state.authReducer);
+  const { user, profile } = useSelector(
+    (state: RootState) => state.authReducer
+  );
   const foods_area_color = appSettings?.foods_area_color
     ? appSettings?.foods_area_color
     : primaryColor;
-  const { markings } = useSelector((state: any) => state.food);
+  const { markings } = useSelector((state: RootState) => state.food);
   const marking = markings?.find((mark: any) => mark.id === markingId);
   const ownMarking = profile?.markings?.find(
     (mark: any) => mark.markings_id === markingId
@@ -193,7 +197,7 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
 
   const markingImage = marking?.image_remote_url
     ? { uri: marking?.image_remote_url }
-    : { uri: getImageUrl(marking?.image) };
+    : { uri: getImageUrl(String(marking?.image)) };
 
   const markingText = getTextFromTranslation(marking?.translations, language);
   const iconSize = isWeb ? 24 : 22;
@@ -226,7 +230,7 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
                   <View
                     style={{
                       ...styles.shortCode,
-                      backgroundColor: MarkingBackgroundColor,
+                      backgroundColor: MarkingBackgroundColor || 'transparent',
                       borderWidth: marking?.hide_border ? 0 : 1,
                       borderColor: MarkingColor,
                     }}
@@ -246,7 +250,7 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
             <View
               style={{
                 ...styles.shortCode,
-                backgroundColor: MarkingBackgroundColor,
+                backgroundColor: MarkingBackgroundColor || 'transparent',
                 borderWidth: marking?.hide_border ? 0 : 1,
                 borderColor: MarkingColor,
               }}
@@ -268,7 +272,7 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
                   <View
                     style={{
                       ...styles.shortCode,
-                      backgroundColor: MarkingBackgroundColor,
+                      backgroundColor: MarkingBackgroundColor || 'transparent',
                       borderWidth: marking?.hide_border ? 0 : 1,
                       borderColor: MarkingColor,
                     }}
@@ -296,7 +300,7 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
             <View
               style={{
                 ...styles.shortCode,
-                backgroundColor: MarkingBackgroundColor,
+                backgroundColor: MarkingBackgroundColor || 'transparent',
                 borderWidth: marking?.hide_border ? 0 : 1,
                 borderColor: MarkingColor,
               }}
@@ -323,8 +327,9 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
                   style={[
                     styles.icon,
                     markingImage.uri && {
-                      backgroundColor:
-                        marking?.background_color && marking?.background_color,
+                      backgroundColor: marking?.background_color
+                        ? marking?.background_color
+                        : 'transparent',
                       borderRadius: marking?.background_color ? 8 : 0,
                     },
                   ]}
@@ -416,7 +421,9 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
           <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
             <TooltipText fontSize='$sm' color={theme.tooltip.text}>
               {`${translate(TranslationKeys.i_like_that)}: ${translate(
-                ownMarking?.like ? TranslationKeys.active : TranslationKeys.inactive
+                ownMarking?.like
+                  ? TranslationKeys.active
+                  : TranslationKeys.inactive
               )}: ${translate(TranslationKeys.markings)}: ${markingText}`}
             </TooltipText>
           </TooltipContent>
@@ -455,7 +462,9 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
           <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
             <TooltipText fontSize='$sm' color={theme.tooltip.text}>
               {`${translate(TranslationKeys.i_dislike_that)}: ${translate(
-                ownMarking?.like === false ? TranslationKeys.active : TranslationKeys.inactive
+                ownMarking?.like === false
+                  ? TranslationKeys.active
+                  : TranslationKeys.inactive
               )}: ${translate(TranslationKeys.markings)}: ${markingText}`}
             </TooltipText>
           </TooltipContent>

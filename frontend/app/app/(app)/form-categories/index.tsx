@@ -18,12 +18,13 @@ import { getFromCategoryTranslation } from '@/helper/resourceHelper';
 import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { RootState } from '@/redux/reducer';
 
 const index = () => {
   useSetPageTitle(TranslationKeys.select_a_form_category);
   const { theme } = useTheme();
   const [loading, setLoading] = useState(false);
-  const { language } = useSelector((state: any) => state.settings);
+  const { language } = useSelector((state: RootState) => state.settings);
   const [formCategories, setFormCategories] = useState<FormCategories[]>([]);
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width

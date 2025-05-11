@@ -24,6 +24,7 @@ import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { RootState } from '@/redux/reducer';
 
 const details = () => {
   useSetPageTitle(TranslationKeys.building_details);
@@ -31,9 +32,9 @@ const details = () => {
   const { translate } = useLanguage();
   const { id } = useLocalSearchParams();
   const { serverInfo, appSettings, primaryColor } = useSelector(
-    (state: any) => state.settings
+    (state: RootState) => state.settings
   );
-  const { campusesDict } = useSelector((state: any) => state.campus);
+  const { campusesDict } = useSelector((state: RootState) => state.campus);
   const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
   const [activeTab, setActiveTab] = useState('information');
   const [loading, setLoading] = useState(false);

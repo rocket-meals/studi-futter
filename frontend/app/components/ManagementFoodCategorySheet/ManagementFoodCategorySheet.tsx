@@ -15,6 +15,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { isWeb } from '@/constants/Constants';
 import { SET_DAY_PLAN } from '@/redux/Types/types';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
+import { RootState } from '@/redux/reducer';
+import { FoodoffersCategories, FoodsCategories } from '@/constants/types';
 
 const ManagementFoodCategorySheet: React.FC<
   ManagementFoodCategorySheetProps
@@ -22,17 +24,19 @@ const ManagementFoodCategorySheet: React.FC<
   const { theme } = useTheme();
   const dispatch = useDispatch();
   const [isCustom, setIsCustom] = useState(false);
-  const [list, setList] = useState([]);
-  const { dayPlan } = useSelector((state: any) => state.management);
+  const [list, setList] = useState<FoodsCategories[] | FoodoffersCategories[]>(
+    []
+  );
+  const { dayPlan } = useSelector((state: RootState) => state.management);
   const [value, setValue] = useState('');
   const [windowWidth, setWindowWidth] = useState(
     Dimensions.get('window').width
   );
   const { primaryColor, language } = useSelector(
-    (state: any) => state.settings
+    (state: RootState) => state.settings
   );
   const { foodCategories, foodOfferCategories } = useSelector(
-    (state: any) => state.food
+    (state: RootState) => state.food
   );
 
   const currentSelectedId =

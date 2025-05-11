@@ -18,13 +18,14 @@ import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
 import { FormsHelper } from '@/redux/actions/Forms/Forms';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { RootState } from '@/redux/reducer';
 
 const index = () => {
   useSetPageTitle(TranslationKeys.select_a_form);
   const { theme } = useTheme();
   const [loading, setLoading] = useState(false);
   const { category_id } = useLocalSearchParams();
-  const { language } = useSelector((state: any) => state.settings);
+  const { language } = useSelector((state: RootState) => state.settings);
   const [forms, setForms] = useState<Forms[]>([]);
   const formsHelper = new FormsHelper();
   const [screenWidth, setScreenWidth] = useState(

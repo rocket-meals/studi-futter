@@ -17,22 +17,23 @@ import { useTheme } from '@/hooks/useTheme';
 import { FormsSubmissionsHelper } from '@/redux/actions/Forms/FormSubmitions';
 import { FormSubmissions } from '@/constants/types';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const SubmissionWarningModal: React.FC<SubmissionWarningModalProps> = ({
   isVisible,
   setIsVisible,
   id,
 }) => {
+  const router = useRouter();
   const { theme } = useTheme();
   const { translate } = useLanguage();
-  const { primaryColor } = useSelector((state: any) => state.settings);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  const formsSubmissionsHelper = new FormsSubmissionsHelper();
+  const { primaryColor } = useSelector((state: RootState) => state.settings);
+  const { user } = useSelector((state: RootState) => state.authReducer);
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
-  const formsSubmissionsHelper = new FormsSubmissionsHelper();
-  const { user } = useSelector((state: any) => state.authReducer);
 
   const handleProceed = async () => {
     setLoading(true);

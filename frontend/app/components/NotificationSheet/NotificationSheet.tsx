@@ -26,6 +26,7 @@ import { replaceLottieColors } from '@/helper/animationHelper';
 import { myContrastColor } from '@/helper/colorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { FoodsFeedbacks } from '@/constants/types';
+import { RootState } from '@/redux/reducer';
 
 const NotificationSheet: React.FC<NotificationSheetProps> = ({
   closeSheet,
@@ -36,11 +37,12 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({
   const { translate } = useLanguage();
   const dispatch = useDispatch();
   const foodfeedbackHelper = new FoodFeedbackHelper();
-  const { primaryColor, appSettings } = useSelector(
-    (state: any) => state.settings
-  );
-  const mode = useSelector((state: any) => state.settings.theme);
-  const { profile } = useSelector((state: any) => state.authReducer);
+  const {
+    primaryColor,
+    appSettings,
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
+  const { profile } = useSelector((state: RootState) => state.authReducer);
   const { isWeb } = usePlatformHelper();
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width

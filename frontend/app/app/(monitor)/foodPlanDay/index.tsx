@@ -37,15 +37,18 @@ import { Switch } from '@gluestack-ui/themed';
 import { myContrastColor } from '@/helper/colorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { RootState } from '@/redux/reducer';
 const Index = () => {
   useSetPageTitle(TranslationKeys.food_plan_day);
   const { theme } = useTheme();
   const { translate } = useLanguage();
   const dispatch = useDispatch();
-  const { primaryColor: projectColor, appSettings } = useSelector(
-    (state: any) => state.settings
-  );
-  const { dayPlan } = useSelector((state: any) => state.management);
+  const {
+    primaryColor: projectColor,
+    appSettings,
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
+  const { dayPlan } = useSelector((state: RootState) => state.management);
   const [isActive, setIsActive] = useState(false);
   const [value, setValue] = useState('');
   const canteenSheetRef = useRef<BottomSheet>(null);
@@ -57,7 +60,6 @@ const Index = () => {
   const [windowWidth, setWindowWidth] = useState(
     Dimensions.get('window').width
   );
-  const mode = useSelector((state: any) => state.settings.theme);
   const [selectedInterval, setSelectedInterval] = useState({
     key: '',
     label: '',

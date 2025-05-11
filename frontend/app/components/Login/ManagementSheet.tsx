@@ -14,6 +14,7 @@ import { SheetProps } from './types';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useSelector } from 'react-redux';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const ManagementSheet: React.FC<SheetProps> = ({
   closeSheet,
@@ -22,7 +23,7 @@ const ManagementSheet: React.FC<SheetProps> = ({
 }) => {
   const { translate } = useLanguage();
   const { theme } = useTheme();
-  const { primaryColor } = useSelector((state: any) => state.settings);
+  const { primaryColor } = useSelector((state: RootState) => state.settings);
   const [formState, setFormState] = useState({
     email: '',
     password: '',

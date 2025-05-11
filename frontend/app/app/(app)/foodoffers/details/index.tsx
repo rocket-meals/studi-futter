@@ -7,31 +7,49 @@ import {AntDesign, MaterialCommunityIcons, MaterialIcons,} from '@expo/vector-ic
 import {isWeb} from '@/constants/Constants';
 import Feedbacks from '@/components/Feedbacks';
 import Details from '@/components/Details';
-import Labels, {selectFoodOffer} from '@/components/Labels';
-import {fetchFoodDetailsById} from '@/redux/actions/FoodOffers/FoodOffers';
-import {excerpt, getImageUrl, getpreviousFeedback, numToOneDecimal,} from '@/constants/HelperFunctions';
-import {Foodoffers, Foods, FoodsFeedbacks, FoodsTranslations, Profiles,} from '@/constants/types';
-import {FoodFeedbackHelper} from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
-import {useDispatch, useSelector} from 'react-redux';
-import {DELETE_FOOD_FEEDBACK_LOCAL, UPDATE_FOOD_FEEDBACK_LOCAL, UPDATE_PROFILE,} from '@/redux/Types/types';
+import Labels from '@/components/Labels';
+import { fetchFoodOffersDetailsById } from '@/redux/actions/FoodOffers/FoodOffers';
+import {
+  excerpt,
+  getImageUrl,
+  getpreviousFeedback,
+  numToOneDecimal,
+} from '@/constants/HelperFunctions';
+import {
+  Foods,
+  FoodsFeedbacks,
+  FoodsTranslations,
+  Profiles,
+} from '@/constants/types';
+import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  DELETE_FOOD_FEEDBACK_LOCAL,
+  UPDATE_FOOD_FEEDBACK_LOCAL,
+  UPDATE_PROFILE,
+} from '@/redux/Types/types';
 import MenuSheet from '@/components/MenuSheet/MenuSheet';
 import PermissionModal from '@/components/PermissionModal/PermissionModal';
-import BottomSheet, {BottomSheetBackdrop} from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import NotificationSheet from '@/components/NotificationSheet/NotificationSheet';
 import usePlatformHelper from '@/helper/platformHelper';
-import {NotificationHelper} from '@/helper/NotificationHelper';
-import {getCurrentDevice, getDeviceIdentifier, getDeviceInformationWithoutPushToken,} from '@/helper/DeviceHelper';
-import {ProfileHelper} from '@/redux/actions/Profile/Profile';
-import {createSelector} from 'reselect';
-import {useLanguage} from '@/hooks/useLanguage';
-import {myContrastColor} from '@/helper/colorHelper';
-import {Tooltip, TooltipContent, TooltipText} from '@gluestack-ui/themed';
-import {TranslationKeys} from '@/locales/keys';
+import { NotificationHelper } from '@/helper/NotificationHelper';
+import {
+  getCurrentDevice,
+  getDeviceIdentifier,
+  getDeviceInformationWithoutPushToken,
+} from '@/helper/DeviceHelper';
+import { ProfileHelper } from '@/redux/actions/Profile/Profile';
+import { createSelector } from 'reselect';
+import { useLanguage } from '@/hooks/useLanguage';
+import { myContrastColor } from '@/helper/colorHelper';
+import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
+import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { handleFoodRating } from '@/helper/feedback';
+import { RootState } from '@/redux/reducer';
 
-const selectAuthState = (state: any) => state.authReducer;
-const selectSettingsState = (state: any) => state.settings;
-const selectFoodState = (state: any) => state.food;
+const selectFoodState = (state: RootState) => state.food;
 
 const selectPreviousFeedback = createSelector(
   [selectFoodState, (_, foodId) => foodId],
@@ -39,18 +57,8 @@ const selectPreviousFeedback = createSelector(
     getpreviousFeedback(foodState.ownFoodFeedbacks, foodId.toString())
 );
 
-const selectPrimaryColor = createSelector(
-  [selectSettingsState],
-  (settingsState) => settingsState.primaryColor
-);
-const selectLanguage = createSelector(
-  [selectSettingsState],
-  (settingsState) => settingsState.language
-);
-
 export default function FoodDetailsScreen() {
   useSetPageTitle(TranslationKeys.food_details);
-  console.log("Food Details Screen")
 
   const { id, foodId } = useLocalSearchParams();
 
@@ -58,22 +66,25 @@ export default function FoodDetailsScreen() {
   const { translate } = useLanguage();
   const dispatch = useDispatch();
   const menuSheetRef = useRef<BottomSheet>(null);
-  const { appSettings, serverInfo } = useSelector(
-    (state: any) => state.settings
-  );
   const menuPoints = useMemo(() => ['90%'], []);
   const { isSmartPhone, isAndroid, isIOS } = usePlatformHelper();
-  const { user, profile } = useSelector(selectAuthState);
-  const mode = useSelector((state: any) => state.settings.theme);
-  const primaryColor = useSelector(selectPrimaryColor);
-  const languageCode = useSelector(selectLanguage);
+  const { user, profile } = useSelector(
+    (state: RootState) => state.authReducer
+  );
+  const {
+    primaryColor,
+    language: languageCode,
+    appSettings,
+    serverInfo,
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
   const previousFeedback = useSelector((state) =>
     selectPreviousFeedback(state, foodId)
   );
   const profileHelper = useMemo(() => new ProfileHelper(), []);
   const foodfeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
   const { foodAttributeGroups } = useSelector(
-    (state: any) => state.foodAttributes
+    (state: RootState) => state.foodAttributes
   );
   const [pushTokenObj, requestDeviceNotificationPermission] =
     NotificationHelper.useNotificationPermission(profile);
@@ -86,13 +97,15 @@ export default function FoodDetailsScreen() {
     mode === 'dark'
   );
   const defaultImage =
-    getImageUrl(appSettings.foods_placeholder_image) ||
+    getImageUrl(String(appSettings.foods_placeholder_image)) ||
     appSettings.foods_placeholder_image_remote_url ||
     getImageUrl(serverInfo?.info?.project?.project_logo);
 
   const [warning, setWarning] = useState(false);
-  const [foodoffer, setFoodoffer] = useState<Foodoffers | null>(null);
-  const foodOfferCanteenId = foodoffer?.canteen as string | undefined;
+  const { selectedCanteen } = useSelector(
+    (state: RootState) => state.canteenReducer
+  );
+  const foodOfferCanteenId = selectedCanteen?.id as string | undefined;
   const [foodDetails, setFoodDetails] = useState<any>(null);
 
   const [activeTab, setActiveTab] = useState('feedbacks');
@@ -152,7 +165,11 @@ export default function FoodDetailsScreen() {
       switch (activeTab) {
         case 'feedbacks':
           return (
-            <Feedbacks foodDetails={foodDetails} offerId={id.toString()} canteenId={foodOfferCanteenId} />
+            <Feedbacks
+              foodDetails={foodDetails}
+              offerId={id.toString()}
+              canteenId={foodOfferCanteenId}
+            />
           );
         case 'details':
           return (
@@ -177,35 +194,19 @@ export default function FoodDetailsScreen() {
     [activeTab, id, foodOfferCanteenId]
   );
 
-  const rateFood = async (rating: number) => {
-    if (!user?.id) {
-      setWarning(true);
-      return;
-    }
-    try {
-      const updateFeedbackResult = (await foodfeedbackHelper.updateFoodFeedback(
-        foodDetails?.id,
-        profile?.id,
-        {
-          ...previousFeedback,
-          rating: previousFeedback?.rating === rating ? null : rating,
-          canteen: foodOfferCanteenId,
-        }
-      )) as FoodsFeedbacks;
-      if (updateFeedbackResult?.id) {
-        dispatch({
-          type: UPDATE_FOOD_FEEDBACK_LOCAL,
-          payload: updateFeedbackResult,
-        });
-      } else {
-        dispatch({
-          type: DELETE_FOOD_FEEDBACK_LOCAL,
-          payload: previousFeedback?.id,
-        });
-      }
-    } catch (e) {
-      console.error('Error creating feedback:', e);
-    }
+  const rateFood = (rating: number) => {
+    const newRating = previousFeedback?.rating === rating ? null : rating;
+
+    handleFoodRating({
+      foodId: foodDetails?.id,
+      profileId: profile?.id,
+      userId: user?.id || '',
+      rating: newRating,
+      canteenId: foodOfferCanteenId,
+      previousFeedback,
+      dispatch,
+      setWarning,
+    });
   };
 
   const updateFoodFeedbackNotification = async () => {
@@ -238,16 +239,14 @@ export default function FoodDetailsScreen() {
 
   const getFoodDetails = async () => {
     try {
-      const foodData = await fetchFoodDetailsById(id.toString());
+      const foodData = await fetchFoodOffersDetailsById(id.toString());
       if (foodData && foodData.data) {
-        const foodoffer = foodData?.data;
         const { food, attribute_values } = foodData?.data;
 
         const translation = food?.translations?.find(
           (val: FoodsTranslations) =>
-            val?.languages_code?.split('-')[0] === languageCode
+            String(val?.languages_code)?.split('-')[0] === languageCode
         );
-        setFoodoffer(foodoffer);
         setFoodDetails({
           ...food,
           name: translation ? translation.name : null,

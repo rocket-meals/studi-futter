@@ -13,6 +13,7 @@ import { Image } from 'expo-image';
 import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const LoginHeader = () => {
   const { translate, setLanguageMode, language } = useLanguage();
@@ -22,7 +23,7 @@ const LoginHeader = () => {
   const [isLanguageModalVisible, setIsLanguageModalVisible] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<string>('');
   const { primaryColor, serverInfo } = useSelector(
-    (state: any) => state.settings
+    (state: RootState) => state.settings
   );
 
   function useDeviceLocaleCodesWithoutRegionCode(): string[] {

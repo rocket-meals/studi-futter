@@ -18,14 +18,15 @@ import { router } from 'expo-router';
 import { FormsSubmissionsHelper } from '@/redux/actions/Forms/FormSubmitions';
 import { FormSubmissions } from '@/constants/types';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const SubmissionWarningSheet: React.FC<sheetProps> = ({ id, closeSheet }) => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
-  const { primaryColor } = useSelector((state: any) => state.settings);
-  const [loading, setLoading] = useState(false);
   const formsSubmissionsHelper = new FormsSubmissionsHelper();
-  const { user } = useSelector((state: any) => state.authReducer);
+  const [loading, setLoading] = useState(false);
+  const { primaryColor } = useSelector((state: RootState) => state.settings);
+  const { user } = useSelector((state: RootState) => state.authReducer);
 
   const handleProceed = async () => {
     setLoading(true);

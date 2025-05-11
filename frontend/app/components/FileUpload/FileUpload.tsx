@@ -11,6 +11,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { FormAnswersHelper } from '@/redux/actions/Forms/FormAnswers';
 import { FileRelation, FormAnswer } from './types';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const FileUpload = ({
   id,
@@ -29,7 +30,7 @@ const FileUpload = ({
 }) => {
   const { translate } = useLanguage();
   const { theme } = useTheme();
-  const { primaryColor } = useSelector((state: any) => state.settings);
+  const { primaryColor } = useSelector((state: RootState) => state.settings);
   const formAnswersHelper = new FormAnswersHelper();
 
   const pickFiles = async () => {
@@ -60,22 +61,22 @@ const FileUpload = ({
   const pickImage = async (source: 'camera' | 'gallery') => {
     try {
       let result;
-        const cameraPermission =
-          await ImagePicker.requestCameraPermissionsAsync();
-        const mediaPermission =
-          await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const cameraPermission =
+        await ImagePicker.requestCameraPermissionsAsync();
+      const mediaPermission =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-        // If permission is not granted for Camera
-        if (source === 'camera' && cameraPermission.status !== 'granted') {
-          // toast('Camera permission is required to take a photo.','warning');
-          return;
-        }
+      // If permission is not granted for Camera
+      if (source === 'camera' && cameraPermission.status !== 'granted') {
+        // toast('Camera permission is required to take a photo.','warning');
+        return;
+      }
 
-        // If permission is not granted for Gallery
-        if (source === 'gallery' && mediaPermission.status !== 'granted') {
-          // toast('Media Library permission is required to select an image.','warning');
-          return;
-        }
+      // If permission is not granted for Gallery
+      if (source === 'gallery' && mediaPermission.status !== 'granted') {
+        // toast('Media Library permission is required to select an image.','warning');
+        return;
+      }
       if (source === 'camera') {
         result = await ImagePicker.launchCameraAsync({
           allowsEditing: true,

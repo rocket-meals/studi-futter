@@ -15,6 +15,7 @@ import { useSelector } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const ManagementModal: React.FC<ManagementModalProps> = ({
   isVisible,
@@ -24,7 +25,7 @@ const ManagementModal: React.FC<ManagementModalProps> = ({
 }) => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
-  const { primaryColor } = useSelector((state: any) => state.settings);
+  const { primaryColor } = useSelector((state: RootState) => state.settings);
 
   const [formState, setFormState] = useState({
     email: '',
@@ -123,7 +124,9 @@ const ManagementModal: React.FC<ManagementModalProps> = ({
             fontSize: Dimensions.get('window').width < 500 ? 23 : 28,
           }}
         >
-          {translate(TranslationKeys.show_login_for_management_with_email_and_password)}
+          {translate(
+            TranslationKeys.show_login_for_management_with_email_and_password
+          )}
         </Text>
         <Text
           style={{

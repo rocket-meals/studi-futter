@@ -19,16 +19,18 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/colorHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 const NewsItem: React.FC<any> = ({ news }) => {
   const { theme } = useTheme();
   const toast = useToast();
   const { translate } = useLanguage();
-  const { primaryColor, language } = useSelector(
-    (state: any) => state.settings
-  );
-  const mode = useSelector((state: any) => state.settings.theme);
-  const appSettings = useSelector((state: any) => state.settings.appSettings);
+  const {
+    primaryColor,
+    language,
+    appSettings,
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );

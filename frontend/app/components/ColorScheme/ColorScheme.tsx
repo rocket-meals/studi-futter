@@ -5,6 +5,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
 import { useSelector } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
+import { RootState } from '@/redux/reducer';
 // Define the type for the theme prop
 type Theme = {
   id: string;
@@ -25,7 +26,7 @@ const ColorScheme: React.FC<ColorSchemeProps> = ({
   onPress,
 }) => {
   const { theme: themes } = useTheme();
-  const { primaryColor } = useSelector((state: any) => state.settings);
+  const { primaryColor } = useSelector((state: RootState) => state.settings);
   const { translate } = useLanguage();
   return (
     <TouchableOpacity

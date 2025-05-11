@@ -21,6 +21,7 @@ import {
 } from '@/helper/resourceHelper';
 import RedirectButton from '../RedirectButton';
 import useToast from '@/hooks/useToast';
+import { RootState } from '@/redux/reducer';
 
 const extractTextAndLink = (description: string) => {
   // Remove unintended spaces between `]` and `(`
@@ -44,108 +45,108 @@ const extractTextAndLink = (description: string) => {
 const MenuSheet: React.FC<MenuSheetProps> = ({ closeSheet }) => {
   const { theme } = useTheme();
   const toast = useToast();
-  const { markingDetails } = useSelector((state: any) => state.food);
-  const { language } = useSelector((state: any) => state.settings);
-const description = getDescriptionFromTranslation(
-  markingDetails?.translations,
-  language
-);
-const { text, label, link } = extractTextAndLink(description);
+  const { markingDetails } = useSelector((state: RootState) => state.food);
+  const { language } = useSelector((state: RootState) => state.settings);
+  const description = getDescriptionFromTranslation(
+    markingDetails?.translations,
+    language
+  );
+  const { text, label, link } = extractTextAndLink(description);
 
-const handleOpenInBrowser = async () => {
-  if (link) {
-    try {
-      if (Platform.OS === 'web') {
-        window.open(link, '_blank');
-      } else {
-        const supported = await Linking.canOpenURL(link);
-
-        if (supported) {
-          await Linking.openURL(link);
+  const handleOpenInBrowser = async () => {
+    if (link) {
+      try {
+        if (Platform.OS === 'web') {
+          window.open(link, '_blank');
         } else {
-          toast(`Cannot open URL: ${link}`, 'error');
+          const supported = await Linking.canOpenURL(link);
+
+          if (supported) {
+            await Linking.openURL(link);
+          } else {
+            toast(`Cannot open URL: ${link}`, 'error');
+          }
         }
+      } catch (error) {
+        console.error('An error occurred:', error);
       }
-    } catch (error) {
-      console.error('An error occurred:', error);
     }
-  }
-};
-return (
-  <BottomSheetScrollView
-    style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }}
-    contentContainerStyle={styles.contentContainer}
-  >
-    <View
-      style={{
-        ...styles.sheetHeader,
-        paddingRight: isWeb ? 10 : 0,
-        paddingTop: isWeb ? 10 : 0,
-      }}
+  };
+  return (
+    <BottomSheetScrollView
+      style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }}
+      contentContainerStyle={styles.contentContainer}
     >
-      <View />
-      <Text
+      <View
         style={{
-          ...styles.sheetHeading,
-          maxWidth: '70%',
-          textAlign: 'center',
-          color: theme.sheet.text,
+          ...styles.sheetHeader,
+          paddingRight: isWeb ? 10 : 0,
+          paddingTop: isWeb ? 10 : 0,
         }}
       >
-        {getTextFromTranslation(markingDetails?.translations, language)}
-        {` (${markingDetails?.external_identifier})`}
-      </Text>
-      <TouchableOpacity
-        style={{
-          ...styles.sheetcloseButton,
-          backgroundColor: theme.sheet.closeBg,
-        }}
-        onPress={closeSheet}
-      >
-        <AntDesign name='close' size={24} color={theme.sheet.closeIcon} />
-      </TouchableOpacity>
-    </View>
-    <View style={{ ...styles.menuContainer, width: isWeb ? '90%' : '100%' }}>
-      <View style={styles.imageContainer}>
-        <Image
-          source={{
-            uri:
-              markingDetails?.image_remote_url ||
-              getImageUrl(markingDetails?.image),
-          }}
+        <View />
+        <Text
           style={{
-            ...styles.image,
-            backgroundColor:
-              markingDetails?.background_color &&
-              markingDetails?.background_color,
-            borderRadius: markingDetails?.background_color
-              ? 8
-              : markingDetails.hide_border
-              ? 5
-              : 0,
+            ...styles.sheetHeading,
+            maxWidth: '70%',
+            textAlign: 'center',
+            color: theme.sheet.text,
           }}
-        />
+        >
+          {getTextFromTranslation(markingDetails?.translations, language)}
+          {` (${markingDetails?.external_identifier})`}
+        </Text>
+        <TouchableOpacity
+          style={{
+            ...styles.sheetcloseButton,
+            backgroundColor: theme.sheet.closeBg,
+          }}
+          onPress={closeSheet}
+        >
+          <AntDesign name='close' size={24} color={theme.sheet.closeIcon} />
+        </TouchableOpacity>
       </View>
-      <Text
-        style={{
-          ...styles.body,
-          color: theme.sheet.text,
-        }}
-      >
-        {text}
-      </Text>
-      {link && (
-        <RedirectButton
-          label={label}
-          type='link'
-          backgroundColor=''
-          color=''
-          onClick={handleOpenInBrowser}
-        />
-      )}
-    </View>
-  </BottomSheetScrollView>
-);
+      <View style={{ ...styles.menuContainer, width: isWeb ? '90%' : '100%' }}>
+        <View style={styles.imageContainer}>
+          <Image
+            source={{
+              uri:
+                markingDetails?.image_remote_url ||
+                getImageUrl(String(markingDetails?.image)),
+            }}
+            style={{
+              ...styles.image,
+              backgroundColor: markingDetails?.background_color
+                ? markingDetails?.background_color
+                : 'transparent',
+              borderRadius: markingDetails?.background_color
+                ? 8
+                : markingDetails.hide_border
+                ? 5
+                : 0,
+            }}
+          />
+        </View>
+        <Text
+          style={{
+            ...styles.body,
+            color: theme.sheet.text,
+          }}
+        >
+          {text}
+        </Text>
+        {link && (
+          <RedirectButton
+            label={label}
+            type='link'
+            backgroundColor=''
+            color=''
+            onClick={handleOpenInBrowser}
+          />
+        )}
+      </View>
+    </BottomSheetScrollView>
+  );
 };
 
 export default MenuSheet;

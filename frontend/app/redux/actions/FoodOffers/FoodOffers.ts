@@ -132,12 +132,34 @@ export const fetchFoodsByCanteen = async (
   }
 };
 
-export const fetchFoodDetailsById = async (id: string) => {
+export const fetchFoodOffersDetailsById = async (id: string) => {
   try {
     const response = await axios.get(`/items/foodoffers/${id}`, {
       params: {
         fields:
           '*, markings.*,feedbacks.*,food.*,food.translations.*,attribute_values.*, attribute_values.food_attribute.*, attribute_values.food_attribute.translations.*, foods_attributes_values.*',
+        limit: -1,
+        deep: {
+          feedbacks: {
+            _filter: {
+              comment: { _nnull: true },
+            },
+            _sort: '-date_updated',
+          },
+        },
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error('Error fetching Food Offers');
+  }
+};
+
+export const fetchFoodDetailsById = async (id: string) => {
+  try {
+    const response = await axios.get(`/items/foods/${id}`, {
+      params: {
+        fields: '*, markings.*,feedbacks.*,food.*,translations.*',
         limit: -1,
         deep: {
           feedbacks: {

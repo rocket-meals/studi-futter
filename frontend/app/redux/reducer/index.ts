@@ -11,6 +11,20 @@ import formReducer from './formReducer';
 import foodAttributesReducer from './FoodAttributes';
 import appElementsReducer from './appElementsReducer';
 import lastUpdatedReducer from './lastUpdatedReducer';
+import {
+  ApartmentsState,
+  AppElementState,
+  AuthState,
+  CampusState,
+  CanteensState,
+  FoodAttributesState,
+  FoodState,
+  FormState,
+  LastUpdatedState,
+  ManagementState,
+  NewsState,
+  SettingsState,
+} from '../Types/stateTypes';
 
 export const reducer = combineReducers({
   state: (state = {}) => state,
@@ -27,3 +41,18 @@ export const reducer = combineReducers({
   appElements: appElementsReducer,
   lastUpdated: lastUpdatedReducer,
 });
+
+export type RootState = {
+  authReducer: AuthState;
+  apartment: ApartmentsState;
+  appElements: AppElementState;
+  campus: CampusState;
+  canteenReducer: CanteensState;
+  food: FoodState;
+  form: FormState;
+  foodAttributes: FoodAttributesState;
+  lastUpdated: LastUpdatedState;
+  management: ManagementState;
+  news: NewsState;
+  settings: SettingsState;
+};

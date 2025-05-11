@@ -30,6 +30,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/colorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { Profiles } from '@/constants/types';
+import { RootState } from '@/redux/reducer';
 
 const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
   timeTableData,
@@ -42,13 +43,14 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
   const dispatch = useDispatch();
   const { translate } = useLanguage();
   const profileHelper = new ProfileHelper();
-  const { profile } = useSelector((state: any) => state.authReducer);
+  const { profile } = useSelector((state: RootState) => state.authReducer);
   const [loading, setLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const { primaryColor, appSettings } = useSelector(
-    (state: any) => state.settings
-  );
-  const mode = useSelector((state: any) => state.settings.theme);
+  const {
+    primaryColor,
+    appSettings,
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
 
   const [selectedFirstDay, setSelectedFirstDay] = useState({
     id: 'Monday',

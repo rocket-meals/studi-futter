@@ -49,6 +49,7 @@ import { SimpleLineIcons } from '@expo/vector-icons';
 import { Zocial } from '@expo/vector-icons';
 import { myContrastColor } from '@/helper/colorHelper';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 
 export const iconLibraries: Record<string, any> = {
   Ionicons,
@@ -87,15 +88,17 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
   const router = useRouter();
   const wikisHelper = new WikisHelper();
   const activeIndex = state.index;
-  const { user, isManagement } = useSelector((state: any) => state.authReducer);
-  const mode = useSelector((state: any) => state.settings.theme);
+  const { user, isManagement } = useSelector(
+    (state: RootState) => state.authReducer
+  );
   const {
     serverInfo,
     primaryColor: projectColor,
     language,
     appSettings,
     wikis,
-  } = useSelector((state: any) => state.settings);
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
 
   const balance_area_color = appSettings?.balance_area_color
     ? appSettings?.balance_area_color
@@ -121,6 +124,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
     theme,
     mode === 'dark'
   );
+
   const isActive = (routeName: string) => {
     const activeRoute = state.routes[activeIndex].name;
     return activeRoute === routeName;

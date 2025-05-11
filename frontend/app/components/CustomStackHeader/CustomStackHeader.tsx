@@ -12,12 +12,13 @@ import { excerpt } from '@/constants/HelperFunctions';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
+import { RootState } from '@/redux/reducer';
 const CustomStackHeader: React.FC<CustomStackHeaderProps> = ({ label }) => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
   const router = useRouter();
   const pathname = usePathname();
-  const { loggedIn } = useSelector((state: any) => state.authReducer);
+  const { loggedIn } = useSelector((state: RootState) => state.authReducer);
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
