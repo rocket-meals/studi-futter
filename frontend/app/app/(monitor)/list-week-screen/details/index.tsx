@@ -34,6 +34,8 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RootState } from '@/redux/reducer';
 
+const fontSize = 8;
+
 const index = () => {
   const printRef = useRef<HTMLElement | null>(null);
   const { translate } = useLanguage();
@@ -490,7 +492,7 @@ const index = () => {
                             <Text
                               style={{
                                 ...styles.itemText,
-                                fontSize: 10,
+                                fontSize: fontSize,
                                 color: theme.screen.text,
                               }}
                             >
@@ -499,7 +501,7 @@ const index = () => {
                             <Text
                               style={{
                                 ...styles.itemText,
-                                fontSize: 10,
+                                fontSize: fontSize,
                                 color: theme.screen.text,
                               }}
                             >
@@ -556,7 +558,7 @@ const index = () => {
                                           <Text
                                             style={{
                                               color: marking.color,
-                                              fontSize: 10,
+                                              fontSize: fontSize,
                                             }}
                                           >
                                             {marking?.shortCode}
@@ -568,10 +570,10 @@ const index = () => {
                                           source={marking.image.uri}
                                           style={{
                                             backgroundColor: marking?.bgColor,
-                                            width: 20,
-                                            height: 20,
-                                            marginRight: 5,
-                                            borderRadius: 8,
+                                            width: 15,
+                                            height: 15,
+                                            marginRight: 2,
+                                            borderRadius: 5,
                                           }}
                                         />
                                       ) : null;
@@ -603,7 +605,7 @@ const index = () => {
                               style={[
                                 styles.itemText,
                                 {
-                                  fontSize: isMobile ? 10 : 10,
+                                  fontSize: isMobile ? fontSize : fontSize,
                                   fontFamily: isMobile
                                     ? 'Poppins_400Regular'
                                     : 'Poppins_700Bold',
@@ -618,7 +620,7 @@ const index = () => {
                               style={[
                                 styles.itemText,
                                 {
-                                  fontSize: isMobile ? 10 : 10,
+                                  fontSize: isMobile ? fontSize : fontSize,
                                   fontFamily: isMobile
                                     ? 'Poppins_400Regular'
                                     : 'Poppins_700Bold',
