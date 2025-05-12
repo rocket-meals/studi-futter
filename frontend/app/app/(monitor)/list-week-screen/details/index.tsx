@@ -465,7 +465,6 @@ const index = () => {
                 return (
                     <View style={{
                       width: '100%',
-                      backgroundColor: "#FF0000",
                       pageBreakInside: 'avoid', // Avoid the page break
                       breakInside: 'avoid', // Avoid the page break
                     }}>
