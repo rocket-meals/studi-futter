@@ -515,6 +515,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
       ),
     [canteenFeedbackLabels, selectedDate]
   );
+  const canteenFeedbackLabelsExist = canteenFeedbackLabels?.length > 0;
 
   const SheetComponent = selectedSheet ? SHEET_COMPONENTS[selectedSheet] : null;
 
@@ -939,7 +940,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 />
               )}
             </View>
-            {!feedbackLabelsLoading && (
+            {!feedbackLabelsLoading && canteenFeedbackLabelsExist > 0 && (
               <View style={styles.feebackContainer}>
                 <View>
                   <Text
