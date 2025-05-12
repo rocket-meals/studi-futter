@@ -21,13 +21,44 @@ import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 
+const getSortedBusinessHoursGroups = (
+    groups: { id: string; sort?: number | null }[]
+) => {
+  return [...groups].sort((a, b) => {
+    const sortA = a.sort;
+    const sortB = b.sort;
+
+    const isValidA = typeof sortA === 'number';
+    const isValidB = typeof sortB === 'number';
+
+    if (isValidA && isValidB) {
+      return sortA - sortB;
+    } else if (isValidA) {
+      return -1; // a has valid sort, b doesn't -> a first
+    } else if (isValidB) {
+      return 1; // b has valid sort, a doesn't -> b first
+    } else {
+      return 0; // neither has valid sort -> keep relative order
+    }
+  });
+};
+
+
 const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
-  const [hours, setHours] = useState<Record<
-    string,
-    { day: string[]; time_start: string | null; time_end: string | null }[]
-  > | null>(null);
+  type GroupedHours = {
+    [groupId: string]: {
+      name: string;
+      entries: {
+        day: string[];
+        time_start: string | null;
+        time_end: string | null;
+      }[];
+    };
+  };
+
+  const [hours, setHours] = useState<GroupedHours | null>(null);
   const [loading, setLoading] = useState(false);
   const { language, firstDayOfTheWeek } = useSelector(
     (state: RootState) => state.settings
@@ -65,7 +96,7 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
     try {
       setLoading(true);
       const buildingData = (await buildingsHelper.fetchBuildingById(
-        selectedCanteen.building
+        selectedCanteen.building as string
       )) as Buildings;
 
       if (!buildingData?.businesshours?.length) {
@@ -97,9 +128,15 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
       // Filter by valid dates
       const currentDate = new Date().toISOString().split('T')[0];
 
-      const groupedByGroupName: Record<string, any[]> = {};
+      const groupedByGroupName: Record<
+          string,
+          {
+            name: string;
+            hours: any[];
+          }
+      > = {};
 
-      businessHoursGroups.forEach((group: any) => {
+      getSortedBusinessHoursGroups(businessHoursGroups).forEach((group: any) => {
         const groupName = group.translations
           ? getTextFromTranslation(group.translations, language)
           : '';
@@ -132,16 +169,17 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
           activeGroupHours = groupHoursWithoutDateFilter;
         }
 
-        groupedByGroupName[groupName] = activeGroupHours;
+        groupedByGroupName[group.id] = {
+          name: groupName,
+          hours: activeGroupHours,
+        };
       });
       let sortedDayKeys = getSortedWeekdayKeys();
 
-      const dayWiseGroupedByGroupName: Record<
-        string,
-        { day: string[]; time_start: string | null; time_end: string | null }[]
-      > = {};
+      const dayWiseGroupedByGroupName: GroupedHours = {};
 
-      Object.entries(groupedByGroupName).forEach(([groupName, hoursList]) => {
+      Object.entries(groupedByGroupName).forEach(([groupId, groupData]) => {
+        const { name: groupName, hours: hoursList } = groupData;
         const dayStartAndEndTimeDict: Record<
           string,
           { day: string; time_start: number | null; time_end: number | null }[]
@@ -399,7 +437,10 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
         });
 
         // Step 3: Convert grouped object back to array
-        dayWiseGroupedByGroupName[groupName] = groupedTimes;
+        dayWiseGroupedByGroupName[groupId] = {
+          name: groupName,
+          entries: groupedTimes,
+        };
       });
 
       setHours(dayWiseGroupedByGroupName);
@@ -420,8 +461,8 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
     time?.slice(0, 5) || 'N/A';
 
   const renderHours = (
-    groupName: string,
-    hoursData: { day: string[]; time_start: string; time_end: string }[]
+    groupId: string,
+    hoursData: { day: string[]; time_start: string | null; time_end: string | null }[]
   ) => {
     if (!hoursData.length) {
       return (
@@ -452,7 +493,7 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
         label += ` - ${lastDay?.name}`;
       }
       let hoursDataKey =
-        groupName + range.day.join('-') + range.time_start + range.time_end;
+        groupId + range.day.join('-') + range.time_start + range.time_end;
 
       let timeText = translate(TranslationKeys.closed_hours);
       if (range.time_start && range.time_end) {
@@ -531,22 +572,25 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
                 width: isWeb ? '90%' : '100%',
               }}
             >
-              {Object.entries(hours).map(
-                ([groupName, groupHours]: [any, any]) => (
-                  <View key={groupName} style={{ marginBottom: 20 }}>
-                    <Text
-                      style={{
-                        ...styles.hoursHeading,
-                        color: theme.sheet.text,
-                        fontSize: isWeb ? (ScreenWidth <= 500 ? 18 : 24) : 24,
-                      }}
-                    >
-                      {groupName}
-                    </Text>
-                    {renderHours(groupName, groupHours)}
-                  </View>
-                )
-              )}
+              {getSortedBusinessHoursGroups(businessHoursGroups)
+                  .filter((group) => hours[group.id])
+                  .map((group) => {
+                    const { name, entries } = hours[group.id];
+                    return (
+                        <View key={group.id} style={{ marginBottom: 20 }}>
+                          <Text
+                              style={{
+                                ...styles.hoursHeading,
+                                color: theme.sheet.text,
+                                fontSize: isWeb ? (ScreenWidth <= 500 ? 18 : 24) : 24,
+                              }}
+                          >
+                            {name}
+                          </Text>
+                          {renderHours(group.id, entries)}
+                        </View>
+                    );
+                  })}
             </View>
           ) : (
             <View
