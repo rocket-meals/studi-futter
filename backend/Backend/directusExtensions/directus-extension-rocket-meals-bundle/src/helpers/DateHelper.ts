@@ -131,9 +131,9 @@ export class DateHelper {
         return date_with_timezone.toDate();
     }
 
-    static formatDDMMYYYY_HHMMSSToDateWithTimeZone(value_raw: string, timezone: DateHelperTimezone){
-        let date_with_timezone = moment.tz(value_raw, "DD.MM.YYYY HH:mm:ss", timezone);
-        return date_with_timezone.toDate();
+    static formatDateToTimeZoneReadable(date: Date, timezone: DateHelperTimezone): string {
+        const dateWithTimezone = moment.tz(date, timezone);
+        return dateWithTimezone.format("DD.MM.YYYY HH:mm:ss");
     }
 
     /**

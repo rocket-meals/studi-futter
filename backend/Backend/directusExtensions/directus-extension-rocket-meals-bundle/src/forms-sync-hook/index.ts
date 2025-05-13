@@ -122,10 +122,13 @@ function registerHookSetStateToSynchingAfterFormSubmission(registerFunctions: Re
         let myDatabaseHelper = new MyDatabaseHelper(apiContext, context);
         let form_submission_ids = meta.keys as PrimaryKey[];
         for(let form_submission_id of form_submission_ids){
-            console.log("Set state to syncing for form submission id: " + form_submission_id);
-            await myDatabaseHelper.getFormsSubmissionsHelper().updateOne(form_submission_id, {
-                state: FormSubmissionState.SYNCING
-            });
+            let formSubmission = await myDatabaseHelper.getFormsSubmissionsHelper().readOne(form_submission_id);
+            if(formSubmission.state === FormSubmissionState.SUBMITTED){
+                console.log("Set state to syncing for form submission id: " + form_submission_id);
+                await myDatabaseHelper.getFormsSubmissionsHelper().updateOne(form_submission_id, {
+                    state: FormSubmissionState.SYNCING
+                });
+            }
         }
     })
 }

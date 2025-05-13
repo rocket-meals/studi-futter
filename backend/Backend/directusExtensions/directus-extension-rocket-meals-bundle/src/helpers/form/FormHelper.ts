@@ -17,28 +17,58 @@ import {TranslationBackendKeys, TranslationsBackend} from "../TranslationsBacken
 import {DateHelper, DateHelperTimezone} from "../DateHelper";
 import {EnvVariableHelper} from "../EnvVariableHelper";
 import {HashHelper} from "../HashHelper";
+import {DirectusFiles} from "../../databaseTypes/types";
+
+type FormFieldExampleData = {
+    value_string?: string | null,
+    value_number?: number | null,
+    value_boolean?: boolean | null,
+    value_date?: string | null,
+    value_image?: DirectusFiles | string | null,
+    value_files?: DirectusFiles[] | string[] | null,
+    value_custom?: string | null,
+}
 
 export class FormHelper {
 
     public static getExampleFormExtractRelevantInformation(): FormExtractRelevantInformation {
-        let amount = 5;
         let formExtractRelevantInformation: FormExtractRelevantInformation = [];
         let form_submission_id = Math.random().toString();
-        for(let i = 0; i < amount; i++){
-            let form_field = this.getExampleFormField();
-            formExtractRelevantInformation.push({
-                form_field_id: form_field.id,
-                sort: i,
-                form_field: this.getExampleFormField(),
-                form_answer: this.getExampleFormExtractFormAnswer(form_field.id, form_submission_id)
-            });
+
+        let index = 0;
+        formExtractRelevantInformation.push(this.addFormField("Text Field", {value_string: "This is a long text example"}, form_submission_id, index++));
+        formExtractRelevantInformation.push(this.addFormField("Text Field 2", {value_string: "This is a long text example"}, form_submission_id, index++));
+        formExtractRelevantInformation.push(this.addFormField("Number Field", {value_number: 123}, form_submission_id, index++));
+        formExtractRelevantInformation.push(this.addFormField("Boolean Field", {value_boolean: true}, form_submission_id, index++));
+        formExtractRelevantInformation.push(this.addFormField("Date Field", {value_date: "2021-09-01T00:00:00.000Z"}, form_submission_id, index++));
+
+        let sizes = [200, 400, 800, 1600];
+        let images: string[] = [];
+        for (let i = 0; i < sizes.length; i++) {
+            let size = sizes[i];
+            let imageUrl = `https://picsum.photos/${size}/${size}`;
+            images.push(imageUrl);
         }
+
+        formExtractRelevantInformation.push(this.addFormField("Image Field", {value_image: images[0]}, form_submission_id, index++));
+        formExtractRelevantInformation.push(this.addFormField("Files Field", {value_files: images}, form_submission_id, index++));
+
         return formExtractRelevantInformation;
     }
 
-    private static getExampleFormField(){
+    private static addFormField(alias: string, data: FormFieldExampleData, form_submission_id: string, index: number): FormExtractRelevantInformationSingle{
+        let form_field = this.getExampleFormField(alias);
         return {
-            alias: "Field Test",
+            form_field_id: form_field.id,
+            sort: index,
+            form_field: form_field,
+            form_answer: this.getExampleFormExtractFormAnswer(form_field.id, form_submission_id, data)
+        }
+    }
+
+    private static getExampleFormField(alias: string){
+        return {
+            alias: alias,
             background_color: "#FFFFFF",
             date_created: "2021-09-01T00:00:00.000Z",
             date_updated: "2021-09-01T00:00:00.000Z",
@@ -51,7 +81,7 @@ export class FormHelper {
             form_settings: "",
             icon: "",
             icon_expo: "",
-            id: Math.random().toString(),
+            id: Math.random().toString()+alias,
             image: null,
             image_remote_url: null,
             image_thumb_hash: null,
@@ -71,7 +101,27 @@ export class FormHelper {
         }
     }
 
-    private static getExampleFormExtractFormAnswer(form_field_id: string, form_submission_id: string): FormExtractFormAnswer {
+    //"2021-09-01T00:00:00.000Z",
+
+    private static getExampleFormExtractFormAnswer(form_field_id: string, form_submission_id: string, data: {
+        value_string?: string | null,
+        value_number?: number | null,
+        value_boolean?: boolean | null,
+        value_date?: string | null,
+        value_image?: DirectusFiles | string | null,
+        value_files?: DirectusFiles[] | string[] | null,
+        value_custom?: string | null,
+    }): FormExtractFormAnswer {
+
+        let value_files: DirectusFiles[] = [];
+        if(data.value_files){
+            value_files = data.value_files as DirectusFiles[];
+        };
+        let value_image = null;
+        if(data.value_image){
+            value_image = data.value_image as DirectusFiles;
+        };
+
         return {
             date_created: "2021-09-01T00:00:00.000Z",
             date_updated: "2021-09-01T00:00:00.000Z",
@@ -82,90 +132,109 @@ export class FormHelper {
             status: "published",
             user_created: "1",
             user_updated: "1",
-            value_boolean: true,
-            value_custom: null,
-            value_date: "2021-09-01T00:00:00.000Z",
-            value_files: [],
-            value_image: null,
-            value_number: 1,
-            value_string: "Test",
+            value_boolean: data.value_boolean || null,
+            value_custom: data.value_custom || null,
+            value_date: data.value_date || null,
+            value_files: value_files || null,
+            value_image: value_image || null,
+            value_number: data.value_number || null,
+            value_string: data.value_string || null,
             values: ""
         }
+    }
+
+    private static generateMarkdownForTypeStringValue(value: string | null | undefined): string {
+        let markdownContent = "";
+        if(value){
+            markdownContent += `${value}`;
+            markdownContent += MarkdownHelper.getMarkdownNewLine()
+        }
+        return markdownContent;
+    }
+
+    private static generateMarkdownForTypeNumberValue(value: number | null | undefined): string {
+        let markdownContent = "";
+        if(value){
+            markdownContent += `${value}`;
+            markdownContent += MarkdownHelper.getMarkdownNewLine()
+        }
+        return markdownContent;
+    }
+
+    private static generateMarkdownForTypeBooleanValue(value: boolean | null | undefined): string {
+        let markdownContent = "";
+        if(value===true || value===false){
+            let booleanValueString = value ? TranslationsBackend.getTranslation(TranslationBackendKeys.FORM_VALUE_BOOLEAN_TRUE) : TranslationsBackend.getTranslation(TranslationBackendKeys.FORM_VALUE_BOOLEAN_FALSE);
+            markdownContent += `${booleanValueString}`;
+            markdownContent += MarkdownHelper.getMarkdownNewLine()
+        }
+        return markdownContent;
+    }
+
+    private static generateMarkdownForTypeDateValue(value: string | null | undefined): string {
+        let markdownContent = "";
+        if(value){
+            let dateString = DateHelper.formatDateToTimeZoneReadable(new Date(value), EnvVariableHelper.getTimeZoneString());
+            markdownContent += `${dateString}`;
+            markdownContent += MarkdownHelper.getMarkdownNewLine()
+        }
+        return markdownContent;
+    }
+
+    private static generateMarkdownForTypeImageValue(fieldName: string, value_image: DirectusFiles | null | undefined, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): string {
+        let markdownContent = "";
+        let formAnswerValueImage = value_image as any;
+        if(formAnswerValueImage){
+            let imageUrl: undefined | string = undefined;
+
+            if(typeof formAnswerValueImage === "string"){
+                if (formAnswerValueImage.startsWith("http")) {
+                    imageUrl = formAnswerValueImage;
+                }
+            } else {
+                imageUrl = DirectusFilesAssetHelper.getDirectAssetUrl(formAnswerValueImage, myDatabaseHelperInterface);
+            }
+
+            markdownContent += `![${fieldName}](${imageUrl})`;
+            markdownContent += MarkdownHelper.getMarkdownNewLine()
+        }
+        return markdownContent;
     }
 
     public static async generateMarkdownContentFromForm(formExtractRelevantInformation: FormExtractRelevantInformationSingle[], myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<string> {
         let markdownContent = "";
 
-        //console.log("generateMarkdownContentFromForm start")
-
-        //console.log("formExtractRelevantInformation")
-        //console.log(JSON.stringify(formExtractRelevantInformation, null, 2))
-
         markdownContent += ``;
 
+        let markdownNewLine = MarkdownHelper.getMarkdownNewLine();
+
         // export type FormExtractRelevantInformationSingle = {form_field_id: string, sort: number | null | undefined, form_field: FormFields, form_answer: FormAnswers }
-        for(let formExtractRelevantInformationSingle of formExtractRelevantInformation){
+        for(let formExtractRelevantInformationSingle of formExtractRelevantInformation) {
             let fieldName = formExtractRelevantInformationSingle.form_field.alias || formExtractRelevantInformationSingle.form_field.id
-            markdownContent += `### ${fieldName}\n`;
-            let value = formExtractRelevantInformationSingle.form_answer.value_string ||
-                formExtractRelevantInformationSingle.form_answer.value_number ||
-                formExtractRelevantInformationSingle.form_answer.value_date
-                //formExtractRelevantInformationSingle.form_answer.value_boolean;
-            if(value){
-                markdownContent += `${value}\n`;
-            }
+            markdownContent += `### ${fieldName}`;
+            markdownContent += markdownNewLine
 
-            let date_value = formExtractRelevantInformationSingle.form_answer.value_date;
-            if(date_value){
-                let dateString = DateHelper.formatDDMMYYYY_HHMMSSToDateWithTimeZone(date_value, EnvVariableHelper.getTimeZoneString());
-                markdownContent += `${dateString}\n`;
+            markdownContent += this.generateMarkdownForTypeStringValue(formExtractRelevantInformationSingle.form_answer.value_string);
+            markdownContent += this.generateMarkdownForTypeNumberValue(formExtractRelevantInformationSingle.form_answer.value_number);
+            markdownContent += this.generateMarkdownForTypeBooleanValue(formExtractRelevantInformationSingle.form_answer.value_boolean);
+            markdownContent += this.generateMarkdownForTypeDateValue(formExtractRelevantInformationSingle.form_answer.value_date);
+            markdownContent += this.generateMarkdownForTypeImageValue(fieldName, formExtractRelevantInformationSingle.form_answer.value_image, myDatabaseHelperInterface);
+            for (let formAnswerValueFile of formExtractRelevantInformationSingle.form_answer.value_files || []) {
+                markdownContent += this.generateMarkdownForTypeImageValue(fieldName, formAnswerValueFile, myDatabaseHelperInterface);
             }
-
-            let boolean_value = formExtractRelevantInformationSingle.form_answer.value_boolean;
-            if(boolean_value===true || boolean_value===false){
-                let booleanValueString = boolean_value ? TranslationsBackend.getTranslation(TranslationBackendKeys.FORM_VALUE_BOOLEAN_TRUE) : TranslationsBackend.getTranslation(TranslationBackendKeys.FORM_VALUE_BOOLEAN_FALSE);
-                markdownContent += `${booleanValueString}\n`;
-            }
-
-            let formAnswerValueImage = formExtractRelevantInformationSingle.form_answer.value_image;
-            if(formAnswerValueImage){
-                let imageUrl = DirectusFilesAssetHelper.getDirectAssetUrl(formAnswerValueImage, myDatabaseHelperInterface);
-                markdownContent += `![${fieldName}](${imageUrl})`;
-                markdownContent += `
-                `
-                //markdownContent += `imageUrl: ${imageUrl}`;
-            }
-
-            let formAnswerValueFiles = formExtractRelevantInformationSingle.form_answer.value_files;
-            if(formAnswerValueFiles){
-                for(let formAnswerValueFile of formAnswerValueFiles){
-                    // access the resource without authentication, by using the internal asset URL, since we are at the backend
-                    let imageUrl = DirectusFilesAssetHelper.getDirectAssetUrl(formAnswerValueFile, myDatabaseHelperInterface);
-                    markdownContent += `![${fieldName}](${imageUrl})`;
-                    markdownContent += `
-                    `
-                    markdownContent += `imageUrl: ${imageUrl}`;
-                }
-            }
-
         }
 
-        //console.log("generateMarkdownContentFromForm end")
-        //console.log("markdownContent")
-        //console.log(markdownContent)
-
         // add a line break at the end
-        markdownContent += `
-        -----------------
-        `;
+        markdownContent += `-----------------`+markdownNewLine
 
         // add a generated at date
-        let generatedAtDate = new Date();
-        let generatedAtDateString = DateHelper.formatDDMMYYYY_HHMMSSToDateWithTimeZone(generatedAtDate.toString(), EnvVariableHelper.getTimeZoneString());
-        markdownContent += `Generiert am ${generatedAtDateString}\n`;
+        let generatedAtDateString = DateHelper.formatDateToTimeZoneReadable(new Date(), DateHelperTimezone.GERMANY);
+        markdownContent += `Generiert am ${generatedAtDateString}`;
+        markdownContent += markdownNewLine
 
         let hashValue = HashHelper.getHashFromObject(formExtractRelevantInformation);
-        markdownContent += `Hash: ${hashValue}\n`;
+        markdownContent += `Hash: ${hashValue}`;
+        markdownContent += markdownNewLine
 
         return markdownContent;
     }
