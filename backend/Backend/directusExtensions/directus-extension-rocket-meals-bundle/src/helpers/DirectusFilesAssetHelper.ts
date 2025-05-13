@@ -20,7 +20,6 @@ export class DirectusFilesAssetHelper {
     }
 
     public static getDirectAssetUrlById(directusFileId: string, myDatabaseTestableHelperInterface: MyDatabaseTestableHelperInterface): string {
-        let serverPort = myDatabaseTestableHelperInterface.getServerPort();
         let publicServerUrl = myDatabaseTestableHelperInterface.getServerUrl();
         return DirectusFilesAssetHelper.getAssetUrl(publicServerUrl, directusFileId);
     }

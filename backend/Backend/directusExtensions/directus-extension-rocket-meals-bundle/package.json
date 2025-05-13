@@ -16,10 +16,7 @@
 		"testEnvironment": "jest-environment-node",
 		"transform": {
 			"^.+\\.ts$": [
-				"ts-jest",
-				{
-					"isolatedModules": true
-				}
+				"ts-jest"
 			]
 		},
 		"testTimeout": 20000

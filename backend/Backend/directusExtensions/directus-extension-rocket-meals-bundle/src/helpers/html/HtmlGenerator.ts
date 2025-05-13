@@ -57,7 +57,7 @@ export class HtmlGenerator {
             projectLogo: projectLogoImageUrl || null,
             projectUrl: null, // We don't want to show the backend link in the emails
             // CUSTOM VARIABLES START HERE
-            server_url: myDatabaseHelperInterface.getServerUrl(), // currently not used
+            server_url_external: myDatabaseHelperInterface.getServerUrl(), // currently not used
         };
     }
 

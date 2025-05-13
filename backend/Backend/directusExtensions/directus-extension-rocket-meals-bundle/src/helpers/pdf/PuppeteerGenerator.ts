@@ -30,10 +30,6 @@ export class PuppeteerGenerator {
 
         let isInsideDocker = EnvVariableHelper.isInsideDocker();
 
-        if(isInsideDocker){
-            console.log("")
-        }
-
         let executablePath = isInsideDocker ? "/usr/bin/chromium" : undefined;
 
         try {
@@ -92,10 +88,6 @@ export class PuppeteerGenerator {
                     request.continue({ headers });
                 });
             }
-
-            console.log("Setting content for PDF generation");
-            console.log("HTML: ");
-            console.log(html);
 
             if(isInsideDocker){
                 // print if
