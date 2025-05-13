@@ -153,35 +153,70 @@ const index = () => {
     }
   };
 
-  const getColumns = (): {
+  const getColumns = useCallback((): {
     key: string;
     title: string;
     isFixed?: boolean;
+    flex: number; // <-- Added: Flex property is now part of the column definition
   }[] => {
+    // If no categories are found, just return the day column
     if (!categories || Object.keys(categories).length === 0) {
-      return [{ key: 'day', title: 'Day', isFixed: true }];
+      return [{ key: 'day', title: 'Day', isFixed: true, flex: isMobile ? 0.2 : 0.2 }]; // <-- Added flex for day column
     }
 
-    // Transform categories into an array of objects with sort included
+    // --- START: NEW Logic to calculate max food count per category across all days ---
+    const maxFoodCounts: Record<string, number> = {}; // Object to store max counts for each category
+
+    // Iterate over each day of the week
+    weekDayNames.forEach(dayName => {
+      const dayFoods = foods[dayName] || []; // Get foods for the current day
+      const dailyCounts: Record<string, number> = {}; // Count foods per category for THIS day
+
+      // Count foods per category for the current day
+      dayFoods.forEach(food => {
+        const categoryId = food?.food?.food_category;
+        // Only count if the category exists in our fetched categories list
+        if (categoryId && categories[categoryId]) {
+          dailyCounts[categoryId] = (dailyCounts[categoryId] || 0) + 1;
+        }
+      });
+
+      // Update the overall maximum count for each category found this day
+      Object.entries(dailyCounts).forEach(([categoryId, count]) => {
+        // Keep the maximum count seen so far for this category
+        maxFoodCounts[categoryId] = Math.max(maxFoodCounts[categoryId] || 0, count);
+      });
+    });
+    // --- END: NEW Logic ---
+
+
+    // Transform categories into an array, sort, and calculate flex for each
     const categoryArray = Object.entries(categories)
-        .map(([categoryId, alias]) => {
-          const cat = typeof alias === 'string' ? { alias, sort: Infinity } : alias;
+        .map(([categoryId, catData]) => {
+          // Calculate flex: minimum is 1, otherwise use the max count for this category
+          const flex = Math.max(1, maxFoodCounts[categoryId] || 0);
           return {
             key: categoryId,
-            title: cat.alias || 'Unknown',
-            sort: cat.sort ?? Infinity,
+            title: catData.alias || 'Unknown',
+            sort: catData.sort ?? Infinity,
+            flex: flex, // <-- Added: Include the calculated flex value
           };
         })
-        .sort((a, b) => a.sort - b.sort); // Sort by foodCategory.sort
+        // Sort categories by their defined sort order
+        .sort((a, b) => a.sort - b.sort);
 
+    // Return the array of column definitions
     return [
-      { key: 'day', title: 'Day', isFixed: true },
-      ...categoryArray.map(({ key, title }) => ({
+      // Day column with fixed flex
+      { key: 'day', title: 'Day', isFixed: true, flex: isMobile ? 0.2 : 0.2 }, // <-- Ensure day column has its fixed flex
+      // Category columns with their dynamically calculated flex
+      ...categoryArray.map(({ key, title, flex }) => ({ // <-- Destructure flex here
         key,
         title,
+        flex, // <-- Include the flex property in the final column object
       })),
     ];
-  };
+  }, [foods, categories, isMobile, weekDayNames]); // <-- Dependencies for useCallback
 
   const getPriceText = (food: any) => {
     return `${showFormatedPrice(
@@ -450,9 +485,10 @@ const index = () => {
                 {getColumns()?.map((col, index) => (
                     <View
                         key={col.key}
+                        // Apply the calculated flex
                         style={[
                           styles.cell,
-                          { flex: index === 0 ? (isMobile ? 0.2 : 0.2) : 1 },
+                          { flex: col.flex }, // Use col.flex here
                         ]}
                     >
                       <Text style={{ ...styles.headerText, color: contrastColor }}>
@@ -616,7 +652,7 @@ const index = () => {
                                   style={[
                                     styles.cell,
                                     {
-                                      flex: colIndex === 0 ? (isMobile ? 0.2 : 0.2) : 1,
+                                      flex: colIndex === 0 ? (isMobile ? 0.2 : 0.2) : col.flex,
                                       borderRightWidth: 1,
                                       borderBottomWidth: 1,
                                       borderLeftWidth: colIndex === 0 ? 1 : 0,
