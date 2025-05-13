@@ -26,7 +26,6 @@ const FoodPlanHeader = ({ handlePrint }: any) => {
   const { translate } = useLanguage();
   const { weekPlan } = useSelector((state: RootState) => state.management);
   const [headerVisible, setHeaderVisible] = useState(true);
-  const [secondaryVisible, setSecondaryVisible] = useState(false);
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
@@ -36,12 +35,10 @@ const FoodPlanHeader = ({ handlePrint }: any) => {
 
   const handleScanHelpClick = () => {
     setHeaderVisible(false);
-    setSecondaryVisible(true);
   };
 
   const handleSecondaryClick = () => {
     setHeaderVisible(true);
-    setSecondaryVisible(false);
   };
 
   useEffect(() => {
@@ -115,46 +112,6 @@ const FoodPlanHeader = ({ handlePrint }: any) => {
                 />
               </TouchableOpacity>
             </View>
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              padding: 10,
-            }}
-          >
-            <View>
-              <Text style={[styles.title, { color: theme.header.text }]}>
-                {weekPlan?.selectedCanteen?.alias}
-              </Text>
-            </View>
-            <View>
-              <Text style={[styles.title, { color: theme.header.text }]}>
-                {`${translate(TranslationKeys.week)} ${
-                  weekPlan?.selectedWeek?.week
-                }`}
-              </Text>
-            </View>
-          </View>
-        </View>
-      )}
-
-      {secondaryVisible && (
-        <View style={styles.textIcon}>
-          <View>
-            <Text style={[styles.title, { color: theme.header.text }]}>
-              {weekPlan?.selectedCanteen?.alias}
-            </Text>
-          </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            <Text style={[styles.title, { color: theme.header.text }]}>
-              {`${translate(TranslationKeys.week)} ${
-                weekPlan?.selectedWeek?.week
-              }`}
-            </Text>
-            <TouchableOpacity onPress={handleSecondaryClick}>
-              <Feather name='minimize' size={24} color={theme.screen.icon} />
-            </TouchableOpacity>
           </View>
         </View>
       )}

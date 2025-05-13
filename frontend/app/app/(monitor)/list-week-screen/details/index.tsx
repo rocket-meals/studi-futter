@@ -58,6 +58,8 @@ const index = () => {
     Dimensions.get('window').width
   );
   const { weekPlan } = useSelector((state: RootState) => state.management);
+
+
   useSetPageTitle(
     weekPlan?.selectedCanteen?.alias +
       ` - ${translate(TranslationKeys.week)} ${weekPlan?.selectedWeek?.week}`
@@ -159,9 +161,12 @@ const index = () => {
     isFixed?: boolean;
     flex: number; // <-- Added: Flex property is now part of the column definition
   }[] => {
+    const dayFlexDesign = 0.25;
+    let flexCategoriesDesign = 5;
+
     // If no categories are found, just return the day column
     if (!categories || Object.keys(categories).length === 0) {
-      return [{ key: 'day', title: 'Day', isFixed: true, flex: isMobile ? 0.2 : 0.2 }]; // <-- Added flex for day column
+      return [{ key: 'day', title: 'Day', isFixed: true, flex: isMobile ? dayFlexDesign : dayFlexDesign }]; // <-- Added flex for day column
     }
 
     // --- START: NEW Logic to calculate max food count per category across all days ---
@@ -205,10 +210,18 @@ const index = () => {
         // Sort categories by their defined sort order
         .sort((a, b) => a.sort - b.sort);
 
+    let flexSumOfCategories = 0;
+    categoryArray.forEach((category) => {
+      flexSumOfCategories += category.flex;
+    });
+
+    let dayFlexDynamic = flexSumOfCategories * (dayFlexDesign / flexCategoriesDesign);
+
+
     // Return the array of column definitions
     return [
       // Day column with fixed flex
-      { key: 'day', title: 'Day', isFixed: true, flex: isMobile ? 0.2 : 0.2 }, // <-- Ensure day column has its fixed flex
+      { key: 'day', title: 'Day', isFixed: true, flex: isMobile ? dayFlexDynamic : dayFlexDynamic }, // <-- Ensure day column has its fixed flex
       // Category columns with their dynamically calculated flex
       ...categoryArray.map(({ key, title, flex }) => ({ // <-- Destructure flex here
         key,
@@ -479,6 +492,26 @@ const index = () => {
                 ref={printRef}
             >
               <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    padding: 2,
+                  }}
+              >
+                <View>
+                  <Text style={[styles.title, { color: theme.header.text }]}>
+                    {weekPlan?.selectedCanteen?.alias}
+                  </Text>
+                </View>
+                <View>
+                  <Text style={[styles.title, { color: theme.header.text }]}>
+                    {`${translate(TranslationKeys.week)} ${
+                        weekPlan?.selectedWeek?.week
+                    }`}
+                  </Text>
+                </View>
+              </View>
+              <View
 
                   style={[styles.headerRow, { backgroundColor: foods_area_color }]}
               >
@@ -652,7 +685,7 @@ const index = () => {
                                   style={[
                                     styles.cell,
                                     {
-                                      flex: colIndex === 0 ? (isMobile ? 0.2 : 0.2) : col.flex,
+                                      flex: col.flex,
                                       borderRightWidth: 1,
                                       borderBottomWidth: 1,
                                       borderLeftWidth: colIndex === 0 ? 1 : 0,

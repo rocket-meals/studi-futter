@@ -8,7 +8,7 @@ export default StyleSheet.create({
   headerRow: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    padding: 5,
+    paddingVertical: 5,
   },
   dataRow: {
     flexDirection: 'row',
@@ -28,13 +28,17 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   cell: {
-    paddingHorizontal: 5,
+    paddingHorizontal: 2,
   },
   icon: {
     width: 30,
     height: 30,
     resizeMode: 'cover',
     borderRadius: 25,
+  },
+  title: {
+    fontSize: 10,
+    fontFamily: 'Poppins_400Regular',
   },
   headerText: {
     fontFamily: 'Poppins_700Bold',
