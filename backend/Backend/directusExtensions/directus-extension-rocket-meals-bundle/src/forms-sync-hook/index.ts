@@ -133,7 +133,13 @@ function registerHookSetStateToSynchingAfterFormSubmission(registerFunctions: Re
     })
 }
 
-export type FormExtractFormAnswer = Omit<FormAnswers, "value_image" | "value_files"> & {value_image: DirectusFiles | undefined | null, value_files: DirectusFiles[]}
+export type FormExtractFormAnswerValueFileSingle = {
+    directus_files_id: string,
+    form_answers_id: string,
+    id: number
+}
+export type FormExtractFormAnswerValueFileSingleOrString = FormExtractFormAnswerValueFileSingle | string
+export type FormExtractFormAnswer = Omit<FormAnswers, "value_image" | "value_files"> & {value_image: DirectusFiles | undefined | null, value_files: FormExtractFormAnswerValueFileSingleOrString[]}
 export type FormExtractRelevantInformationSingle = {form_field_id: string, sort: number | null | undefined, form_field: FormFields, form_answer: FormExtractFormAnswer }
 export type FormExtractRelevantInformation = FormExtractRelevantInformationSingle[]
 
@@ -174,8 +180,56 @@ function registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions: 
                     })
                     let form_answers: FormExtractFormAnswer[] = form_answers_raw as FormExtractFormAnswer[];
 
-                    console.log("Form answers: ");
-                    console.log(JSON.stringify(form_answers, null, 2));
+                    //console.log("Form answers: ");
+                    //console.log(JSON.stringify(form_answers, null, 2));
+
+                    /**
+                     *  Form answers:
+                     *  [
+                     *    {
+                     *      "date_created": "2025-05-13T15:42:17.078Z",
+                     *      "date_updated": "2025-05-13T15:42:42.560Z",
+                     *      "form_field": "5aa6c42e-9316-4e19-b012-33e6d3a6a3c4",
+                     *      "form_submission": "854f22c6-51ac-4b18-97b1-b3695cc2c5ca",
+                     *      "id": "486e0a7d-cf7c-4c80-b56d-82b9fb458faf",
+                     *      "sort": null,
+                     *      "status": "published",
+                     *      "user_created": "b49bcb9c-97d7-4809-9c64-30cc38c9ad76",
+                     *      "user_updated": "b49bcb9c-97d7-4809-9c64-30cc38c9ad76",
+                     *      "value_boolean": null,
+                     *      "value_custom": null,
+                     *      "value_date": null,
+                     *      "value_number": null,
+                     *      "value_string": null,
+                     *      "value_files": [
+                     *        {
+                     *          "directus_files_id": "24794e32-0db9-4e76-9a35-27545b99e4dd",
+                     *          "form_answers_id": "486e0a7d-cf7c-4c80-b56d-82b9fb458faf",
+                     *          "id": 10
+                     *        }
+                     *      ],
+                     *      "value_image": null
+                     *    },
+                     *    {
+                     *      "date_created": "2025-05-13T15:42:17.071Z",
+                     *      "date_updated": "2025-05-13T15:42:42.568Z",
+                     *      "form_field": "d5cda419-7a66-4208-b528-b293ead52844",
+                     *      "form_submission": "854f22c6-51ac-4b18-97b1-b3695cc2c5ca",
+                     *      "id": "32ab94fc-1273-405e-a9a7-0f0c2149ebdd",
+                     *      "sort": null,
+                     *      "status": "published",
+                     *      "user_created": "b49bcb9c-97d7-4809-9c64-30cc38c9ad76",
+                     *      "user_updated": "b49bcb9c-97d7-4809-9c64-30cc38c9ad76",
+                     *      "value_boolean": null,
+                     *      "value_custom": null,
+                     *      "value_date": null,
+                     *      "value_number": null,
+                     *      "value_string": "Test",
+                     *      "value_files": [],
+                     *      "value_image": null
+                     *    }
+                     *  ]
+                     */
 
                     // Get the form fields of the form
                     console.log("Get form fields");

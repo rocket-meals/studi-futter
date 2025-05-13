@@ -11,6 +11,17 @@ export class DirectusFilesAssetHelper {
         return `${serverUrl}/assets/${directusFileId}`;
     }
 
+    public static getDirectAssetUrlByObjectOrId(
+        directusFile: DirectusFiles | string,
+        myDatabaseTestableHelperInterface: MyDatabaseTestableHelperInterface,
+    ): string {
+        if (typeof directusFile === "string") {
+            return DirectusFilesAssetHelper.getDirectAssetUrlById(directusFile, myDatabaseTestableHelperInterface);
+        } else {
+            return DirectusFilesAssetHelper.getDirectAssetUrl(directusFile, myDatabaseTestableHelperInterface);
+        }
+    }
+
     /**
      * Access only if permission is granted for the file
      * @param directusFile

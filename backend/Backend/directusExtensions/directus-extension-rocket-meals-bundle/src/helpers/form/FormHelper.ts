@@ -1,5 +1,5 @@
 import {
-    FormExtractFormAnswer,
+    FormExtractFormAnswer, FormExtractFormAnswerValueFileSingle, FormExtractFormAnswerValueFileSingleOrString,
     FormExtractRelevantInformation,
     FormExtractRelevantInformationSingle
 } from "../../forms-sync-hook";
@@ -25,7 +25,7 @@ type FormFieldExampleData = {
     value_boolean?: boolean | null,
     value_date?: string | null,
     value_image?: DirectusFiles | string | null,
-    value_files?: DirectusFiles[] | string[] | null,
+    value_files?: FormExtractFormAnswerValueFileSingleOrString[] | null,
     value_custom?: string | null,
 }
 
@@ -109,13 +109,13 @@ export class FormHelper {
         value_boolean?: boolean | null,
         value_date?: string | null,
         value_image?: DirectusFiles | string | null,
-        value_files?: DirectusFiles[] | string[] | null,
+        value_files?: FormExtractFormAnswerValueFileSingleOrString[] | null,
         value_custom?: string | null,
     }): FormExtractFormAnswer {
 
-        let value_files: DirectusFiles[] = [];
+        let value_files: FormExtractFormAnswerValueFileSingleOrString[] = [];
         if(data.value_files){
-            value_files = data.value_files as DirectusFiles[];
+            value_files = data.value_files as FormExtractFormAnswerValueFileSingleOrString[];
         };
         let value_image = null;
         if(data.value_image){
@@ -181,24 +181,38 @@ export class FormHelper {
         return markdownContent;
     }
 
-    private static generateMarkdownForTypeImageValue(fieldName: string, value_image: DirectusFiles | null | undefined, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): string {
+    private static generateMarkdownForTypeImageUrl(fieldName: string, imageUrl: string | undefined): string {
         let markdownContent = "";
-        let formAnswerValueImage = value_image as any;
-        if(formAnswerValueImage){
-            let imageUrl: undefined | string = undefined;
-
-            if(typeof formAnswerValueImage === "string"){
-                if (formAnswerValueImage.startsWith("http")) {
-                    imageUrl = formAnswerValueImage;
-                }
-            } else {
-                imageUrl = DirectusFilesAssetHelper.getDirectAssetUrl(formAnswerValueImage, myDatabaseHelperInterface);
-            }
-
+        if(imageUrl){
             markdownContent += `![${fieldName}](${imageUrl})`;
             markdownContent += MarkdownHelper.getMarkdownNewLine()
         }
         return markdownContent;
+    }
+
+    private static generateMarkdownForTypeImageValue(fieldName: string, value_image: DirectusFiles | string | null | undefined, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): string {
+        let assetUrl: undefined | string = undefined;
+        if(value_image) {
+            if (typeof value_image === "string" && value_image.startsWith("http")) {
+                assetUrl = value_image;
+            } else {
+                assetUrl = DirectusFilesAssetHelper.getDirectAssetUrlByObjectOrId(value_image, myDatabaseHelperInterface);
+            }
+        }
+        return this.generateMarkdownForTypeImageUrl(fieldName, assetUrl);
+    }
+
+    private static generateMarkdownForTypeFilesValue(fieldName: string, value_file: FormExtractFormAnswerValueFileSingleOrString | null | undefined, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): string {
+        let assetUrl: undefined | string = undefined;
+        if(value_file) {
+            if (typeof value_file === "string" && value_file.startsWith("http")) {
+                assetUrl = value_file;
+            } else {
+                let valueFileAsObject: FormExtractFormAnswerValueFileSingle = value_file as FormExtractFormAnswerValueFileSingle;
+                assetUrl = DirectusFilesAssetHelper.getDirectAssetUrlByObjectOrId(valueFileAsObject.directus_files_id, myDatabaseHelperInterface);
+            }
+        }
+        return this.generateMarkdownForTypeImageUrl(fieldName, assetUrl);
     }
 
     public static async generateMarkdownContentFromForm(formExtractRelevantInformation: FormExtractRelevantInformationSingle[], myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<string> {
@@ -220,7 +234,7 @@ export class FormHelper {
             markdownContent += this.generateMarkdownForTypeDateValue(formExtractRelevantInformationSingle.form_answer.value_date);
             markdownContent += this.generateMarkdownForTypeImageValue(fieldName, formExtractRelevantInformationSingle.form_answer.value_image, myDatabaseHelperInterface);
             for (let formAnswerValueFile of formExtractRelevantInformationSingle.form_answer.value_files || []) {
-                markdownContent += this.generateMarkdownForTypeImageValue(fieldName, formAnswerValueFile, myDatabaseHelperInterface);
+                markdownContent += this.generateMarkdownForTypeFilesValue(fieldName, formAnswerValueFile, myDatabaseHelperInterface);
             }
         }
 
