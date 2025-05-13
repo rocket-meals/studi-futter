@@ -19,7 +19,6 @@ import {
   SET_SELECTED_CANTEEN,
 } from '@/redux/Types/types';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { CanteenProps } from '@/components/CanteenSelectionSheet/types';
 import { excerpt, getImageUrl } from '@/constants/HelperFunctions';
 import { Buildings, Canteens } from '@/constants/types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';

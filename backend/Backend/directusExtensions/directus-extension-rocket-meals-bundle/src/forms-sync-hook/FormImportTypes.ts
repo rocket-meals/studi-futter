@@ -16,10 +16,11 @@ export const FormAnswersValueFieldKeys: Record<KeyOfFormAnswersValueFieldsType, 
 }
 
 export enum FormSubmissionState {
-    DRAFT = "draft",
-    SUBMITTED = "submitted",
-    SYNCING = "syncing",
-    CLOSED = "closed",
+    DRAFT = "draft", // Noch nicht eingereicht
+    SUBMITTED = "submitted", // Eingereicht und System soll verarbeiten
+    SYNCING = "syncing", // In Bearbeitung von dem System
+    CLOSED = "closed", // Eingereicht und System hat verarbeitet
+    FAILED = "failed", // Eingereicht und System hat nicht verarbeitet
 }
 
 export type FormImportSyncFormAnswer = Partial<FormAnswers> & {external_import_id: string}

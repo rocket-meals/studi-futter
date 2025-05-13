@@ -15,8 +15,12 @@ export class EnvVariableHelper {
         return envVariable;
     }
 
-    static getTimeZoneString() {
-        return this.getEnvVariable("TZ") || DateHelperTimezone.GERMANY
+    static getTimeZoneString(): DateHelperTimezone {
+        let envTimeZone = this.getEnvVariable("TZ");
+        if (envTimeZone && envTimeZone.length > 0) {
+            return envTimeZone as any as DateHelperTimezone;
+        }
+        return DateHelperTimezone.GERMANY
     }
 
     static getFoodSyncMode() {

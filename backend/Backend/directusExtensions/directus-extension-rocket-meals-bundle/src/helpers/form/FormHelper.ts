@@ -3,11 +3,20 @@ import {
     FormExtractRelevantInformation,
     FormExtractRelevantInformationSingle
 } from "../../forms-sync-hook";
-import {BaseGermanMarkdownTemplateHelper, DEFAULT_HTML_TEMPLATE, HtmlGenerator} from "../html/HtmlGenerator";
-import {PdfGeneratorHelper} from "../pdf/PdfGeneratorHelper";
+import {
+    BaseGermanMarkdownTemplateHelper,
+    DEFAULT_HTML_TEMPLATE,
+    HtmlGenerator,
+    HtmlGeneratorOptions
+} from "../html/HtmlGenerator";
+import {PdfGeneratorHelper, PdfGeneratorOptions, RequestOptions} from "../pdf/PdfGeneratorHelper";
 import {DirectusFilesAssetHelper} from "../DirectusFilesAssetHelper";
 import {MarkdownHelper} from "../html/MarkdownHelper";
 import {MyDatabaseTestableHelperInterface} from "../MyDatabaseHelperInterface";
+import {TranslationBackendKeys, TranslationsBackend} from "../TranslationsBackend";
+import {DateHelper, DateHelperTimezone} from "../DateHelper";
+import {EnvVariableHelper} from "../EnvVariableHelper";
+import {HashHelper} from "../HashHelper";
 
 export class FormHelper {
 
@@ -87,18 +96,12 @@ export class FormHelper {
     public static async generateMarkdownContentFromForm(formExtractRelevantInformation: FormExtractRelevantInformationSingle[], myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<string> {
         let markdownContent = "";
 
-        // access the resource without authentication, by using the internal asset URL, since we are at the backend
-        let options = DirectusFilesAssetHelper.getOptionsInternal() // use internal server URL
-
         //console.log("generateMarkdownContentFromForm start")
 
         //console.log("formExtractRelevantInformation")
         //console.log(JSON.stringify(formExtractRelevantInformation, null, 2))
 
-        markdownContent += MarkdownHelper.EXAMPLE_MARKDOWN+`
-        
-        
-        `;
+        markdownContent += ``;
 
         // export type FormExtractRelevantInformationSingle = {form_field_id: string, sort: number | null | undefined, form_field: FormFields, form_answer: FormAnswers }
         for(let formExtractRelevantInformationSingle of formExtractRelevantInformation){
@@ -106,26 +109,38 @@ export class FormHelper {
             markdownContent += `### ${fieldName}\n`;
             let value = formExtractRelevantInformationSingle.form_answer.value_string ||
                 formExtractRelevantInformationSingle.form_answer.value_number ||
-                formExtractRelevantInformationSingle.form_answer.value_date ||
-                formExtractRelevantInformationSingle.form_answer.value_boolean;
+                formExtractRelevantInformationSingle.form_answer.value_date
+                //formExtractRelevantInformationSingle.form_answer.value_boolean;
             if(value){
                 markdownContent += `${value}\n`;
             }
 
+            let date_value = formExtractRelevantInformationSingle.form_answer.value_date;
+            if(date_value){
+                let dateString = DateHelper.formatDDMMYYYY_HHMMSSToDateWithTimeZone(date_value, EnvVariableHelper.getTimeZoneString());
+                markdownContent += `${dateString}\n`;
+            }
+
+            let boolean_value = formExtractRelevantInformationSingle.form_answer.value_boolean;
+            if(boolean_value===true || boolean_value===false){
+                let booleanValueString = boolean_value ? TranslationsBackend.getTranslation(TranslationBackendKeys.FORM_VALUE_BOOLEAN_TRUE) : TranslationsBackend.getTranslation(TranslationBackendKeys.FORM_VALUE_BOOLEAN_FALSE);
+                markdownContent += `${booleanValueString}\n`;
+            }
+
             let formAnswerValueImage = formExtractRelevantInformationSingle.form_answer.value_image;
             if(formAnswerValueImage){
-                let imageUrl = DirectusFilesAssetHelper.getDirectAssetUrl(formAnswerValueImage, myDatabaseHelperInterface, options);
+                let imageUrl = DirectusFilesAssetHelper.getDirectAssetUrl(formAnswerValueImage, myDatabaseHelperInterface);
                 markdownContent += `![${fieldName}](${imageUrl})`;
                 markdownContent += `
                 `
-                markdownContent += `imageUrl: ${imageUrl}`;
+                //markdownContent += `imageUrl: ${imageUrl}`;
             }
 
             let formAnswerValueFiles = formExtractRelevantInformationSingle.form_answer.value_files;
             if(formAnswerValueFiles){
                 for(let formAnswerValueFile of formAnswerValueFiles){
                     // access the resource without authentication, by using the internal asset URL, since we are at the backend
-                    let imageUrl = DirectusFilesAssetHelper.getDirectAssetUrl(formAnswerValueFile, myDatabaseHelperInterface, options);
+                    let imageUrl = DirectusFilesAssetHelper.getDirectAssetUrl(formAnswerValueFile, myDatabaseHelperInterface);
                     markdownContent += `![${fieldName}](${imageUrl})`;
                     markdownContent += `
                     `
@@ -139,18 +154,36 @@ export class FormHelper {
         //console.log("markdownContent")
         //console.log(markdownContent)
 
+        // add a line break at the end
+        markdownContent += `
+        -----------------
+        `;
+
+        // add a generated at date
+        let generatedAtDate = new Date();
+        let generatedAtDateString = DateHelper.formatDDMMYYYY_HHMMSSToDateWithTimeZone(generatedAtDate.toString(), EnvVariableHelper.getTimeZoneString());
+        markdownContent += `Generiert am ${generatedAtDateString}\n`;
+
+        let hashValue = HashHelper.getHashFromObject(formExtractRelevantInformation);
+        markdownContent += `Hash: ${hashValue}\n`;
+
         return markdownContent;
     }
 
     public static async generatePdfFromForm(formExtractRelevantInformation: FormExtractRelevantInformation, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<Buffer> {
         let markdownContent = await this.generateMarkdownContentFromForm(formExtractRelevantInformation, myDatabaseHelperInterface);
         let template = DEFAULT_HTML_TEMPLATE;
-        let options = HtmlGenerator.getHtmlGeneratorOptionsInternal();
-        let html = await HtmlGenerator.generateHtml(BaseGermanMarkdownTemplateHelper.getTemplateDataForMarkdownContent(markdownContent), myDatabaseHelperInterface, options, template);
+        let html = await HtmlGenerator.generateHtml(BaseGermanMarkdownTemplateHelper.getTemplateDataForMarkdownContent(markdownContent), myDatabaseHelperInterface, template);
 
-        let requestOptions = {
-            bearerToken: await myDatabaseHelperInterface.getAdminBearerToken()
+        let requestOptions: RequestOptions = {
+            bearerToken: null
         }
+
+        let adminBearerToken = await myDatabaseHelperInterface.getAdminBearerToken();
+        if(adminBearerToken){
+            requestOptions.bearerToken = adminBearerToken;
+        }
+
 
         let pdfBuffer = PdfGeneratorHelper.generatePdfFromHtml(html, requestOptions);
         return pdfBuffer;

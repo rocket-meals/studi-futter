@@ -1859,6 +1859,11 @@
   dependencies:
     knex "3.1.0"
 
+"@directus/sdk@^18.0.0":
+  version "18.0.3"
+  resolved "https://registry.yarnpkg.com/@directus/sdk/-/sdk-18.0.3.tgz#779f4e7bae1bba71c87b7ac2e7f8248bf97da01a"
+  integrity sha512-PnEDRDqr2x/DG3HZ3qxU7nFp2nW6zqJqswjii57NhriXgTz4TBUI8NmSdzQvnyHuTL9J0nedYfQGfW4v8odS1A==
+
 "@directus/specs@10.1.1":
   version "10.1.1"
   resolved "https://registry.yarnpkg.com/@directus/specs/-/specs-10.1.1.tgz#384af0a1f80b3e77b71e46dbfcd2b6951820c796"
@@ -10643,6 +10648,11 @@ source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
   integrity sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==
+
+spark-md5@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/spark-md5/-/spark-md5-3.0.2.tgz#7952c4a30784347abcee73268e473b9c0167e3fc"
+  integrity sha512-wcFzz9cDfbuqe0FZzfi2or1sgyIrsDwmPwfZC4hiNidPdPINjeUwNfv5kldczoEAcjl9Y1L3SM7Uz2PUEQzxQw==
 
 split-on-first@^1.0.0:
   version "1.1.0"

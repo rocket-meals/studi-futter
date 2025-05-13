@@ -188,7 +188,6 @@ export const blurhash =
 
 export const languageCode = 'en';
 export const itemStatus = 'published';
-export const studentUnionUrl = 'https://www.studentenwerk-osnabrueck.de/';
   // export const languageCode = 'de';
 
 

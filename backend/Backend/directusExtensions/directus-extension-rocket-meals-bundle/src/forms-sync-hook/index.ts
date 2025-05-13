@@ -21,10 +21,6 @@ import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {TranslationHelper} from "../helpers/TranslationHelper";
 import {FormHelper} from "../helpers/form/FormHelper";
 
-function getFormSync(): FormsSyncInterface | null {
-    return null;
-}
-
 function registerHookPresentCreateFormSubmissionIllegalState(registerFunctions: RegisterFunctions, apiContext: ApiContext){
     registerFunctions.filter<Partial<FormSubmissions>>(CollectionNames.FORM_SUBMISSIONS+".items.create", async (input, meta, eventContext) => {
         if(input.state !== FormSubmissionState.DRAFT && !!input.state){ // if state is set and not draft -> throw error
@@ -41,7 +37,13 @@ function registerHookPreventUpdateFormSubmissionIllegalState(registerFunctions: 
         for(let form_submission_id of form_submission_ids){
             let formSubmission = await myDatabaseHelper.getFormsSubmissionsHelper().readOne(form_submission_id);
             if(formSubmission.state === FormSubmissionState.SYNCING){
-                throw new Error("Form submission is in state syncing. It is not allowed to update the form submission.");
+                if(!!input.state){
+                    if(input.state === FormSubmissionState.CLOSED || input.state === FormSubmissionState.FAILED){
+                        // Only allow to set the state to closed or failed
+                    } else {
+                        throw new Error("Form submission is in state syncing. It is not allowed to update the form submission. Please set the state to closed.");
+                    }
+                }
             }
         }
         return input;
@@ -112,6 +114,20 @@ function registerHookCheckAllRequiredFieldsAreFilled(registerFunctions: Register
 
         return input
     });
+}
+
+function registerHookSetStateToSynchingAfterFormSubmission(registerFunctions: RegisterFunctions, apiContext: ApiContext){
+    registerFunctions.action(CollectionNames.FORM_SUBMISSIONS+".items.update", async (meta, context) => {
+        console.log("Set state to syncing after form submission");
+        let myDatabaseHelper = new MyDatabaseHelper(apiContext, context);
+        let form_submission_ids = meta.keys as PrimaryKey[];
+        for(let form_submission_id of form_submission_ids){
+            console.log("Set state to syncing for form submission id: " + form_submission_id);
+            await myDatabaseHelper.getFormsSubmissionsHelper().updateOne(form_submission_id, {
+                state: FormSubmissionState.SYNCING
+            });
+        }
+    })
 }
 
 export type FormExtractFormAnswer = Omit<FormAnswers, "value_image" | "value_files"> & {value_image: DirectusFiles | undefined | null, value_files: DirectusFiles[]}
@@ -306,7 +322,7 @@ async function sendFormExtractMail(
     console.log("Subject: " + subject);
 
     let pdfBuffer = await FormHelper.generatePdfFromForm(formExtractRelevantInformation, myDatabaseHelper);
-    let pdfMarkdown = await FormHelper.generateMarkdownContentFromForm(formExtractRelevantInformation, myDatabaseHelper);
+    //let pdfMarkdown = await FormHelper.generateMarkdownContentFromForm(formExtractRelevantInformation, myDatabaseHelper);
 
     console.log("recipient_emails: ");
     console.log(recipient_emails);
@@ -328,7 +344,7 @@ async function sendFormExtractMail(
 
         let mail: Partial<Mails> = {
             recipient: recipient_email,
-            markdown_content: "Anbei finden Sie die Daten des Formulars: " + form_name+" \n\n"+pdfMarkdown,
+            markdown_content: "Anbei finden Sie die Daten des Formulars zum download: " + form_name,
             subject: subject,
             form_submission: formSubmission.id,
             // @ts-ignore - thats how directus allows to set attachments
@@ -342,12 +358,27 @@ async function sendFormExtractMail(
 
 export default defineHook(async (registerFunctions, apiContext) => {
 
+    // Allow only drafts to be created
     registerHookToCreateFormAnswersForFormSubmission(registerFunctions, apiContext);
+
+    // Allow only drafts to be created
     registerHookPresentCreateFormSubmissionIllegalState(registerFunctions, apiContext);
+
+    // Set the date_submitted to now
     registerHookHandleFormSubmissionDateSubmitted(registerFunctions, apiContext);
-    registerHookPreventUpdateFormSubmissionIllegalState(registerFunctions, apiContext);
-    registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions, apiContext);
+
+    // Check if all required fields are filled
     registerHookCheckAllRequiredFieldsAreFilled(registerFunctions, apiContext);
+
+    // Prevent update of form submission if state is syncing, only allow to set state to closed
+    registerHookPreventUpdateFormSubmissionIllegalState(registerFunctions, apiContext);
+
+    // Set the state to syncing after form submission
+    registerHookSetStateToSynchingAfterFormSubmission(registerFunctions, apiContext);
+
+    // Send mail after form submission state syncing
+    registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions, apiContext);
+
 
 
     switch(EnvVariableHelper.getSyncForCustomer()){

@@ -3373,15 +3373,15 @@
   "tr": "Ara",
   "zh": "12月"
 },
-  "RATE_US": {
-    "de": "Bewerten Sie uns",
-    "en": "Rate Us",
-    "ar": "قيّمنا",
-    "es": "Califícanos",
-    "fr": "Évaluez-nous",
-    "ru": "Оцените нас",
-    "tr": "Bizi değerlendirin",
-    "zh": "评价"
+  "RATE_FOOD": {
+    "de": "Speise bewerten",
+    "en": "Rate Food",
+    "ar": "قيم الطعام",
+    "es": "Califica la comida",
+    "fr": "Évaluer la nourriture",
+    "ru": "Оценить еду",
+    "tr": "Yemek Puanla",
+    "zh": "评分食物"
   },
   "GET_NOTIFICATION_ON_AVAILABILITY": {
     "de": "Benachrichtigung bei Verfügbarkeit erhalten",

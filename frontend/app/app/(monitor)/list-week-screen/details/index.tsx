@@ -39,7 +39,7 @@ const fontSize = 10;
 const index = () => {
   const printRef = useRef<HTMLElement | null>(null);
   const { translate } = useLanguage();
-  const { theme } = useTheme();
+  const { theme, setThemeMode } = useTheme();
   const dispatch = useDispatch();
   const {
     canteens_id,
@@ -50,7 +50,7 @@ const index = () => {
   const markingGroupsHelper = new MarkingGroupsHelper();
   const foodCategoriesHelper = new FoodCategoriesHelper();
   const [foods, setFoods] = useState<any>({});
-  const [categories, setCategories] = useState({});
+  const [categories, setCategories] = useState<Record<string, { alias: string; sort: number }>>({});
   const [foodMarkings, setFoodMarkings] = useState<any>({});
   const { markings } = useSelector((state: RootState) => state.food);
   const [loading, setLoading] = useState(true);
@@ -115,6 +115,7 @@ const index = () => {
 
   useEffect(() => {
     fetchFoods();
+    setThemeMode("light");
   }, [canteens_id, date_iso]);
 
   const fetchCurrentFoodCategory = async (foodData: Record<string, any[]>) => {
@@ -137,7 +138,10 @@ const index = () => {
               categoryId
             )) as FoodsCategories;
             if (result) {
-              newCategories[categoryId] = result?.alias; // Save unique category
+              newCategories[categoryId] = {
+                alias: result?.alias,
+                sort: result?.sort ?? Infinity,
+              };
             }
           }
         }
@@ -158,11 +162,23 @@ const index = () => {
       return [{ key: 'day', title: 'Day', isFixed: true }];
     }
 
+    // Transform categories into an array of objects with sort included
+    const categoryArray = Object.entries(categories)
+        .map(([categoryId, alias]) => {
+          const cat = typeof alias === 'string' ? { alias, sort: Infinity } : alias;
+          return {
+            key: categoryId,
+            title: cat.alias || 'Unknown',
+            sort: cat.sort ?? Infinity,
+          };
+        })
+        .sort((a, b) => a.sort - b.sort); // Sort by foodCategory.sort
+
     return [
       { key: 'day', title: 'Day', isFixed: true },
-      ...Object.entries(categories).map(([categoryId, alias]) => ({
-        key: categoryId,
-        title: typeof alias === 'string' ? alias : 'Unknown',
+      ...categoryArray.map(({ key, title }) => ({
+        key,
+        title,
       })),
     ];
   };
@@ -465,6 +481,7 @@ const index = () => {
                 return (
                     <View style={{
                       width: '100%',
+                      // @ts-ignore // pageBreakInside is not supported by react-native but it is supported by browsers
                       pageBreakInside: 'avoid', // Avoid the page break
                       breakInside: 'avoid', // Avoid the page break
                     }}>

@@ -131,6 +131,11 @@ export class DateHelper {
         return date_with_timezone.toDate();
     }
 
+    static formatDDMMYYYY_HHMMSSToDateWithTimeZone(value_raw: string, timezone: DateHelperTimezone){
+        let date_with_timezone = moment.tz(value_raw, "DD.MM.YYYY HH:mm:ss", timezone);
+        return date_with_timezone.toDate();
+    }
+
     /**
      * Formats a date to ISO 8601 without timezone
      * @param date the date to format

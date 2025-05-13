@@ -43,14 +43,16 @@ const Labels: React.FC<LabelsProps> = ({
     ? appSettings?.foods_area_color
     : primaryColor;
 
+  let food_responsible_organization_name = appSettings?.food_responsible_organization_name || "Verantwortliche Organisation";
+  let food_responsible_organization_link = appSettings?.food_responsible_organization_link || "https://www.studentenwerk-osnabrueck.de/";
+    const handleRedirect = () => {
+        Linking.openURL(food_responsible_organization_link).catch((err) =>
+            console.error('Failed to open URL:', err)
+        );
+    };
+
   const markings = useSelector(selectMarkings);
   const foodOffer = useSelector(selectFoodOffer(offerId));
-
-  const handleRedirect = () => {
-    Linking.openURL(studentUnionUrl).catch((err) =>
-      console.error('Failed to open URL:', err)
-    );
-  };
 
   const foodMarkings = useMemo(() => {
     if (!foodOffer?.markings) return [];
@@ -88,7 +90,7 @@ const Labels: React.FC<LabelsProps> = ({
       <RedirectButton
         type='link'
         onClick={handleRedirect}
-        label='Studentenwerk Osnabrueck'
+        label={food_responsible_organization_name}
         backgroundColor={foods_area_color}
         color='#FFF'
       />

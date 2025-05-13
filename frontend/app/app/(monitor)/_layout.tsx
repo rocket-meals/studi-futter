@@ -48,7 +48,10 @@ export default function MonitorLayout() {
         name='foodPlanDay/index'
         options={{
           header: () => (
-            <CustomStackHeader label={translate(TranslationKeys.food_Plan_Day)} key={'foodPlanDay'} />
+            <CustomStackHeader
+              label={translate(TranslationKeys.food_Plan_Day)}
+              key={'foodPlanDay'}
+            />
           ),
         }}
       />

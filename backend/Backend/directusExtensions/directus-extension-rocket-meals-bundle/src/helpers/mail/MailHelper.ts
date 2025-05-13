@@ -4,10 +4,10 @@ import {MyDatabaseHelperInterface, MyDatabaseTestableHelperInterface} from "../M
 
 export class MailHelper {
 
-    public static async renderMailToHtml(mail: Partial<Mails>, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface, options: HtmlGeneratorOptions): Promise<any> {
+    public static async renderMailToHtml(mail: Partial<Mails>, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<any> {
         let variables = MailHelper.getHtmlTemplateDataFromMail(mail);
         let template = HtmlGenerator.getHtmlTemplate(mail.template_name);
-        return await HtmlGenerator.generateHtml(variables, myDatabaseHelperInterface, options, template);
+        return await HtmlGenerator.generateHtml(variables, myDatabaseHelperInterface, template);
     }
 
     public static getHtmlTemplateDataFromMail(mail: Partial<Mails>): {[key: string]: any} & {mailContentFieldRenderedAsHtml?: string} {

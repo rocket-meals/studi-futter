@@ -1,5 +1,5 @@
 import {
-  Dimensions,
+  Dimensions, Linking,
   SafeAreaView,
   ScrollView,
   Text,
@@ -45,6 +45,9 @@ const index = () => {
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
+
+  let food_responsible_organization_name = appSettings?.food_responsible_organization_name || "Verantwortliche Organisation";
+  let food_responsible_organization_link = appSettings?.food_responsible_organization_link || "https://www.studentenwerk-osnabrueck.de/";
 
   useFocusEffect(
     useCallback(() => {
@@ -104,6 +107,12 @@ const index = () => {
     setReadMore(!readMore);
   };
 
+  const handleRedirect = () => {
+    Linking.openURL(food_responsible_organization_link).catch((err) =>
+        console.error('Failed to open URL:', err)
+    );
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
       <View style={{ flex: 1 }}>
@@ -150,8 +159,9 @@ const index = () => {
             )}
             <RedirectButton
               type={'link'}
-              label='Studentenwerk Osnabrueck'
+              label={food_responsible_organization_name}
               backgroundColor={primaryColor}
+              onClick={handleRedirect}
               color={theme.activeText}
             />
             <View style={styles.feedbackLabelsContainer}>

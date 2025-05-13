@@ -322,20 +322,16 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({
         </TouchableOpacity>
       </View>
       <View style={styles.popupContainer}>
-        <View style={styles.imageContainer}>
-          <Image
-            style={styles.image}
-            source={
-              eventData?.image || eventData?.image_remote_url
-                ? {
-                    uri:
-                      eventData?.image_remote_url ||
-                      getImageUrl(eventData?.image),
-                  }
-                : { uri: defaultImage }
-            }
-          />
-        </View>
+        {
+            (eventData?.image || eventData?.image_remote_url) && (
+                <View style={styles.imageContainer}>
+                  <Image
+                      style={styles.image}
+                      source={eventData?.image || eventData?.image_remote_url}
+                  />
+                </View>
+            )
+        }
         {getContent()}
       </View>
     </BottomSheetScrollView>

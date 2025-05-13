@@ -1,4 +1,4 @@
-import { ActivityIndicator, Dimensions, Image, Pressable, Text, View } from 'react-native';
+import {ActivityIndicator, Dimensions, Image, Linking, Pressable, Text, View} from 'react-native';
 import React from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -26,6 +26,14 @@ const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
     language,
     selectedTheme: mode,
   } = useSelector((state: RootState) => state.settings);
+
+let food_responsible_organization_name = appSettings?.food_responsible_organization_name || "Verantwortliche Organisation";
+let food_responsible_organization_link = appSettings?.food_responsible_organization_link || "https://www.studentenwerk-osnabrueck.de/";
+const handleRedirect = () => {
+    Linking.openURL(food_responsible_organization_link).catch((err) =>
+        console.error('Failed to open URL:', err)
+    );
+};
 
   const foods_area_color = appSettings?.foods_area_color
     ? appSettings?.foods_area_color
@@ -242,7 +250,8 @@ const Details: React.FC<DetailsProps> = ({ groupedAttributes, loading }) => {
       </Text>
       <RedirectButton
         type={'link'}
-        label='Studentenwerk Osnabrueck'
+        label={food_responsible_organization_name}
+        onClick={handleRedirect}
         backgroundColor={foods_area_color}
         color={theme.light}
       />

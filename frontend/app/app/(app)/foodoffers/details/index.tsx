@@ -514,7 +514,7 @@ export default function FoodDetailsScreen() {
                     <Text
                       style={{ ...styles.rateUs, color: theme.screen.text }}
                     >
-                      {translate(TranslationKeys.RATE_US)}
+                      {translate(TranslationKeys.RATE_FOOD)}
                     </Text>
                     <View style={styles.stars}>
                       {Array.from({ length: 5 }).map((_, index) => (
@@ -634,7 +634,7 @@ export default function FoodDetailsScreen() {
                   color: theme.screen.text,
                 }}
               >
-                {excerpt(foodDetails?.name, 90)}
+                {foodDetails?.name}
               </Text>
               <View
                 style={{
@@ -648,7 +648,7 @@ export default function FoodDetailsScreen() {
                     color: theme.screen.text,
                   }}
                 >
-                  {translate(TranslationKeys.RATE_US)}
+                  {translate(TranslationKeys.RATE_FOOD)}
                 </Text>
                 <View style={styles.mobileStars}>
                   {Array.from({ length: 5 }).map((_, index) => (
