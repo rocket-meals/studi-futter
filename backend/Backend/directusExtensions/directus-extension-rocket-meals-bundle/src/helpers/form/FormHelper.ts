@@ -261,11 +261,7 @@ export class FormHelper {
         return markdownContent;
     }
 
-    public static async generatePdfFromForm(formExtractRelevantInformation: FormExtractRelevantInformation, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<Buffer> {
-        let markdownContent = await this.generateMarkdownContentFromForm(formExtractRelevantInformation, myDatabaseHelperInterface);
-        let template = DEFAULT_HTML_TEMPLATE;
-        let html = await HtmlGenerator.generateHtml(BaseGermanMarkdownTemplateHelper.getTemplateDataForMarkdownContent(markdownContent), myDatabaseHelperInterface, template);
-
+    public static async generatePdfFromHtml(html: string, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<Buffer> {
         let requestOptions: RequestOptions = {
             bearerToken: null
         }
@@ -275,8 +271,21 @@ export class FormHelper {
             requestOptions.bearerToken = adminBearerToken;
         }
 
-
         let pdfBuffer = PdfGeneratorHelper.generatePdfFromHtml(html, requestOptions);
+        return pdfBuffer;
+    }
+
+    public static async generateHtmlFromForm(formExtractRelevantInformation: FormExtractRelevantInformation, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<string> {
+        let markdownContent = await this.generateMarkdownContentFromForm(formExtractRelevantInformation, myDatabaseHelperInterface);
+        let template = DEFAULT_HTML_TEMPLATE;
+        let html = await HtmlGenerator.generateHtml(BaseGermanMarkdownTemplateHelper.getTemplateDataForMarkdownContent(markdownContent), myDatabaseHelperInterface, template);
+
+        return html;
+    }
+
+    public static async generatePdfFromForm(formExtractRelevantInformation: FormExtractRelevantInformation, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): Promise<Buffer> {
+        let html = await this.generateHtmlFromForm(formExtractRelevantInformation, myDatabaseHelperInterface);
+        let pdfBuffer = await this.generatePdfFromHtml(html, myDatabaseHelperInterface);
         return pdfBuffer;
     }
 }

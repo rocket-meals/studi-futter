@@ -385,7 +385,10 @@ async function sendFormExtractMail(
     // we need the internal server mode to generate the pdf, as traefik does not route the request correctly
     // TODO: Fix traefik configuration or add server to extra_hosts in docker-compose
     let pdfBuffer = await FormHelper.generatePdfFromForm(formExtractRelevantInformation, internalMyDatabaseHelper);
+    let html = await FormHelper.generateHtmlFromForm(formExtractRelevantInformation, internalMyDatabaseHelper);
     //let pdfMarkdown = await FormHelper.generateMarkdownContentFromForm(formExtractRelevantInformation, myDatabaseHelper);
+
+    let markdownHtmlWrapper = "```\n" + html + "\n```";
 
     console.log("recipient_emails: ");
     console.log(recipient_emails);
@@ -407,7 +410,7 @@ async function sendFormExtractMail(
 
         let mail: Partial<Mails> = {
             recipient: recipient_email,
-            markdown_content: "Anbei finden Sie die Daten des Formulars zum download: " + form_name,
+            markdown_content: "Anbei finden Sie die Daten des Formulars zum download: " + form_name+"\n\n" + markdownHtmlWrapper,
             subject: subject,
             form_submission: formSubmission.id,
             // @ts-ignore - thats how directus allows to set attachments
