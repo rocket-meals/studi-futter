@@ -174,6 +174,9 @@ function registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions: 
                     })
                     let form_answers: FormExtractFormAnswer[] = form_answers_raw as FormExtractFormAnswer[];
 
+                    console.log("Form answers: ");
+                    console.log(JSON.stringify(form_answers, null, 2));
+
                     // Get the form fields of the form
                     console.log("Get form fields");
                     let form_fields = await myDatabaseHelper.getFormsFieldsHelper().findItems({
