@@ -15,6 +15,11 @@ export class EnvVariableHelper {
         return envVariable;
     }
 
+    public static isInsideDocker(){
+        let isInsideDocker = !process.env.JEST_WORKER_ID; // Falls Jest gesetzt ist, dann ist es ein lokaler Test
+        return isInsideDocker;
+    }
+
     static getTimeZoneString(): DateHelperTimezone {
         let envTimeZone = this.getEnvVariable("TZ");
         if (envTimeZone && envTimeZone.length > 0) {
