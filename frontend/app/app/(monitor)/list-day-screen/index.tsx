@@ -60,7 +60,7 @@ const index = () => {
   const rowHeight = 80;
   let chunkedMarkings: any[] = [];
   const foodCategoriesHelper = new FoodCategoriesHelper();
-  const { markings } = useSelector((state: RootState) => state.food);
+  const { markings, foodCategories, foodOfferCategories } = useSelector((state: RootState) => state.food);
   const [foods, setFoods] = useState([]);
   const [optionalFoods, setOptionalFoods] = useState([]);
   const [foodMarkings, setFoodMarkings] = useState<any>({});
@@ -70,11 +70,12 @@ const index = () => {
   const canteenHelper = new CanteenHelper();
   const buildingsHelper = new BuildingsHelper();
   const [optionalFoodMarkings, setOptionalFoodMarkings] = useState<any>({});
-  const [foodCategories, setFoodCategories] = useState<any>({});
+  const [mainFoodCategories, setMainFoodCategories] = useState<any>({});
   const [optionalFoodCategories, setOptionalFoodCategories] = useState<any>({});
   const [selectedCanteen, setSelectedCanteen] = useState<any>(null);
   const { canteens } = useSelector((state: RootState) => state.canteenReducer);
   const { isManagement } = useSelector((state: RootState) => state.authReducer);
+
   const {
     primaryColor: projectColor,
     language,
@@ -529,10 +530,6 @@ const index = () => {
         newMarkings[food.id] = dummyMarkings;
       });
 
-      for (let i = 0; i < markings?.length; i += 7) {
-        chunkedMarkings.push(markings?.slice(i, i + 7));
-      }
-
       setMarkingsState(newMarkings);
     },
     [markings, theme, mode]
@@ -540,33 +537,48 @@ const index = () => {
 
   const fetchCurrentFoodCategory = async (
     foodList: any,
-    setCategoryState: any
+    setCategoryState: any,
+    foodCategories: FoodsCategories[]
   ) => {
     if (!foodList) return;
 
     const newCategories: any = {};
 
     for (const food of foodList) {
-      try {
-        const result = (await foodCategoriesHelper.fetchFoodCategoriesById(
-          food?.food?.food_category
-        )) as FoodsCategories;
-        if (result) {
-          newCategories[food.id] = result;
-        }
-      } catch (error) {
-        console.error(`Error fetching category for food ID ${food.id}:`, error);
+      //try {
+      //  const result = (await foodCategoriesHelper.fetchFoodCategoriesById(
+      //    food?.food?.food_category
+      //  )) as FoodsCategories;
+      //  if (result) {
+      //    newCategories[food.id] = result;
+      //  }
+      //} catch (error) {
+      //  console.error(`Error fetching category for food ID ${food.id}:`, error);
+      //}
+
+      if (food?.food?.food_category) {
+          const category = foodCategories.find(
+          (cat: FoodsCategories) => cat.id === food?.food?.food_category
+          );
+          if (category) {
+          newCategories[food.id] = category;
+          }
       }
     }
 
     setCategoryState(newCategories);
   };
 
+  chunkedMarkings = [];
+  for (let i = 0; i < markings?.length; i += 7) {
+    chunkedMarkings.push(markings?.slice(i, i + 7));
+  }
+
   useEffect(() => {
-    if (foods?.length > 0) fetchCurrentFoodCategory(foods, setFoodCategories);
+    if (foods?.length > 0) fetchCurrentFoodCategory(foods, setMainFoodCategories, foodCategories);
     if (optionalFoods?.length > 0)
-      fetchCurrentFoodCategory(optionalFoods, setOptionalFoodCategories);
-  }, [foods, optionalFoods]);
+      fetchCurrentFoodCategory(optionalFoods, setOptionalFoodCategories, foodCategories);
+  }, [foods, optionalFoods, foodCategories]);
 
   useEffect(() => {
     if (foods?.length > 0) fetchFoodMarkingLabels(foods, setFoodMarkings);
@@ -809,7 +821,7 @@ const index = () => {
                             },
                           ]}
                         >
-                          {foodCategories[item.id]?.alias || '-'}
+                          {mainFoodCategories[item.id]?.alias || '-'}
                         </Text>
                         <Text
                           style={[
@@ -1217,7 +1229,9 @@ const index = () => {
             ...styles.footer,
             borderTopWidth: 2,
             borderTopColor: foods_area_color,
-            height: 230,
+            flexShrink: 0, // verhindert unnötiges Schrumpfen
+            flexGrow: 0,   // Footer soll nicht wachsen
+            flexBasis: 'auto', // Nimmt nur so viel Platz wie der Inhalt braucht
           }}
         >
           <View
