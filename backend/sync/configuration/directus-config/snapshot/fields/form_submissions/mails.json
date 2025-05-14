@@ -12,7 +12,15 @@
     "hidden": false,
     "interface": "list-o2m",
     "note": null,
-    "options": null,
+    "options": {
+      "fields": [
+        "date_created",
+        "recipient",
+        "subject",
+        "log"
+      ],
+      "layout": "table"
+    },
     "readonly": false,
     "required": false,
     "sort": 18,

@@ -15,9 +15,14 @@
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 8,
+    "sort": 9,
     "special": null,
-    "translations": null,
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Verfügbar bis"
+      }
+    ],
     "validation": null,
     "validation_message": null,
     "width": "full"

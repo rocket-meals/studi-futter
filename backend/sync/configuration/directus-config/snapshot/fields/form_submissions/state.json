@@ -31,6 +31,12 @@
         {
           "text": "Closed",
           "value": "closed"
+        },
+        {
+          "color": "#E35169",
+          "icon": "bug_report",
+          "text": "Failed",
+          "value": "failed"
         }
       ]
     },

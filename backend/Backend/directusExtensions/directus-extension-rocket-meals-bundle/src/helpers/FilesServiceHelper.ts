@@ -16,6 +16,16 @@ import {CreateShareLinkOptionForDirectusFiles, ShareDirectusFileMethod, ShareSer
 import * as Buffer from "node:buffer";
 import {MyDatabaseHelperInterface} from "./MyDatabaseHelperInterface";
 
+export enum MyFileTypes {
+    PDF = "application/pdf",
+    PNG = "image/png",
+    JPEG = "image/jpeg",
+    JPG = "image/jpg",
+    JSON = "application/json",
+    CSV = "text/csv",
+    TXT = "text/plain",
+}
+
 export class FilesServiceHelper extends ItemsServiceHelper<DirectusFiles> implements FilesService, ShareDirectusFileMethod {
 
     constructor(myDatabaseHelper: MyDatabaseHelperInterface) {
@@ -28,7 +38,21 @@ export class FilesServiceHelper extends ItemsServiceHelper<DirectusFiles> implem
         return filesService;
     }
 
-    async uploadOneFromBuffer(buffer: Buffer, filename: string, myDatabaseHelper: MyDatabaseHelperInterface, directus_folder_id?: string): Promise<PrimaryKey> {
+    public static sanitizeFilename(filename: string): string {
+        // Replace any invalid characters with underscores
+        filename = filename.replace(/[^a-zA-Z0-9-_\.]/g, '_');
+        // Limit the filename length to 255 characters
+        if (filename.length > 255) {
+            filename = filename.substring(0, 255);
+        }
+        // if empty, set to "filename_download"
+        if (filename.length === 0) {
+            filename = "filename_download";
+        }
+        return filename;
+    }
+
+    async uploadOneFromBuffer(buffer: Buffer, filename: string, fileType: MyFileTypes, myDatabaseHelper: MyDatabaseHelperInterface,  directus_folder_id?: string): Promise<PrimaryKey> {
         const filesHelper = new FilesServiceHelper(myDatabaseHelper);
 
         // Convert Buffer to a Readable Stream
@@ -36,10 +60,14 @@ export class FilesServiceHelper extends ItemsServiceHelper<DirectusFiles> implem
         stream.push(buffer);
         stream.push(null); // Mark end of stream
 
+        let filename_download = FilesServiceHelper.sanitizeFilename(filename);
+        // now fix the filename to be a valid filename
+
         // Define file metadata
-        const fileMetadata = {
-            filename_download: filename,
-            type: 'application/pdf',
+        const fileMetadata: FileServiceFileStream = {
+            filename_download: filename_download,
+            title: filename,
+            type: fileType,
             storage: "local",
             folder: directus_folder_id,
         };

@@ -1,5 +1,4 @@
 import {defineHook} from "@directus/extensions-sdk";
-import {FormsSyncInterface} from "./FormsSyncInterface";
 import {EnvVariableHelper, SyncForCustomerEnum} from "../helpers/EnvVariableHelper";
 import {FormSyncHannover} from "./customers/hannover/FormSyncHannover";
 import {registerHookToCreateFormAnswersForFormSubmission} from "./RegisterHookCreateFormSubmissionsFormAnswers";
@@ -20,6 +19,7 @@ import {PrimaryKey} from "@directus/types";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {TranslationHelper} from "../helpers/TranslationHelper";
 import {FormHelper} from "../helpers/form/FormHelper";
+import {MyFileTypes} from "../helpers/FilesServiceHelper";
 
 function registerHookPresentCreateFormSubmissionIllegalState(registerFunctions: RegisterFunctions, apiContext: ApiContext){
     registerFunctions.filter<Partial<FormSubmissions>>(CollectionNames.FORM_SUBMISSIONS+".items.create", async (input, meta, eventContext) => {
@@ -390,7 +390,7 @@ async function sendFormExtractMail(
     console.log(recipient_emails);
     for(let recipient_email of recipient_emails){
         console.log("Send mail to: " + recipient_email);
-        let newFile = await myDatabaseHelper.getFilesHelper().uploadOneFromBuffer(pdfBuffer, form_name + ".pdf", myDatabaseHelper);
+        let newFile = await myDatabaseHelper.getFilesHelper().uploadOneFromBuffer(pdfBuffer, form_name + ".pdf", MyFileTypes.PDF, myDatabaseHelper);
         let attachments = {
           "create": [
             {
