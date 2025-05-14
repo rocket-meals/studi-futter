@@ -1,5 +1,6 @@
 import axios from "axios";
-import {CheerioAPI, Element as CheerioElement, load as cheerioLoad} from 'cheerio';
+import {CheerioAPI, load as cheerioLoad} from 'cheerio';
+import type { Element as CheerioElement } from 'domhandler';
 import {ApartmentParserInterface, ApartmentsForParser} from "../ApartmentParserInterface";
 
 

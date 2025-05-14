@@ -60,7 +60,7 @@ export class MyDatabaseHelper implements MyDatabaseHelperInterface {
     public eventContext: ExtentContextDirectusTypes | undefined;
     public useLocalServerMode: boolean = false;
 
-    constructor(apiContext: ApiContext, eventContext?: EventContextForFlows) {
+    constructor(apiContext: ApiContext, eventContext?: EventContextForFlows | ExtentContextDirectusTypes) {
         this.apiContext = apiContext;
         // if available we should use eventContext - https://github.com/directus/directus/discussions/11051
         this.eventContext = eventContext as any as ExtentContextDirectusTypes; // stupid typescript error, because of the import

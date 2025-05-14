@@ -2,6 +2,8 @@ import {Translator} from "./Translator";
 import {TranslatorSettings} from "./TranslatorSettings";
 import {Languages} from "../databaseTypes/types";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
+import {SchemaOverview} from "@directus/types";
+import {CollectionNames} from "../helpers/CollectionNames";
 
 export class DirectusCollectionTranslator {
     static FIELD_BE_SOURCE_FOR_TRANSLATION = "be_source_for_translations";
@@ -9,9 +11,9 @@ export class DirectusCollectionTranslator {
 
     static FIELD_LANGUAGES_IDS_NEW = "languages_id"
     static FIELD_LANGUAGES_CODE_OLD = "languages_code"
-    static FIELD_LANGUAGES_ID_OR_CODE = undefined;
+    static FIELD_LANGUAGES_ID_OR_CODE: undefined | string = undefined;
 
-    static COLLECTION_LANGUAGES = "languages";
+    static COLLECTION_LANGUAGES = CollectionNames.LANGUAGES;
 
     /**
      * We only need to translate if there are translations to translate
@@ -31,7 +33,7 @@ export class DirectusCollectionTranslator {
         return false;
     }
 
-    static getSourceTranslationFromTranslations(translations: any, schema: any, collectionName: any, translation_field: string) {
+    static getSourceTranslationFromTranslations(translations: any, schema: SchemaOverview, collectionName: string, translation_field: string) {
         if (!!translations && translations.length > 0) {
             for (let translation of translations) {
                 let let_be_source_for_translation = DirectusCollectionTranslator.getValueFromPayloadOrDefaultValue(translation, DirectusCollectionTranslator.FIELD_BE_SOURCE_FOR_TRANSLATION, schema, collectionName, translation_field);
@@ -42,7 +44,7 @@ export class DirectusCollectionTranslator {
         }
     }
 
-    static getSourceTranslationFromListsOfTranslations(listsOfTranslations, schema, collectionName, translation_field: string) {
+    static getSourceTranslationFromListsOfTranslations(listsOfTranslations: any, schema: SchemaOverview, collectionName: string, translation_field: string) {
         if (!!listsOfTranslations && listsOfTranslations.length > 0) {
             for (let i = 0; i < listsOfTranslations.length; i++) {
                 let translations = listsOfTranslations[i];
@@ -60,23 +62,27 @@ export class DirectusCollectionTranslator {
      * therefore we identify which field is used and set it accordingly
      * @param translation
      */
-    static setFIELD_LANGUAGES_ID_OR_CODE(translation){
+    static setFIELD_LANGUAGES_ID_OR_CODE(translation: any): string | undefined {
         const translationFieldOld = translation?.[DirectusCollectionTranslator.FIELD_LANGUAGES_CODE_OLD]
         if(!!translationFieldOld){
             DirectusCollectionTranslator.FIELD_LANGUAGES_ID_OR_CODE = DirectusCollectionTranslator.FIELD_LANGUAGES_CODE_OLD
+            return DirectusCollectionTranslator.FIELD_LANGUAGES_CODE_OLD
         }
         const translationFieldNew = translation?.[DirectusCollectionTranslator.FIELD_LANGUAGES_IDS_NEW]
         if(!!translationFieldNew){
             DirectusCollectionTranslator.FIELD_LANGUAGES_ID_OR_CODE = DirectusCollectionTranslator.FIELD_LANGUAGES_IDS_NEW
+            return DirectusCollectionTranslator.FIELD_LANGUAGES_IDS_NEW
         }
+        return undefined
     }
 
-    static parseTranslationListToLanguagesCodeDict(translations) {
-        let languagesCodeDict = {};
+    static parseTranslationListToLanguagesCodeDict(translations: any) {
+        let languagesCodeDict: any = {};
         for (let translation of translations) {
-            DirectusCollectionTranslator.setFIELD_LANGUAGES_ID_OR_CODE(translation);
-
-            languagesCodeDict[translation?.[DirectusCollectionTranslator.FIELD_LANGUAGES_ID_OR_CODE]?.code] = translation;
+            let FIELD_LANGUAGES_ID_OR_CODE = DirectusCollectionTranslator.setFIELD_LANGUAGES_ID_OR_CODE(translation);
+            if(!!FIELD_LANGUAGES_ID_OR_CODE){
+                languagesCodeDict[translation?.[FIELD_LANGUAGES_ID_OR_CODE]?.code] = translation;
+            }
         }
         return languagesCodeDict;
     }
@@ -167,9 +173,11 @@ export class DirectusCollectionTranslator {
             for (let translation of currentTranslations) {
                 //console.log("Check translation: ");
                 //console.log(JSON.stringify(translation, null, 2));
-                DirectusCollectionTranslator.setFIELD_LANGUAGES_ID_OR_CODE(translation);
+                let FIELD_LANGUAGES_ID_OR_CODE = DirectusCollectionTranslator.setFIELD_LANGUAGES_ID_OR_CODE(translation);
                 //console.log("DirectusCollectionTranslator.FIELD_LANGUAGES_ID_OR_CODE: ", DirectusCollectionTranslator.FIELD_LANGUAGES_ID_OR_CODE);
-                existingTranslations[translation?.[DirectusCollectionTranslator.FIELD_LANGUAGES_ID_OR_CODE]] = translation;
+                if(!!FIELD_LANGUAGES_ID_OR_CODE){
+                    existingTranslations[translation?.[FIELD_LANGUAGES_ID_OR_CODE]] = translation;
+                }
             }
 
             //console.log("existingTranslations: ");
@@ -211,12 +219,16 @@ export class DirectusCollectionTranslator {
             //TODO Maybe throw an error if multiple source translations are found?
 
             if (sourceTranslation) { // we should always have a source translation, since we checked if there are update or create translations
-                let sourceTranslationLanguageCode = sourceTranslation?.[DirectusCollectionTranslator.FIELD_LANGUAGES_ID_OR_CODE]?.code;
+                let FIELD_LANGUAGES_ID_OR_CODE = DirectusCollectionTranslator.setFIELD_LANGUAGES_ID_OR_CODE(sourceTranslation);
+                let sourceTranslationLanguageCode: any = undefined;
+                if(!!FIELD_LANGUAGES_ID_OR_CODE){
+                    sourceTranslationLanguageCode = sourceTranslation?.[FIELD_LANGUAGES_ID_OR_CODE]?.code;
+                }
                 //console.log("sourceTranslationLanguageCode: ", sourceTranslationLanguageCode);
 
                 let languagesService = myDatabaseHelper.getItemsServiceHelper<Languages>(DirectusCollectionTranslator.COLLECTION_LANGUAGES);
                 let languages = await languagesService.readByQuery({});
-                if (languages.length > 0) {
+                if (languages.length > 0 && !!FIELD_LANGUAGES_ID_OR_CODE) {
                     let translationsToCreate = [];
                     let translationsToUpdate = [];
                     let translationsToDelete: any[] = [];
@@ -265,7 +277,7 @@ export class DirectusCollectionTranslator {
                                     //console.log("sourceTranslation: ");
                                     //console.log(JSON.stringify(sourceTranslation, null, 2));
 
-                                    let translatedItem = await DirectusCollectionTranslator.translateTranslationItem(sourceTranslation, language_code, translator, translatorSettings, fieldsToTranslate);
+                                    let translatedItem = await DirectusCollectionTranslator.translateTranslationItem(sourceTranslation, language_code, translator, translatorSettings, fieldsToTranslate, FIELD_LANGUAGES_ID_OR_CODE);
                                     //console.log("translatedItem: ");
                                     //console.log(JSON.stringify(translatedItem, null, 2));
                                     translationsToUpdate.push({
@@ -313,7 +325,7 @@ export class DirectusCollectionTranslator {
                                 //console.log("letBeTranslated: ", letBeTranslated);
                                 if (letBeTranslated) {
                                     //console.log("Create translation");
-                                    let translatedItem = await DirectusCollectionTranslator.translateTranslationItem(sourceTranslation, language?.code, translator, translatorSettings, fieldsToTranslate);
+                                    let translatedItem = await DirectusCollectionTranslator.translateTranslationItem(sourceTranslation, language?.code, translator, translatorSettings, fieldsToTranslate, FIELD_LANGUAGES_ID_OR_CODE);
                                     //console.log("translatedItem: ");
                                     //console.log(JSON.stringify(translatedItem, null, 2));
                                     translationsToCreate.push({
@@ -360,14 +372,14 @@ export class DirectusCollectionTranslator {
         }
     }
 
-    static async translateTranslationItem(sourceTranslation: any, language_code: string, translator: Translator, translatorSettings: TranslatorSettings, fieldsToTranslate: string[]) {
+    static async translateTranslationItem(sourceTranslation: any, language_code: string, translator: Translator, translatorSettings: TranslatorSettings, fieldsToTranslate: string[], FIELD_LANGUAGES_ID_OR_CODE: string) {
         let translatedItem: any = {};
         if (!!fieldsToTranslate && fieldsToTranslate.length > 0) {
             for (let field of fieldsToTranslate) {
                 let fieldValue = sourceTranslation[field];
                 if (!!fieldValue) {
                     try {
-                        let translatedValue = await translator.translate(fieldValue, sourceTranslation?.[DirectusCollectionTranslator.FIELD_LANGUAGES_ID_OR_CODE]?.code, language_code);
+                        let translatedValue = await translator.translate(fieldValue, sourceTranslation?.[FIELD_LANGUAGES_ID_OR_CODE]?.code, language_code);
                         if (!!translatedValue) {
                             translatedItem[field] = translatedValue;
                         } else {
@@ -381,7 +393,7 @@ export class DirectusCollectionTranslator {
             }
         }
 
-        translatedItem[DirectusCollectionTranslator.FIELD_LANGUAGES_ID_OR_CODE] = {
+        translatedItem[FIELD_LANGUAGES_ID_OR_CODE] = {
             "code": language_code
         }
         translatedItem[DirectusCollectionTranslator.FIELD_LET_BE_TRANSLATED] = true; //if we create a translation, we want it in the future also
@@ -492,7 +504,7 @@ export class DirectusCollectionTranslator {
 
         let primaryFieldKey = translationCollectionInformations?.primary || "id"; //we need to know the primary field key
 
-        let fieldsToTranslateDict = {};
+        let fieldsToTranslateDict: any = {};
         for (let field of collectionFields) {
             if (field !== primaryFieldKey) { //we dont translate the primary field
                 let fieldsInformation = collectionFieldsInformationsDict[field];

@@ -8,6 +8,7 @@ export function getAllCollectionNames() {
 }
 
 export enum CollectionNames {
+    AUTO_TRANSLATION_SETTINGS = "auto_translation_settings",
     APP_SETTINGS = "app_settings",
     APP_FEEDBACKS = "app_feedbacks",
     CASHREGISTERS = "cashregisters",
@@ -40,6 +41,7 @@ export enum CollectionNames {
     WASHINGMACHINES = "washingmachines",
     WASHINGMACHINES_JOBS = "washingmachines_jobs",
     NEWS = "news",
+    LANGUAGES = "languages",
     PROFILES = "profiles",
     UTILIZATION_GROUPS = "utilizations_groups",
     UTILIZATION_ENTRIES = "utilizations_entries",

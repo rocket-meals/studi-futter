@@ -1,5 +1,6 @@
 import axios from "axios";
-import {load as cheerioLoad, CheerioAPI, Element as CheerioElement} from 'cheerio';
+import {load as cheerioLoad, CheerioAPI} from 'cheerio';
+import type { Element as CheerioElement } from 'domhandler';
 import { TranslationHelper } from "../../helpers/TranslationHelper";
 import { NewsParserInterface, NewsTypeForParser } from "./../NewsParserInterface";
 

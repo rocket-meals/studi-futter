@@ -546,7 +546,7 @@ export class ParseSchedule {
     }
 
     async updateFoodTranslations(foundFoodWithTranslations: Foods, foodsInformationForParser: FoodsInformationTypeForParser) {
-        await TranslationHelper.updateItemTranslationsForItemWithTranslationsFetched<Foods, FoodsTranslations>(foundFoodWithTranslations, foodsInformationForParser.translations, "foods_id", CollectionNames.FOODS, this.myDatabaseHelper.apiContext, this.myDatabaseHelper.eventContext);
+        await TranslationHelper.updateItemTranslationsForItemWithTranslationsFetched<Foods, FoodsTranslations>(foundFoodWithTranslations, foodsInformationForParser.translations, "foods_id", CollectionNames.FOODS, this.myDatabaseHelper);
     }
 
     async getOrCreateFoodsOnlyWithTranslations(foodsInformationForParserList: FoodsInformationTypeForParser[]){
@@ -883,7 +883,7 @@ export class ParseSchedule {
 
 
     async updateMarkingTranslations(marking: Markings, markingJSON: MarkingsTypeForParser) {
-        await TranslationHelper.updateItemTranslations<Markings, MarkingsTranslations>(marking, markingJSON.translations, "markings_id", CollectionNames.MARKINGS, this.myDatabaseHelper.apiContext, this.myDatabaseHelper.eventContext);
+        await TranslationHelper.updateItemTranslations<Markings, MarkingsTranslations>(marking, markingJSON.translations, "markings_id", CollectionNames.MARKINGS, this.myDatabaseHelper);
     }
 
 }

@@ -4,6 +4,7 @@ import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
 import {StringHelper} from "../helpers/StringHelper";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {NanoidHelper} from "../helpers/NanoidHelper";
+import {AccountabilityHelper} from "../helpers/AccountabilityHelper";
 
 const SCHEDULE_NAME = "redirect_with_token";
 const env = process.env;
@@ -237,8 +238,8 @@ export default defineEndpoint({
 			if(!!directus_session_token) { // this means the auth provider is using "session" mode.
 				// we need to obtain the directus_refresh_token from the directus_session_token
 				//console.log("Redirect with token endpoint: directus_session_token: " + directus_session_token)
-				const accountability = req?.accountability;
-				const userId = req?.accountability?.user;
+				const accountability = AccountabilityHelper.getAccountabilityFromRequest(req);
+				const userId = accountability?.user;
 				//console.log("Redirect with token endpoint: userId: " + userId)
 				if(!userId){
 					res.status(400).send("No user found");

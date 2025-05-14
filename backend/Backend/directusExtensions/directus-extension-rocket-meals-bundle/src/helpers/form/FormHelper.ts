@@ -204,8 +204,8 @@ export class FormHelper {
 
     private static generateMarkdownForTypeFilesValue(fieldName: string, value_file: FormExtractFormAnswerValueFileSingleOrString | null | undefined, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): string {
         let assetUrl: undefined | string = undefined;
-        console.log("generateMarkdownForTypeFilesValue");
-        console.log(JSON.stringify(value_file, null, 2));
+        //console.log("generateMarkdownForTypeFilesValue");
+        //console.log(JSON.stringify(value_file, null, 2));
         if(value_file) {
             if (typeof value_file === "string" && value_file.startsWith("http")) {
                 assetUrl = value_file;
@@ -215,7 +215,7 @@ export class FormHelper {
             }
         }
 
-        console.log("assetUrl", assetUrl);
+        //console.log("assetUrl", assetUrl);
         return this.generateMarkdownForTypeImageUrl(fieldName, assetUrl);
     }
 
@@ -226,9 +226,9 @@ export class FormHelper {
 
         let markdownNewLine = MarkdownHelper.getMarkdownNewLine();
 
-        console.log("generateMarkdownContentFromForm");
-        console.log(JSON.stringify(formExtractRelevantInformation, null, 2));
-        console.log("---")
+        //console.log("generateMarkdownContentFromForm");
+        //console.log(JSON.stringify(formExtractRelevantInformation, null, 2));
+        //console.log("---")
 
         // export type FormExtractRelevantInformationSingle = {form_field_id: string, sort: number | null | undefined, form_field: FormFields, form_answer: FormAnswers }
         for(let formExtractRelevantInformationSingle of formExtractRelevantInformation) {

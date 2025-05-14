@@ -2,10 +2,9 @@ import {AutoTranslationSettings} from "../../databaseTypes/types";
 import {ApiContext} from "../ApiContext";
 import {ItemsServiceCreator} from "../ItemsServiceCreator";
 import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
+import {CollectionNames} from "../CollectionNames";
 
 export class AutoTranslationSettingsHelper {
-
-    static TABLENAME = "auto_translation_settings";
 
     private apiExtensionContext: ApiContext;
     private eventContext: EventContext | undefined;
@@ -17,7 +16,7 @@ export class AutoTranslationSettingsHelper {
 
     async setAutoTranslationSettings(appSettings: Partial<AutoTranslationSettings>) {
         const itemsServiceCreator = new ItemsServiceCreator(this.apiExtensionContext, this.eventContext);
-        const itemsService = await itemsServiceCreator.getItemsService<AutoTranslationSettings>(AutoTranslationSettingsHelper.TABLENAME);
+        const itemsService = await itemsServiceCreator.getItemsService<AutoTranslationSettings>(CollectionNames.AUTO_TRANSLATION_SETTINGS);
         await itemsService.upsertSingleton(appSettings);
         /**
          * await this.database(TABLENAME_FLOWHOOKS).update({
@@ -28,7 +27,7 @@ export class AutoTranslationSettingsHelper {
 
     async getAppSettings(): Promise<Partial<AutoTranslationSettings> | undefined | null> {
         const itemsServiceCreator = new ItemsServiceCreator(this.apiExtensionContext, this.eventContext);
-        const itemsService = await itemsServiceCreator.getItemsService<AutoTranslationSettings>(AutoTranslationSettingsHelper.TABLENAME);
+        const itemsService = await itemsServiceCreator.getItemsService<AutoTranslationSettings>(CollectionNames.AUTO_TRANSLATION_SETTINGS);
         return await itemsService.readSingleton({});
     }
 

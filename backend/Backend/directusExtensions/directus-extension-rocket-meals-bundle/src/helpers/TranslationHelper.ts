@@ -4,6 +4,8 @@ import {ApiContext} from "./ApiContext";
 import {ItemsServiceCreator} from "./ItemsServiceCreator";
 import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
 import {MyTimers} from "./MyTimer";
+import {MyDatabaseHelper} from "./MyDatabaseHelper";
+import {CollectionNames} from "./CollectionNames";
 
 const FIELD_TRANSLATION_LANGUAGE_CODE = "languages_code"; // TODO Import from directus-extension-auto-translation package the field name
 const FIELD_LANGUAGE_ID = "code"; // TODO Import from directus-extension-auto-translation package the field name
@@ -104,12 +106,10 @@ export class TranslationHelper {
         itemWithTranslations: T, // the item we want to update the translations for
         translationsFromParsing: TranslationsFromParsingType, // the translations we got from the parser
         items_primary_field_in_translation_table: TranslationRelationField<E>, // the primary field (to our item) in the translation table, e.g. "food_id" when translating foods
-        itemsTablename: string, // the name of the table of our item
-        apiContext: ApiContext,
-        eventContext?: EventContext
+        itemsTablename: CollectionNames, // the name of the table of our item
+        myDatabaseHelper: MyDatabaseHelper,
     ) {
-        const itemsServiceCreator = new ItemsServiceCreator(apiContext, eventContext);
-        const specificItemServiceReader = await itemsServiceCreator.getItemsService<T>(itemsTablename);
+        const specificItemServiceReader = await myDatabaseHelper.getItemsServiceHelper<T>(itemsTablename);
         if (!!itemWithTranslations) {
             const {
                 updateObject: updateObject,
@@ -157,16 +157,14 @@ export class TranslationHelper {
         item: T, // the item we want to update the translations for
         translationsFromParsing: TranslationsFromParsingType, // the translations we got from the parser
         items_primary_field_in_translation_table: TranslationRelationField<E>, // the primary field (to our item) in the translation table, e.g. "food_id" when translating foods
-        itemsTablename: string, // the name of the table of our item
-        apiContext: ApiContext,
-        eventContext?: EventContext
+        itemsTablename: CollectionNames, // the name of the table of our item
+        myDatabaseHelper: MyDatabaseHelper,
     ) {
-        const itemsServiceCreator = new ItemsServiceCreator(apiContext, eventContext);
-        const specificItemServiceReader = await itemsServiceCreator.getItemsService<T>(itemsTablename);
+        const specificItemServiceReader = await myDatabaseHelper.getItemsServiceHelper<T>(itemsTablename);
         let itemWithTranslations = await specificItemServiceReader.readOne(item?.id, {
             ...TranslationHelper.QUERY_FIELDS_FOR_ALL_FIELDS_AND_FOR_TRANSLATION_FETCHING,
         }); // Bottleneck HERE. Takes on average 1.0s
-        return TranslationHelper.updateItemTranslationsForItemWithTranslationsFetched(itemWithTranslations, translationsFromParsing, items_primary_field_in_translation_table, itemsTablename, apiContext, eventContext);
+        return TranslationHelper.updateItemTranslationsForItemWithTranslationsFetched(itemWithTranslations, translationsFromParsing, items_primary_field_in_translation_table, itemsTablename, myDatabaseHelper);
     }
 
     static async _getUpdateInformationForTranslations<

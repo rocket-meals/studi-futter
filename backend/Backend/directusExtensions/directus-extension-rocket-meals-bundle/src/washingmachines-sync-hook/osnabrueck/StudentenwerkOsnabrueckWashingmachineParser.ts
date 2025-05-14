@@ -124,7 +124,7 @@ export class StudentenwerkOsnabrueckWashingmachineParser implements Washingmachi
             if(!!data && typeof data === "string") {
                 return response.data;
             }
-        } catch (e) {
+        } catch (e: any) {
             console.error("Error getting data from Intercard");
             console.error(e.toString());
         }

@@ -452,7 +452,8 @@ export default defineEndpoint({
 				mylog("No accountability or userId found.");
 				return res.status(400).json({ error: 'No accountability or userId found.' });
 			}
-			let directus_refresh_token = await generateRefreshToken(directus_session_token, accountability, userId, database);
+			let knexDatabase = database as any as Knex<any, any[]>;
+			let directus_refresh_token = await generateRefreshToken(directus_session_token, accountability, userId, knexDatabase);
 
 			// Save the directus refresh token in the code challenge
 			await myStorage.setCodeChallenge(saved_authorization_code_and_redirect.authorization_code, {

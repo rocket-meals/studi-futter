@@ -39,7 +39,7 @@ async function getCurrentItemForTranslation(tablename: string, meta: any, transl
 }
 
 async function handleCreateOrUpdate(tablename: string, payload: any, meta: any, myDatabaseHelper: MyDatabaseHelper) {
-	if(tablename === AutoTranslationSettingsHelper.TABLENAME){
+	if(tablename === CollectionNames.AUTO_TRANSLATION_SETTINGS){
 		// Don't translate settings
 		return payload;
 	}
@@ -149,9 +149,9 @@ function registerCollectionAutoTranslation(filter: any, apiContext: ApiContext) 
 }
 
 export default defineHook(({filter, action, init, schedule}, apiContext) => {
-	let collectionFound = DatabaseInitializedCheck.checkTablesExist(scheduleNameAutoTranslation, apiContext, [AutoTranslationSettingsHelper.TABLENAME])
+	let collectionFound = DatabaseInitializedCheck.checkTablesExist(scheduleNameAutoTranslation, apiContext, [CollectionNames.AUTO_TRANSLATION_SETTINGS])
 	if(!collectionFound){
-		console.log("Collection "+AutoTranslationSettingsHelper.TABLENAME+" not found. Skipping auto-translation initialization.");
+		console.log("Collection "+CollectionNames.AUTO_TRANSLATION_SETTINGS+" not found. Skipping auto-translation initialization.");
 		return;
 	}
 

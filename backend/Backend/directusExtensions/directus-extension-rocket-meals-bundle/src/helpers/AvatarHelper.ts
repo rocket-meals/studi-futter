@@ -7,11 +7,11 @@ export class AvatarHelper {
      * @returns {Promise<void>}
      */
     static async deleteAvatarOfUser(
-        services,
-        database,
-        schema,
-        accountability,
-        userId
+        services: any,
+        database: any,
+        schema: any,
+        accountability: any,
+        userId: string
     ) {
         const filesService = await AvatarHelper.getAdminFileServiceInstance(
             schema,
@@ -45,7 +45,7 @@ export class AvatarHelper {
      * get a fileService with admin permission
      * @returns {*}
      */
-    static async getAdminFileServiceInstance(schema, accountability, services) {
+    static async getAdminFileServiceInstance(schema: any, accountability: any, services: any) {
         // TODO: Replace with MyDatabaseHelper.getFilesHelper()
 
         const {FilesService} = services;

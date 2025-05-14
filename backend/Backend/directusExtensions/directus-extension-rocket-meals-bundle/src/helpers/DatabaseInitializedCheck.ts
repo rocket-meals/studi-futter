@@ -1,4 +1,4 @@
-import {getAllCollectionNames} from "./CollectionNames";
+import {CollectionNames, getAllCollectionNames} from "./CollectionNames";
 import {ApiContext} from "./ApiContext";
 
 /**
@@ -12,11 +12,11 @@ export class DatabaseInitializedCheck{
         return await DatabaseInitializedCheck.checkTablesExist(scheduleName, apiContext, getAllCollectionNames());
     }
 
-    static async getTableNamesFromApiContext(apiContext: ApiContext): Promise<string[]> {
+    static async getTableNamesFromApiContext(apiContext: ApiContext): Promise<CollectionNames[]> {
         return await DatabaseInitializedCheck.getTableNames(apiContext.getSchema);
     }
 
-    private static async getTableNames(getSchema: any): Promise<string[]> {
+    private static async getTableNames(getSchema: any): Promise<CollectionNames[]> {
         try{
             let schema = await getSchema();
             let collectionKeys = Object.keys(schema.collections);
@@ -27,14 +27,14 @@ export class DatabaseInitializedCheck{
                     tableNamesDict[collection.collection] = collection.collection;
                 }
             }
-            return Object.keys(tableNamesDict);
+            return Object.keys(tableNamesDict) as CollectionNames[];
         } catch (e) {
             console.error("++ "+EXTENSION_NAME+" - getTableNames: Error: ", e);
             return [];
         }
     }
 
-    static async checkTablesExist(scheduleName: string, apiContext: ApiContext, tablesRequiredForPlugin: string[]): Promise<boolean> {
+    static async checkTablesExist(scheduleName: string, apiContext: ApiContext, tablesRequiredForPlugin: CollectionNames[]): Promise<boolean> {
         let missingTables = [];
 
         let existingTablesNamesOnServer = await DatabaseInitializedCheck.getTableNamesFromApiContext(apiContext);

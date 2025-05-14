@@ -41,7 +41,7 @@ export class EnvVariableHelper {
     }
 
     static getFoodSyncTL1FileExportCsvFileEncoding() {
-        return this.getEnvVariable("FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING") || "latin1" as BufferEncoding;
+        return (this.getEnvVariable("FOOD_SYNC_TL1FILE_EXPORT_CSV_FILE_ENCODING") || "latin1") as BufferEncoding;
     }
 
     static getFoodSyncTL1WebExportUrl() {
