@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, DimensionValue } from 'react-native';
+import React from 'react';
+import { View, Text, ScrollView } from 'react-native';
 import styles from './styles';
 import { useSelector } from 'react-redux';
 import { getImageUrl } from '@/constants/HelperFunctions';
@@ -17,26 +17,10 @@ const index = () => {
   const { theme } = useTheme();
   useSetPageTitle(TranslationKeys.markings);
 
-  const [currentTime, setCurrentTime] = useState('');
-
   const { markings } = useSelector((state: RootState) => state.food);
   const { language, selectedTheme: mode } = useSelector(
     (state: RootState) => state.settings
   );
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      const formattedTime = `${now
-        .toLocaleDateString('en-GB')
-        .replace(/\//g, '.')} - ${now.toLocaleTimeString('en-US', {
-        hour12: false,
-      })}`;
-      setCurrentTime(formattedTime);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   const chunkedMarkings = [];
   for (let i = 0; i < markings?.length; i += 7) {

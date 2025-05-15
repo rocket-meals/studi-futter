@@ -44,25 +44,26 @@ const index = () => {
   const {
     canteens_id,
     date_iso: dateParam,
+    canteen_alias,
+    week,
     show_markings,
   } = useLocalSearchParams();
   const markingHelper = new MarkingHelper();
   const markingGroupsHelper = new MarkingGroupsHelper();
   const foodCategoriesHelper = new FoodCategoriesHelper();
   const [foods, setFoods] = useState<any>({});
-  const [categories, setCategories] = useState<Record<string, { alias: string; sort: number }>>({});
+  const [categories, setCategories] = useState<
+    Record<string, { alias: string; sort: number }>
+  >({});
   const [foodMarkings, setFoodMarkings] = useState<any>({});
   const { markings } = useSelector((state: RootState) => state.food);
   const [loading, setLoading] = useState(true);
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
-  const { weekPlan } = useSelector((state: RootState) => state.management);
-
 
   useSetPageTitle(
-    weekPlan?.selectedCanteen?.alias +
-      ` - ${translate(TranslationKeys.week)} ${weekPlan?.selectedWeek?.week}`
+    canteen_alias + ` - ${translate(TranslationKeys.week)} ${week}`
   );
   const isMobile = screenWidth < 800;
   const {
@@ -117,7 +118,7 @@ const index = () => {
 
   useEffect(() => {
     fetchFoods();
-    setThemeMode("light");
+    setThemeMode('light');
   }, [canteens_id, date_iso]);
 
   const fetchCurrentFoodCategory = async (foodData: Record<string, any[]>) => {
@@ -166,19 +167,26 @@ const index = () => {
 
     // If no categories are found, just return the day column
     if (!categories || Object.keys(categories).length === 0) {
-      return [{ key: 'day', title: 'Day', isFixed: true, flex: isMobile ? dayFlexDesign : dayFlexDesign }]; // <-- Added flex for day column
+      return [
+        {
+          key: 'day',
+          title: 'Day',
+          isFixed: true,
+          flex: isMobile ? dayFlexDesign : dayFlexDesign,
+        },
+      ]; // <-- Added flex for day column
     }
 
     // --- START: NEW Logic to calculate max food count per category across all days ---
     const maxFoodCounts: Record<string, number> = {}; // Object to store max counts for each category
 
     // Iterate over each day of the week
-    weekDayNames.forEach(dayName => {
+    weekDayNames.forEach((dayName) => {
       const dayFoods = foods[dayName] || []; // Get foods for the current day
       const dailyCounts: Record<string, number> = {}; // Count foods per category for THIS day
 
       // Count foods per category for the current day
-      dayFoods.forEach(food => {
+      dayFoods.forEach((food) => {
         const categoryId = food?.food?.food_category;
         // Only count if the category exists in our fetched categories list
         if (categoryId && categories[categoryId]) {
@@ -189,41 +197,49 @@ const index = () => {
       // Update the overall maximum count for each category found this day
       Object.entries(dailyCounts).forEach(([categoryId, count]) => {
         // Keep the maximum count seen so far for this category
-        maxFoodCounts[categoryId] = Math.max(maxFoodCounts[categoryId] || 0, count);
+        maxFoodCounts[categoryId] = Math.max(
+          maxFoodCounts[categoryId] || 0,
+          count
+        );
       });
     });
     // --- END: NEW Logic ---
 
-
     // Transform categories into an array, sort, and calculate flex for each
     const categoryArray = Object.entries(categories)
-        .map(([categoryId, catData]) => {
-          // Calculate flex: minimum is 1, otherwise use the max count for this category
-          const flex = Math.max(1, maxFoodCounts[categoryId] || 0);
-          return {
-            key: categoryId,
-            title: catData.alias || 'Unknown',
-            sort: catData.sort ?? Infinity,
-            flex: flex, // <-- Added: Include the calculated flex value
-          };
-        })
-        // Sort categories by their defined sort order
-        .sort((a, b) => a.sort - b.sort);
+      .map(([categoryId, catData]) => {
+        // Calculate flex: minimum is 1, otherwise use the max count for this category
+        const flex = Math.max(1, maxFoodCounts[categoryId] || 0);
+        return {
+          key: categoryId,
+          title: catData.alias || 'Unknown',
+          sort: catData.sort ?? Infinity,
+          flex: flex, // <-- Added: Include the calculated flex value
+        };
+      })
+      // Sort categories by their defined sort order
+      .sort((a, b) => a.sort - b.sort);
 
     let flexSumOfCategories = 0;
     categoryArray.forEach((category) => {
       flexSumOfCategories += category.flex;
     });
 
-    let dayFlexDynamic = flexSumOfCategories * (dayFlexDesign / flexCategoriesDesign);
-
+    let dayFlexDynamic =
+      flexSumOfCategories * (dayFlexDesign / flexCategoriesDesign);
 
     // Return the array of column definitions
     return [
       // Day column with fixed flex
-      { key: 'day', title: 'Day', isFixed: true, flex: isMobile ? dayFlexDynamic : dayFlexDynamic }, // <-- Ensure day column has its fixed flex
+      {
+        key: 'day',
+        title: 'Day',
+        isFixed: true,
+        flex: isMobile ? dayFlexDynamic : dayFlexDynamic,
+      }, // <-- Ensure day column has its fixed flex
       // Category columns with their dynamically calculated flex
-      ...categoryArray.map(({ key, title, flex }) => ({ // <-- Destructure flex here
+      ...categoryArray.map(({ key, title, flex }) => ({
+        // <-- Destructure flex here
         key,
         title,
         flex, // <-- Include the flex property in the final column object
@@ -488,46 +504,46 @@ const index = () => {
               },
             ]}
           >
-            <View
-                ref={printRef}
-            >
+            <View ref={printRef}>
               <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    padding: 2,
-                  }}
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  padding: 2,
+                }}
               >
                 <View>
                   <Text style={[styles.title, { color: theme.header.text }]}>
-                    {weekPlan?.selectedCanteen?.alias}
+                    {canteen_alias}
                   </Text>
                 </View>
                 <View>
                   <Text style={[styles.title, { color: theme.header.text }]}>
-                    {`${translate(TranslationKeys.week)} ${
-                        weekPlan?.selectedWeek?.week
-                    }`}
+                    {`${translate(TranslationKeys.week)} ${week}`}
                   </Text>
                 </View>
               </View>
               <View
-
-                  style={[styles.headerRow, { backgroundColor: foods_area_color }]}
+                style={[
+                  styles.headerRow,
+                  { backgroundColor: foods_area_color },
+                ]}
               >
                 {getColumns()?.map((col, index) => (
-                    <View
-                        key={col.key}
-                        // Apply the calculated flex
-                        style={[
-                          styles.cell,
-                          { flex: col.flex }, // Use col.flex here
-                        ]}
+                  <View
+                    key={col.key}
+                    // Apply the calculated flex
+                    style={[
+                      styles.cell,
+                      { flex: col.flex }, // Use col.flex here
+                    ]}
+                  >
+                    <Text
+                      style={{ ...styles.headerText, color: contrastColor }}
                     >
-                      <Text style={{ ...styles.headerText, color: contrastColor }}>
-                        {col.key === 'day' ? translate(col.key) : col.title}
-                      </Text>
-                    </View>
+                      {col.key === 'day' ? translate(col.key) : col.title}
+                    </Text>
+                  </View>
                 ))}
               </View>
               {/* Data Rows */}
@@ -539,209 +555,214 @@ const index = () => {
                 const hasAnyFood = getColumns().some((col) => {
                   if (col.key === 'day') return false;
                   return (
-                      foods[dayName]?.some(
-                          (food: any) => food?.food?.food_category === col.key
-                      ) || false
+                    foods[dayName]?.some(
+                      (food: any) => food?.food?.food_category === col.key
+                    ) || false
                   );
                 });
 
                 if (!hasAnyFood) return null;
 
                 return (
-                    <View style={{
+                  <View
+                    style={{
                       width: '100%',
                       // @ts-ignore // pageBreakInside is not supported by react-native but it is supported by browsers
                       pageBreakInside: 'avoid', // Avoid the page break
                       breakInside: 'avoid', // Avoid the page break
-                    }}>
-                      <View
-                          key={index}
-                          style={{
-                            ...styles.dataRow,
-                            // @ts-ignore // pageBreakInside is not supported by react-native but it is supported by browsers
-                            pageBreakInside: 'avoid', // Avoid the page break
-                          }}
-                      >
-                        {getColumns().map((col, colIndex) => {
-                          const foodItems = foods[dayName]
-                              ?.filter(
-                                  (food: any) => food.food.food_category === col.key
-                              )
-                              ?.map((filteredFood: any) => {
-                                const foodText = getTextFromTranslation(
-                                    filteredFood?.food?.translations,
-                                    language
-                                );
-                                const priceText = getPriceText(filteredFood);
+                    }}
+                  >
+                    <View
+                      key={index}
+                      style={{
+                        ...styles.dataRow,
+                        // @ts-ignore // pageBreakInside is not supported by react-native but it is supported by browsers
+                        pageBreakInside: 'avoid', // Avoid the page break
+                      }}
+                    >
+                      {getColumns().map((col, colIndex) => {
+                        const foodItems = foods[dayName]
+                          ?.filter(
+                            (food: any) => food.food.food_category === col.key
+                          )
+                          ?.map((filteredFood: any) => {
+                            const foodText = getTextFromTranslation(
+                              filteredFood?.food?.translations,
+                              language
+                            );
+                            const priceText = getPriceText(filteredFood);
 
-                                return (
-                                    <View
-                                        key={filteredFood.id}
-                                        style={{
-                                          flexDirection: 'column',
-                                          alignItems: 'flex-start',
-                                          flexWrap: 'wrap',
-                                        }}
-                                    >
-                                      <Text
-                                          style={{
-                                            ...styles.itemText,
-                                            fontSize: fontSize,
-                                            color: theme.screen.text,
-                                          }}
-                                      >
-                                        {foodText}
-                                      </Text>
-                                      <Text
-                                          style={{
-                                            ...styles.itemText,
-                                            fontSize: fontSize,
-                                            color: theme.screen.text,
-                                          }}
-                                      >
-                                        ({priceText})
-                                      </Text>
-
-                                      {show_markings === 'true' && (
-                                          <View
-                                              style={{
-                                                width: '100%',
-                                                flexDirection: 'row',
-                                                alignItems: 'center',
-                                                justifyContent: 'flex-start',
-                                                flexWrap: 'wrap',
-                                                padding: 2,
-                                              }}
-                                          >
-                                            {foodMarkings[filteredFood.id] &&
-                                                foodMarkings[filteredFood.id].map(
-                                                    (marking: any, idx: number) => {
-                                                      const iconParts =
-                                                          marking?.icon?.split(':') || [];
-                                                      const [library, name] = iconParts;
-                                                      const Icon =
-                                                          library && iconLibraries[library];
-                                                      return marking?.icon ? (
-                                                          <View
-                                                              key={idx}
-                                                              style={{
-                                                                ...styles.iconMarking,
-                                                                backgroundColor: marking?.bgColor,
-                                                                marginRight: 5,
-                                                                borderRadius: 5,
-                                                              }}
-                                                          >
-                                                            <Icon
-                                                                name={name}
-                                                                size={14}
-                                                                color={marking.color}
-                                                            />
-                                                          </View>
-                                                      ) : !marking?.image?.uri &&
-                                                      marking?.shortCode ? (
-                                                          <View
-                                                              key={idx}
-                                                              style={{
-                                                                ...styles.shortCode,
-                                                                backgroundColor: marking?.bgColor,
-                                                                marginRight: 5,
-                                                                padding: 2,
-                                                                borderRadius: 5,
-                                                              }}
-                                                          >
-                                                            <Text
-                                                                style={{
-                                                                  color: marking.color,
-                                                                  fontSize: fontSize,
-                                                                }}
-                                                            >
-                                                              {marking?.shortCode}
-                                                            </Text>
-                                                          </View>
-                                                      ) : marking?.image?.uri ? (
-                                                          <Image
-                                                              key={idx}
-                                                              source={marking.image.uri}
-                                                              style={{
-                                                                backgroundColor: marking?.bgColor,
-                                                                width: 15,
-                                                                height: 15,
-                                                                marginRight: 2,
-                                                                borderRadius: 5,
-                                                              }}
-                                                          />
-                                                      ) : null;
-                                                    }
-                                                )}
-                                          </View>
-                                      )}
-                                    </View>
-                                );
-                              });
-
-                          return (
+                            return (
                               <View
-                                  key={col.key}
-                                  style={[
-                                    styles.cell,
-                                    {
-                                      flex: col.flex,
-                                      borderRightWidth: 1,
-                                      borderBottomWidth: 1,
-                                      borderLeftWidth: colIndex === 0 ? 1 : 0,
-                                      borderColor: foods_area_color,
-                                    },
-                                  ]}
+                                key={filteredFood.id}
+                                style={{
+                                  flexDirection: 'column',
+                                  alignItems: 'flex-start',
+                                  flexWrap: 'wrap',
+                                }}
                               >
-                                {col.key === 'day' ? (
-                                    <View style={{ flexDirection: 'column' }}>
-                                      <Text
-                                          style={[
-                                            styles.itemText,
-                                            {
-                                              fontSize: isMobile ? fontSize : fontSize,
-                                              fontFamily: isMobile
-                                                  ? 'Poppins_400Regular'
-                                                  : 'Poppins_700Bold',
-                                              textAlign: 'center',
-                                              color: theme.screen.text,
-                                            },
-                                          ]}
-                                      >
-                                        {translate(shortDayName)}
-                                      </Text>
-                                      <Text
-                                          style={[
-                                            styles.itemText,
-                                            {
-                                              fontSize: isMobile ? fontSize : fontSize,
-                                              fontFamily: isMobile
-                                                  ? 'Poppins_400Regular'
-                                                  : 'Poppins_700Bold',
-                                              textAlign: 'center',
-                                              color: theme.screen.text,
-                                            },
-                                          ]}
-                                      >
-                                        {formatDate(date)}
-                                      </Text>
-                                    </View>
-                                ) : (
-                                    <View style={{ flexDirection: 'column' }}>
-                                      {foodItems?.length > 0 ? (
-                                          foodItems
-                                      ) : (
-                                          <Text style={{ color: theme.screen.text }}>
-                                            -
-                                          </Text>
+                                <Text
+                                  style={{
+                                    ...styles.itemText,
+                                    fontSize: fontSize,
+                                    color: theme.screen.text,
+                                  }}
+                                >
+                                  {foodText}
+                                </Text>
+                                <Text
+                                  style={{
+                                    ...styles.itemText,
+                                    fontSize: fontSize,
+                                    color: theme.screen.text,
+                                  }}
+                                >
+                                  ({priceText})
+                                </Text>
+
+                                {show_markings === 'true' && (
+                                  <View
+                                    style={{
+                                      width: '100%',
+                                      flexDirection: 'row',
+                                      alignItems: 'center',
+                                      justifyContent: 'flex-start',
+                                      flexWrap: 'wrap',
+                                      padding: 2,
+                                    }}
+                                  >
+                                    {foodMarkings[filteredFood.id] &&
+                                      foodMarkings[filteredFood.id].map(
+                                        (marking: any, idx: number) => {
+                                          const iconParts =
+                                            marking?.icon?.split(':') || [];
+                                          const [library, name] = iconParts;
+                                          const Icon =
+                                            library && iconLibraries[library];
+                                          return marking?.icon ? (
+                                            <View
+                                              key={idx}
+                                              style={{
+                                                ...styles.iconMarking,
+                                                backgroundColor:
+                                                  marking?.bgColor,
+                                                marginRight: 5,
+                                                borderRadius: 5,
+                                              }}
+                                            >
+                                              <Icon
+                                                name={name}
+                                                size={14}
+                                                color={marking.color}
+                                              />
+                                            </View>
+                                          ) : !marking?.image?.uri &&
+                                            marking?.shortCode ? (
+                                            <View
+                                              key={idx}
+                                              style={{
+                                                ...styles.shortCode,
+                                                backgroundColor:
+                                                  marking?.bgColor,
+                                                marginRight: 5,
+                                                padding: 2,
+                                                borderRadius: 5,
+                                              }}
+                                            >
+                                              <Text
+                                                style={{
+                                                  color: marking.color,
+                                                  fontSize: fontSize,
+                                                }}
+                                              >
+                                                {marking?.shortCode}
+                                              </Text>
+                                            </View>
+                                          ) : marking?.image?.uri ? (
+                                            <Image
+                                              key={idx}
+                                              source={marking.image.uri}
+                                              style={{
+                                                backgroundColor:
+                                                  marking?.bgColor,
+                                                width: 15,
+                                                height: 15,
+                                                marginRight: 2,
+                                                borderRadius: 5,
+                                              }}
+                                            />
+                                          ) : null;
+                                        }
                                       )}
-                                    </View>
+                                  </View>
                                 )}
                               </View>
-                          );
-                        })}
-                      </View>
+                            );
+                          });
+
+                        return (
+                          <View
+                            key={col.key}
+                            style={[
+                              styles.cell,
+                              {
+                                flex: col.flex,
+                                borderRightWidth: 1,
+                                borderBottomWidth: 1,
+                                borderLeftWidth: colIndex === 0 ? 1 : 0,
+                                borderColor: foods_area_color,
+                              },
+                            ]}
+                          >
+                            {col.key === 'day' ? (
+                              <View style={{ flexDirection: 'column' }}>
+                                <Text
+                                  style={[
+                                    styles.itemText,
+                                    {
+                                      fontSize: isMobile ? fontSize : fontSize,
+                                      fontFamily: isMobile
+                                        ? 'Poppins_400Regular'
+                                        : 'Poppins_700Bold',
+                                      textAlign: 'center',
+                                      color: theme.screen.text,
+                                    },
+                                  ]}
+                                >
+                                  {translate(shortDayName)}
+                                </Text>
+                                <Text
+                                  style={[
+                                    styles.itemText,
+                                    {
+                                      fontSize: isMobile ? fontSize : fontSize,
+                                      fontFamily: isMobile
+                                        ? 'Poppins_400Regular'
+                                        : 'Poppins_700Bold',
+                                      textAlign: 'center',
+                                      color: theme.screen.text,
+                                    },
+                                  ]}
+                                >
+                                  {formatDate(date)}
+                                </Text>
+                              </View>
+                            ) : (
+                              <View style={{ flexDirection: 'column' }}>
+                                {foodItems?.length > 0 ? (
+                                  foodItems
+                                ) : (
+                                  <Text style={{ color: theme.screen.text }}>
+                                    -
+                                  </Text>
+                                )}
+                              </View>
+                            )}
+                          </View>
+                        );
+                      })}
                     </View>
+                  </View>
                 );
               })}
             </View>

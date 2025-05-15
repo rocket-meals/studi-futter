@@ -10,7 +10,7 @@ import {
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { fetchFoodsByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
 import {
   getImageUrl,
@@ -26,12 +26,22 @@ import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RootState } from '@/redux/reducer';
+import { FoodCategoriesHelper } from '@/redux/actions/FoodCategories/FoodCategories';
+import { FoodoffersCategories, FoodsCategories } from '@/constants/types';
+import {
+  SET_FOOD_CATEGORIES,
+  SET_FOOD_OFFERS_CATEGORIES,
+} from '@/redux/Types/types';
+import { FoodOffersCategoriesHelper } from '@/redux/actions/FoodOffersCategories/FoodOffersCategories';
 
 const Index = () => {
   useSetPageTitle(TranslationKeys.big_screen);
+  const dispatch = useDispatch();
   const { theme } = useTheme();
   const { translate } = useLanguage();
   const params = useLocalSearchParams();
+  const foodCategoriesHelper = new FoodCategoriesHelper();
+  const foodOffersCategoriesHelper = new FoodOffersCategoriesHelper();
   const { width, height } = Dimensions.get('window');
   const imageSize = width / 2;
   const [currentTime, setCurrentTime] = useState('');
@@ -80,6 +90,42 @@ const Index = () => {
 
     return () => unsubscribe();
   }, []);
+
+  const getFoodCategories = async () => {
+    try {
+      const result = (await foodCategoriesHelper.fetchFoodCategories(
+        {}
+      )) as FoodsCategories[];
+      if (result) {
+        dispatch({ type: SET_FOOD_CATEGORIES, payload: result });
+      }
+    } catch (error) {
+      console.error('Error fetching food categories:', error);
+    }
+  };
+
+  const getFoodOffersCategories = async () => {
+    try {
+      const result =
+        (await foodOffersCategoriesHelper.fetchFoodOffersCategories(
+          {}
+        )) as FoodoffersCategories[];
+      if (result) {
+        dispatch({ type: SET_FOOD_OFFERS_CATEGORIES, payload: result });
+      }
+    } catch (error) {
+      console.error('Error fetching food offers categories:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (foodCategories.length === 0) {
+      getFoodCategories();
+    }
+    if (foodOfferCategories.length === 0) {
+      getFoodOffersCategories();
+    }
+  }, [foodCategories, foodOfferCategories]);
 
   const fetchSelectedCanteen = useCallback(() => {
     if (!params?.canteens_id || !canteens || canteens.length === 0) return;

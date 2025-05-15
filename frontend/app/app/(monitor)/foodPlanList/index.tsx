@@ -29,7 +29,11 @@ import {
 } from '@expo/vector-icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import ManagementCanteensSheet from '@/components/ManagementCanteensSheet/ManagementCanteensSheet';
-import { SET_FOOD_PLAN } from '@/redux/Types/types';
+import {
+  SET_FOOD_ATTRIBUTES,
+  SET_FOOD_ATTRIBUTES_DICT,
+  SET_FOOD_PLAN,
+} from '@/redux/Types/types';
 import { CanteenProps } from '@/components/CanteenSelectionSheet/types';
 import CustomCollapsible from '@/components/CustomCollapsible/CustomCollapsible';
 import { isWeb } from '@/constants/Constants';
@@ -38,6 +42,8 @@ import { myContrastColor } from '@/helper/colorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RootState } from '@/redux/reducer';
+import { FoodsAttributes } from '@/constants/types';
+import { FoodAttributesHelper } from '@/redux/actions/FoodAttributes/FoodAttributes';
 
 type FoodAttribute = {
   id: string;
@@ -51,6 +57,7 @@ const Index = () => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
   const dispatch = useDispatch();
+  const foodAttributesHelper = new FoodAttributesHelper();
   const { foodAttributes: initialFoodAttributes } = useSelector(
     (state: RootState) => state.foodAttributes
   );
@@ -86,8 +93,27 @@ const Index = () => {
     label: '',
   });
 
+  const getAllFoodAttributes = async () => {
+    try {
+      const result =
+        (await foodAttributesHelper.fetchAllFoodAttributes()) as FoodsAttributes[];
+      if (result) {
+        const attributesDict = result.reduce((acc, attr) => {
+          if (attr.id) {
+            acc[attr.id] = attr;
+          }
+          return acc;
+        }, {} as Record<string, FoodsAttributes>);
+        dispatch({ type: SET_FOOD_ATTRIBUTES, payload: result });
+        dispatch({ type: SET_FOOD_ATTRIBUTES_DICT, payload: attributesDict });
+      }
+    } catch (error) {
+      console.error('Error fetching Food attribute', error);
+    }
+  };
+
   useEffect(() => {
-    if (initialFoodAttributes) {
+    if (initialFoodAttributes.length > 0) {
       setFoodAttributes(
         initialFoodAttributes.map((attr: any, index: number) => {
           const title = attr?.translations
@@ -101,6 +127,8 @@ const Index = () => {
           };
         })
       );
+    } else {
+      getAllFoodAttributes();
     }
   }, [initialFoodAttributes]);
 

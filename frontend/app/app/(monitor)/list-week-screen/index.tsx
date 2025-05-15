@@ -110,11 +110,15 @@ const index = () => {
       if (type === 'current') {
         params = {
           canteens_id: weekPlan?.selectedCanteen?.id,
+          canteen_alias:weekPlan?.selectedCanteen.alias,
+          week:weekNumber,
           show_markings: weekPlan?.isAllergene,
         };
       } else {
         params = {
           canteens_id: weekPlan?.selectedCanteen?.id,
+          canteen_alias: weekPlan?.selectedCanteen.alias,
+          week: weekNumber,
           date_iso: dateIso,
           show_markings: weekPlan?.isAllergene,
         };
