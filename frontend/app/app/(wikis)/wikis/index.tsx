@@ -25,11 +25,14 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { Wikis } from '@/constants/types';
 import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
 import { RootState } from '@/redux/reducer';
+import { TranslationKeys } from '@/locales/keys';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const index = () => {
   const { theme } = useTheme();
+  const { translate } = useLanguage();
   const [wiki, setWiki] = useState<Wikis>();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { wikis, language, primaryColor } = useSelector(
     (state: RootState) => state.settings
   );
@@ -42,36 +45,30 @@ const index = () => {
   useSetPageTitle(title);
 
   const filterWiki = () => {
-    setLoading(true);
     const wiki_data = wikis?.filter(
       (wiki: any) => wiki?.custom_id === custom_id
     );
     if (wiki_data) {
       setWiki(wiki_data[0]);
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const filterWikiWithId = () => {
-    setLoading(true);
     const wiki_data = wikis?.filter((wiki: any) => wiki?.id === id);
     if (wiki_data) {
       setWiki(wiki_data[0]);
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
-    if (wikis && custom_id) {
+    if (wikis?.length > 0 && custom_id) {
       filterWiki();
-    }
-  }, [wikis, custom_id]);
-
-  useEffect(() => {
-    if (wikis && id) {
+    } else if (wikis?.length > 0 && id) {
       filterWikiWithId();
     }
-  }, [wikis, id]);
+  }, [wikis, custom_id, id]);
 
   return (
     <ScrollView
@@ -112,18 +109,18 @@ const index = () => {
           >
             <ActivityIndicator size={30} color={theme.screen.text} />
           </View>
+        ) : wiki?.translations &&
+          getTextFromTranslation(wiki.translations, language)?.trim() ? (
+          <CustomMarkdown
+            content={getTextFromTranslation(wiki.translations, language)}
+            backgroundColor={wiki?.color || primaryColor}
+            imageWidth={'100%'}
+            imageHeight={400}
+          />
         ) : (
-          wiki &&
-          wiki?.translations && (
-            <CustomMarkdown
-              content={
-                getTextFromTranslation(wiki.translations, language) || ''
-              }
-              backgroundColor={wiki?.color || primaryColor}
-              imageWidth={'100%'}
-              imageHeight={400}
-            />
-          )
+          <Text style={{ color: theme.screen.text, padding: 16 }}>
+            {translate(TranslationKeys.no_data_found)}
+          </Text>
         )}
       </View>
     </ScrollView>

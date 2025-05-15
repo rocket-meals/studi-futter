@@ -18,7 +18,7 @@ import {
 } from '@/redux/Types/types';
 
 const initialState = {
-  selectedTheme: 'dark',
+  selectedTheme: 'systematic',
   isWarning: false,
   sortBy: 'intelligent',
   campusesSortBy: 'intelligent',
@@ -26,7 +26,7 @@ const initialState = {
   serverInfo: {},
   primaryColor: '#FCDE31',
   appSettings: {},
-  language: '',
+  language: 'de',
   firstDayOfTheWeek: { id: 'monday', name: 'Mon' },
   drawerPosition: 'left',
   wikisPages: [],

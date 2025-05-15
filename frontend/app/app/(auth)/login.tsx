@@ -130,11 +130,24 @@ export default function Login() {
           password
         );
         if (!result) throw new Error('Invalid credentials');
-        dispatch({ type: UPDATE_MANAGEMENT, payload: true });
       }
 
       // Fetch and process user data
       const user = await ServerAPI.getMe();
+      const roles = await ServerAPI.readRemoteRoles();
+
+      console.log('user: ', user);
+      console.log('roles: ', roles);
+      let usersRoleId = user?.role;
+      let isManagement = false;
+      if (usersRoleId) {
+          const role = roles.find((role) => role.id === usersRoleId);
+          if (role && role.name !== 'User') {
+            isManagement = true;
+          }
+      }
+      dispatch({ type: UPDATE_MANAGEMENT, payload: isManagement });
+
       updateLoginStatus(dispatch, user as DirectusUsers);
       const currentDate = getCurrentDate();
 
