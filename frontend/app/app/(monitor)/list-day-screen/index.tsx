@@ -36,13 +36,9 @@ import {
   Canteens,
   FoodsAttributes,
   FoodsCategories,
-  Markings,
-  MarkingsGroups,
 } from '@/constants/types';
 import { ColumnPercentages } from './types';
 import { RootState } from '@/redux/reducer';
-import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
-import { MarkingHelper } from '@/redux/actions/Markings/Markings';
 import { CanteenHelper } from '@/redux/actions';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { FoodCategoriesHelper } from '@/redux/actions/FoodCategories/FoodCategories';
@@ -60,14 +56,11 @@ const index = () => {
   const { translate } = useLanguage();
   const { theme } = useTheme();
   const rowHeight = 80;
-  let chunkedMarkings: any[] = [];
   const { markings, foodCategories: localFoodCategories } = useSelector(
     (state: RootState) => state.food
   );
-  const markingHelper = new MarkingHelper();
   const canteenHelper = new CanteenHelper();
   const buildingsHelper = new BuildingsHelper();
-  const markingGroupsHelper = new MarkingGroupsHelper();
   const foodAttributesHelper = new FoodAttributesHelper();
   const foodCategoriesHelper = new FoodCategoriesHelper();
   const [foods, setFoods] = useState([]);
@@ -218,9 +211,7 @@ const index = () => {
         }
 
         setFoodAttributesDataFull(attributeDataCopy);
-
         const aliases = attributeDataCopy.map((attr) => attr.alias);
-        console.log('aliases', aliases);
         setFoodAttributesColumn(aliases);
       } catch (error) {
         console.error('Error processing food attributes:', error);
@@ -372,7 +363,7 @@ const index = () => {
       return () => {
         // setFoodAttributes(null);
       };
-    }, [foods])
+    }, [foods, foodAttributesDataFull])
   );
 
   useFocusEffect(
@@ -384,7 +375,7 @@ const index = () => {
       return () => {
         // setOptionalFoodAttributes(null);
       };
-    }, [optionalFoods])
+    }, [optionalFoods, foodAttributesDataFull])
   );
 
   const fetchFoods = async () => {
@@ -451,91 +442,16 @@ const index = () => {
     }
   }, [canteens_id, monitor_additional_canteens_id]);
 
-  const getMarkings = async () => {
-    try {
-      const markingResult = (await markingHelper.fetchMarkings(
-        {}
-      )) as Markings[];
-      const markingGroupResult = (await markingGroupsHelper.fetchMarkingGroups(
-        {}
-      )) as MarkingsGroups[];
-
-      // Normalize sort values to ensure undefined, null, or empty values don't break sorting
-      const normalizeSort = (value: any) =>
-        value === undefined || value === null || value === ''
-          ? Infinity
-          : value;
-
-      // Sort marking groups by their "sort" field
-      const sortedGroups = [...markingGroupResult].sort(
-        (a, b) => normalizeSort(a.sort) - normalizeSort(b.sort)
-      );
-
-      // Create a map for quick lookup of each marking's group
-      const markingToGroupMap = new Map<string, MarkingsGroups>();
-      sortedGroups.forEach((group) => {
-        group.markings.forEach((markingId) => {
-          markingToGroupMap.set(markingId, group);
-        });
-      });
-
-      // Helper function to get group sort value
-      const getGroupSort = (marking: Markings): number => {
-        const group = markingToGroupMap.get(marking.id);
-        return normalizeSort(group?.sort);
-      };
-
-      // Helper function to get marking's own sort value
-      const getMarkingSort = (marking: Markings): number => {
-        return normalizeSort(marking.sort);
-      };
-
-      // Sort markings based on the specified criteria
-      const sortedMarkings = [...markingResult].sort((a, b) => {
-        const groupSortA = getGroupSort(a);
-        const groupSortB = getGroupSort(b);
-
-        // First, compare group sorts
-        if (groupSortA !== groupSortB) {
-          return groupSortA - groupSortB;
-        }
-
-        // If both markings belong to the same group, sort by their "sort" value
-        const markingSortA = getMarkingSort(a);
-        const markingSortB = getMarkingSort(b);
-
-        if (markingSortA !== markingSortB) {
-          return markingSortA - markingSortB;
-        }
-
-        // If no sort values exist, sort alphabetically by alias
-        return (a.alias || '').localeCompare(b.alias || '');
-      });
-
-      return sortedMarkings;
-      // dispatch({ type: UPDATE_MARKINGS, payload: sortedMarkings });
-    } catch (error) {
-      return [];
-    }
-  };
-
   const fetchFoodMarkingLabels = useCallback(
     async (foodList: any, setMarkingsState: any) => {
-      if (!foodList) return;
-      let markingsData: Markings[] = [];
-      if (markings.length > 1) {
-        markingsData = markings;
-      } else {
-        markingsData = await getMarkings();
-      }
+      if (!foodList && markings.length === 0) return;
 
       const newMarkings = {};
       foodList.forEach((food: any) => {
         const markingIds =
           food?.markings?.map((mark: any) => mark.markings_id) || [];
         const filteredMarkings =
-          markingsData?.filter((mark: any) => markingIds.includes(mark.id)) ||
-          [];
+          markings?.filter((mark: any) => markingIds.includes(mark.id)) || [];
 
         let dummyMarkings = filteredMarkings.map((item: any) => ({
           image: item?.image_remote_url
@@ -582,11 +498,6 @@ const index = () => {
 
     setCategoryState(newCategories);
   };
-
-  chunkedMarkings = [];
-  for (let i = 0; i < markings?.length; i += 7) {
-    chunkedMarkings.push(markings?.slice(i, i + 7));
-  }
 
   useEffect(() => {
     if (foods?.length > 0)
@@ -678,6 +589,11 @@ const index = () => {
       useNativeDriver: false,
     }).start();
   };
+
+  let chunkedMarkings = [];
+  for (let i = 0; i < markings?.length; i += 7) {
+    chunkedMarkings.push(markings?.slice(i, i + 7));
+  }
 
   return (
     <ScrollView
