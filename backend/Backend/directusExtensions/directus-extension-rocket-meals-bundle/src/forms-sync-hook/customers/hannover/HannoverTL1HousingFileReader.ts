@@ -5,6 +5,7 @@ import {HashHelper} from "../../../helpers/HashHelper";
 import iconv from 'iconv-lite';
 import {WorkflowRunLogger} from "../../../workflows-runs-hook/WorkflowRunJobInterface";
 import {DateHelper, DateHelperTimezone} from "../../../helpers/DateHelper";
+import {StringHelper} from "../../../helpers/StringHelper";
 
 // VONUMMER: Haus-Wohnung-Wohnungsnummer
 // 420-01-05-51-6
@@ -31,7 +32,10 @@ export enum HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS {
     MIETER_MIETENDE = "MIETENDE", // Mieter Mietende
     MIETER_AUSZUGSDATUM = "AUSZUG", // Mieter Auszugsdatum
     MIETER_TELEFON_MOBILE = "TELEFONMOBIL", // Mieter Telefon Mobil
-    MIETER_EMAIL = "EMAIL" // Mieter Email
+    MIETER_EMAIL = "EMAIL", // Mieter Email
+    VERFUEGBARAB = "VERFUEGBARAB", // Verfügbar ab
+    ZIMMERNR = "ZIMMERNR", // Zimmernummer
+    WOHNHEIM_EMAIL = "WH_EMAIL", // Wohnheim Email
 }
 
 const HOUSING_CONTRACT_FIELDS_FOR_ID: HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS[] = [
@@ -51,7 +55,10 @@ const HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS_REQUIRED: Record<HANNOVER_TL
     [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETENDE]: true,
     [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_AUSZUGSDATUM]: true,
     [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_TELEFON_MOBILE]: false,
-    [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_EMAIL]: false
+    [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_EMAIL]: false,
+    [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.VERFUEGBARAB]: true,
+    [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.ZIMMERNR]: true,
+    [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.WOHNHEIM_EMAIL]: false,
 }
 
 // Define the type for ImportHousingContract
@@ -131,6 +138,11 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
             ...housingContract
         };
 
+        result.WH_EMAIL = this.getWohnheimEmail(housingContract);
+
+        result = this.fixZimmernummer(result);
+
+
         for(let key of [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETBEGINN, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETENDE, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_AUSZUGSDATUM]){
             let value = housingContract[key];
             if(value){
@@ -142,16 +154,77 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
         return result;
     }
 
+    private fixZimmernummer(housingContract: ImportHousingContract): ImportHousingContract {
+        // Mail mit Wiebesiek 16.05.2025 - 15:17
+        // e.G. "21-3" -> "213"
+        let zimmernummer = housingContract[HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.ZIMMERNR];
+        if(zimmernummer){
+            zimmernummer = StringHelper.replaceAll(zimmernummer, "-", "");
+        }
+        housingContract[HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.ZIMMERNR] = zimmernummer;
+
+        return housingContract;
+    }
+
     getResultHash(TL1ImportHousingContracts: Tl1ImportHousingContracts): string {
         return HashHelper.hashFromObject(TL1ImportHousingContracts);
     }
 
     private getValue(housingContract: ImportHousingContract, field: HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS): string | null {
+        if(field=== HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.WOHNHEIM_EMAIL){
+            return this.getWohnheimEmail(housingContract);
+        }
+
         let value = housingContract[field];
         if(!value){
             return null;
         }
         return value;
+    }
+
+    /**
+     * email address for the given housing contract.
+     * Mail: Martin Gertz: 15.05.2025
+     * @private
+     */
+    private static WOHNHEIM_NUMMER_TO_EMAIL: Record<string, string> = {
+        "Bischofsholer Damm": "whl-bida@studentenwerk-hannover.de",
+        "Hufelandstraße": "WHL-Hu@studentenwerk-hannover.de",
+        "Jägerstraße": "whl-jae@studentenwerk-hannover.de",
+        "Am Georgengarten": "whl-ge@studentenwerk-hannover.de",
+        "Schneiderberg": "WHL-Sn@studentenwerk-hannover.de",
+        "Dorotheenstraße": "whl-do@studentenwerk-hannover.de",
+        "Internationales Quartier": "whl-do@studentenwerk-hannover.de", // gleiche Mail wie Dorotheenstraße
+        "MHH-Wohnhäuser": "whl-mhh@studentenwerk-hannover.de",
+        "Haus Am Berggarten": "WHL-Hal@studentenwerk-hannover.de",
+        "Callinstraße 25": "whl-ca@studentenwerk-hannover.de",
+        "Callinstraße 18": "whl-ca@studentenwerk-hannover.de", // gleiche Mail wie Callinstraße 25
+        "Karl-Wiechert-Allee": "WHL-Kawi@studentenwerk-hannover.de",
+        "Nobelring": "WHL-No@studentenwerk-hannover.de",
+        "Ritter-Brüning-Straße": "whl-rbs@studentenwerk-hannover.de",
+        "Studentenwohnhaus Klaus Bahlsen": "WHL-SKB@studentenwerk-hannover.de",
+        "Emdenstraße": "WHL-Em@studentenwerk-hannover.de",
+        "Garbsen": "whl-ga@studentenwerk-hannover.de",
+        "Heidjerhof": "WHL-Heidjer@studentenwerk-hannover.de",
+        "Am Papehof": "WHL-pa@studentenwerk-hannover.de",
+        "Menschingstr": "WHL-me@studentenwerk-hannover.de",
+    };
+
+    private getWohnheimEmail(housingContract: ImportHousingContract): string {
+        let wohnheimName = this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.WOHNUNGSNAME);
+        if(!wohnheimName){
+            return "";
+        }
+
+        //console.log("Getting wohnheim email for wohnheimname: ", wohnheimName);
+        let wohnheimEmail = HannoverTL1HousingFileReader.WOHNHEIM_NUMMER_TO_EMAIL[wohnheimName];
+        if(!wohnheimEmail){
+            //console.log("No email found for wohnheimname: ", wohnheimName);
+            return "";
+        } else {
+            //console.log("Found email for wohnheimname: ", wohnheimName, " -> ", wohnheimEmail);
+            return wohnheimEmail;
+        }
     }
 
     getAlias(housingContract: ImportHousingContract): string {

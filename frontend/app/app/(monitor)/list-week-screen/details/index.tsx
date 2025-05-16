@@ -33,6 +33,7 @@ import { UPDATE_MARKINGS } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RootState } from '@/redux/reducer';
+import { sortMarkingsByGroup } from '@/helper/sortingHelper';
 
 const fontSize = 10;
 
@@ -264,57 +265,8 @@ const index = () => {
         {}
       )) as MarkingsGroups[];
 
-      // Normalize sort values to ensure undefined, null, or empty values don't break sorting
-      const normalizeSort = (value: any) =>
-        value === undefined || value === null || value === ''
-          ? Infinity
-          : value;
-
-      // Sort marking groups by their "sort" field
-      const sortedGroups = [...markingGroupResult].sort(
-        (a, b) => normalizeSort(a.sort) - normalizeSort(b.sort)
-      );
-
-      // Create a map for quick lookup of each marking's group
-      const markingToGroupMap = new Map<string, MarkingsGroups>();
-      sortedGroups.forEach((group) => {
-        group.markings.forEach((markingId) => {
-          markingToGroupMap.set(markingId, group);
-        });
-      });
-
-      // Helper function to get group sort value
-      const getGroupSort = (marking: Markings): number => {
-        const group = markingToGroupMap.get(marking.id);
-        return normalizeSort(group?.sort);
-      };
-
-      // Helper function to get marking's own sort value
-      const getMarkingSort = (marking: Markings): number => {
-        return normalizeSort(marking.sort);
-      };
-
-      // Sort markings based on the specified criteria
-      const sortedMarkings = [...markingResult].sort((a, b) => {
-        const groupSortA = getGroupSort(a);
-        const groupSortB = getGroupSort(b);
-
-        // First, compare group sorts
-        if (groupSortA !== groupSortB) {
-          return groupSortA - groupSortB;
-        }
-
-        // If both markings belong to the same group, sort by their "sort" value
-        const markingSortA = getMarkingSort(a);
-        const markingSortB = getMarkingSort(b);
-
-        if (markingSortA !== markingSortB) {
-          return markingSortA - markingSortB;
-        }
-
-        // If no sort values exist, sort alphabetically by alias
-        return (a.alias || '').localeCompare(b.alias || '');
-      });
+      // Use the sortMarkingsByGroup function to sort markings
+      const sortedMarkings = sortMarkingsByGroup(markingResult, markingGroupResult);
 
       dispatch({ type: UPDATE_MARKINGS, payload: sortedMarkings });
     } catch (error) {
@@ -328,6 +280,11 @@ const index = () => {
       if (!markings || Object.keys(markings).length === 0) {
         await getMarkings();
       }
+
+      // Fetch marking groups for sorting
+      const markingGroupsHelper = new MarkingGroupsHelper();
+      const markingGroups = await markingGroupsHelper.fetchMarkingGroups({});
+
       const newMarkings: Record<string, any[]> = {};
       // Iterate over each day's foods
       Object.entries(foodData).forEach(([day, dayFoods]) => {
@@ -339,8 +296,11 @@ const index = () => {
             food?.markings?.map((mark: any) => mark.markings_id) || [];
 
           // Find matching marking objects from `markings` array
-          const filteredMarkings =
+          let filteredMarkings =
             markings?.filter((mark: any) => markingIds.includes(mark.id)) || [];
+
+          // Sort the filtered markings using sortMarkingsByGroup
+          filteredMarkings = sortMarkingsByGroup(filteredMarkings, markingGroups);
 
           const dummyMarkings = filteredMarkings.map((item: any) => ({
             image: item?.image_remote_url

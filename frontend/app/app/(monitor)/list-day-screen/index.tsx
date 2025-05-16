@@ -43,6 +43,8 @@ import { CanteenHelper } from '@/redux/actions';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { FoodCategoriesHelper } from '@/redux/actions/FoodCategories/FoodCategories';
 import { SET_FOOD_CATEGORIES } from '@/redux/Types/types';
+import { sortMarkingsByGroup } from '@/helper/sortingHelper';
+import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
 const index = () => {
   useSetPageTitle('list-day-screen');
   const {
@@ -446,12 +448,19 @@ const index = () => {
     async (foodList: any, setMarkingsState: any) => {
       if (!foodList && markings.length === 0) return;
 
+      // Fetch marking groups for sorting
+      const markingGroupsHelper = new MarkingGroupsHelper();
+      const markingGroups = await markingGroupsHelper.fetchMarkingGroups({});
+
       const newMarkings = {};
       foodList.forEach((food: any) => {
         const markingIds =
           food?.markings?.map((mark: any) => mark.markings_id) || [];
-        const filteredMarkings =
+        let filteredMarkings =
           markings?.filter((mark: any) => markingIds.includes(mark.id)) || [];
+
+        // Sort the filtered markings using sortMarkingsByGroup
+        filteredMarkings = sortMarkingsByGroup(filteredMarkings, markingGroups);
 
         let dummyMarkings = filteredMarkings.map((item: any) => ({
           image: item?.image_remote_url

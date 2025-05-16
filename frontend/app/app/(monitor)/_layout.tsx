@@ -12,6 +12,7 @@ import { SET_APP_SETTINGS, UPDATE_MARKINGS } from '@/redux/Types/types';
 import { RootState } from '@/redux/reducer';
 import { ActivityIndicator, View } from 'react-native';
 import { AppSettingsHelper } from '@/redux/actions/AppSettings/AppSettings';
+import { sortMarkingsByGroup } from '@/helper/sortingHelper';
 
 export default function MonitorLayout() {
   const { theme } = useTheme();
@@ -30,55 +31,8 @@ export default function MonitorLayout() {
       {}
     )) as MarkingsGroups[];
 
-    // Normalize sort values to ensure undefined, null, or empty values don't break sorting
-    const normalizeSort = (value: any) =>
-      value === undefined || value === null || value === '' ? Infinity : value;
-
-    // Sort marking groups by their "sort" field
-    const sortedGroups = [...markingGroupResult].sort(
-      (a, b) => normalizeSort(a.sort) - normalizeSort(b.sort)
-    );
-
-    // Create a map for quick lookup of each marking's group
-    const markingToGroupMap = new Map<string, MarkingsGroups>();
-    sortedGroups.forEach((group) => {
-      group.markings.forEach((markingId) => {
-        markingToGroupMap.set(markingId, group);
-      });
-    });
-
-    // Helper function to get group sort value
-    const getGroupSort = (marking: Markings): number => {
-      const group = markingToGroupMap.get(marking.id);
-      return normalizeSort(group?.sort);
-    };
-
-    // Helper function to get marking's own sort value
-    const getMarkingSort = (marking: Markings): number => {
-      return normalizeSort(marking.sort);
-    };
-
-    // Sort markings based on the specified criteria
-    const sortedMarkings = [...markingResult].sort((a, b) => {
-      const groupSortA = getGroupSort(a);
-      const groupSortB = getGroupSort(b);
-
-      // First, compare group sorts
-      if (groupSortA !== groupSortB) {
-        return groupSortA - groupSortB;
-      }
-
-      // If both markings belong to the same group, sort by their "sort" value
-      const markingSortA = getMarkingSort(a);
-      const markingSortB = getMarkingSort(b);
-
-      if (markingSortA !== markingSortB) {
-        return markingSortA - markingSortB;
-      }
-
-      // If no sort values exist, sort alphabetically by alias
-      return (a.alias || '').localeCompare(b.alias || '');
-    });
+    // Use the sortMarkingsByGroup function to sort markings
+    const sortedMarkings = sortMarkingsByGroup(markingResult, markingGroupResult);
 
     dispatch({ type: UPDATE_MARKINGS, payload: sortedMarkings });
   };
