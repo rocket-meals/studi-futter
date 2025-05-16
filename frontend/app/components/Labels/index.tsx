@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Linking, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useTheme } from '@/hooks/useTheme';
@@ -7,11 +7,13 @@ import RedirectButton from '../RedirectButton';
 import MarkingLabels from '../MarkingLabels/MarkingLabels';
 import { getFoodOffer } from '@/constants/HelperFunctions';
 import { studentUnionUrl } from '@/constants/Constants';
-import { FoodoffersMarkings, Markings } from '@/constants/types';
+import { FoodoffersMarkings, Markings, MarkingsGroups } from '@/constants/types';
 import { createSelector } from 'reselect';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
+import { sortMarkingsByGroup } from '@/helper/sortingHelper';
+import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
 
 interface LabelsProps {
   foodDetails: any;
@@ -54,15 +56,39 @@ const Labels: React.FC<LabelsProps> = ({
   const markings = useSelector(selectMarkings);
   const foodOffer = useSelector(selectFoodOffer(offerId));
 
+  // State for marking groups
+  const [markingGroups, setMarkingGroups] = useState<MarkingsGroups[]>([]);
+
+  // Fetch marking groups
+  useEffect(() => {
+    const fetchMarkingGroups = async () => {
+      try {
+        const markingGroupsHelper = new MarkingGroupsHelper();
+        const result = await markingGroupsHelper.fetchMarkingGroups({});
+        if (result) {
+          setMarkingGroups(result);
+        }
+      } catch (error) {
+        console.error('Error fetching marking groups:', error);
+      }
+    };
+
+    fetchMarkingGroups();
+  }, []);
+
   const foodMarkings = useMemo(() => {
     if (!foodOffer?.markings) return [];
-    return foodOffer.markings
+
+    // First, map food offer markings to actual marking objects
+    const mappedMarkings = foodOffer.markings
       ?.map((marking: FoodoffersMarkings) =>
         markings.find((mark: Markings) => mark.id === marking?.markings_id)
       )
-      .filter((mark: any): mark is Markings => Boolean(mark))
-      .sort((a: any, b: any) => b.sort - a.sort);
-  }, [foodOffer, markings]);
+      .filter((mark: any): mark is Markings => Boolean(mark));
+
+    // Then sort them using the sortMarkingsByGroup function
+    return sortMarkingsByGroup(mappedMarkings, markingGroups);
+  }, [foodOffer, markings, markingGroups]);
 
   return (
     <View style={styles.container}>
