@@ -80,19 +80,24 @@ export interface HannoverHousingFileReaderInterface {
 export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderInterface {
 
     private path_to_file: string;
+    private logger?: WorkflowRunLogger;
 
     constructor(path_to_file: string) {
         this.path_to_file = path_to_file;
     }
 
     async readData(logger?: WorkflowRunLogger): Promise<Tl1ImportHousingContracts> {
+        this.logger = logger;
         if(logger){
-            await logger.appendLog("Reading data from: " + this.path_to_file);
+            await logger.appendLog("Reading data");
         }
 
         // check if file exists
         const fileExists = fs.existsSync(this.path_to_file);
         if(!fileExists){
+            if(logger){
+                await logger.appendLog("No file existing to read from");
+            }
             return [];
         }
 
@@ -116,6 +121,10 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
             rawReport = csvContent;
         }
 
+        if(logger){
+            await logger.appendLog("File read successfully, now parsing");
+        }
+
         let jsonListFromCsvString = CSVExportParser.getListOfLineObjects(rawReport, {
             newLineDelimiter: CSVExportParser.NEW_LINE_DELIMITER,
             inlineDelimiter: CSVExportParser.INLINE_DELIMITER_SEMICOLON,
@@ -123,24 +132,43 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
         });
         let result: Tl1ImportHousingContracts = jsonListFromCsvString as Tl1ImportHousingContracts;
 
+        if(logger){
+            await logger.appendLog("CSV parsed successfully, now correcting date values");
+        }
+
         for(let i = 0; i < result.length; i++){
+            if(logger){
+                await logger.appendLog("Correcting date values for housing contract from line " + (i+1) + " of " + result.length);
+            }
             let housingContract = result[i];
             if(housingContract){
-                result[i] = this.correctDateValues(housingContract);
+                result[i] = await this.correctDateValues(housingContract);
             }
         }
 
         return result;
     }
 
-    private correctDateValues(housingContract: ImportHousingContract): ImportHousingContract {
+    private async correctDateValues(housingContract: ImportHousingContract): Promise<ImportHousingContract> {
         let result: ImportHousingContract = {
             ...housingContract
         };
 
+        if(this.logger){
+            await this.logger.appendLog("Getting wohnheim email for housing contract:");
+        }
         result.WH_EMAIL = this.getWohnheimEmail(housingContract);
+        if(this.logger){
+            await this.logger.appendLog("Wohnheim email: " + result.WH_EMAIL);
+        }
 
+        if(this.logger){
+            await this.logger.appendLog("Fixing zimmernummer for housing contract:");
+        }
         result = this.fixZimmernummer(result);
+        if(this.logger){
+            await this.logger.appendLog("Zimmernummer fixed: " + result.ZIMMERNR);
+        }
 
 
         for(let key of [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETBEGINN, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETENDE, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_AUSZUGSDATUM]){
