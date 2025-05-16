@@ -109,16 +109,32 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
 
         if(!encoding){
             throw new Error("Could not detect encoding");
+        } else {
+            encoding = encoding.toLowerCase();
+            if(logger){
+                await logger.appendLog("Detected encoding: " + encoding);
+            }
         }
 
         let rawReport = "";
-        if (encoding.toLowerCase() === "windows-1252") {
-            encoding = "win1252"; // iconv-lite supports this alias
-            const rawBuffer = readFileSync(this.path_to_file);
-            rawReport = iconv.decode(rawBuffer, encoding);
-        } else {
-            const csvContent = readFileSync(this.path_to_file, encoding as BufferEncoding);
-            rawReport = csvContent;
+        try{
+            if (encoding.toLowerCase() === "windows-1252") {
+                encoding = "win1252"; // iconv-lite supports this alias
+                const rawBuffer = readFileSync(this.path_to_file);
+                rawReport = iconv.decode(rawBuffer, encoding);
+            } else {
+                const csvContent = readFileSync(this.path_to_file, encoding as BufferEncoding);
+                rawReport = csvContent;
+            }
+        } catch (error: any){
+            if(logger){
+                // print the error message
+                await logger.appendLog("Error reading file: " + error.message);
+                // print the error stack
+                await logger.appendLog(error.toString());
+                await logger.appendLog("Cannot read file, please check the file format and encoding");
+            }
+            throw new Error("Error reading file: " + error.message);
         }
 
         if(logger){
