@@ -6,13 +6,7 @@ import {
     TL1AttributeValueType
 } from "../FoodTL1Parser";
 import {FoodTL1Parser_GetRawReportInterface} from "../FoodTL1Parser_GetRawReportInterface";
-import {
-    FoodoffersTypeForParser,
-    FoodParseFoodAttributesType,
-    FoodsInformationTypeForParser, FoodWithBasicDataWithoutIdType
-} from "../FoodParserInterface";
-import {FoodTL1ParserHelper} from "../FoodTL1ParserHelper";
-import {MarkingsTypeForParser} from "../MarkingParserInterface";
+import {FoodParseFoodAttributesType} from "../FoodParserInterface";
 
 export class FoodTL1ParserHannover extends FoodTL1Parser {
 
@@ -23,20 +17,6 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
 
     constructor(rawFoodofferReader: FoodTL1Parser_GetRawReportInterface) {
         super(rawFoodofferReader);
-    }
-
-    override async getFoodoffersForParser(): Promise<FoodoffersTypeForParser[]> {
-        let foodOffers = await super.getFoodoffersForParser();
-        let fieldsToRemove = ["fiber_g", "co2_g", "co2_saving_percentage", "co2_rating"];
-        foodOffers = FoodTL1ParserHelper.adaptFoodOffersRemoveBasicFoodofferDataFields(foodOffers, fieldsToRemove);
-        return foodOffers;
-    }
-
-    override async getFoodsListForParser(): Promise<FoodsInformationTypeForParser[]> {
-        let foodList = await super.getFoodsListForParser();
-        let fieldsToRemove = ["fiber_g", "co2_g", "co2_saving_percentage", "co2_rating"];
-        foodList = FoodTL1ParserHelper.adaptFoodsListRemoveBasicFoodDataFields(foodList, fieldsToRemove);
-        return foodList;
     }
 
     /**

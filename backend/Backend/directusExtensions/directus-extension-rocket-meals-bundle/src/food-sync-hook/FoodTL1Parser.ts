@@ -149,16 +149,11 @@ export class FoodTL1Parser implements FoodParserInterface {
             [LanguageCodes.EN]: {"name": FoodTL1Parser._getFoodNameEn(parsedReportItem)}
         };
 
-        const foodNutritions = FoodTL1Parser.getFoodNutritionValuesFromRawTL1Foodoffer(parsedReportItem);
-        const foodEnvironmentImpact = FoodTL1Parser.getFoodEnvironmentImpactValuesFromRawTL1Foodoffer(parsedReportItem);
-
         let foodAttributes = this.getFoodAttributesFromRawTL1Foodoffer(parsedReportItem);
 
         const basicFoodData: FoodWithBasicData = {
             id: food_id,
             alias: FoodTL1Parser._getFoodNameDe(parsedReportItem),
-            ...foodNutritions,
-            ...foodEnvironmentImpact
         }
 
         return {
@@ -204,9 +199,6 @@ export class FoodTL1Parser implements FoodParserInterface {
         for(let rawFoodoffer of rawFoodoffers){
             let parsedReportItem = FoodTL1Parser.getParsedReportItemFromrawFoodoffer(rawFoodoffer);
 
-            const foodNutritions = FoodTL1Parser.getFoodNutritionValuesFromRawTL1Foodoffer(parsedReportItem);
-            const foodEnvironmentImpact = FoodTL1Parser.getFoodEnvironmentImpactValuesFromRawTL1Foodoffer(parsedReportItem);
-
             let foodAttributes = this.getFoodAttributesFromRawTL1Foodoffer(parsedReportItem);
 
             const basicFoodofferData: FoodofferTypeWithBasicData = {
@@ -214,8 +206,6 @@ export class FoodTL1Parser implements FoodParserInterface {
                 price_employee: FoodTL1Parser.getPriceForGroup(parsedReportItem, PriceGroupEnum.PRICE_GROUP_EMPLOYEE),
                 price_guest: FoodTL1Parser.getPriceForGroup(parsedReportItem, PriceGroupEnum.PRICE_GROUP_GUEST),
                 price_student: FoodTL1Parser.getPriceForGroup(parsedReportItem, PriceGroupEnum.PRICE_GROUP_STUDENT),
-                ...foodNutritions,
-                ...foodEnvironmentImpact,
             }
 
             const foodofferForParser: FoodoffersTypeForParser = {
@@ -654,62 +644,6 @@ export class FoodTL1Parser implements FoodParserInterface {
         }
 
         return attributeValues;
-    }
-
-    static getFoodEnvironmentImpactValuesFromRawTL1Foodoffer(parsedReportItem: RawTL1FoodofferType): FoodWithBasicDataWithoutIdType {
-        let environmentImpactJSON: FoodWithBasicDataWithoutIdType = {};
-        let co2_g = parsedReportItem[FoodTL1Parser.DEFAULT_CO2_GRAMM_FIELD];
-        if(!!co2_g){
-            environmentImpactJSON.co2_g = parseFloat(co2_g);
-        }
-
-        let co2_saving_percentage = parsedReportItem[FoodTL1Parser.DEFAULT_CO2_SAVING_PERCENTAGE_FIELD];
-        if(!!co2_saving_percentage){
-            environmentImpactJSON.co2_saving_percentage = parseFloat(co2_saving_percentage);
-        }
-
-        let co2_rating = parsedReportItem[FoodTL1Parser.DEFAULT_CO2_RATING_FIELD];
-        if(!!co2_rating){
-            environmentImpactJSON.co2_rating = co2_rating;
-        }
-
-        return environmentImpactJSON;
-    }
-
-    /**
-     * Nutritions
-     */
-    static getFoodNutritionValuesFromRawTL1Foodoffer(parsedReportItem: RawTL1FoodofferType): FoodWithBasicDataWithoutIdType {
-        /**
-         * e. G.
-         * "NAEHRWERTEJEPORT": "Brennwert=612 kJ (146 kcal), Fett=1,1g, davon gesättigte Fettsäuren=0,6g, Kohlenhydrate=19,8g, davon Zucker=18,8g, Ballaststoffe=0,0g, Eiweiß=12,8g, Salz=0,1g,"
-         */
-        let nutritionValuesJSON: FoodWithBasicDataWithoutIdType = {};
-        let nutritionValuesString = parsedReportItem[FoodTL1Parser.DEFAULT_NUTRITIONS_FIELD];
-        if(!!nutritionValuesString){
-            let kcalEndString = " kcal)";
-            let match = nutritionValuesString.match(/\(.* kcal/gm);
-            // e. G. (XXXXXXX kcal)
-            if(!!match){
-                let kcal = match[0].slice(1,kcalEndString.length); //remove starting bracket "(" and kcal)
-                nutritionValuesJSON.calories_kcal = parseInt(kcal);
-            }
-
-            nutritionValuesJSON.fat_g = FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Fett");
-
-            nutritionValuesJSON.saturated_fat_g = FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Fettsäuren");
-
-            nutritionValuesJSON.carbohydrate_g = FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Kohlenhydrate");
-
-            nutritionValuesJSON.sugar_g = FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Zucker");
-
-            nutritionValuesJSON.fiber_g = FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Ballaststoffe");
-
-            nutritionValuesJSON.protein_g = FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Eiweiß");
-
-            nutritionValuesJSON.salt_g = FoodTL1Parser.parseNutritionValue(nutritionValuesString, "Salz");
-        }
-        return nutritionValuesJSON;
     }
 
     static parseFloatWithOneDecimal(str: string){

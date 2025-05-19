@@ -71,32 +71,6 @@ describe("FoodTL1ParserOsnabrueck Test", () => {
         }
     });
 
-    it("Foods shall have not fiber_g", async () => {
-        await foodParser.createNeededData();
-        let foodsJson = await foodParser.getFoodsListForParser();
-        let foundFiber = false;
-        for(let food of foodsJson){
-            if(!!food.basicFoodData.fiber_g){
-                foundFiber = true;
-                break;
-            }
-        }
-        expect(foundFiber).toBe(false);
-    });
-
-    it("Foodoffers shall have not fiber_g", async () => {
-        await foodParser.createNeededData();
-        let foodOffersJson = await foodParser.getFoodoffersForParser();
-        let foundFiber = false;
-        for(let foodOffer of foodOffersJson){
-            if(!!foodOffer.basicFoodofferData.fiber_g){
-                foundFiber = true;
-                break;
-            }
-        }
-        expect(foundFiber).toBe(false);
-    });
-
     it("Foodoffer with vegetarian marking shall have vegetarian marking", async () => {
         let foodOfferJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderOsnabrueck.getSavedRawReportWithVegetarianValues());
         expect(!!foodOfferJson).toBe(true);

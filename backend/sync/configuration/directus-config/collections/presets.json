@@ -1,6 +1,7 @@
 [
   {
     "refresh_interval": null,
+    "filter": null,
     "layout_query": {
       "tabular": {
         "fields": [
@@ -12,7 +13,6 @@
         ]
       }
     },
-    "filter": null,
     "layout_options": null,
     "color": null,
     "icon": "bookmark",

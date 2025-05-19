@@ -1,39 +1,36 @@
 {
-  "collection": "foods",
-  "field": "carbohydrate_g",
-  "type": "float",
+  "collection": "form_extracts",
+  "field": "send_attachments_as_links",
+  "type": "boolean",
   "meta": {
-    "collection": "foods",
+    "collection": "form_extracts",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "carbohydrate_g",
-    "group": "nutrition",
+    "field": "send_attachments_as_links",
+    "group": null,
     "hidden": false,
-    "interface": "input",
+    "interface": "boolean",
     "note": null,
     "options": null,
     "readonly": false,
     "required": false,
-    "sort": 2,
-    "special": null,
-    "translations": [
-      {
-        "language": "de-DE",
-        "translation": "Kohlenhydrate (Gramm)"
-      }
+    "sort": 14,
+    "special": [
+      "cast-boolean"
     ],
+    "translations": null,
     "validation": null,
     "validation_message": null,
-    "width": "half"
+    "width": "full"
   },
   "schema": {
-    "name": "carbohydrate_g",
-    "table": "foods",
-    "data_type": "real",
-    "default_value": null,
+    "name": "send_attachments_as_links",
+    "table": "form_extracts",
+    "data_type": "boolean",
+    "default_value": false,
     "max_length": null,
-    "numeric_precision": 24,
+    "numeric_precision": null,
     "numeric_scale": null,
     "is_nullable": true,
     "is_unique": false,

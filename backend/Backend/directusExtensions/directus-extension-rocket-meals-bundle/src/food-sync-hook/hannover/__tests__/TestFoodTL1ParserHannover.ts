@@ -59,32 +59,6 @@ describe("FoodTL1ParserHannover Test", () => {
         }
     });
 
-    it("Foods shall have not fiber_g", async () => {
-        await foodParser.createNeededData();
-        let foodsJson = await foodParser.getFoodsListForParser();
-        let foundFiber = false;
-        for(let food of foodsJson){
-            if(!!food.basicFoodData.fiber_g){
-                foundFiber = true;
-                break;
-            }
-        }
-        expect(foundFiber).toBe(false);
-    });
-
-    it("Foodoffers shall have not fiber_g", async () => {
-        await foodParser.createNeededData();
-        let foodOffersJson = await foodParser.getFoodoffersForParser();
-        let foundFiber = false;
-        for(let foodOffer of foodOffersJson){
-            if(!!foodOffer.basicFoodofferData.fiber_g){
-                foundFiber = true;
-                break;
-            }
-        }
-        expect(foundFiber).toBe(false);
-    });
-
     function checkIfFoodHasMarking(foodId: string | null, expectedMarkingExternalIdentifiersToBeIncluded: string[], foodOffersJson: FoodoffersTypeForParser[]){
         let foodOffersWithSpecialMarking = foodOffersJson.filter((foodOffer) => {
             return foodOffer.food_id === foodId;
@@ -212,22 +186,6 @@ describe("FoodTL1ParserHannover Test", () => {
         }
     })
 
-    it("Food has no co2_g attribute", async () => {
-      let foodsJson = await getFoodsJson();
-      for(let food of foodsJson){
-          let co2_g = food.basicFoodData.co2_g;
-          expect(!!co2_g).toBe(false);
-      }
-    })
-
-    it("Foodoffer has no co2_g attribute", async () => {
-        let foodOffersJson = await getFoodoffersJson();
-        for(let foodOffer of foodOffersJson){
-            let co2_g = foodOffer.basicFoodofferData.co2_g;
-            expect(!!co2_g).toBe(false);
-        }
-    });
-
     it("Food offers with same recipe ids and same markings shall have same food ids", async () => {
         let foodOfferJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithMultipleFoodoofersSameMarkings());
         let foodsJson = await getFoodsJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithMultipleFoodoofersSameMarkings());
@@ -323,23 +281,6 @@ describe("FoodTL1ParserHannover Test", () => {
                 // Now check if the value is correct set
                 if(expectedAttribute.value_type === TL1AttributeValueType.NUMBER){
                     expect(foundAttribute.attribute_value.number_value).not.toBeUndefined();
-                    if(foundAttribute.attribute_value.number_value){
-                        if(foundAttribute.external_identifier==="salt_g"){
-                            let offerData: any = undefined;
-                            let foodOrFoodofferAsFood = foodOrFoodoffer as FoodsInformationTypeForParser;
-                            if(foodOrFoodofferAsFood?.basicFoodData){
-                                offerData = foodOrFoodofferAsFood.basicFoodData;
-                            }
-
-                            let foodOrFoodofferAsFoodoffer = foodOrFoodoffer as FoodoffersTypeForParser;
-                            if(foodOrFoodofferAsFoodoffer?.basicFoodofferData){
-                                offerData = foodOrFoodofferAsFoodoffer.basicFoodofferData;
-                            }
-
-                            expect(foundAttribute.attribute_value.number_value+"").toBe(offerData.salt_g+"")
-                        }
-                    }
-
                 } else if(expectedAttribute.value_type === TL1AttributeValueType.STRING) {
                     expect(!!foundAttribute.attribute_value.string_value).not.toBeUndefined();
                 } else if(expectedAttribute.value_type === TL1AttributeValueType.BOOLEAN) {

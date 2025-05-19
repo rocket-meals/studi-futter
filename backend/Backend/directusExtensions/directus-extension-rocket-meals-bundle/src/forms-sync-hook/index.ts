@@ -6,7 +6,7 @@ import {CollectionNames} from "../helpers/CollectionNames";
 import {
     DirectusFiles,
     DirectusUsers,
-    FormAnswers,
+    FormAnswers, FormExtracts,
     FormFields,
     Forms,
     FormSubmissions,
@@ -336,7 +336,7 @@ function registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions: 
                         });
 
                         // So now we have the fields and answers relevant for the
-                        await sendFormExtractMail(form_with_translations, formSubmission, form_answers_relevant_for_form_extract, recipient_emails, myDatabaseHelper);
+                        await sendFormExtractMail(form_with_translations, form_extract,  formSubmission, form_answers_relevant_for_form_extract, recipient_emails, myDatabaseHelper);
                     }
 
                     // set state to closed
@@ -364,6 +364,7 @@ function registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions: 
 
 async function sendFormExtractMail(
     form: Forms,
+    formExtract: FormExtracts,
     formSubmission: FormSubmissions,
     formExtractRelevantInformation: FormExtractRelevantInformation,
     recipient_emails: string[],
@@ -404,10 +405,12 @@ async function sendFormExtractMail(
           "delete": []
         }
 
+        let send_attachments_as_links = !!formExtract.send_attachments_as_links;
         let mail: Partial<Mails> = {
             recipient: recipient_email,
             markdown_content: "Anbei finden Sie eine Kopie des Formulars: " + form_name+"\n\n",
             subject: subject,
+            send_attachments_as_links: send_attachments_as_links,
             form_submission: formSubmission.id,
             // @ts-ignore - thats how directus allows to set attachments
             attachments: attachments
