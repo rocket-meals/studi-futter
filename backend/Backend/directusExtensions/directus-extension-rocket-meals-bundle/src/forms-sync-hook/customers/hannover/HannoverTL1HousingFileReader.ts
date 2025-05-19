@@ -189,8 +189,14 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
             await this.logger.appendLog("Zimmernummer fixed: " + result.ZIMMERNR);
         }
 
+        let dateFields = [
+            HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETBEGINN,
+            HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETENDE,
+            HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_AUSZUGSDATUM,
+            HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.VERFUEGBARAB
+        ]
 
-        for(let key of [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETBEGINN, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETENDE, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_AUSZUGSDATUM]){
+        for(let key of dateFields){
             let value = housingContract[key];
             if(value){
                 let date = DateHelper.formatDDMMYYYYToDateWithTimeZone(value, DateHelperTimezone.GERMANY);
