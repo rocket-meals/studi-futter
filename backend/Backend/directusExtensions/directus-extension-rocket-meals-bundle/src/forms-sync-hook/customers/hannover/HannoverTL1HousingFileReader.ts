@@ -117,14 +117,17 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
         }
 
         let rawReport = "";
-        try{
-            if (encoding.toLowerCase() === "windows-1252") {
-                encoding = "win1252"; // iconv-lite supports this alias
-                const rawBuffer = readFileSync(this.path_to_file);
-                rawReport = iconv.decode(rawBuffer, encoding);
+        try {
+            const rawBuffer = readFileSync(this.path_to_file);
+
+            // iconv-lite supports many encodings, including 'win1252' and 'iso-8859-1'
+            // Normalize encoding name for iconv-lite
+            const normalizedEncoding = StringHelper.replaceAll(encoding.toLowerCase(), "_", "-");
+
+            if (iconv.encodingExists(normalizedEncoding)) {
+                rawReport = iconv.decode(rawBuffer, normalizedEncoding);
             } else {
-                const csvContent = readFileSync(this.path_to_file, encoding as BufferEncoding);
-                rawReport = csvContent;
+                throw new Error("Unsupported encoding: " + normalizedEncoding);
             }
         } catch (error: any){
             if(logger){

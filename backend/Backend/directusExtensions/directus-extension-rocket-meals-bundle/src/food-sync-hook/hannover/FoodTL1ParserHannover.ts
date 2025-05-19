@@ -201,41 +201,41 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
             external_identifier: "salt_g",
             value_type: TL1AttributeValueType.NUMBER
         },
-//        {
-//            field_name: "EXTINFO_CO2_WERT",
-//            external_identifier: "co2_g",
-//            value_type: TL1AttributeValueType.NUMBER
-//        },
-//        {
-//            field_name: "EXTINFO_CO2_EINSPARUNG",
-//            external_identifier: "co2_saving_percentage",
-//            value_type: TL1AttributeValueType.NUMBER
-//        },
-//        {
-//            field_name: "EXTINFO_CO2_BEWERTUNG",
-//            external_identifier: "co2_rating",
-//            value_type: TL1AttributeValueType.STRING
-//        },
-//        {
-//            field_name: "EXTINFO_WASSER_WERT",
-//            external_identifier: "water_usage",
-//            value_type: TL1AttributeValueType.NUMBER
-//        },
-//        {
-//            field_name: "EXTINFO_WASSER_BEWERTUNG",
-//            external_identifier: "water_rating",
-//            value_type: TL1AttributeValueType.STRING
-//        },
-//        {
-//            field_name: "EXTINFO_TIERWOHL",
-//            external_identifier: "animal_welfare",
-//            value_type: TL1AttributeValueType.STRING
-//        },
-//        {
-//            field_name: "EXTINFO_REGENWALD",
-//            external_identifier: "rainforest",
-//            value_type: TL1AttributeValueType.STRING
-//        }
+        {
+            field_name: "EXTINFO_CO2_WERT",
+            external_identifier: "co2_g",
+            value_type: TL1AttributeValueType.NUMBER
+        },
+        {
+            field_name: "EXTINFO_CO2_EINSPARUNG",
+            external_identifier: "co2_saving_percentage",
+            value_type: TL1AttributeValueType.NUMBER
+        },
+        {
+            field_name: "EXTINFO_CO2_BEWERTUNG",
+            external_identifier: "co2_rating",
+            value_type: TL1AttributeValueType.STRING
+        },
+        {
+            field_name: "EXTINFO_WASSER_WERT",
+            external_identifier: "water_usage",
+            value_type: TL1AttributeValueType.NUMBER
+        },
+        {
+            field_name: "EXTINFO_WASSER_BEWERTUNG",
+            external_identifier: "water_rating",
+            value_type: TL1AttributeValueType.STRING
+        },
+        {
+            field_name: "EXTINFO_TIERWOHL",
+            external_identifier: "animal_welfare",
+            value_type: TL1AttributeValueType.STRING
+        },
+        {
+            field_name: "EXTINFO_REGENWALD",
+            external_identifier: "rainforest",
+            value_type: TL1AttributeValueType.STRING
+        }
     ]
 
     override getFoodAttributesFromRawTL1Foodoffer(parsedReportItem: RawTL1FoodofferType): FoodParseFoodAttributesType {
