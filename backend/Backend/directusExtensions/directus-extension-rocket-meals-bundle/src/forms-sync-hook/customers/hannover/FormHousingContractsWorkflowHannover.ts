@@ -49,6 +49,7 @@ export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow
             case HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETBEGINN:
             case HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETENDE:
             case HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_AUSZUGSDATUM:
+            case HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.VERFUEGBARAB:
                 // date is already in ISO format
                 return {
                     value_date: value_raw
