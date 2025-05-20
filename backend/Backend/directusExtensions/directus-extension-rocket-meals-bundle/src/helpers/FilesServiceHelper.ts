@@ -13,7 +13,7 @@ import {AssetsService} from "@directus/api";
 import {Readable} from "node:stream";
 import type {Stat} from "@directus/storage";
 import {CreateShareLinkOptionForDirectusFiles, ShareDirectusFileMethod, ShareServiceHelper} from "./ShareServiceHelper";
-import * as Buffer from "node:buffer";
+import { Buffer } from "node:buffer";
 import {MyDatabaseHelperInterface} from "./MyDatabaseHelperInterface";
 
 export enum MyFileTypes {
@@ -100,7 +100,7 @@ export class FilesServiceHelper extends ItemsServiceHelper<DirectusFiles> implem
     }
 
     async readFileContent(id: PrimaryKey): Promise<Buffer> {
-        //console.log("FilesServiceHelper.readFileContent: ", id);
+        console.log("FilesServiceHelper.readFileContent: ", id);
         const AssetsService: AssetsService = this.apiContext.services.AssetsService
         let schema = await this.apiContext.getSchema();
         // @ts-ignore
@@ -110,24 +110,27 @@ export class FilesServiceHelper extends ItemsServiceHelper<DirectusFiles> implem
             schema: schema,
         })
 
-        //console.log(" - getAsset: ", id);
+        console.log(" - getAsset: ", id);
         let file: {
             stream: Readable;
             file: any;
             stat: Stat;
         } = await assetsService.getAsset(id, { transformationParams: {} }); // https://github.com/directus/directus/discussions/14318
 
-        //console.log(" - read the file buffer");
+        console.log(" - read the file buffer");
         let chunks: Buffer[] = [];
         return new Promise<Buffer>((resolve, reject) => {
-            file.stream.on('data', (chunk: Buffer) => {
-                chunks.push(chunk);
+            file.stream.on('data', (chunk: Buffer<ArrayBufferLike>) => {
+                console.log("Chunk type:", typeof chunk, "instanceof Buffer:", chunk instanceof Buffer);
+                chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
             });
             file.stream.on('end', () => {
+                console.log(" - end of stream");
                 // @ts-ignore
                 resolve(Buffer.concat(chunks));
             });
             file.stream.on('error', (error: Error) => {
+                console.error(" - error in stream", error);
                 reject(error);
             });
         });
