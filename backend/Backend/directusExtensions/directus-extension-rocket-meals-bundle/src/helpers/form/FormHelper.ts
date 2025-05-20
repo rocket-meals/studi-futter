@@ -31,6 +31,8 @@ type FormFieldExampleData = {
 
 export class FormHelper {
 
+    private static FORM_IMAGE_TRANSFORM_OPTIONS = DirectusFilesAssetHelper.PRESET_FILE_TRANSFORMATION_IMAGE_HD;
+
     public static getExampleFormExtractRelevantInformation(): FormExtractRelevantInformation {
         let formExtractRelevantInformation: FormExtractRelevantInformation = [];
         let form_submission_id = Math.random().toString();
@@ -196,7 +198,7 @@ export class FormHelper {
             if (typeof value_image === "string" && value_image.startsWith("http")) {
                 assetUrl = value_image;
             } else {
-                assetUrl = DirectusFilesAssetHelper.getDirectAssetUrlByObjectOrId(value_image, myDatabaseHelperInterface);
+                assetUrl = DirectusFilesAssetHelper.getDirectAssetUrlByObjectOrId(value_image, myDatabaseHelperInterface, FormHelper.FORM_IMAGE_TRANSFORM_OPTIONS);
             }
         }
         return this.generateMarkdownForTypeImageUrl(fieldName, assetUrl);
@@ -211,7 +213,7 @@ export class FormHelper {
                 assetUrl = value_file;
             } else {
                 let valueFileAsObject: FormExtractFormAnswerValueFileSingle = value_file as FormExtractFormAnswerValueFileSingle;
-                assetUrl = DirectusFilesAssetHelper.getDirectAssetUrlByObjectOrId(valueFileAsObject.directus_files_id, myDatabaseHelperInterface);
+                assetUrl = DirectusFilesAssetHelper.getDirectAssetUrlByObjectOrId(valueFileAsObject.directus_files_id, myDatabaseHelperInterface, FormHelper.FORM_IMAGE_TRANSFORM_OPTIONS);
             }
         }
 
@@ -271,7 +273,10 @@ export class FormHelper {
             requestOptions.bearerToken = adminBearerToken;
         }
 
-        let pdfBuffer = PdfGeneratorHelper.generatePdfFromHtml(html, requestOptions);
+        console.log("Generating PDF from HTML with length:", html.length);
+        console.log("Using request options:", requestOptions);
+
+        let pdfBuffer = await PdfGeneratorHelper.generatePdfFromHtml(html, requestOptions);
         return pdfBuffer;
     }
 

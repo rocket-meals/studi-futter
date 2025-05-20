@@ -62,7 +62,8 @@ export class PuppeteerGenerator {
                     "--safebrowsing-disable-auto-update",
                     "--single-process",
                     "--no-zygote",
-                    "--disable-features=AudioServiceOutOfProcess"
+                    "--disable-features=AudioServiceOutOfProcess",
+                    "--disable-dev-shm-usage" // This helps with memory issues in Docker, since /dev/shm is often too small and causes crashes
                 ]
             });
 
