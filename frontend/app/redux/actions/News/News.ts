@@ -12,7 +12,8 @@ export class NewsHelper extends CollectionHelper<News> {
   async fetchNews(queryOverride: any = {}) {
     const defaultQuery = {
       fields: ['* , translations.*'],
-      limit: -1, // Fetch all
+      sort: ['sort', '-date'],
+      limit: 100, // Fetch all
     };
 
     const query = { ...defaultQuery, ...queryOverride };

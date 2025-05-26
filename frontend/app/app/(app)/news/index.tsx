@@ -34,14 +34,31 @@ const index = () => {
   }, []);
 
   const fetchAllNews = async () => {
-    setLoading(true);
-    const newsData = (await newsHelper.fetchNews({})) as News[];
-    const news = newsData || [];
-    if (news) {
-      dispatch({ type: SET_NEWS, payload: news });
-    }
-    setLoading(false);
-  };
+  setLoading(true);
+  const newsData = (await newsHelper.fetchNews({})) as News[];
+
+  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+
+  const sortedNews = [...(newsData || [])].sort((a, b) => {
+    const dateA = a?.date;
+    const dateB = b?.date;
+
+    if (!dateA && !dateB) return 0;
+    if (!dateA) return 1;
+    if (!dateB) return -1;
+
+    const dayA = dateA.split('T')[0];
+    const dayB = dateB.split('T')[0];
+
+    if (dayA === today && dayB !== today) return -1;
+    if (dayB === today && dayA !== today) return 1;
+
+    return dayA < dayB ? 1 : -1; // neuere zuerst
+  });
+
+  dispatch({ type: SET_NEWS, payload: sortedNews });
+  setLoading(false);
+};
 
   useEffect(() => {
     fetchAllNews();
