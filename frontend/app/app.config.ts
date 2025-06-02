@@ -76,6 +76,7 @@ export default ({config}: {config?: any}) => {
             "updates": {
                 "enabled": true,
                 "url": "https://u.expo.dev/"+customerConfig.easUpdateId,
+                "fallbackToCacheTimeout": 10*1000, // 10 seconds
             },
             "scheme": customerConfig.appScheme,
             "userInterfaceStyle": "automatic",

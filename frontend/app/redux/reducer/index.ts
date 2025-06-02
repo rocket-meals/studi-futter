@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux';
+import {combineReducers} from 'redux';
 import authReducer from './authReducer';
 import canteenReducer from './canteenReducer';
 import settingReducer from './settingsReducer';

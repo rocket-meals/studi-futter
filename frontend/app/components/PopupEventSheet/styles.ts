@@ -12,13 +12,17 @@ export default StyleSheet.create({
   contentContainer: {
     alignItems: 'center',
   },
-  sheetHeader: {
+  sheetHeaderClose: {
+    width: '100%',
+    flexDirection: 'column',
+    borderTopRightRadius: 28,
+    borderTopLeftRadius: 28,
+  },
+  sheetHeaderText: {
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderTopRightRadius: 28,
-    borderTopLeftRadius: 28,
   },
   sheetcloseButton: {
     width: 45,

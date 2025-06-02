@@ -294,11 +294,25 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({
       style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }}
       contentContainerStyle={styles.contentContainer}
     >
+      <View style={{
+        ...styles.sheetHeaderClose,
+        paddingRight: isWeb ? 10 : 0,
+        paddingTop: isWeb ? 10 : 0,
+        alignItems: 'flex-end',
+      }}>
+        <TouchableOpacity
+            style={{
+              ...styles.sheetcloseButton,
+              backgroundColor: theme.sheet.closeBg,
+            }}
+            onPress={closeSheet}
+        >
+          <AntDesign name='close' size={24} color={theme.sheet.closeIcon} />
+        </TouchableOpacity>
+      </View>
       <View
         style={{
-          ...styles.sheetHeader,
-          paddingRight: isWeb ? 10 : 0,
-          paddingTop: isWeb ? 10 : 0,
+          ...styles.sheetHeaderText,
         }}
       >
         <View />
@@ -311,15 +325,7 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({
         >
           {title || eventData?.alias}
         </Text>
-        <TouchableOpacity
-          style={{
-            ...styles.sheetcloseButton,
-            backgroundColor: theme.sheet.closeBg,
-          }}
-          onPress={closeSheet}
-        >
-          <AntDesign name='close' size={24} color={theme.sheet.closeIcon} />
-        </TouchableOpacity>
+
       </View>
       <View style={styles.popupContainer}>
         {
