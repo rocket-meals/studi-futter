@@ -21,7 +21,7 @@ export default StyleSheet.create({
   sheetHeaderText: {
     width: '100%',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
   },
   sheetcloseButton: {
@@ -33,7 +33,6 @@ export default StyleSheet.create({
   },
   sheetHeading: {
     fontFamily: 'Poppins_700Bold',
-    marginLeft: 30,
     textAlign: 'center',
   },
   popupContainer: {
