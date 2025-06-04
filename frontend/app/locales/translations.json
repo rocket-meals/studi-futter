@@ -950,14 +950,14 @@
     "zh": "食品优惠"
   },
   "no_foodoffers_found_for_selection": {
-    "de": "Keine Angebote gefunden.",
-    "en": "No offers found.",
-    "ar": "لم يتم العثور على عروض.",
-    "es": "No se encontraron ofertas.",
-    "fr": "Aucune offre trouvée.",
-    "ru": "Предложений не найдено.",
-    "tr": "Teklif bulunamadı.",
-    "zh": "未找到优惠。"
+    "de": "Keine Angebote gefunden oder Mensa geschlossen.",
+    "en": "No offers found or canteen closed.",
+    "ar": "لم يتم العثور على عروض أو المقصف مغلق.",
+    "es": "No se encontraron ofertas o la cantina está cerrada.",
+    "fr": "Aucune offre trouvée ou cantine fermée.",
+    "ru": "Предложений не найдено или столовая закрыта.",
+    "tr": "Teklif bulunamadı veya yemekhane kapalı.",
+    "zh": "未找到优惠或食堂已关闭。"
   },
   "error": {
     "de": "Fehler",
