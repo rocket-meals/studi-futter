@@ -21,7 +21,8 @@ import {StringHelper} from "../../../helpers/StringHelper";
 // VONUMMER Eindeutig
 // MIETBEGINN Eindeutig
 
-export enum HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS {
+
+export enum ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS {
     WOHNUNGSNUMMER = "WHNR", // Wohnungsnummer
     WOHNUNGSNAME = "WHNAME", // Wohnungsname
     VERWALTUNGSOBJEKT_NUMMER = "VONUMMER", // Verwaltungsobjekt Nummer
@@ -36,45 +37,67 @@ export enum HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS {
     VERFUEGBARAB = "VERFUEGBARAB", // Verfügbar ab
     ZIMMERNR = "ZIMMERNR", // Zimmernummer
     WOHNHEIM_EMAIL = "WH_EMAIL", // Wohnheim Email
-}
-
-const HOUSING_CONTRACT_FIELDS_FOR_ID: HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS[] = [
-    HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.VERWALTUNGSOBJEKT_NUMMER,
-    HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_PERSONENNUMMER,
-    HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETBEGINN
-].sort(); // sort the keys to ensure the order is always the same, so even when the order of the fields defined above changes, the id stays the same
-
-const HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS_REQUIRED: Record<HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS, boolean> = {
-    [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.WOHNUNGSNUMMER]: true,
-    [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.WOHNUNGSNAME]: true,
-    [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.VERWALTUNGSOBJEKT_NUMMER]: true,
-    [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_PERSONENNUMMER]: true,
-    [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_PERSON_NACHNAME]: true,
-    [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_PERSON_VORNAME]: true,
-    [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETBEGINN]: true,
-    [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETENDE]: true,
-    [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_AUSZUGSDATUM]: true,
-    [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_TELEFON_MOBILE]: false,
-    [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_EMAIL]: false,
-    [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.VERFUEGBARAB]: true,
-    [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.ZIMMERNR]: true,
-    [HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.WOHNHEIM_EMAIL]: false,
+    GEBURTSDATUM = "GEBURTSDATUM", // Geburtsdatum
+    BANKVERBINDUNG = "BANKVERBINDUNG", // Bankverbindung
+    ADRESSE_HEIMAT = "ADRESSE_HEIMAT", // Adresse Heimat
+    ADRESSE_NEU = "ADRESSE_NEU", // Adresse neu
 }
 
 // Define the type for ImportHousingContract
 export type ImportHousingContract = {
+    [key in ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS]: string | null; // Use string | null to allow for missing values
+};
+
+export type ImportHousingContracts = ImportHousingContract[];
+
+
+export enum HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS {
+    WOHNUNGSNUMMER = "WHNR", // Wohnungsnummer
+    WOHNUNGSNAME = "WHNAME", // Wohnungsname
+    VERWALTUNGSOBJEKT_NUMMER = "VONUMMER", // Verwaltungsobjekt Nummer
+    MIETER_PERSONENNUMMER = "PERSONNR", // Mieter Personennummer
+    MIETER_PERSON_NACHNAME = "NAME", // Mieter Nachname
+    MIETER_PERSON_VORNAME = "VORNAME", // Mieter Vorname
+    MIETER_MIETBEGINN = "MIETBEGINN", // Mieter Mietbeginn
+    MIETER_MIETENDE = "MIETENDE", // Mieter Mietende
+    MIETER_AUSZUGSDATUM = "AUSZUG", // Mieter Auszugsdatum
+    MIETER_TELEFON_MOBILE = "TELEFONMOBIL", // Mieter Telefon Mobil
+    MIETER_EMAIL = "EMAIL", // Mieter Email
+    VERFUEGBARAB = "VERFUEGBARAB", // Verfügbar ab
+    ZIMMERNR = "ZIMMERNR", // Zimmernummer
+    GEBURTSDATUM = "GEBURTSDATUM", // Geburtsdatum
+    BANKVERBINDUNG = "BANKVERBINDUNG", // Bankverbindung
+    ADRESSE_HEIMAT_LAND = "Land Heimat",
+    ADRESSE_HEIMAT_PLZ = "PLZ Heimat", // Adresse Heimat PLZ
+    ADRESSE_HEIMAT_STADT = "Ort Heimat", // Adresse Heimat Stad
+    ADRESSE_HEIMAT_STRASSE = "Straße Heimat", // Adresse Heimat Straße
+    ADRESSE_NEU_LAND = "Land neue Anschrift",
+    ADRESSE_NEU_PLZ = "PLZ neue Anschrift", // Adresse neu PLZ
+    ADRESSE_NEU_STADT = "Ort neue Anschrift", // Adresse neu Stadt
+    ADRESSE_NEU_STRASSE = "Straße neue Anschrift", // Adresse neu Straße
+}
+
+const HOUSING_CONTRACT_FIELDS_FOR_ID: ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS[] = [
+    ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.VERWALTUNGSOBJEKT_NUMMER,
+    ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_PERSONENNUMMER,
+    ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_MIETBEGINN
+].sort(); // sort the keys to ensure the order is always the same, so even when the order of the fields defined above changes, the id stays the same
+
+// Define the type for ImportHousingContract
+export type Tl1ImportHousingContract = {
     [key in HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS]: string;
 };
 
-export type Tl1ImportHousingContracts = ImportHousingContract[]
+
+export type Tl1ImportHousingContracts = Tl1ImportHousingContract[]
 
 
 
 export interface HannoverHousingFileReaderInterface {
-    readData(): Promise<Tl1ImportHousingContracts>
+    readData(): Promise<ImportHousingContracts>
     getHousingContractInternalCustomId(housingContract: ImportHousingContract): string | null // returns a unique identifier for the housing contract; null if not possible and a field is missing
     getAlias(housingContract: ImportHousingContract): string | null // returns a unique identifier for the housing contract; null if not possible and a field is missing
-    getResultHash(TL1ImportHousingContracts: Tl1ImportHousingContracts): string
+    getResultHash(TL1ImportHousingContracts: ImportHousingContracts): string
 }
 
 export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderInterface {
@@ -86,7 +109,7 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
         this.path_to_file = path_to_file;
     }
 
-    async readData(logger?: WorkflowRunLogger): Promise<Tl1ImportHousingContracts> {
+    async readData(logger?: WorkflowRunLogger): Promise<ImportHousingContracts> {
         this.logger = logger;
         if(logger){
             await logger.appendLog("Reading data");
@@ -149,90 +172,148 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
             inlineDelimiter: CSVExportParser.INLINE_DELIMITER_SEMICOLON,
             removeTailoringQuotes: true
         });
-        let result: Tl1ImportHousingContracts = jsonListFromCsvString as Tl1ImportHousingContracts;
+        let tl1ImportHousingContracts: Tl1ImportHousingContracts = jsonListFromCsvString as Tl1ImportHousingContracts;
 
         if(logger){
             await logger.appendLog("CSV parsed successfully, now correcting date values");
         }
 
-        for(let i = 0; i < result.length; i++){
+        let result: ImportHousingContracts = [];
+
+        for(let i = 0; i < tl1ImportHousingContracts.length; i++){
             if(logger){
                 await logger.appendLog("Correcting date values for housing contract from line " + (i+1) + " of " + result.length);
             }
-            let housingContract = result[i];
-            if(housingContract){
-                result[i] = await this.correctDateValues(housingContract);
+            let tl1HousingContract = tl1ImportHousingContracts[i];
+            if(tl1HousingContract){
+                result[i] = await this.parseTl1ImportElementToImportHousingContract(tl1HousingContract);
             }
         }
 
         return result;
     }
 
-    private async correctDateValues(housingContract: ImportHousingContract): Promise<ImportHousingContract> {
+    /**
+    export enum ROCKET_MEALS_HOUSING_CONTRACT_FORM_FIELDS {
+    WOHNUNGSNUMMER = "WHNR", // Wohnungsnummer
+    WOHNUNGSNAME = "WHNAME", // Wohnungsname
+    VERWALTUNGSOBJEKT_NUMMER = "VONUMMER", // Verwaltungsobjekt Nummer
+    MIETER_PERSONENNUMMER = "PERSONNR", // Mieter Personennummer
+    MIETER_PERSON_NACHNAME = "NAME", // Mieter Nachname
+    MIETER_PERSON_VORNAME = "VORNAME", // Mieter Vorname
+    MIETER_MIETBEGINN = "MIETBEGINN", // Mieter Mietbeginn
+    MIETER_MIETENDE = "MIETENDE", // Mieter Mietende
+    MIETER_AUSZUGSDATUM = "AUSZUG", // Mieter Auszugsdatum
+    MIETER_TELEFON_MOBILE = "TELEFONMOBIL", // Mieter Telefon Mobil
+    MIETER_EMAIL = "EMAIL", // Mieter Email
+    VERFUEGBARAB = "VERFUEGBARAB", // Verfügbar ab
+    ZIMMERNR = "ZIMMERNR", // Zimmernummer
+    WOHNHEIM_EMAIL = "WH_EMAIL", // Wohnheim Email
+    GEBURTSDATUM = "GEBURTSDATUM", // Geburtsdatum
+    BANKVERBINDUNG = "BANKVERBINDUNG", // Bankverbindung
+    ADRESSE_HEIMAT = "ADRESSE_HEIMAT", // Adresse Heimat
+    ADRESSE_NEU = "ADRESSE_NEU", // Adresse neu
+}
+        */
+
+    private async parseTl1ImportElementToImportHousingContract(housingContract: Tl1ImportHousingContract): Promise<ImportHousingContract> {
         let result: ImportHousingContract = {
-            ...housingContract
+            [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.WOHNUNGSNUMMER]: this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.WOHNUNGSNUMMER),
+            [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.WOHNUNGSNAME]: this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.WOHNUNGSNAME),
+            [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.VERWALTUNGSOBJEKT_NUMMER]: this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.VERWALTUNGSOBJEKT_NUMMER),
+            [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_PERSONENNUMMER]: this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_PERSONENNUMMER),
+            [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_PERSON_NACHNAME]: this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_PERSON_NACHNAME),
+            [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_PERSON_VORNAME]: this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_PERSON_VORNAME),
+            [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_MIETBEGINN]: this.getDateValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETBEGINN),
+            [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_MIETENDE]: this.getDateValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETENDE),
+            [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_AUSZUGSDATUM]: this.getDateValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_AUSZUGSDATUM),
+            [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_TELEFON_MOBILE]: this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_TELEFON_MOBILE),
+            [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_EMAIL]: this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_EMAIL),
+            [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.VERFUEGBARAB]: this.getDateValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.VERFUEGBARAB),
+            [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.ZIMMERNR]: this.getZimmernummer(housingContract),
+            [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.WOHNHEIM_EMAIL]: this.getWohnheimEmail(housingContract),
+            [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.GEBURTSDATUM]: this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.GEBURTSDATUM),
+            [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.BANKVERBINDUNG]: this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.BANKVERBINDUNG),
+            // Adresse Heimat
+            [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.ADRESSE_HEIMAT]: this.getAdresseHeimat(housingContract),
+            [ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.ADRESSE_NEU]: this.getAdresseNeu(housingContract),
         };
 
-        if(this.logger){
-            await this.logger.appendLog("Getting wohnheim email for housing contract:");
-        }
-        result.WH_EMAIL = this.getWohnheimEmail(housingContract);
-        if(this.logger){
-            await this.logger.appendLog("Wohnheim email: " + result.WH_EMAIL);
-        }
-
-        if(this.logger){
-            await this.logger.appendLog("Fixing zimmernummer for housing contract:");
-        }
-        result = this.fixZimmernummer(result);
-        if(this.logger){
-            await this.logger.appendLog("Zimmernummer fixed: " + result.ZIMMERNR);
-        }
-
-        let dateFields = [
-            HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETBEGINN,
-            HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETENDE,
-            HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_AUSZUGSDATUM,
-            HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.VERFUEGBARAB
-        ]
-
-        for(let key of dateFields){
-            let value = housingContract[key];
-            if(value){
-                let date = DateHelper.formatDDMMYYYYToDateWithTimeZone(value, DateHelperTimezone.GERMANY);
-                result[key] = date.toISOString()
-            }
-        }
 
         return result;
     }
 
-    private fixZimmernummer(housingContract: ImportHousingContract): ImportHousingContract {
-        // Mail mit Wiebesiek 16.05.2025 - 15:17
-        // e.G. "21-3" -> "213"
-        let zimmernummer = housingContract[HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.ZIMMERNR];
-        if(zimmernummer){
-            zimmernummer = StringHelper.replaceAll(zimmernummer, "-", "");
-        }
-        housingContract[HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.ZIMMERNR] = zimmernummer;
+    private getAdresseHeimat(housingContract: Tl1ImportHousingContract): string | null {
+        let land = this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.ADRESSE_HEIMAT_LAND);
+        let plz = this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.ADRESSE_HEIMAT_PLZ);
+        let stadt = this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.ADRESSE_HEIMAT_STADT);
+        let strasse = this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.ADRESSE_HEIMAT_STRASSE);
 
-        return housingContract;
+        return this.combineAddressValues(land, plz, stadt, strasse);
     }
 
-    getResultHash(TL1ImportHousingContracts: Tl1ImportHousingContracts): string {
-        return HashHelper.hashFromObject(TL1ImportHousingContracts);
+    private getAdresseNeu(housingContract: Tl1ImportHousingContract): string | null {
+        let land = this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.ADRESSE_NEU_LAND);
+        let plz = this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.ADRESSE_NEU_PLZ);
+        let stadt = this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.ADRESSE_NEU_STADT);
+        let strasse = this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.ADRESSE_NEU_STRASSE);
+
+        return this.combineAddressValues(land, plz, stadt, strasse);
     }
 
-    private getValue(housingContract: ImportHousingContract, field: HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS): string | null {
-        if(field=== HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.WOHNHEIM_EMAIL){
-            return this.getWohnheimEmail(housingContract);
+    private combineAddressValues(land: string | null, plz: string | null, stadt: string | null, strasse: string | null): string | null {
+        let unknownValue = "???" // in the export file, if a value is not set, it is set to "???", so we use this as a placeholder for missing values only for adresses
+        if(land === unknownValue) {
+            land = "";
         }
+        if(plz === unknownValue) {
+            plz = "";
+        }
+        if(stadt === unknownValue) {
+            stadt = "";
+        }
+        if(strasse === unknownValue) {
+            strasse = "";
+        }
+        // if all values are empty, return null
+        if(!land && !plz && !stadt && !strasse) {
+            return null;
+        }
+        return `${land}, ${plz} ${stadt}, ${strasse}`.trim();
+    }
 
+    private getValue(housingContract: Tl1ImportHousingContract, field: HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS): string | null {
         let value = housingContract[field];
         if(!value){
             return null;
         }
         return value;
+    }
+
+    private getZimmernummer(housingContract: Tl1ImportHousingContract): string | null {
+        // Mail mit Wiebesiek 16.05.2025 - 15:17
+        // e.G. "21-3" -> "213"
+        let zimmernummer = housingContract[HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.ZIMMERNR];
+        if(zimmernummer){
+            zimmernummer = StringHelper.replaceAll(zimmernummer, "-", "");
+            return zimmernummer;
+        } else {
+            return null;
+        }
+    }
+
+    getResultHash(importHousingContracts: ImportHousingContracts): string {
+        return HashHelper.hashFromObject(importHousingContracts);
+    }
+
+    private getDateValue(housingContract: Tl1ImportHousingContract, field: HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS): string | null {
+        let value = housingContract[field];
+        if(value){
+            let date = DateHelper.formatDDMMYYYYToDateWithTimeZone(value, DateHelperTimezone.GERMANY);
+            return date.toISOString()
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -263,7 +344,7 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
         "Menschingstr": "WHL-me@studentenwerk-hannover.de",
     };
 
-    private getWohnheimEmail(housingContract: ImportHousingContract): string {
+    private getWohnheimEmail(housingContract: Tl1ImportHousingContract): string {
         let wohnheimName = this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.WOHNUNGSNAME);
         if(!wohnheimName){
             return "";
@@ -285,11 +366,11 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
 
         let partialIds: (string | null)[] = [];
 
-        let wohnheimname = this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.WOHNUNGSNAME);
+        let wohnheimname = housingContract[ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.WOHNUNGSNAME];
         partialIds.push(wohnheimname);
-        let nachname = this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_PERSON_NACHNAME);
+        let nachname = housingContract[ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_PERSON_NACHNAME];
         partialIds.push(nachname);
-        let mietendeRaw = this.getValue(housingContract, HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETENDE);
+        let mietendeRaw = housingContract[ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_MIETENDE];
         let mietende: string | null = null;
         if(mietendeRaw){
             let date = new Date(mietendeRaw);
@@ -315,7 +396,7 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
         }
     }
 
-    private getPartialExternalId(housingContract: ImportHousingContract, field: HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS): string | null {
+    private getPartialExternalId(housingContract: ImportHousingContract, field: ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS): string | null {
         let value = housingContract[field];
         if(!value){
             return null;
@@ -323,15 +404,15 @@ export class HannoverTL1HousingFileReader implements HannoverHousingFileReaderIn
         return `${field}_${housingContract[field]}`;
     }
 
-    static isValueRequiredNotEmpty(field: HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS): boolean {
+    static isValueRequiredNotEmpty(field: ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS): boolean {
         // if field is in composite id, it is required
         if(HOUSING_CONTRACT_FIELDS_FOR_ID.includes(field)){
             return true;
         }
-        return HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS_REQUIRED[field];
+        return false;
     }
 
-    public static getSortedKeysForHousingContractCompositeId(): HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS[] {
+    public static getSortedKeysForHousingContractCompositeId(): ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS[] {
         let sortedKeysForHousingContractCompositeId = HOUSING_CONTRACT_FIELDS_FOR_ID.sort();
         return sortedKeysForHousingContractCompositeId;
     }

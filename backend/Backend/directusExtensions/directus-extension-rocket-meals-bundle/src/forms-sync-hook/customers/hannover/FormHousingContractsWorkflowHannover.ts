@@ -2,8 +2,7 @@ import {FormImportSyncWorkflow} from "../../FormImportSyncWorkflow";
 import {
     HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS,
     HannoverTL1HousingFileReader,
-    ImportHousingContract,
-    Tl1ImportHousingContracts
+    ImportHousingContract, ImportHousingContracts, ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS
 } from "./HannoverTL1HousingFileReader";
 import {
     FormImportSyncFormAnswer,
@@ -13,7 +12,6 @@ import {
 import {WorkflowResultHash} from "../../../helpers/itemServiceHelpers/WorkflowsRunHelper";
 import {FormAnswers} from "../../../databaseTypes/types";
 import {WorkflowRunLogger} from "../../../workflows-runs-hook/WorkflowRunJobInterface";
-import {DateHelper, DateHelperTimezone} from "../../../helpers/DateHelper";
 
 
 export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow {
@@ -21,7 +19,7 @@ export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow
     static FORM_INTERNAL_ID = "housing-contract-sync-hannover";
 
     private reader: HannoverTL1HousingFileReader;
-    private contracts: Tl1ImportHousingContracts = [];
+    private contracts: ImportHousingContracts = [];
 
     constructor(housingPath: string) {
         super();
@@ -46,10 +44,10 @@ export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow
         let value_raw = contract[key];
 
         switch (key) {
-            case HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETBEGINN:
-            case HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_MIETENDE:
-            case HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.MIETER_AUSZUGSDATUM:
-            case HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS.VERFUEGBARAB:
+            case ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_MIETBEGINN:
+            case ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_MIETENDE:
+            case ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.MIETER_AUSZUGSDATUM:
+            case ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS.VERFUEGBARAB:
                 // date is already in ISO format
                 return {
                     value_date: value_raw
@@ -72,7 +70,7 @@ export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow
 
     private getFormImportSyncFormAnswers(contract: ImportHousingContract): FormImportSyncFormAnswers {
         let formAnswers: FormImportSyncFormAnswers = [];
-        let contractKeys = Object.keys(contract) as HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS[];
+        let contractKeys = Object.keys(contract) as ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS[];
         for (let key of contractKeys) {
             let formAnswer = FormHousingContractsWorkflowHannover.getFormImportSyncFormAnswer(contract, key);
             formAnswers.push(formAnswer);

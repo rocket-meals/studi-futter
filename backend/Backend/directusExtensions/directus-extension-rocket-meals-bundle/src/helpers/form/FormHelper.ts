@@ -273,8 +273,8 @@ export class FormHelper {
             requestOptions.bearerToken = adminBearerToken;
         }
 
-        console.log("Generating PDF from HTML with length:", html.length);
-        console.log("Using request options:", requestOptions);
+        //console.log("Generating PDF from HTML with length:", html.length);
+        //console.log("Using request options:", requestOptions);
 
         let pdfBuffer = await PdfGeneratorHelper.generatePdfFromHtml(html, requestOptions);
         return pdfBuffer;

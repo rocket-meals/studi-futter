@@ -7,7 +7,7 @@ import {
 import {
     HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS,
     HannoverTL1HousingFileReader,
-    ImportHousingContract
+    ImportHousingContract, ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS
 } from "../HannoverTL1HousingFileReader";
 import {FormHousingContractsWorkflowHannover} from "../FormHousingContractsWorkflowHannover";
 import {FIELD_VALUE_KEY_PREFIX, KeyOfFormAnswersValueFieldsType} from "../../../FormImportTypes";
@@ -74,7 +74,7 @@ describe("Hannover Housing Form Test", () => {
         const housingContracts = await getData();
         for(let housingContract of housingContracts) {
             let internalCustomId = testFileReader.getHousingContractInternalCustomId(housingContract);
-            let housingContractFields = Object.values(HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS);
+            let housingContractFields = Object.values(ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS);
 
             for (let housingContractField of housingContractFields) {
                 let formAnswer = FormHousingContractsWorkflowHannover.getFormImportSyncFormAnswer(housingContract, housingContractField);
@@ -105,7 +105,7 @@ describe("Hannover Housing Form Test", () => {
         const data = await getData();
         for (let entry of data) {
             // `keys` are the logical field names used by developers, while values are the actual field keys in the data.
-            const keys = Object.values(HANNOVER_TL1_EXTERNAL_HOUSING_CONTRACT_FIELDS);
+            const keys = Object.values(ROCKET_MEALS_HANNOVER_HOUSING_CONTRACT_FORM_FIELDS);
 
             for (let key of keys) {
                 let hasKey = Object.keys(entry).includes(key);
