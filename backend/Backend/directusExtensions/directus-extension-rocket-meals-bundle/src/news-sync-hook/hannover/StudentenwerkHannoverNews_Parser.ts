@@ -4,12 +4,13 @@ import type { Element as CheerioElement } from 'domhandler';
 import { TranslationHelper } from "../../helpers/TranslationHelper";
 import { NewsParserInterface, NewsTypeForParser } from "./../NewsParserInterface";
 import * as https from "node:https";
-import undici, {Agent} from 'undici';
+//import undici, {Agent} from 'undici';
 import {WorkflowsRuns} from "../../databaseTypes/types";
 import {MyDatabaseHelper} from "../../helpers/MyDatabaseHelper";
 import {WorkflowRunLogger} from "../../workflows-runs-hook/WorkflowRunJobInterface";
+import axios from "axios";
 
-const agent = new Agent({ maxHeaderSize: 32 * 1024 });
+//const agent = new Agent({ maxHeaderSize: 32 * 1024 });
 
 export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
 
@@ -42,6 +43,7 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
     }
 
     async fetchNewsPage() {
+        /**
         const { statusCode, body } = await undici.request(StudentenwerkHannoverNews_Parser.newsUrl, {
             dispatcher: agent
         });
@@ -52,15 +54,16 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
 
         const text = await body.text();
         return text;
+            */
 
-        /**
+
         return axios.get(StudentenwerkHannoverNews_Parser.newsUrl).then(response => {
             return response.data; // gibt den HTML-Inhalt zurück
         });
-            */
     }
 
     static async fetchArticlePage(articleUrl: string) {
+        /**
         const { statusCode, body } = await undici.request(articleUrl, {
             dispatcher: agent
         });
@@ -70,9 +73,10 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
         }
 
         return await body.text(); // gibt den HTML-Inhalt zurück
+            */
 
         // Axios nutzt intern den Node.js HTTP-Parser. Dieser hat eine harte Begrenzung bei ca. 8192 Bytes (8 KB) für Response-Header. Diese Grenze lässt sich im aktuellen Node.js nicht direkt erhöhen für axios.
-        // return axios.get(articleUrl).then(response => response.data);
+        return axios.get(articleUrl).then(response => response.data);
     }
 
     static async parseNewsItems(html: string, logger?: WorkflowRunLogger, limitAmountNews?: number): Promise<NewsTypeForParser[]> {
