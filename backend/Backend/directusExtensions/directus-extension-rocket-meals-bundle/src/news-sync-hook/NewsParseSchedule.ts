@@ -5,6 +5,8 @@ import {News, WorkflowsRuns} from "../databaseTypes/types";
 import {CollectionNames} from "../helpers/CollectionNames";
 import {WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
 import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
+import {WorkflowResultHash} from "../helpers/itemServiceHelpers/WorkflowsRunHelper";
+import {HashHelper} from "../helpers/HashHelper";
 
 export class NewsParseSchedule {
 
@@ -21,17 +23,39 @@ export class NewsParseSchedule {
         this.parser = parser;
     }
 
+    async getPreviousHash() {
+        return await this.myDatabaseHelper.getWorkflowsRunsHelper().getPreviousResultHash(this.workflowRun, this.logger);
+    }
+
     async parse(): Promise<Partial<WorkflowsRuns>> {
         await this.logger.appendLog("Starting sync news parsing");
 
         try {
             await this.logger.appendLog("Getting news items");
             let newsJSONList = await this.parser.getNewsItems();
-            await this.updateNews(newsJSONList);
+            await this.logger.appendLog("Found " + newsJSONList.length + " news items");
+
+            let currentHash = new WorkflowResultHash(HashHelper.hashFromObject(newsJSONList));
+
+            let previousMealOffersHash = await this.getPreviousHash();
+            if(WorkflowResultHash.isError(previousMealOffersHash)){
+                console.log("Previous Hash is Error");
+                await this.logger.appendLog("Error: " + previousMealOffersHash.toString());
+                return this.logger.getFinalLogWithStateAndParams({
+                    state: WORKFLOW_RUN_STATE.FAILED,
+                });
+            }
+
+            let noHash = !previousMealOffersHash;
+            let isSameHash = currentHash.isSame(previousMealOffersHash);
+            if(noHash || !isSameHash){
+                await this.updateNews(newsJSONList);
+            }
 
             await this.logger.appendLog("Finished");
             return await this.logger.getFinalLogWithStateAndParams({
                 state: WORKFLOW_RUN_STATE.SUCCESS,
+                result_hash: currentHash.getHash()
             });
         } catch (err: any) {
             await this.logger.appendLog("Error: " + err.toString());

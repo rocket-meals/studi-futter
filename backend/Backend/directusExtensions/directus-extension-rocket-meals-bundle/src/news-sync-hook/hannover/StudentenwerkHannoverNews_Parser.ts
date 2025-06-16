@@ -1,8 +1,12 @@
-import axios from "axios";
+//import axios from "axios";
 import {load as cheerioLoad, CheerioAPI} from 'cheerio';
 import type { Element as CheerioElement } from 'domhandler';
 import { TranslationHelper } from "../../helpers/TranslationHelper";
 import { NewsParserInterface, NewsTypeForParser } from "./../NewsParserInterface";
+import * as https from "node:https";
+import undici, {Agent} from 'undici';
+
+const agent = new Agent({ maxHeaderSize: 32 * 1024 });
 
 export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
 
@@ -20,19 +24,45 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
     async getRealNewsItems(limitAmountNews?: number): Promise<NewsTypeForParser[]> {
         try {
             let response = await this.fetchNewsPage();
-            return StudentenwerkHannoverNews_Parser.parseNewsItems(response.data, limitAmountNews);
-        } catch (error) {
-            console.log(error);
-            return [];
+            return StudentenwerkHannoverNews_Parser.parseNewsItems(response, limitAmountNews);
+        } catch (error: any) {
+            console.error("Error fetching or parsing news page:", error);
+            throw new Error(`Failed to fetch or parse news page: ${error.toString()}`);
         }
     }
 
     async fetchNewsPage() {
-        return axios.get(StudentenwerkHannoverNews_Parser.newsUrl);
+        const { statusCode, body } = await undici.request(StudentenwerkHannoverNews_Parser.newsUrl, {
+            dispatcher: agent
+        });
+
+        if (statusCode < 200 || statusCode >= 300) {
+            throw new Error(`Failed to fetch news page. HTTP status ${statusCode} - Error: ${body.toString()}`);
+        }
+
+        const text = await body.text();
+        return text;
+
+        /**
+        return axios.get(StudentenwerkHannoverNews_Parser.newsUrl).then(response => {
+            return response.data; // gibt den HTML-Inhalt zurück
+        });
+            */
     }
 
     static async fetchArticlePage(articleUrl: string) {
-        return axios.get(articleUrl);
+        const { statusCode, body } = await undici.request(articleUrl, {
+            dispatcher: agent
+        });
+
+        if (statusCode < 200 || statusCode >= 300) {
+            throw new Error(`Failed to fetch article page. HTTP status ${statusCode} - Error: ${body.toString()}`);
+        }
+
+        return await body.text(); // gibt den HTML-Inhalt zurück
+
+        // Axios nutzt intern den Node.js HTTP-Parser. Dieser hat eine harte Begrenzung bei ca. 8192 Bytes (8 KB) für Response-Header. Diese Grenze lässt sich im aktuellen Node.js nicht direkt erhöhen für axios.
+        // return axios.get(articleUrl).then(response => response.data);
     }
 
     static async parseNewsItems(html: string, limitAmountNews?: number): Promise<NewsTypeForParser[]> {
@@ -96,7 +126,7 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
         if (!articleUrl) return null;
         try {
             let articleResponse = await this.fetchArticlePage(articleUrl);
-            const $articleDetails = cheerioLoad(articleResponse.data);
+            const $articleDetails = cheerioLoad(articleResponse);
 
             // .news-list-date > time:nth-child(2)
             let datePublishedText = $articleDetails(".news-list-date").text().trim();

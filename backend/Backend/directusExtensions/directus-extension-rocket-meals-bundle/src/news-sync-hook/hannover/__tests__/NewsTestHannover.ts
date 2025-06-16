@@ -1,7 +1,6 @@
 // small jest test
-import {describe, expect, it, jest} from '@jest/globals';
+import {describe, expect, it} from '@jest/globals';
 import {StudentenwerkHannoverNews_Parser} from "../StudentenwerkHannoverNews_Parser";
-import axios from "axios";
 import path from "path";
 import fs from "fs";
 
@@ -15,26 +14,52 @@ describe("NewsTestHannover", () => {
 
     it("should find news with fields", async () => {
         let limitAmountNews = 2;
-        jest.mock('axios');
-        // mock for StudentenwerkHannoverNews_Parser.baseUrl repsone only
-        // check if url is StudentenwerkHannoverNews_Parser.baseUrl
-        // Mock axios.get only for specific URLs
-
-        jest.spyOn(axios, 'get').mockImplementation((url) => {
-            if (url === StudentenwerkHannoverNews_Parser.newsUrl) {
-                return Promise.resolve({ data: htmlNews });
-            } else if (url === StudentenwerkHannoverNews_Parser.newsUrl+"/detail/unterstuetzung-beim-start") {
-                // Mock response for a specific article detail page
-                return Promise.resolve({ data: htmlNewsUnterstuetzungBeimStart});
-            } else if(url === StudentenwerkHannoverNews_Parser.newsUrl+"/detail/bafoeg-antrag-leichter-gemacht") {
-                // Mock response for a specific article detail page
-                return Promise.resolve({ data: htmlNewsBafoegAntragLeichterGemacht});
-            }
-            return Promise.reject(new Error('Unknown URL'));
-        });
-
-
         let news = await newsParser.getRealNewsItems(limitAmountNews);
         expect(news.length).toBeGreaterThan(0);
+    });
+
+    it("test date from news article", async () => {
+        //console.log("Testing date extraction from news article");
+        let articleUrl = "https://www.studentenwerk-hannover.de/unternehmen/news/detail/lange-tafel-2024";
+
+        //console.log("Article URL: " + articleUrl);
+
+        let response = await StudentenwerkHannoverNews_Parser.fetchArticleDate(articleUrl);
+        //console.log("Response: " + response);
+        //console.log(response);
+        expect(response).toBeDefined();
+    });
+
+
+    it("real news", async () => {
+        let news = await newsParser.getRealNewsItems(5);
+        expect(news.length).toBeGreaterThan(0);
+        let sortedNews = news.sort((a, b) => {
+            let dateA_raw = a.basicNews.date;
+            let dateB_raw = b.basicNews.date;
+
+            // latest articles first
+
+            // if no date, sort to the end
+            if (!dateA_raw) return 1; // dateA is undefined, so it goes to the end
+            if (!dateB_raw) return -1; // dateB is undefined, so it goes to the end
+
+            let dateA = new Date(dateA_raw);
+            let dateB = new Date(dateB_raw);
+            return dateB.getTime() - dateA.getTime(); // latest articles first
+        });
+
+        let expectedAliasSomewhere = "Essen, quatschen, zuhören";
+        let foundAlias = news.some(item => item.basicNews.alias === expectedAliasSomewhere);
+        expect(foundAlias).toBe(true);
+
+        for( let newsItem of news) {
+            expect(newsItem.basicNews.external_identifier).toBeDefined();
+            expect(newsItem.basicNews.image_remote_url).toBeDefined();
+            expect(newsItem.basicNews.alias).toBeDefined();
+            expect(newsItem.basicNews.date).toBeDefined();
+            expect(newsItem.basicNews.url).toBeDefined();
+
+        }
     });
 });
