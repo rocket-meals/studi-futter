@@ -2,6 +2,8 @@ import axios from "axios";
 import { load as cheerioLoad } from 'cheerio';
 import { TranslationHelper } from "../../helpers/TranslationHelper";
 import { NewsParserInterface, NewsTypeForParser } from "./../NewsParserInterface";
+import {WorkflowsRuns} from "../../databaseTypes/types";
+import {WorkflowRunLogger} from "../../workflows-runs-hook/WorkflowRunJobInterface";
 
 type ArticleDetails = {
     date?: Date | null;
@@ -15,7 +17,7 @@ export class StudentenwerkOsnabrueckNews_Parser implements NewsParserInterface {
 
     constructor() {}
 
-    async getNewsItems(): Promise<NewsTypeForParser[]> {
+    async getNewsItems(workflowRun?: WorkflowsRuns, logger?: WorkflowRunLogger): Promise<NewsTypeForParser[]> {
         let realNewsItems = await this.getRealNewsItems();
         return [...realNewsItems];
     }

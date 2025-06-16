@@ -32,7 +32,7 @@ export class NewsParseSchedule {
 
         try {
             await this.logger.appendLog("Getting news items");
-            let newsJSONList = await this.parser.getNewsItems();
+            let newsJSONList = await this.parser.getNewsItems(this.workflowRun, this.logger);
             await this.logger.appendLog("Found " + newsJSONList.length + " news items");
 
             let currentHash = new WorkflowResultHash(HashHelper.hashFromObject(newsJSONList));

@@ -1,5 +1,6 @@
-import {News} from "../databaseTypes/types";
+import {News, WorkflowsRuns} from "../databaseTypes/types";
 import {TranslationsFromParsingType} from "../helpers/TranslationHelper";
+import {WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
 
 type NewsTypeForParserOmmited = Omit<News, 'id' | 'user_created' | 'user_updated' | 'image' | "translations" |"status" | "external_identifier"> & {
     external_identifier: string
@@ -11,5 +12,5 @@ export type NewsTypeForParser = {
 
 export interface NewsParserInterface {
 
-    getNewsItems(): Promise<NewsTypeForParser[]>;
+    getNewsItems(workflowRun?: WorkflowsRuns, logger?: WorkflowRunLogger): Promise<NewsTypeForParser[]>;
 }

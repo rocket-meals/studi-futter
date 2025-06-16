@@ -14,7 +14,7 @@ describe("NewsTestHannover", () => {
 
     it("should find news with fields", async () => {
         let limitAmountNews = 2;
-        let news = await newsParser.getRealNewsItems(limitAmountNews);
+        let news = await newsParser.getRealNewsItems(undefined, limitAmountNews);
         expect(news.length).toBeGreaterThan(0);
     });
 
@@ -32,7 +32,7 @@ describe("NewsTestHannover", () => {
 
 
     it("real news", async () => {
-        let news = await newsParser.getRealNewsItems(5);
+        let news = await newsParser.getRealNewsItems(undefined, 5);
         expect(news.length).toBeGreaterThan(0);
         let sortedNews = news.sort((a, b) => {
             let dateA_raw = a.basicNews.date;
