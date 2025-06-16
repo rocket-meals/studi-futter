@@ -9,6 +9,7 @@ import {WorkflowsRuns} from "../../databaseTypes/types";
 import {MyDatabaseHelper} from "../../helpers/MyDatabaseHelper";
 import {WorkflowRunLogger} from "../../workflows-runs-hook/WorkflowRunJobInterface";
 import axios from "axios";
+import {FetchHelper} from "../../helpers/FetchHelper";
 
 //const agent = new Agent({ maxHeaderSize: 32 * 1024 });
 
@@ -43,40 +44,11 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
     }
 
     async fetchNewsPage() {
-        /**
-        const { statusCode, body } = await undici.request(StudentenwerkHannoverNews_Parser.newsUrl, {
-            dispatcher: agent
-        });
-
-        if (statusCode < 200 || statusCode >= 300) {
-            throw new Error(`Failed to fetch news page. HTTP status ${statusCode} - Error: ${body.toString()}`);
-        }
-
-        const text = await body.text();
-        return text;
-            */
-
-
-        return axios.get(StudentenwerkHannoverNews_Parser.newsUrl).then(response => {
-            return response.data; // gibt den HTML-Inhalt zurück
-        });
+        return await FetchHelper.fetchPage(StudentenwerkHannoverNews_Parser.newsUrl);
     }
 
     static async fetchArticlePage(articleUrl: string) {
-        /**
-        const { statusCode, body } = await undici.request(articleUrl, {
-            dispatcher: agent
-        });
-
-        if (statusCode < 200 || statusCode >= 300) {
-            throw new Error(`Failed to fetch article page. HTTP status ${statusCode} - Error: ${body.toString()}`);
-        }
-
-        return await body.text(); // gibt den HTML-Inhalt zurück
-            */
-
-        // Axios nutzt intern den Node.js HTTP-Parser. Dieser hat eine harte Begrenzung bei ca. 8192 Bytes (8 KB) für Response-Header. Diese Grenze lässt sich im aktuellen Node.js nicht direkt erhöhen für axios.
-        return axios.get(articleUrl).then(response => response.data);
+        return await FetchHelper.fetchPage(articleUrl);
     }
 
     static async parseNewsItems(html: string, logger?: WorkflowRunLogger, limitAmountNews?: number): Promise<NewsTypeForParser[]> {
