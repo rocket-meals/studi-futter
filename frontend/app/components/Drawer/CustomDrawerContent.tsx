@@ -389,7 +389,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
                 size={28}
                 color={
                   isActive('settings/index')
-                    ? theme.activeIcon
+                    ? contrastColor
                     : theme.inactiveIcon
                 }
               />

@@ -5,8 +5,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import Modal from 'react-native-modal';
+import React, { useEffect, useState, useRef } from 'react';
+import BaseBottomSheet from '../BaseBottomSheet';
+import BottomSheet from '@gorhom/bottom-sheet';
 import { styles } from './styles';
 import { AntDesign } from '@expo/vector-icons';
 import { PermissionModalProps } from './types';
@@ -18,6 +19,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { persistor } from '@/redux/store';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
+import { myContrastColor } from '@/helper/colorHelper';
 import { RootState } from '@/redux/reducer';
 
 const PermissionModal: React.FC<PermissionModalProps> = ({
@@ -26,10 +28,14 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
 }) => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
-  const { primaryColor } = useSelector((state: RootState) => state.settings);
+  const { primaryColor, selectedTheme: mode } = useSelector(
+    (state: RootState) => state.settings
+  );
+  const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
+  const sheetRef = useRef<BottomSheet>(null);
 
   const getModalWidth = (windowWidth: number) => {
     if (windowWidth < 800) return '100%';
@@ -41,6 +47,14 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
     const windowWidth = Dimensions.get('window').width;
     return getModalWidth(windowWidth);
   });
+
+  useEffect(() => {
+    if (isVisible) {
+      sheetRef.current?.expand();
+    } else {
+      sheetRef.current?.close();
+    }
+  }, [isVisible]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -71,15 +85,17 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
   };
 
   return (
-    <Modal
-      isVisible={isVisible}
-      style={styles.modalContainer}
+    <BaseBottomSheet
+      ref={sheetRef}
+      index={-1}
+      enablePanDownToClose
       onClose={() => setIsVisible(false)}
+      backgroundStyle={{ backgroundColor: theme.sheet.sheetBg }}
     >
       <View
         style={{
           ...styles.modalView,
-          backgroundColor: theme.modal.modalBg,
+          backgroundColor: theme.sheet.sheetBg,
           width: modalWidth,
         }}
       >
@@ -101,7 +117,7 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
             fontSize: Dimensions.get('window').width < 500 ? 26 : 36,
           }}
         >
-          Access Limited
+          {translate(TranslationKeys.access_limited)}
         </Text>
         <Text
           style={{
@@ -110,9 +126,7 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
             fontSize: Dimensions.get('window').width < 500 ? 14 : 18,
           }}
         >
-          To enjoy a personalized experience, please log in or create an
-          account. Alternatively, you can continue as a guest with limited
-          features.
+          {translate(TranslationKeys.limited_access_description)}
         </Text>
         <TouchableOpacity
           style={{
@@ -125,15 +139,14 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
           {loading ? (
             <ActivityIndicator size={22} color={theme.background} />
           ) : (
-            <Text style={{ ...styles.loginLabel, color: theme.light }}>
-              {/* Sign In / Create Account */}
+            <Text style={{ ...styles.loginLabel, color: contrastColor }}>
               {translate(TranslationKeys.sign_in)} /{' '}
               {translate(TranslationKeys.create_account)}
             </Text>
           )}
         </TouchableOpacity>
       </View>
-    </Modal>
+    </BaseBottomSheet>
   );
 };
 

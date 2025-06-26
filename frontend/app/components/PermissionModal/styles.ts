@@ -7,10 +7,10 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalView: {
-    height: "auto",
+    height: 'auto',
     borderRadius: 40,
     padding: 20,
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   modalHeader: {
     width: '100%',
@@ -26,13 +26,16 @@ export const styles = StyleSheet.create({
   modalHeading: {
     fontSize: 36,
     fontFamily: 'Poppins_700Bold',
+    textAlign: 'center',
+    width: '100%',
   },
   modalSubHeading: {
     fontSize: 16,
     fontFamily: 'Poppins_400Regular',
     marginTop: 15,
     marginBottom: 10,
-    textAlign: 'center',
+    textAlign: 'left',
+    width: '100%',
   },
   loginButton: {
     width: '80%',

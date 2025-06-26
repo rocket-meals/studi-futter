@@ -5,9 +5,9 @@ import { useTheme } from '@/hooks/useTheme';
 import Form from '@/components/Login/Form';
 import Header from '@/components/Login/Header';
 import Footer from '@/components/Login/Footer';
-import ManagementModal from '@/components/Login/ManagementModal';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import ManagementSheet from '@/components/Login/ManagementSheet';
+import BaseBottomSheet from '@/components/BaseBottomSheet';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { isWeb } from '@/constants/Constants';
 import { router, useFocusEffect, useGlobalSearchParams } from 'expo-router';
@@ -43,14 +43,12 @@ export default function Login() {
   const { deviceMock } = useGlobalSearchParams();
   const appSettingsHelper = new AppSettingsHelper();
   const wikisHelper = new WikisHelper();
-  const [isVisible, setIsVisible] = useState(false);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [loading, setLoading] = useState(false);
   const snapPoints = useMemo(() => ['50%'], []);
   const [isActive, setIsActive] = useState(false);
   const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
   const attentionSheetRef = useRef<BottomSheet>(null);
-  const attentionSnapPoints = useMemo(() => ['80%'], []);
   const [providers, setProviders] = useState<any>([]);
   const [isWebVisible, setIsWebVisible] = useState(
     Dimensions.get('window').width > 500
@@ -103,6 +101,8 @@ export default function Login() {
   const closeSheet = () => {
     bottomSheetRef?.current?.close();
   };
+
+
 
   const openAttentionSheet = () => {
     setIsBottomSheetVisible(true);
@@ -282,7 +282,6 @@ export default function Login() {
         >
           <Header />
           <Form
-            setIsVisible={setIsVisible}
             openSheet={openSheet}
             openAttentionSheet={openAttentionSheet}
             onSuccess={handleUserLogin}
@@ -312,15 +311,8 @@ export default function Login() {
             {renderContent()}
           </View>
         )}
-        {isWeb ? (
-          <ManagementModal
-            isVisible={isVisible}
-            setIsVisible={setIsVisible}
-            handleLogin={handleUserLogin}
-            loading={loading}
-          />
-        ) : (
-          <BottomSheet
+        {isActive && (
+          <BaseBottomSheet
             ref={bottomSheetRef}
             index={-1}
             snapPoints={snapPoints}
@@ -328,32 +320,35 @@ export default function Login() {
             backgroundStyle={{
               borderTopRightRadius: 30,
               borderTopLeftRadius: 30,
+              backgroundColor: theme.sheet.sheetBg,
             }}
+            enablePanDownToClose
+            onClose={closeSheet}
           >
             <ManagementSheet
               closeSheet={closeSheet}
               handleLogin={handleUserLogin}
               loading={loading}
             />
-          </BottomSheet>
+          </BaseBottomSheet>
         )}
         {isActive && (
-          <BottomSheet
+          <BaseBottomSheet
             ref={attentionSheetRef}
             index={-1}
-            snapPoints={attentionSnapPoints}
-            handleComponent={null}
             backgroundStyle={{
               borderTopRightRadius: 30,
               borderTopLeftRadius: 30,
+              backgroundColor: theme.sheet.sheetBg,
             }}
+            onClose={closeAttentionSheet}
           >
             <AttentionSheet
               closeSheet={closeAttentionSheet}
               handleLogin={handleAnonymousLogin}
               isBottomSheetVisible={isBottomSheetVisible}
             />
-          </BottomSheet>
+          </BaseBottomSheet>
         )}
       </ScrollView>
     </>

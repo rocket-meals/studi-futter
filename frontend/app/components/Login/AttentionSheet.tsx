@@ -13,6 +13,7 @@ import animationJson from '@/assets/animations/astronaut-computer.json';
 import { useFocusEffect } from 'expo-router';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
+import { myContrastColor } from '@/helper/colorHelper';
 
 const AttentionSheet: React.FC<AttentionSheetProps> = ({
   closeSheet,
@@ -21,9 +22,10 @@ const AttentionSheet: React.FC<AttentionSheetProps> = ({
 }) => {
   const { translate } = useLanguage();
   const { theme } = useTheme();
-  const { primaryColor, appSettings } = useSelector(
+  const { primaryColor, appSettings, selectedTheme: mode } = useSelector(
     (state: RootState) => state.settings
   );
+  const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
   const updatedAnimationJson = replaceLottieColors(animationJson, primaryColor);
   const animationRef = useRef<LottieView>(null);
   const [hasPlayed, setHasPlayed] = useState(false);
@@ -78,7 +80,7 @@ const AttentionSheet: React.FC<AttentionSheetProps> = ({
               handleLogin();
             }}
           >
-            <Text style={[styles.confirmLabel, { color: theme.light }]}>
+            <Text style={[styles.confirmLabel, { color: contrastColor }]}>
               {translate(TranslationKeys.confirm)}
             </Text>
           </TouchableOpacity>

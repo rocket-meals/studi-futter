@@ -61,7 +61,7 @@ const ManagementSheet: React.FC<SheetProps> = ({
         )}
       </Text>
       <Text style={{ ...styles.sheetSubHeading, color: theme.sheet.text }}>
-        Sign in with open account
+        {translate(TranslationKeys.management_login_description)}
       </Text>
       <TextInput
         style={{

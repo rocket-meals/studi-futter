@@ -8,6 +8,7 @@ import styles from './styles';
 import { NicknameSheetProps } from './types';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
+import { myContrastColor } from '@/helper/colorHelper';
 
 const NicknameSheet: React.FC<NicknameSheetProps> = ({
   closeSheet,
@@ -18,7 +19,10 @@ const NicknameSheet: React.FC<NicknameSheetProps> = ({
 }) => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
-  const { primaryColor } = useSelector((state: RootState) => state.settings);
+  const { primaryColor, selectedTheme: mode } = useSelector(
+    (state: RootState) => state.settings
+  );
+  const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 
   return (
     <BottomSheetView
@@ -58,7 +62,7 @@ const NicknameSheet: React.FC<NicknameSheetProps> = ({
           disabled={disableSave}
           style={{ ...styles.saveButton, backgroundColor: primaryColor }}
         >
-          <Text style={[styles.buttonText, { color: theme.activeText }]}> 
+          <Text style={[styles.buttonText, { color: contrastColor }]}>
             {translate(TranslationKeys.save)}
           </Text>
         </TouchableOpacity>

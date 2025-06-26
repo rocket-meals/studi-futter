@@ -256,11 +256,12 @@ export const styles = StyleSheet.create({
   sheetInput: {
     width: '100%',
     height: 52,
-    borderRadius: 10,
+    borderRadius: 20,
     paddingHorizontal: 20,
     marginTop: 20,
     fontFamily: 'Poppins_400Regular',
     fontSize: 16,
+    borderWidth: 1,
   },
   sheetLoginButton: {
     width: '100%',

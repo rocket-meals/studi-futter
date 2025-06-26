@@ -1409,6 +1409,16 @@
     "tr": "Yönetim için",
     "zh": "用于管理"
   },
+  "management_login_description": {
+    "de": "Dieser Login ist nur für verwaltende Personen der App bestimmt.",
+    "en": "This login is only intended for managing persons of the app.",
+    "ar": "هذا الدخول مخصص فقط للأشخاص المسؤولين عن إدارة التطبيق.",
+    "es": "Este inicio de sesión está destinado únicamente a las personas encargadas de la gestión de la aplicación.",
+    "fr": "Cette connexion est uniquement destinée aux personnes en charge de la gestion de l",
+    "ru": "Этот вход предназначен только для управляющих лиц приложения.",
+    "tr": "Bu giriş, uygulamanın yönetiminden sorumlu kişiler içindir.",
+    "zh": "此登录仅适用于应用程序的管理人员。"
+  },
   "support_team": {
     "de": "Support Team",
     "en": "Support Team",
@@ -2582,6 +2592,26 @@
     "ru": "Продолжить без аккаунта",
     "tr": "Hesap olmadan devam et",
     "zh": "无需账户继续"
+  },
+  "access_limited": {
+    "de": "Zugriff eingeschränkt",
+    "en": "Access Limited",
+    "ar": "تم تقييد الوصول",
+    "es": "Acceso limitado",
+    "fr": "Accès limité",
+    "ru": "Доступ ограничен",
+    "tr": "Erişim sınırlı",
+    "zh": "访问受限"
+  },
+  "limited_access_description": {
+    "de": "Um alle Funktionen zu nutzen, melde dich bitte an oder erstelle ein Konto. Als Gast kannst du nur eingeschränkte Funktionen verwenden.",
+    "en": "To enjoy a personalized experience, please log in or create an account. Alternatively, you can continue as a guest with limited features.",
+    "ar": "لتجربة مخصصة، يرجى تسجيل الدخول أو إنشاء حساب. بدلاً من ذلك، يمكنك المتابعة كضيف بميزات محدودة.",
+    "es": "Para disfrutar de una experiencia personalizada, inicia sesión o crea una cuenta. Alternativamente, puedes continuar como invitado con funciones limitadas.",
+    "fr": "Pour profiter d'une expérience personnalisée, veuillez vous connecter ou créer un compte. Vous pouvez également continuer en tant qu'invité avec des fonctionnalités limitées.",
+    "ru": "Чтобы пользоваться всеми функциями, войдите или создайте аккаунт. Либо продолжайте как гость с ограниченными возможностями.",
+    "tr": "Kişiselleştirilmiş bir deneyim için lütfen giriş yapın veya hesap oluşturun. Alternatif olarak sınırlı özelliklerle misafir olarak devam edebilirsiniz.",
+    "zh": "要获得个性化体验，请登录或创建帐户。或者，您可以以访客身份继续，但功能受限。"
   },
   "sign_in_with": {
     "de": "Anmelden mit",

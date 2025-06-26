@@ -25,9 +25,8 @@ import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 
 const LoginForm: React.FC<FormProps> = ({
-  setIsVisible,
-  onSuccess,
   openSheet,
+  onSuccess,
   openAttentionSheet,
   providers,
 }) => {
@@ -203,11 +202,7 @@ const LoginForm: React.FC<FormProps> = ({
         </Text>
         <TouchableOpacity
           onPress={() => {
-            if (isWeb()) {
-              setIsVisible(true);
-            } else {
-              openSheet();
-            }
+            openSheet();
           }}
         >
           <Text style={{ ...styles.loginText, color: theme.screen.text }}>
