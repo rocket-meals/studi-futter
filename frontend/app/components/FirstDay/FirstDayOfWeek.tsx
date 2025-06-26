@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { isWeb } from '@/constants/Constants';
 import { useLanguage } from '@/hooks/useLanguage';
 import { RootState } from '@/redux/reducer';
+import { myContrastColor } from '@/helper/colorHelper';
 
 // Define the type for the theme prop
 type Position = {
@@ -28,7 +29,10 @@ const FirstDayOfWeek: React.FC<FirstDayOfWeekProps> = ({
 }) => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
-  const { primaryColor } = useSelector((state: RootState) => state.settings);
+  const { primaryColor, selectedTheme: mode } = useSelector(
+    (state: RootState) => state.settings
+  );
+  const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
   return (
     <TouchableOpacity
       style={{
@@ -42,7 +46,7 @@ const FirstDayOfWeek: React.FC<FirstDayOfWeekProps> = ({
       <Text
         style={{
           ...styles.text,
-          color: isSelected ? theme.activeText : theme.header.text,
+          color: isSelected ? contrastColor : theme.header.text,
         }}
       >
         {translate(position.name)}
@@ -52,7 +56,7 @@ const FirstDayOfWeek: React.FC<FirstDayOfWeekProps> = ({
       <MaterialCommunityIcons
         name={isSelected ? 'checkbox-marked' : 'checkbox-blank'}
         size={24}
-        color={isSelected ? '#ffffff' : '#ffffff'}
+        color={isSelected ? contrastColor : theme.screen.icon}
         style={styles.radioButton}
       />
     </TouchableOpacity>

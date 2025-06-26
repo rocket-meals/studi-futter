@@ -101,7 +101,7 @@ export default StyleSheet.create({
   sheetHeader: {
     width: '60%',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'flex-end',
     borderTopRightRadius: 28,

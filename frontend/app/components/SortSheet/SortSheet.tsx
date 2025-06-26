@@ -15,7 +15,15 @@ import { SortSheetProps } from './types';
 import Checkbox from 'expo-checkbox';
 import { SET_SELECTED_CANTEEN_FOOD_OFFERS, SET_SORTING } from '@/redux/Types/types';
 import { useDispatch, useSelector } from 'react-redux';
-import { intelligentSort, sortByEatingHabits, sortByFoodName, sortByOwnFavorite, sortByPublicFavorite } from '@/helper/sortingHelper';
+import {
+  intelligentSort,
+  sortByEatingHabits,
+  sortByFoodName,
+  sortByOwnFavorite,
+  sortByPublicFavorite,
+  sortByFoodCategory,
+  sortByFoodOfferCategory,
+} from '@/helper/sortingHelper';
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/colorHelper';
 import { TranslationKeys } from '@/locales/keys';
@@ -36,7 +44,9 @@ const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
     appSettings,
     selectedTheme: mode,
   } = useSelector((state: RootState) => state.settings);
-  const { ownFoodFeedbacks } = useSelector((state: RootState) => state.food);
+  const { ownFoodFeedbacks, foodCategories, foodOfferCategories } = useSelector(
+    (state: RootState) => state.food
+  );
   const { profile } = useSelector((state: RootState) => state.authReducer);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const foods_area_color = appSettings?.foods_area_color
@@ -63,6 +73,16 @@ const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
       id: 'eating',
       label: 'eating_habits',
       icon: <Ionicons name='bag-add' size={24} />,
+    },
+    {
+      id: 'food_category',
+      label: 'sort_option_food_category',
+      icon: <MaterialCommunityIcons name='food' size={24} />,
+    },
+    {
+      id: 'foodoffer_category',
+      label: 'sort_option_foodoffer_category',
+      icon: <MaterialCommunityIcons name='food-variant' size={24} />,
     },
     {
       id: 'rating',
@@ -105,6 +125,18 @@ const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
           profile.markings
         );
         break;
+      case 'food_category':
+        copiedFoodOffers = sortByFoodCategory(
+          copiedFoodOffers,
+          foodCategories
+        );
+        break;
+      case 'foodoffer_category':
+        copiedFoodOffers = sortByFoodOfferCategory(
+          copiedFoodOffers,
+          foodOfferCategories
+        );
+        break;
       case 'rating':
         copiedFoodOffers = sortByPublicFavorite(copiedFoodOffers);
         break;
@@ -113,7 +145,9 @@ const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
           copiedFoodOffers,
           ownFoodFeedbacks,
           profile.markings,
-          languageCode
+          languageCode,
+          foodCategories,
+          foodOfferCategories
         );
         break;
       default:
@@ -155,15 +189,6 @@ const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
         >
           {translate(TranslationKeys.sort)}
         </Text>
-        <TouchableOpacity
-          style={{
-            ...styles.sheetcloseButton,
-            backgroundColor: theme.sheet.closeBg,
-          }}
-          onPress={closeSheet}
-        >
-          <AntDesign name='close' size={24} color={theme.sheet.closeIcon} />
-        </TouchableOpacity>
       </View>
       <View style={styles.sortingListContainer}>
         {sortingOptions.map((option, index) => (

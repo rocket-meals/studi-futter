@@ -28,9 +28,11 @@ import {
   CLEAR_MANAGEMENT,
   CLEAR_NEWS,
   CLEAR_SETTINGS,
+  CLEAR_POPUP_EVENTS_HASH,
   ON_LOGOUT,
   SET_WIKIS,
 } from '@/redux/Types/types';
+import { performLogout } from '@/helper/logoutHelper';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { useLanguage } from '@/hooks/useLanguage';
 import * as Linking from 'expo-linking';
@@ -171,21 +173,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
   });
 
   const handleLogout = async () => {
-    try {
-      await AsyncStorage.clear();
-      dispatch({ type: ON_LOGOUT });
-      dispatch({ type: CLEAR_CANTEENS });
-      dispatch({ type: CLEAR_CAMPUSES });
-      dispatch({ type: CLEAR_APARTMENTS });
-      dispatch({ type: CLEAR_FOODS });
-      dispatch({ type: CLEAR_MANAGEMENT });
-      dispatch({ type: CLEAR_NEWS });
-      dispatch({ type: CLEAR_SETTINGS });
-      dispatch({ type: CLEAR_COLLECTION_DATES_LAST_UPDATED });
-      router.push({ pathname: '/(auth)/login', params: { logout: 'true' } });
-    } catch (error) {
-      console.error('Error during logout:', error);
-    }
+    await performLogout(dispatch, router);
   };
 
   const openInBrowser = async (url: string) => {
@@ -415,18 +403,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
                 if (user?.id) {
                   handleLogout();
                 } else {
-                  dispatch({ type: CLEAR_ANONYMOUSLY });
-                  dispatch({ type: CLEAR_ANONYMOUSLY });
-                  dispatch({ type: CLEAR_CANTEENS });
-                  dispatch({ type: CLEAR_CAMPUSES });
-                  dispatch({ type: CLEAR_APARTMENTS });
-                  dispatch({ type: CLEAR_FOODS });
-                  dispatch({ type: CLEAR_NEWS });
-                  dispatch({ type: CLEAR_SETTINGS });
-                  router.push({
-                    pathname: '/(auth)/login',
-                    params: { logout: 'true' },
-                  });
+                  performLogout(dispatch, router, true);
                 }
               }}
             >

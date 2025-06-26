@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
   sheetHeader: {
     width: '100%',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     borderTopRightRadius: 28,
     borderTopLeftRadius: 28,
@@ -27,7 +27,7 @@ export const styles = StyleSheet.create({
   },
   sheetHeading: {
     fontFamily: 'Poppins_700Bold',
-    marginLeft: 30,
+    
   },
   additionalInfoContainer: {
     width: '100%',

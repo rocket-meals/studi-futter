@@ -49,7 +49,8 @@ import {
   MaterialIcons,
 } from '@expo/vector-icons';
 import { RootDrawerParamList } from './types';
-import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import BaseBottomSheet from '@/components/BaseBottomSheet';
+import type BottomSheet from '@gorhom/bottom-sheet';
 import CanteenSelectionSheet from '@/components/CanteenSelectionSheet/CanteenSelectionSheet';
 import SortSheet from '@/components/SortSheet/SortSheet';
 import HourSheet from '@/components/HoursSheet/HoursSheet';
@@ -70,6 +71,8 @@ import {
   sortByFoodName,
   sortByOwnFavorite,
   sortByPublicFavorite,
+  sortByFoodCategory,
+  sortByFoodOfferCategory,
 } from '@/helper/sortingHelper';
 import { format } from 'date-fns';
 import { BusinessHoursHelper } from '@/redux/actions/BusinessHours/BusinessHours';
@@ -94,16 +97,6 @@ export const SHEET_COMPONENTS = {
   eatingHabits: EatingHabitsSheet,
 };
 
-const SHEET_POINTS = {
-  canteen: ['100%'],
-  sort: ['80%'],
-  hours: ['85%'],
-  calendar: ['80%'],
-  forecast: ['80%'],
-  menu: ['90%'],
-  imageManagement: ['80%'],
-  eatingHabits: ['90%'],
-};
 
 const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -113,7 +106,6 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const drawerNavigation =
     useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const eventPoints = useMemo(() => ['100%'], []);
   const eventSheetRef = useRef<BottomSheet>(null);
   const businessHoursHelper = new BusinessHoursHelper();
   const canteenFeedbackLabelHelper = new CanteenFeedbackLabelHelper();
@@ -139,9 +131,13 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     appSettings,
     primaryColor,
   } = useSelector((state: RootState) => state.settings);
-  const { ownFoodFeedbacks, popupEvents, selectedDate } = useSelector(
-    (state: RootState) => state.food
-  );
+  const {
+    ownFoodFeedbacks,
+    popupEvents,
+    selectedDate,
+    foodCategories,
+    foodOfferCategories,
+  } = useSelector((state: RootState) => state.food);
   const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
   const animationRef = useRef<LottieView>(null);
   const [animationJson, setAmimationJson] = useState<any>(null);
@@ -302,10 +298,6 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     if (isActive && selectedSheet) {
       setTimeout(() => {
         bottomSheetRef.current?.expand();
-        bottomSheetRef.current?.snapToIndex(0);
-        bottomSheetRef.current?.snapToPosition(
-          SHEET_POINTS[selectedSheet!][0] || '80%'
-        );
       }, 150);
     }
   }, [selectedSheet, isActive]);
@@ -408,6 +400,18 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
           profile.markings
         );
         break;
+      case 'food_category':
+        copiedFoodOffers = sortByFoodCategory(
+          copiedFoodOffers,
+          foodCategories
+        );
+        break;
+      case 'foodoffer_category':
+        copiedFoodOffers = sortByFoodOfferCategory(
+          copiedFoodOffers,
+          foodOfferCategories
+        );
+        break;
       case 'rating':
         copiedFoodOffers = sortByPublicFavorite(copiedFoodOffers);
         break;
@@ -416,7 +420,9 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
           copiedFoodOffers,
           ownFoodFeedbacks,
           profile.markings,
-          languageCode
+          languageCode,
+          foodCategories,
+          foodOfferCategories
         );
         break;
       default:
@@ -958,7 +964,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
           </ScrollView>
         </View>
         {isActive && (
-          <BottomSheet
+          <BaseBottomSheet
             key={selectedSheet}
             ref={bottomSheetRef}
             // snapPoints={['40%']}
@@ -973,35 +979,38 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
             enableHandlePanningGesture={
               selectedSheet === 'forecast' ? false : true
             }
-            backdropComponent={(props) => (
-              <BottomSheetBackdrop {...props} onPress={closeSheet} />
-            )}
+            enableDynamicSizing={selectedSheet === 'forecast' ? false : true}
+            onChange={(index) => {
+              if (index === -1) {
+                closeSheet();
+              }
+            }}
+            onClose={closeSheet}
             handleComponent={null}
           >
             {SheetComponent && (
               <SheetComponent closeSheet={closeSheet} {...sheetProps} />
             )}
-          </BottomSheet>
+          </BaseBottomSheet>
         )}
 
         {isActive && (
-          <BottomSheet
+          <BaseBottomSheet
             ref={eventSheetRef}
             index={-1}
-            snapPoints={eventPoints}
             backgroundStyle={{
               ...styles.sheetBackground,
               backgroundColor: theme.sheet.sheetBg,
             }}
             enablePanDownToClose={false}
-            enableDynamicSizing={false}
             handleComponent={null}
+            onClose={closeEventSheet}
           >
             <PopupEventSheet
               closeSheet={closeEventSheet}
               eventData={popupEvents?.find((e: any) => e.isCurrent) || {}}
             />
-          </BottomSheet>
+          </BaseBottomSheet>
         )}
       </SafeAreaView>
     </>

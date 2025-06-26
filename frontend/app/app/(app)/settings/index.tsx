@@ -11,7 +11,6 @@ import {
   Text,
   Dimensions,
   SafeAreaView,
-  TextInput,
   TouchableOpacity,
 } from 'react-native';
 import { Image } from 'expo-image';
@@ -30,10 +29,9 @@ import {
 } from '@expo/vector-icons';
 import { isWeb } from '@/constants/Constants';
 import SettingList from '@/components/SettingList/SettingList';
-import ModalComponent from '../../../components/ModalSetting/ModalComponent';
-import ColorScheme from '../../../components/ColorScheme/ColorScheme';
-import DrawerPosition from '../../../components/Drawer/DrawerPosition';
-import FirstDayOfWeek from '../../../components/FirstDay/FirstDayOfWeek';
+import NicknameSheet from '@/components/NicknameSheet/NicknameSheet';
+import ColorSchemeSheet from '@/components/ColorSchemeSheet/ColorSchemeSheet';
+import DrawerPositionSheet from '@/components/DrawerPositionSheet/DrawerPositionSheet';
 import { router, useFocusEffect } from 'expo-router';
 import {
   themes,
@@ -55,6 +53,7 @@ import {
   CLEAR_MANAGEMENT,
   CLEAR_NEWS,
   CLEAR_SETTINGS,
+  CLEAR_POPUP_EVENTS_HASH,
   ON_LOGOUT,
   SET_AMOUNT_COLUMNS_FOR_CARDS,
   SET_DRAWER_POSITION,
@@ -64,9 +63,14 @@ import {
   UPDATE_MANAGEMENT,
   UPDATE_PROFILE,
 } from '@/redux/Types/types';
+import { performLogout } from '@/helper/logoutHelper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import BaseBottomSheet from '@/components/BaseBottomSheet';
+import type BottomSheet from '@gorhom/bottom-sheet';
 import CanteenSelectionSheet from '@/components/CanteenSelectionSheet/CanteenSelectionSheet';
+import LanguageSheet from '@/components/LanguageSheet/LanguageSheet';
+import AmountColumnSheet from '@/components/AmountColumnSheet/AmountColumnSheet';
+import FirstDaySheet from '@/components/FirstDaySheet/FirstDaySheet';
 import {
   excerpt,
   formatPrice,
@@ -84,21 +88,19 @@ const Settings = () => {
   const { theme, setThemeMode } = useTheme();
   const dispatch = useDispatch();
   const canteenSheetRef = useRef<BottomSheet>(null);
-  const canteenPoints = useMemo(() => ['100%'], []);
   const [isActive, setIsActive] = useState(false);
   const { translate, setLanguageMode, language } = useLanguage();
-  const [isLanguageModalVisible, setIsLanguageModalVisible] = useState(false);
-  const [isNicknameModalVisible, setIsNicknameModalVisible] = useState(false);
   const [nickname, setNickname] = useState<string>('');
-  const openModal = () => setIsNicknameModalVisible(true);
-  const closeModal = () => setIsNicknameModalVisible(false);
+  const nicknameSheetRef = useRef<BottomSheet>(null);
+  const openNicknameSheet = () => nicknameSheetRef?.current?.expand();
+  const closeNicknameSheet = () => nicknameSheetRef?.current?.close();
   const [selectedLanguage, setSelectedLanguage] = useState<string>('');
-  const [isDrawerModalVisible, setIsDrawerModalVisible] = useState(false);
-  const [isAmountColumnModal, setIsAmountColumnModal] = useState(false);
-  const [isFirstDayModalVisible, setIsFirstDayModalVisible] = useState(false);
+  const drawerSheetRef = useRef<BottomSheet>(null);
+  const languageSheetRef = useRef<BottomSheet>(null);
+  const amountColumnSheetRef = useRef<BottomSheet>(null);
+  const firstDaySheetRef = useRef<BottomSheet>(null);
+  const colorSchemeSheetRef = useRef<BottomSheet>(null);
   const [disabled, setDisabled] = useState(false);
-  const [isColorSchemeModalVisible, setIsColorSchemeModalVisible] =
-    useState(false);
   const {
     user,
     profile,
@@ -146,7 +148,7 @@ const Settings = () => {
         payload: nickname?.trim(),
       });
     }
-    closeModal();
+    closeNicknameSheet();
   };
 
   useFocusEffect(
@@ -173,72 +175,52 @@ const Settings = () => {
     setSelectedLanguage(language);
   }, [language]);
 
-  const saveLanguage = () => {
-    closeModal();
-  };
-
   const openLanguageModal = () => {
-    setIsLanguageModalVisible(true);
+    languageSheetRef?.current?.expand();
   };
 
   const closeLanguageModal = () => {
-    setIsLanguageModalVisible(false);
+    languageSheetRef?.current?.close();
   };
 
   // ColorScheme
 
-  const saveColorSheme = () => {
-    closeModal();
+  const openColorSchemeSheet = () => {
+    colorSchemeSheetRef?.current?.expand();
   };
 
-  const openColorschemeModal = () => {
-    setIsColorSchemeModalVisible(true);
-  };
-
-  const closeColorschemeModal = () => {
-    setIsColorSchemeModalVisible(false);
+  const closeColorSchemeSheet = () => {
+    colorSchemeSheetRef?.current?.close();
   };
 
   // Drawer Position
 
-  const saveDrawer = () => {
-    closeModal();
+  const openDrawerSheet = () => {
+    drawerSheetRef?.current?.expand();
   };
 
-  const openDrawerModal = () => {
-    setIsDrawerModalVisible(true);
-  };
-
-  const closeDrawerModal = () => {
-    setIsDrawerModalVisible(false);
+  const closeDrawerSheet = () => {
+    drawerSheetRef?.current?.close();
   };
 
   // Amount Column Card
 
-  const saveAmount = () => {
-    closeModal();
-  };
-
   const openAmountColumnModal = () => {
-    setIsAmountColumnModal(true);
+    amountColumnSheetRef?.current?.expand();
   };
 
   const closeAmountColumnModal = () => {
-    setIsAmountColumnModal(false);
+    amountColumnSheetRef?.current?.close();
   };
 
   // first day of week
 
-  const saveFirstDay = () => {
-    closeModal();
-  };
-
   const openFirstDayModal = () => {
-    setIsFirstDayModalVisible(true);
+    firstDaySheetRef?.current?.expand();
   };
 
   const closeFirstDayModal = () => {
-    setIsFirstDayModalVisible(false);
+    firstDaySheetRef?.current?.close();
   };
 
   const changeLanguage = (language: {
@@ -264,37 +246,11 @@ const Settings = () => {
   };
 
   const handleLogout = async () => {
-    try {
-      await AsyncStorage.clear();
-      dispatch({ type: ON_LOGOUT });
-      dispatch({ type: CLEAR_CANTEENS });
-      dispatch({ type: CLEAR_CAMPUSES });
-      dispatch({ type: CLEAR_APARTMENTS });
-      dispatch({ type: CLEAR_FOODS });
-      dispatch({ type: CLEAR_MANAGEMENT });
-      dispatch({ type: CLEAR_NEWS });
-      dispatch({ type: CLEAR_SETTINGS });
-      dispatch({ type: CLEAR_COLLECTION_DATES_LAST_UPDATED });
-      router.push({ pathname: '/(auth)/login', params: { logout: 'true' } });
-    } catch (error) {
-      console.error('Error during logout:', error);
-    }
+    await performLogout(dispatch, router);
   };
 
   const handleLogin = () => {
-    dispatch({ type: CLEAR_ANONYMOUSLY });
-    dispatch({ type: CLEAR_ANONYMOUSLY });
-    dispatch({ type: CLEAR_CANTEENS });
-    dispatch({ type: CLEAR_CAMPUSES });
-    dispatch({ type: CLEAR_APARTMENTS });
-    dispatch({ type: CLEAR_FOODS });
-    dispatch({ type: CLEAR_NEWS });
-    dispatch({ type: CLEAR_SETTINGS });
-    dispatch({ type: CLEAR_COLLECTION_DATES_LAST_UPDATED });
-    router.push({
-      pathname: '/(auth)/login',
-      params: { logout: 'true' },
-    });
+    performLogout(dispatch, router, true);
   };
 
   const openCanteenSheet = () => {
@@ -371,34 +327,6 @@ const Settings = () => {
             </View>
           </View>
           {/* NickName */}
-          <ModalComponent
-            isVisible={isNicknameModalVisible}
-            onClose={closeModal}
-            onSave={saveNickname}
-            disableSave={disabled}
-            title={translate(TranslationKeys.nickname)}
-          >
-            {/* Custom Content */}
-            <TextInput
-              style={{
-                ...styles.input,
-                color: 'black',
-                backgroundColor: '#fff',
-                borderWidth: 1,
-              }}
-              placeholder={translate(TranslationKeys.nickname)}
-              value={nickname?.trim()}
-              onChangeText={(text) => {
-                setNickname(text);
-                if (text === profile?.nickname) {
-                  setDisabled(true);
-                } else {
-                  setDisabled(false);
-                }
-              }}
-            />
-          </ModalComponent>
-          {/* </View> */}
           <SettingList
             leftIcon={
               <MaterialCommunityIcons
@@ -417,7 +345,7 @@ const Settings = () => {
               />
             }
             handleFunction={() => {
-              openModal();
+              openNicknameSheet();
               setNickname(profile?.id ? profile?.nickname : nickNameLocal);
               if (profile?.nickname === nickname) {
                 setDisabled(true);
@@ -427,68 +355,6 @@ const Settings = () => {
             }}
           />
           {/* Language */}
-          <ModalComponent
-            isVisible={isLanguageModalVisible}
-            onClose={closeLanguageModal}
-            title={translate(TranslationKeys.language)}
-            onSave={saveLanguage}
-            showButtons={false}
-          >
-            <View style={styles.languageContainer}>
-              {languages.map((language, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={{
-                    ...styles.languageRow,
-                    paddingHorizontal: isWeb ? 20 : 10,
-
-                    backgroundColor:
-                      selectedLanguage === language.value
-                        ? primaryColor
-                        : theme.screen.iconBg,
-                  }}
-                  onPress={() => {
-                    changeLanguage(language);
-                  }}
-                >
-                  <Image
-                    source={language.flag}
-                    style={styles.flagIcon}
-                    cachePolicy={'memory-disk'}
-                    transition={500}
-                    contentFit='cover'
-                  />
-                  <Text
-                    style={{
-                      ...styles.languageText,
-                      color:
-                        selectedLanguage === language.value
-                          ? theme.activeText
-                          : theme.screen.text,
-                    }}
-                  >
-                    {language.label}
-                  </Text>
-
-                  {/* Radio Button */}
-                  <MaterialCommunityIcons
-                    name={
-                      selectedLanguage === language.value
-                        ? 'checkbox-marked'
-                        : 'checkbox-blank'
-                    }
-                    size={24}
-                    color={
-                      selectedLanguage === language.value
-                        ? '#ffffff'
-                        : '#ffffff'
-                    }
-                    style={styles.radioButton}
-                  />
-                </TouchableOpacity>
-              ))}
-            </View>
-          </ModalComponent>
           <SettingList
             leftIcon={
               <Ionicons name='language' size={24} color={theme.screen.icon} />
@@ -600,27 +466,6 @@ const Settings = () => {
             handleFunction={() => router.navigate('/notification')}
           />
           {/* color Scheme */}
-          <ModalComponent
-            isVisible={isColorSchemeModalVisible}
-            onClose={closeColorschemeModal}
-            title={translate(TranslationKeys.color_scheme)}
-            onSave={saveColorSheme}
-            showButtons={false}
-          >
-            <View style={styles.languageContainer}>
-              {themes.map((theme) => (
-                <ColorScheme
-                  key={theme.id}
-                  theme={theme}
-                  isSelected={selectedTheme === theme.id}
-                  onPress={() => {
-                    closeColorschemeModal();
-                    handleTheme(theme.id);
-                  }}
-                />
-              ))}
-            </View>
-          </ModalComponent>
           <SettingList
             leftIcon={
               <MaterialCommunityIcons
@@ -644,29 +489,9 @@ const Settings = () => {
                 color={theme.screen.icon}
               />
             }
-            handleFunction={() => openColorschemeModal()}
+            handleFunction={() => openColorSchemeSheet()}
           />
 
-          <ModalComponent
-            isVisible={isDrawerModalVisible}
-            onClose={closeDrawerModal}
-            title={translate(TranslationKeys.drawer_config_position)}
-            onSave={saveDrawer}
-            showButtons={false}
-          >
-            <View style={styles.languageContainer}>
-              {drawers.map((drawer) => (
-                <DrawerPosition
-                  key={drawer.id}
-                  position={drawer}
-                  isSelected={drawerPosition === drawer.id}
-                  onPress={() => {
-                    handleDrawerPosition(drawer.id);
-                  }}
-                />
-              ))}
-            </View>
-          </ModalComponent>
 
           <SettingList
             leftIcon={
@@ -681,33 +506,9 @@ const Settings = () => {
                 color={theme.screen.icon}
               />
             }
-            handleFunction={() => openDrawerModal()}
+            handleFunction={() => openDrawerSheet()}
           />
 
-          <ModalComponent
-            isVisible={isAmountColumnModal}
-            onClose={closeAmountColumnModal}
-            title={translate(TranslationKeys.amount_columns_for_cards)}
-            onSave={saveAmount}
-            showButtons={false}
-          >
-            <ScrollView style={styles.amountOfCardContainer}>
-              {AmountColumn.map((column) => (
-                <AmountColumns
-                  key={column.id}
-                  position={column}
-                  isSelected={amountColumnsForcard === column.id}
-                  onPress={() => {
-                    dispatch({
-                      type: SET_AMOUNT_COLUMNS_FOR_CARDS,
-                      payload: column.id,
-                    });
-                    closeAmountColumnModal();
-                  }}
-                />
-              ))}
-            </ScrollView>
-          </ModalComponent>
           <SettingList
             leftIcon={
               <FontAwesome5
@@ -731,30 +532,6 @@ const Settings = () => {
             }
             handleFunction={() => openAmountColumnModal()}
           />
-          <ModalComponent
-            isVisible={isFirstDayModalVisible}
-            onClose={closeFirstDayModal}
-            title={translate(TranslationKeys.first_day_of_week)}
-            onSave={saveFirstDay}
-            showButtons={false}
-          >
-            <View style={styles.languageContainer}>
-              {days.map((firstDay) => (
-                <FirstDayOfWeek
-                  key={firstDay.id}
-                  position={firstDay}
-                  isSelected={firstDayOfTheWeek?.name === firstDay?.name}
-                  onPress={() => {
-                    dispatch({
-                      type: SET_FIRST_DAY_OF_THE_WEEK,
-                      payload: { id: firstDay.id, name: firstDay?.name },
-                    });
-                    closeFirstDayModal();
-                  }}
-                />
-              ))}
-            </View>
-          </ModalComponent>
           <SettingList
             leftIcon={
               <Feather name='calendar' size={24} color={theme.screen.icon} />
@@ -937,20 +714,148 @@ const Settings = () => {
         </View>
       </ScrollView>
       {isActive && (
-        <BottomSheet
-          ref={canteenSheetRef}
-          index={-1}
-          snapPoints={canteenPoints}
-          backgroundStyle={{
-            ...styles.sheetBackground,
-            backgroundColor: theme.sheet.sheetBg,
-          }}
-          enablePanDownToClose
-          handleComponent={null}
-          backdropComponent={(props) => <BottomSheetBackdrop {...props} />}
-        >
-          <CanteenSelectionSheet closeSheet={closeCanteenSheet} />
-        </BottomSheet>
+        <>
+          <BaseBottomSheet
+            ref={canteenSheetRef}
+            index={-1}
+            backgroundStyle={{
+              ...styles.sheetBackground,
+              backgroundColor: theme.sheet.sheetBg,
+            }}
+            enablePanDownToClose
+            handleComponent={null}
+            onClose={closeCanteenSheet}
+          >
+            <CanteenSelectionSheet closeSheet={closeCanteenSheet} />
+          </BaseBottomSheet>
+          <BaseBottomSheet
+            ref={languageSheetRef}
+            index={-1}
+            backgroundStyle={{
+              ...styles.sheetBackground,
+              backgroundColor: theme.sheet.sheetBg,
+            }}
+            enablePanDownToClose
+            handleComponent={null}
+            onClose={closeLanguageModal}
+          >
+            <LanguageSheet
+              closeSheet={closeLanguageModal}
+              selectedLanguage={selectedLanguage}
+              onSelect={(value) => {
+                changeLanguage({ value } as any);
+              }}
+            />
+          </BaseBottomSheet>
+          <BaseBottomSheet
+            ref={amountColumnSheetRef}
+            index={-1}
+            backgroundStyle={{
+              ...styles.sheetBackground,
+              backgroundColor: theme.sheet.sheetBg,
+            }}
+            enablePanDownToClose
+            handleComponent={null}
+            onClose={closeAmountColumnModal}
+          >
+            <AmountColumnSheet
+              closeSheet={closeAmountColumnModal}
+              selectedAmount={amountColumnsForcard}
+              onSelect={(val) => {
+                dispatch({
+                  type: SET_AMOUNT_COLUMNS_FOR_CARDS,
+                  payload: val,
+                });
+              }}
+            />
+          </BaseBottomSheet>
+          <BaseBottomSheet
+            ref={firstDaySheetRef}
+            index={-1}
+            backgroundStyle={{
+              ...styles.sheetBackground,
+              backgroundColor: theme.sheet.sheetBg,
+            }}
+            enablePanDownToClose
+            handleComponent={null}
+            onClose={closeFirstDayModal}
+          >
+          <FirstDaySheet
+            closeSheet={closeFirstDayModal}
+            selectedDay={firstDayOfTheWeek?.name}
+            onSelect={(day) => {
+              dispatch({
+                type: SET_FIRST_DAY_OF_THE_WEEK,
+                payload: day,
+              });
+            }}
+          />
+          </BaseBottomSheet>
+          <BaseBottomSheet
+            ref={nicknameSheetRef}
+            index={-1}
+            backgroundStyle={{
+              ...styles.sheetBackground,
+              backgroundColor: theme.sheet.sheetBg,
+            }}
+            enablePanDownToClose
+            handleComponent={null}
+            onClose={closeNicknameSheet}
+          >
+            <NicknameSheet
+              closeSheet={closeNicknameSheet}
+              value={nickname}
+              onChange={(text) => {
+                setNickname(text);
+                if (text === profile?.nickname) {
+                  setDisabled(true);
+                } else {
+                  setDisabled(false);
+                }
+              }}
+              onSave={saveNickname}
+              disableSave={disabled}
+            />
+          </BaseBottomSheet>
+          <BaseBottomSheet
+            ref={colorSchemeSheetRef}
+            index={-1}
+            backgroundStyle={{
+              ...styles.sheetBackground,
+              backgroundColor: theme.sheet.sheetBg,
+            }}
+            enablePanDownToClose
+            handleComponent={null}
+            onClose={closeColorSchemeSheet}
+          >
+            <ColorSchemeSheet
+              closeSheet={closeColorSchemeSheet}
+              selectedTheme={selectedTheme}
+              onSelect={(theme) => {
+                handleTheme(theme);
+              }}
+            />
+          </BaseBottomSheet>
+          <BaseBottomSheet
+            ref={drawerSheetRef}
+            index={-1}
+            backgroundStyle={{
+              ...styles.sheetBackground,
+              backgroundColor: theme.sheet.sheetBg,
+            }}
+            enablePanDownToClose
+            handleComponent={null}
+            onClose={closeDrawerSheet}
+          >
+            <DrawerPositionSheet
+              closeSheet={closeDrawerSheet}
+              selectedPosition={drawerPosition}
+              onSelect={(position) => {
+                handleDrawerPosition(position);
+              }}
+            />
+          </BaseBottomSheet>
+        </>
       )}
     </SafeAreaView>
   );

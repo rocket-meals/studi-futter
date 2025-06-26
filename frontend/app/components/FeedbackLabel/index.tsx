@@ -90,7 +90,7 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({
         labelEntries,
         String(label[0]?.foods_feedbacks_labels_id),
         likeStats,
-        selectedCanteen.id,
+        selectedCanteen?.id,
         offerId
       )) as FoodsFeedbacksLabelsEntries;
     dispatch({
@@ -183,7 +183,7 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({
           trigger={(triggerProps) => (
             <Pressable
               style={{
-                ...styles.likeButton,
+                ...styles.dislikeButton,
                 backgroundColor: like === false && foods_area_color,
               }}
               {...triggerProps}

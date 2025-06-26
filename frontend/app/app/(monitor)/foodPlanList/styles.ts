@@ -72,7 +72,7 @@ export default StyleSheet.create({
     fontFamily: 'Poppins_700Bold',
     alignSelf: 'center',
     textAlign: 'center',
-    marginLeft: 30,
+    
   },
   closeButton: {
     borderRadius: 50,

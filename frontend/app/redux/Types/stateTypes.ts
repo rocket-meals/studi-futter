@@ -154,3 +154,7 @@ export interface ManagementState {
   foodPlan: FoodPlan;
   weekPlan: WeekPlan;
 }
+
+export interface PopupEventsHashState {
+  hashValue: string;
+}

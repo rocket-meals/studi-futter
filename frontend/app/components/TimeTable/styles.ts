@@ -30,7 +30,7 @@ export default StyleSheet.create({
   sheetHeader: {
     width: '100%',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     borderTopRightRadius: 28,
     borderTopLeftRadius: 28,

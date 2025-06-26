@@ -85,7 +85,10 @@ export class NewsParseSchedule {
     }
 
     async updateNews(newsJSONList: NewsTypeForParser[]) {
-        for (let newsJSON of newsJSONList) {
+        await this.logger.appendLog("Updating news items");
+        for (let index = 0; index < newsJSONList.length; index++) {
+            let newsJSON = newsJSONList[index] as NewsTypeForParser;
+            await this.logger.appendLog(`Processing news item ${index + 1} of ${newsJSONList.length}`);
             let news = await this.findOrCreateSingleNews(newsJSON);
             if (!!news && news?.id) {
                 await this.updateOtherFields(news, newsJSON);

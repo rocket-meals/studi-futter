@@ -6,6 +6,7 @@ import { isWeb } from '@/constants/Constants';
 import { useSelector } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
 import { RootState } from '@/redux/reducer';
+import { myContrastColor } from '@/helper/colorHelper';
 // Define the type for the theme prop
 type Theme = {
   id: string;
@@ -26,7 +27,10 @@ const ColorScheme: React.FC<ColorSchemeProps> = ({
   onPress,
 }) => {
   const { theme: themes } = useTheme();
-  const { primaryColor } = useSelector((state: RootState) => state.settings);
+  const { primaryColor, selectedTheme: mode } = useSelector(
+    (state: RootState) => state.settings
+  );
+  const contrastColor = myContrastColor(primaryColor, themes, mode === 'dark');
   const { translate } = useLanguage();
   return (
     <TouchableOpacity
@@ -41,7 +45,7 @@ const ColorScheme: React.FC<ColorSchemeProps> = ({
       <MaterialCommunityIcons
         name={theme.icon}
         size={24}
-        color={isSelected ? themes.activeText : themes.screen.icon}
+        color={isSelected ? contrastColor : themes.screen.icon}
         style={styles.icon}
       />
 
@@ -49,7 +53,7 @@ const ColorScheme: React.FC<ColorSchemeProps> = ({
       <Text
         style={{
           ...styles.text,
-          color: isSelected ? themes.activeText : themes.header.text,
+          color: isSelected ? contrastColor : themes.header.text,
         }}
       >
         {translate(theme.name)}
@@ -59,7 +63,7 @@ const ColorScheme: React.FC<ColorSchemeProps> = ({
       <MaterialCommunityIcons
         name={isSelected ? 'checkbox-marked' : 'checkbox-blank'}
         size={24}
-        color={isSelected ? '#ffffff' : '#ffffff'}
+        color={isSelected ? contrastColor : themes.screen.icon}
         style={styles.radioButton}
       />
     </TouchableOpacity>

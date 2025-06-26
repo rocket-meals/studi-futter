@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { isWeb } from '@/constants/Constants';
 import { useLanguage } from '@/hooks/useLanguage';
 import { RootState } from '@/redux/reducer';
+import { myContrastColor } from '@/helper/colorHelper';
 
 // Define the type for the theme prop
 type Position = {
@@ -27,7 +28,10 @@ const DrawerPosition: React.FC<DrawerPositionProps> = ({
   onPress,
 }) => {
   const { theme } = useTheme();
-  const { primaryColor } = useSelector((state: RootState) => state.settings);
+  const { primaryColor, selectedTheme: mode } = useSelector(
+    (state: RootState) => state.settings
+  );
+  const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
   const { translate } = useLanguage();
   return (
     <TouchableOpacity
@@ -43,7 +47,7 @@ const DrawerPosition: React.FC<DrawerPositionProps> = ({
       <MaterialCommunityIcons
         name={position.icon}
         size={24}
-        color={isSelected ? theme.activeText : theme.screen.icon}
+        color={isSelected ? contrastColor : theme.screen.icon}
         style={styles.icon}
       />
 
@@ -51,7 +55,7 @@ const DrawerPosition: React.FC<DrawerPositionProps> = ({
       <Text
         style={{
           ...styles.text,
-          color: isSelected ? theme.activeText : theme.header.text,
+          color: isSelected ? contrastColor : theme.header.text,
         }}
       >
         {translate(position.name)}
@@ -61,7 +65,7 @@ const DrawerPosition: React.FC<DrawerPositionProps> = ({
       <MaterialCommunityIcons
         name={isSelected ? 'checkbox-marked' : 'checkbox-blank'}
         size={24}
-        color={isSelected ? '#ffffff' : '#ffffff'}
+        color={isSelected ? contrastColor : theme.screen.icon}
         style={styles.radioButton}
       />
     </TouchableOpacity>

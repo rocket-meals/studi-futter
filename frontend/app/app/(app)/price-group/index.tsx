@@ -24,6 +24,7 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { Profiles } from '@/constants/types';
 import { RootState } from '@/redux/reducer';
+import { myContrastColor } from '@/helper/colorHelper';
 
 const index = () => {
   useSetPageTitle(TranslationKeys.price_group);
@@ -33,9 +34,10 @@ const index = () => {
   const profileHelper = new ProfileHelper();
   const [loading, setLoading] = useState(false);
   const { profile } = useSelector((state: RootState) => state.authReducer);
-  const { primaryColor, appSettings } = useSelector(
+  const { primaryColor, appSettings, selectedTheme: mode } = useSelector(
     (state: RootState) => state.settings
   );
+  const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
   const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
   const animationRef = useRef<LottieView>(null);
   const [animationJson, setAmimationJson] = useState<any>(null);
@@ -149,9 +151,7 @@ const index = () => {
               {cloneElement(
                 option.icon,
                 selectedOption === option.id
-                  ? {
-                      color: theme.activeText,
-                    }
+                  ? { color: contrastColor }
                   : { color: theme.screen.icon }
               )}
               <Text
@@ -159,7 +159,7 @@ const index = () => {
                   styles.label,
                   selectedOption === option.id
                     ? {
-                        color: theme.activeText,
+                        color: contrastColor,
                       }
                     : { color: theme.screen.text },
                 ]}

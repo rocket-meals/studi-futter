@@ -58,7 +58,7 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
   const handleLogout = async () => {
     try {
       setLoading(true);
-      await AsyncStorage.clear();
+      await AsyncStorage.multiRemove(['auth_data', 'persist:root']);
       dispatch({ type: ON_LOGOUT });
       dispatch({ type: 'RESET_STORE' });
       persistor.purge();
@@ -74,7 +74,7 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
     <Modal
       isVisible={isVisible}
       style={styles.modalContainer}
-      onBackdropPress={() => setIsVisible(false)}
+      onClose={() => setIsVisible(false)}
     >
       <View
         style={{

@@ -30,18 +30,7 @@ import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import { isWeb } from '@/constants/Constants';
 import ModalComponent from '@/components/ModalSetting/ModalComponent';
 import { deleteProfileRemote } from '@/redux/actions/Profile/Profile';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  CLEAR_APARTMENTS,
-  CLEAR_CAMPUSES,
-  CLEAR_CANTEENS,
-  CLEAR_COLLECTION_DATES_LAST_UPDATED,
-  CLEAR_FOODS,
-  CLEAR_MANAGEMENT,
-  CLEAR_NEWS,
-  CLEAR_SETTINGS,
-  ON_LOGOUT,
-} from '@/redux/Types/types';
+import { performLogout } from '@/helper/logoutHelper';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 
@@ -152,18 +141,8 @@ const index = () => {
     if (profile?.id) {
       setLoading(true);
       await deleteProfileRemote(profile.id);
-      await AsyncStorage.clear();
-      dispatch({ type: ON_LOGOUT });
-      dispatch({ type: CLEAR_CANTEENS });
-      dispatch({ type: CLEAR_CAMPUSES });
-      dispatch({ type: CLEAR_APARTMENTS });
-      dispatch({ type: CLEAR_FOODS });
-      dispatch({ type: CLEAR_MANAGEMENT });
-      dispatch({ type: CLEAR_NEWS });
-      dispatch({ type: CLEAR_SETTINGS });
-      dispatch({ type: CLEAR_COLLECTION_DATES_LAST_UPDATED });
+      await performLogout(dispatch, router);
       setLoading(false);
-      router.push({ pathname: '/(auth)/login', params: { logout: 'true' } });
     } else {
       setLoading(false);
     }

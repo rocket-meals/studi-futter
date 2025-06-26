@@ -4,6 +4,8 @@ import {
   BuildingsTranslations,
   Foodoffers,
   Foods,
+  FoodsCategories,
+  FoodoffersCategories,
   FormCategoriesTranslations,
   FormFieldsTranslations,
   FormsTranslations,
@@ -101,6 +103,42 @@ export const getFoodAttributesTranslation = (
   languageCode: string
 ): string => {
   if (!translations || translations.length === 0) return '';
+  const translation = translations.find(
+    (t) => t.languages_code?.split('-')[0] === languageCode
+  );
+  return translation?.name || '';
+};
+
+export const getFoodCategoryName = (
+  categories: FoodsCategories[],
+  category: string | FoodsCategories | null | undefined,
+  languageCode: string
+): string => {
+  if (!category) return '';
+  const cat =
+    typeof category === 'object'
+      ? category
+      : categories.find((c) => c.id === category);
+  if (!cat) return '';
+  const translations: any[] = (cat.translations as any[]) || [];
+  const translation = translations.find(
+    (t) => t.languages_code?.split('-')[0] === languageCode
+  );
+  return translation?.name || '';
+};
+
+export const getFoodOfferCategoryName = (
+  categories: FoodoffersCategories[],
+  category: string | FoodoffersCategories | null | undefined,
+  languageCode: string
+): string => {
+  if (!category) return '';
+  const cat =
+    typeof category === 'object'
+      ? category
+      : categories.find((c) => c.id === category);
+  if (!cat) return '';
+  const translations: any[] = (cat.translations as any[]) || [];
   const translation = translations.find(
     (t) => t.languages_code?.split('-')[0] === languageCode
   );
@@ -335,4 +373,11 @@ export const getAppElementTranslation = (
 };
 
 
-export { getIconComponent, getTextFromTranslation, extractFoodDetails, getDescriptionFromTranslation };
+export {
+  getIconComponent,
+  getTextFromTranslation,
+  extractFoodDetails,
+  getDescriptionFromTranslation,
+  getFoodCategoryName,
+  getFoodOfferCategoryName,
+};

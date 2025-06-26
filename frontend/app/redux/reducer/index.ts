@@ -11,6 +11,7 @@ import formReducer from './formReducer';
 import foodAttributesReducer from './FoodAttributes';
 import appElementsReducer from './appElementsReducer';
 import lastUpdatedReducer from './lastUpdatedReducer';
+import popupEventsHashReducer from './popupEventsHashReducer';
 import {
   ApartmentsState,
   AppElementState,
@@ -24,6 +25,7 @@ import {
   ManagementState,
   NewsState,
   SettingsState,
+  PopupEventsHashState,
 } from '../Types/stateTypes';
 
 export const reducer = combineReducers({
@@ -40,6 +42,7 @@ export const reducer = combineReducers({
   foodAttributes: foodAttributesReducer,
   appElements: appElementsReducer,
   lastUpdated: lastUpdatedReducer,
+  popup_events_hash: popupEventsHashReducer,
 });
 
 export type RootState = {
@@ -55,4 +58,5 @@ export type RootState = {
   management: ManagementState;
   news: NewsState;
   settings: SettingsState;
+  popup_events_hash: PopupEventsHashState;
 };

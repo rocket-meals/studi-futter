@@ -659,6 +659,56 @@
     "tr": "Mesafe",
     "zh": "距离"
   },
+  "sort_option_food_category": {
+    "de": "Essenskategorie",
+    "en": "Food Category",
+    "ar": "فئة الطعام",
+    "es": "Categoría de comida",
+    "fr": "Catégorie alimentaire",
+    "ru": "Категория блюда",
+    "tr": "Yemek Kategorisi",
+    "zh": "食品类别"
+  },
+  "sort_option_foodoffer_category": {
+    "de": "Essensangebotskategorie",
+    "en": "Food Offer Category",
+    "ar": "فئة عرض الطعام",
+    "es": "Categoría de oferta de comida",
+    "fr": "Catégorie d'offre alimentaire",
+    "ru": "Категория предложения еды",
+    "tr": "Yemek Teklifi Kategorisi",
+    "zh": "餐品类别"
+  },
+  "general": {
+    "de": "Allgemeines",
+    "en": "General",
+    "ar": "عام",
+    "es": "General",
+    "fr": "Général",
+    "ru": "Общее",
+    "tr": "Genel",
+    "zh": "一般"
+  },
+  "food_category_label": {
+    "de": "Essenskategorie",
+    "en": "Food Category",
+    "ar": "فئة الطعام",
+    "es": "Categoría de comida",
+    "fr": "Catégorie alimentaire",
+    "ru": "Категория блюда",
+    "tr": "Yemek Kategorisi",
+    "zh": "食品类别"
+  },
+  "foodoffer_category_label": {
+    "de": "Kategorie des Angebots",
+    "en": "Food Offer Category",
+    "ar": "فئة عرض الطعام",
+    "es": "Categoría de oferta de comida",
+    "fr": "Catégorie d'offre alimentaire",
+    "ru": "Категория предложения еды",
+    "tr": "Yemek Teklifi Kategorisi",
+    "zh": "餐品类别"
+  },
   "free_rooms": {
     "de": "Freie Zimmer",
     "en": "Free Rooms",

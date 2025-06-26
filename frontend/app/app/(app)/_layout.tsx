@@ -39,6 +39,7 @@ import {
   SET_FOOD_OFFERS_CATEGORIES,
   SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES,
   SET_POPUP_EVENTS,
+  SET_POPUP_EVENTS_HASH,
   SET_SELECTED_DATE,
   SET_WIKIS,
   UPDATE_FOOD_FEEDBACK_LABELS,
@@ -74,9 +75,12 @@ import { TranslationKeys } from '@/locales/keys';
 import { CollectionLastUpdateHelper } from '@/redux/actions/CollectionLastUpdate/CollectionLastUpdate';
 import { transformUpdateDatesToMap } from '@/helper/dateMap';
 import { shouldFetch } from '@/helper/shouldFetch';
+// TODO: replace HashHelper with expo-crypto once packages can be installed
+import { HashHelper } from '@/helper/hashHelper';
 import { CollectionKeys } from '@/constants/collectionKeys';
 import { RootState } from '@/redux/reducer';
-import { sortMarkingsByGroup } from '@/helper/sortingHelper';
+import { sortMarkingsByGroup, sortBySortField } from '@/helper/sortingHelper';
+
 
 export default function Layout() {
   const { theme } = useTheme();
@@ -102,6 +106,9 @@ export default function Layout() {
   const foodFeedbackLabelEntryHelper = new FoodFeedbackLabelEntryHelper();
   const canteenFeedbackLabelEntryHelper = new CanteenFeedbackLabelEntryHelper();
   const { popupEvents } = useSelector((state: RootState) => state.food);
+  const { hashValue } = useSelector(
+    (state: RootState) => state.popup_events_hash,
+  );
   const { lastUpdatedMap } = useSelector(
     (state: RootState) => state.lastUpdated
   );
@@ -238,7 +245,7 @@ export default function Layout() {
         {}
       )) as FoodsCategories[];
       if (result) {
-        dispatch({ type: SET_FOOD_CATEGORIES, payload: result });
+        dispatch({ type: SET_FOOD_CATEGORIES, payload: sortBySortField(result) });
       }
     } catch (error) {
       console.error('Error fetching food categories:', error);
@@ -252,7 +259,10 @@ export default function Layout() {
           {}
         )) as FoodoffersCategories[];
       if (result) {
-        dispatch({ type: SET_FOOD_OFFERS_CATEGORIES, payload: result });
+        dispatch({
+          type: SET_FOOD_OFFERS_CATEGORIES,
+          payload: sortBySortField(result),
+        });
       }
     } catch (error) {
       console.error('Error fetching food offers categories:', error);
@@ -373,9 +383,10 @@ export default function Layout() {
             isOpen: false,
             isCurrent: index === 0,
           }));
-
-        if (filteredEvents.length !== popupEvents.length) {
+        const eventsHash = HashHelper.md5(JSON.stringify(filteredEvents));
+        if (eventsHash !== hashValue) {
           dispatch({ type: SET_POPUP_EVENTS, payload: filteredEvents });
+          dispatch({ type: SET_POPUP_EVENTS_HASH, payload: eventsHash });
         }
       }
     } catch (error) {
@@ -401,7 +412,15 @@ export default function Layout() {
     { key: CollectionKeys.MARKINGS_GROUPS, action: getMarkings },
     { key: CollectionKeys.FOODS_CATEGORIES, action: getFoodCategories },
     {
+      key: CollectionKeys.FOODS_CATEGORIES_TRANSLATIONS,
+      action: getFoodCategories,
+    },
+    {
       key: CollectionKeys.FOODOFFERS_CATEGORIES,
+      action: getFoodOffersCategories,
+    },
+    {
+      key: CollectionKeys.FOODOFFERS_CATEGORIES_TRANSLATIONS,
       action: getFoodOffersCategories,
     },
     {

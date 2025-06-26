@@ -140,23 +140,21 @@ const index = () => {
                 {translate(TranslationKeys.FOOD_LABELING_INFO)}
               </Text>
             )}
-            {screenWidth < 600 && (
-              <View style={styles.readMoreContainer}>
-                <TouchableOpacity
+            <View style={styles.readMoreContainer}>
+              <TouchableOpacity
                   onPress={handleReadMore}
                   style={{
                     ...styles.readMoreButton,
                     backgroundColor: theme.primary,
                   }}
-                >
-                  <Text style={{ ...styles.readMore, color: theme.activeText }}>
-                    {readMore
+              >
+                <Text style={{ ...styles.readMore, color: theme.activeText }}>
+                  {readMore
                       ? translate(TranslationKeys.read_less)
                       : translate(TranslationKeys.read_more)}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            )}
+                </Text>
+              </TouchableOpacity>
+            </View>
             <RedirectButton
               type={'link'}
               label={food_responsible_organization_name}
