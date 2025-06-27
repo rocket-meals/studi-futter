@@ -74,12 +74,10 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content }) => {
   const customHTMLElementModels = {
     sub: HTMLElementModel.fromCustomModel({
       tagName: 'sub',
-      mixedUAStyles: { fontSize: '75%' },
       contentModel: HTMLContentModel.textual,
     }),
     sup: HTMLElementModel.fromCustomModel({
       tagName: 'sup',
-      mixedUAStyles: { fontSize: '75%' },
       contentModel: HTMLContentModel.textual,
     }),
   };
@@ -131,7 +129,7 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content }) => {
       const { data } = props.tnode;
       const text = data || props.children[0]?.data;
       return (
-        <Text style={{ fontSize: fontSize * 0.75, verticalAlign: 'sub', color: textColor }}>
+        <Text style={{ fontSize, verticalAlign: 'sub', color: textColor }}>
           {text}
         </Text>
       );
@@ -140,7 +138,7 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content }) => {
       const { data } = props.tnode;
       const text = data || props.children[0]?.data;
       return (
-        <Text style={{ fontSize: fontSize * 0.75, verticalAlign: 'super', color: textColor }}>
+        <Text style={{ fontSize, verticalAlign: 'super', color: textColor }}>
           {text}
         </Text>
       );
