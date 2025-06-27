@@ -439,6 +439,9 @@ export default function Layout() {
 
   const fetchConfig: { key: string; action: () => Promise<void> }[] = [
     { key: CollectionKeys.APP_ELEMENTS, action: getAllAppElements },
+    // also refresh markings when the markings or translation tables changed
+    { key: CollectionKeys.MARKINGS, action: getMarkings },
+    { key: CollectionKeys.MARKINGS_TRANSLATIONS, action: getMarkings },
     { key: CollectionKeys.MARKINGS_GROUPS, action: getMarkings },
     { key: CollectionKeys.FOODS_CATEGORIES, action: getFoodCategories },
     {
