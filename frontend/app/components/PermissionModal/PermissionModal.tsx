@@ -5,9 +5,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useEffect, useState, useRef } from 'react';
-import BaseBottomSheet from '../BaseBottomSheet';
-import BottomSheet from '@gorhom/bottom-sheet';
+import React, { useEffect, useState } from 'react';
+import Modal from 'react-native-modal';
 import { styles } from './styles';
 import { AntDesign } from '@expo/vector-icons';
 import { PermissionModalProps } from './types';
@@ -19,23 +18,18 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { persistor } from '@/redux/store';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
-import { myContrastColor } from '@/helper/colorHelper';
 import { RootState } from '@/redux/reducer';
 
 const PermissionModal: React.FC<PermissionModalProps> = ({
-  isVisible,
-  setIsVisible,
-}) => {
+                                                           isVisible,
+                                                           setIsVisible,
+                                                         }) => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
-  const { primaryColor, selectedTheme: mode } = useSelector(
-    (state: RootState) => state.settings
-  );
-  const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
+  const { primaryColor } = useSelector((state: RootState) => state.settings);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
-  const sheetRef = useRef<BottomSheet>(null);
 
   const getModalWidth = (windowWidth: number) => {
     if (windowWidth < 800) return '100%';
@@ -47,14 +41,6 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
     const windowWidth = Dimensions.get('window').width;
     return getModalWidth(windowWidth);
   });
-
-  useEffect(() => {
-    if (isVisible) {
-      sheetRef.current?.expand();
-    } else {
-      sheetRef.current?.close();
-    }
-  }, [isVisible]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -85,68 +71,69 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
   };
 
   return (
-    <BaseBottomSheet
-      ref={sheetRef}
-      index={-1}
-      enablePanDownToClose
-      onClose={() => setIsVisible(false)}
-      backgroundStyle={{ backgroundColor: theme.sheet.sheetBg }}
-    >
-      <View
-        style={{
-          ...styles.modalView,
-          backgroundColor: theme.sheet.sheetBg,
-          width: modalWidth,
-        }}
+      <Modal
+          isVisible={isVisible}
+          style={styles.modalContainer}
+          onClose={() => setIsVisible(false)}
       >
-        <View style={styles.modalHeader}>
-          <TouchableOpacity
+        <View
             style={{
-              ...styles.closeButton,
-              backgroundColor: theme.modal.closeBg,
+              ...styles.modalView,
+              backgroundColor: theme.modal.modalBg,
+              width: modalWidth,
             }}
-            onPress={() => setIsVisible(false)}
+        >
+          <View style={styles.modalHeader}>
+            <TouchableOpacity
+                style={{
+                  ...styles.closeButton,
+                  backgroundColor: theme.modal.closeBg,
+                }}
+                onPress={() => setIsVisible(false)}
+            >
+              <AntDesign name='close' size={28} color={theme.modal.closeIcon} />
+            </TouchableOpacity>
+          </View>
+          <Text
+              style={{
+                ...styles.modalHeading,
+                color: theme.modal.text,
+                fontSize: Dimensions.get('window').width < 500 ? 26 : 36,
+              }}
           >
-            <AntDesign name='close' size={28} color={theme.modal.closeIcon} />
+            Access Limited
+          </Text>
+          <Text
+              style={{
+                ...styles.modalSubHeading,
+                color: theme.modal.text,
+                fontSize: Dimensions.get('window').width < 500 ? 14 : 18,
+              }}
+          >
+            To enjoy a personalized experience, please log in or create an
+            account. Alternatively, you can continue as a guest with limited
+            features.
+          </Text>
+          <TouchableOpacity
+              style={{
+                ...styles.loginButton,
+                backgroundColor: primaryColor,
+                width: Dimensions.get('window').width < 500 ? '100%' : '80%',
+              }}
+              onPress={handleLogout}
+          >
+            {loading ? (
+                <ActivityIndicator size={22} color={theme.background} />
+            ) : (
+                <Text style={{ ...styles.loginLabel, color: theme.light }}>
+                  {/* Sign In / Create Account */}
+                  {translate(TranslationKeys.sign_in)} /{' '}
+                  {translate(TranslationKeys.create_account)}
+                </Text>
+            )}
           </TouchableOpacity>
         </View>
-        <Text
-          style={{
-            ...styles.modalHeading,
-            color: theme.modal.text,
-            fontSize: Dimensions.get('window').width < 500 ? 26 : 36,
-          }}
-        >
-          {translate(TranslationKeys.access_limited)}
-        </Text>
-        <Text
-          style={{
-            ...styles.modalSubHeading,
-            color: theme.modal.text,
-            fontSize: Dimensions.get('window').width < 500 ? 14 : 18,
-          }}
-        >
-          {translate(TranslationKeys.limited_access_description)}
-        </Text>
-        <TouchableOpacity
-          style={{
-            ...styles.loginButton,
-            backgroundColor: primaryColor,
-            width: Dimensions.get('window').width < 500 ? '100%' : '80%',
-          }}
-          onPress={handleLogout}
-        >
-          {loading ? (
-            <ActivityIndicator size={22} color={theme.background} />
-          ) : (
-            <Text style={{ ...styles.loginLabel, color: contrastColor }}>
-              {translate(TranslationKeys.sign_in)} /{' '}
-              {translate(TranslationKeys.create_account)}
-            </Text>
-          )}
-        </TouchableOpacity>
-      </View>
-    </BaseBottomSheet>
+      </Modal>
   );
 };
 

@@ -62,6 +62,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { WikisHelper } from '@/redux/actions/Wikis/Wikis';
 import { AppSettingsHelper } from '@/redux/actions/AppSettings/AppSettings';
 import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
+import { NewsHelper } from '@/redux/actions/News/News';
 import { FoodAttributeGroupHelper } from '@/redux/actions/FoodAttributes/FoodAttributeGroup';
 import { FoodAttributesHelper } from '@/redux/actions/FoodAttributes/FoodAttributes';
 import DeviceMock from '@/components/DeviceMock/DeviceMock';
@@ -102,6 +103,7 @@ export default function Layout() {
   const foodAttributeGroupHelper = new FoodAttributeGroupHelper();
   const businessHoursGroupsHelper = new BusinessHoursGroupsHelper();
   const foodOffersCategoriesHelper = new FoodOffersCategoriesHelper();
+  const newsHelper = new NewsHelper();
   const collectionLastUpdateHelper = new CollectionLastUpdateHelper();
   const foodFeedbackLabelEntryHelper = new FoodFeedbackLabelEntryHelper();
   const canteenFeedbackLabelEntryHelper = new CanteenFeedbackLabelEntryHelper();
@@ -236,6 +238,34 @@ export default function Layout() {
       dispatch({ type: UPDATE_MARKINGS, payload: sortedMarkings });
     } catch (error) {
       console.error('Error fetching markings:', error);
+    }
+  };
+
+  const getNews = async () => {
+    try {
+      const result = (await newsHelper.fetchNews({})) as News[];
+      if (result) {
+        const today = new Date().toISOString().split('T')[0];
+        const sortedNews = [...result].sort((a, b) => {
+          const dateA = a?.date;
+          const dateB = b?.date;
+
+          if (!dateA && !dateB) return 0;
+          if (!dateA) return 1;
+          if (!dateB) return -1;
+
+          const dayA = dateA.split('T')[0];
+          const dayB = dateB.split('T')[0];
+
+          if (dayA === today && dayB !== today) return -1;
+          if (dayB === today && dayA !== today) return 1;
+
+          return dayA < dayB ? 1 : -1;
+        });
+        dispatch({ type: SET_NEWS, payload: sortedNews });
+      }
+    } catch (error) {
+      console.error('Error fetching news:', error);
     }
   };
 
@@ -427,6 +457,7 @@ export default function Layout() {
       key: CollectionKeys.FOODS_FEEDBACKS_LABELS,
       action: getFoodFeedBackLabels,
     },
+    { key: CollectionKeys.NEWS, action: getNews },
     { key: CollectionKeys.BUSINESSHOURS, action: getBusinessHours },
     {
       key: CollectionKeys.BUSINESSHOURS_GROUPS,

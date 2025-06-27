@@ -29,8 +29,7 @@ const index = () => {
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    fetchAllNews();
-    setRefreshing(false);
+    fetchAllNews().finally(() => setRefreshing(false));
   }, []);
 
   const fetchAllNews = async () => {
@@ -61,7 +60,9 @@ const index = () => {
 };
 
   useEffect(() => {
-    fetchAllNews();
+    if (!news || news.length === 0) {
+      fetchAllNews();
+    }
   }, []);
 
   return (
