@@ -238,7 +238,7 @@ const Settings = () => {
       type: SET_DRAWER_POSITION,
       payload: position,
     });
-    closeDrawerModal();
+    closeDrawerSheet();
   };
 
   const handleTheme = (theme: any) => {
