@@ -498,7 +498,13 @@ const Settings = () => {
               <Entypo name='menu' size={24} color={theme.screen.icon} />
             }
             label={translate(TranslationKeys.drawer_config_position)}
-            value={translate(TranslationKeys.drawer_config_position_system)}
+            value={
+              drawerPosition === 'left'
+                ? translate(TranslationKeys.drawer_config_position_left)
+                : drawerPosition === 'right'
+                ? translate(TranslationKeys.drawer_config_position_right)
+                : translate(TranslationKeys.drawer_config_position_system)
+            }
             rightIcon={
               <Octicons
                 name='chevron-right'

@@ -3,6 +3,7 @@ import React from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import RedirectButton from '../RedirectButton';
+import FoodLabelingInfo from '../FoodLabelingInfo';
 import { useSelector } from 'react-redux';
 import {
   formatFoodInformationValue,
@@ -239,19 +240,8 @@ const handleRedirect = () => {
           );
         })
       )}
-      <Text
-        style={{
-          ...styles.body1,
-          color: theme.screen.text,
-          fontStyle: 'italic',
-        }}
-      >
-        {translate(TranslationKeys.FOOD_LABELING_INFO)}
-      </Text>
-      <RedirectButton
-        type={'link'}
-        label={food_responsible_organization_name}
-        onClick={handleRedirect}
+      <FoodLabelingInfo
+        textStyle={styles.body1}
         backgroundColor={foods_area_color}
       />
     </View>

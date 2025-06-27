@@ -3,7 +3,7 @@ import { Linking, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
-import RedirectButton from '../RedirectButton';
+import FoodLabelingInfo from '../FoodLabelingInfo';
 import MarkingLabels from '../MarkingLabels/MarkingLabels';
 import { getFoodOffer } from '@/constants/HelperFunctions';
 import { studentUnionUrl } from '@/constants/Constants';
@@ -104,22 +104,7 @@ const Labels: React.FC<LabelsProps> = ({
         />
       ))}
 
-      <Text
-        style={{
-          ...styles.body,
-          color: theme.screen.text,
-          fontStyle: 'italic',
-        }}
-      >
-        {translate(TranslationKeys.FOOD_LABELING_INFO)}
-      </Text>
-      <RedirectButton
-        type='link'
-        onClick={handleRedirect}
-        label={food_responsible_organization_name}
-        backgroundColor={foods_area_color}
-        color='#FFF'
-      />
+      <FoodLabelingInfo textStyle={styles.body} backgroundColor={foods_area_color} />
     </View>
   );
 };

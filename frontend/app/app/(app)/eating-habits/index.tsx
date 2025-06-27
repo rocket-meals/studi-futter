@@ -1,5 +1,5 @@
 import {
-  Dimensions, Linking,
+  Dimensions,
   SafeAreaView,
   ScrollView,
   Text,
@@ -16,7 +16,7 @@ import React, {
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
-import RedirectButton from '@/components/RedirectButton';
+import FoodLabelingInfo from '@/components/FoodLabelingInfo';
 import { useSelector } from 'react-redux';
 import MarkingLabels from '@/components/MarkingLabels/MarkingLabels';
 import { FoodoffersMarkings } from '@/constants/types';
@@ -26,6 +26,7 @@ import animation from '@/assets/animations/allergist.json';
 import LottieView from 'lottie-react-native';
 import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
+import { myContrastColor } from '@/helper/colorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RootState } from '@/redux/reducer';
@@ -35,9 +36,10 @@ const index = () => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
   const { markings } = useSelector((state: RootState) => state.food);
-  const { primaryColor, appSettings } = useSelector(
+  const { primaryColor, appSettings, selectedTheme: mode } = useSelector(
     (state: RootState) => state.settings
   );
+  const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
   const [readMore, setReadMore] = useState(false);
   const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
   const animationRef = useRef<LottieView>(null);
@@ -46,8 +48,6 @@ const index = () => {
     Dimensions.get('window').width
   );
 
-  let food_responsible_organization_name = appSettings?.food_responsible_organization_name || "Verantwortliche Organisation";
-  let food_responsible_organization_link = appSettings?.food_responsible_organization_link || "https://www.studentenwerk-osnabrueck.de/";
 
   useFocusEffect(
     useCallback(() => {
@@ -107,11 +107,6 @@ const index = () => {
     setReadMore(!readMore);
   };
 
-  const handleRedirect = () => {
-    Linking.openURL(food_responsible_organization_link).catch((err) =>
-        console.error('Failed to open URL:', err)
-    );
-  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
@@ -136,9 +131,10 @@ const index = () => {
                   )}
             </Text>
             {readMore && (
-              <Text style={{ ...styles.body2, color: theme.screen.text }}>
-                {translate(TranslationKeys.FOOD_LABELING_INFO)}
-              </Text>
+              <FoodLabelingInfo
+                textStyle={styles.body2}
+                backgroundColor={primaryColor}
+              />
             )}
             <View style={styles.readMoreContainer}>
               <TouchableOpacity
@@ -148,20 +144,13 @@ const index = () => {
                     backgroundColor: theme.primary,
                   }}
               >
-                <Text style={{ ...styles.readMore, color: theme.activeText }}>
+                <Text style={{ ...styles.readMore, color: contrastColor }}>
                   {readMore
                       ? translate(TranslationKeys.read_less)
                       : translate(TranslationKeys.read_more)}
                 </Text>
               </TouchableOpacity>
             </View>
-            <RedirectButton
-              type={'link'}
-              label={food_responsible_organization_name}
-              backgroundColor={primaryColor}
-              onClick={handleRedirect}
-              color={theme.activeText}
-            />
             <View style={styles.feedbackLabelsContainer}>
               {markings?.map((marking) => {
                 return (
