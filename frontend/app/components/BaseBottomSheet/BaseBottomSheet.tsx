@@ -39,7 +39,7 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(
     const snapPoints = useMemo(() => ['80%'], []);
 
     const headerBg = backgroundStyle?.backgroundColor || theme.sheet.sheetBg;
-    const handleColor = myContrastColor(headerBg, theme, mode === 'dark');
+    const handleColor = theme.sheet.closeBg;
 
     const handleChange = useCallback(
       (index: number) => {
