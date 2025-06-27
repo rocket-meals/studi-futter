@@ -554,12 +554,17 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
           <ActivityIndicator size={30} color={theme.screen.text} />
         </View>
       ) : (
-        <>
+          <View
+              style={{
+                minHeight: 200,
+                width: '100%',
+              }}
+          >
           {hours && Object.keys(hours).length > 0 ? (
             <View
               style={{
                 ...styles.hoursContainer,
-                width: isWeb ? '90%' : '100%',
+                width: '100%',
               }}
             >
               {getSortedBusinessHoursGroups(businessHoursGroups)
@@ -596,7 +601,7 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
               </Text>
             </View>
           )}
-        </>
+        </View>
       )}
     </BottomSheetScrollView>
   );

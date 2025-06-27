@@ -34,6 +34,7 @@ export default StyleSheet.create({
   hoursContainer: {
     paddingHorizontal: 20,
     marginTop: 20,
+    width: '100%',
   },
   hoursHeading: {
     fontSize: 24,
