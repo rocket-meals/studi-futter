@@ -612,13 +612,23 @@ const Settings = () => {
                 color={theme.screen.icon}
               />
             }
-            handleFunction={() => router.navigate('/data-access')}
-          />
-          <SettingList
-            leftIcon={
-              <MaterialIcons
-                name='support-agent'
-                size={24}
+          handleFunction={() => router.navigate('/data-access')}
+        />
+        <SettingList
+          leftIcon={
+            <MaterialIcons name='event' size={24} color={theme.screen.icon} />
+          }
+          label={translate(TranslationKeys.events)}
+          rightIcon={
+            <Octicons name='chevron-right' size={24} color={theme.screen.icon} />
+          }
+          handleFunction={() => router.navigate('/events')}
+        />
+        <SettingList
+          leftIcon={
+            <MaterialIcons
+              name='support-agent'
+              size={24}
                 color={theme.screen.icon}
               />
             }

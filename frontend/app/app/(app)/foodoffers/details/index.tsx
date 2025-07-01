@@ -28,7 +28,7 @@ import {
   UPDATE_FOOD_FEEDBACK_LOCAL,
   UPDATE_PROFILE,
 } from '@/redux/Types/types';
-import MenuSheet from '@/components/MenuSheet/MenuSheet';
+import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import PermissionModal from '@/components/PermissionModal/PermissionModal';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
@@ -942,21 +942,7 @@ export default function FoodDetailsScreen() {
       {/* Menu sheet */}
 
       {isActive && (
-        <BaseBottomSheet
-          ref={menuSheetRef}
-          index={-1}
-          backgroundStyle={{
-            ...styles.sheetBackground,
-            backgroundColor: theme.sheet.sheetBg,
-          }}
-          enablePanDownToClose
-          handleComponent={null}
-          enableHandlePanningGesture={false}
-          enableContentPanningGesture={false}
-          onClose={closeMenuSheet}
-        >
-          <MenuSheet closeSheet={closeMenuSheet} />
-        </BaseBottomSheet>
+        <MarkingBottomSheet ref={menuSheetRef} onClose={closeMenuSheet} />
       )}
     </SafeAreaView>
   );

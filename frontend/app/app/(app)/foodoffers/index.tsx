@@ -58,7 +58,6 @@ import CalendarSheet from '@/components/CalendarSheet/CalendarSheet';
 import { excerpt } from '@/constants/HelperFunctions';
 import { useLanguage } from '@/hooks/useLanguage';
 import ForecastSheet from '@/components/ForecastSheet/ForecastSheet';
-import MenuSheet from '@/components/MenuSheet/MenuSheet';
 import ImageManagementSheet from '@/components/ImageManagementSheet/ImageManagementSheet';
 import EatingHabitsSheet from '@/components/EatingHabitsSheet/EatingHabitsSheet';
 import { CanteenFeedbackLabelHelper } from '@/redux/actions/CanteenFeedbacksLabel/CanteenFeedbacksLabel';
@@ -85,6 +84,7 @@ import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
 import { RootState } from '@/redux/reducer';
+import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 
 export const SHEET_COMPONENTS = {
   canteen: CanteenSelectionSheet,
@@ -92,7 +92,6 @@ export const SHEET_COMPONENTS = {
   hours: HourSheet,
   calendar: CalendarSheet,
   forecast: ForecastSheet,
-  menu: MenuSheet,
   imageManagement: ImageManagementSheet,
   eatingHabits: EatingHabitsSheet,
 };
@@ -254,7 +253,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   }, [popupEvents]);
 
   const openSheet = useCallback(
-    (sheet: keyof typeof SHEET_COMPONENTS, props = {}) => {
+    (sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
       setSelectedSheet(sheet);
       setSheetProps(props);
     },
@@ -523,7 +522,10 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   );
   const canteenFeedbackLabelsExist = canteenFeedbackLabels?.length > 0;
 
-  const SheetComponent = selectedSheet ? SHEET_COMPONENTS[selectedSheet] : null;
+  const SheetComponent =
+    selectedSheet && selectedSheet !== 'menu'
+      ? SHEET_COMPONENTS[selectedSheet]
+      : null;
 
   return (
     <>
@@ -964,34 +966,37 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
           </ScrollView>
         </View>
         {isActive && (
-          <BaseBottomSheet
-            key={selectedSheet}
-            ref={bottomSheetRef}
-            // snapPoints={['40%']}
-            backgroundStyle={{
-              ...styles.sheetBackground,
-              backgroundColor: theme.sheet.sheetBg,
-            }}
-            enablePanDownToClose={selectedSheet === 'forecast' ? false : true}
-            enableContentPanningGesture={
-              selectedSheet === 'forecast' ? false : true
-            }
-            enableHandlePanningGesture={
-              selectedSheet === 'forecast' ? false : true
-            }
-            enableDynamicSizing={selectedSheet === 'forecast' ? false : true}
-            onChange={(index) => {
-              if (index === -1) {
-                closeSheet();
+          selectedSheet === 'menu' ? (
+            <MarkingBottomSheet ref={bottomSheetRef} onClose={closeSheet} />
+          ) : (
+            <BaseBottomSheet
+              key={selectedSheet}
+              ref={bottomSheetRef}
+              backgroundStyle={{
+                ...styles.sheetBackground,
+                backgroundColor: theme.sheet.sheetBg,
+              }}
+              enablePanDownToClose={selectedSheet === 'forecast' ? false : true}
+              enableContentPanningGesture={
+                selectedSheet === 'forecast' ? false : true
               }
-            }}
-            onClose={closeSheet}
-            handleComponent={null}
-          >
-            {SheetComponent && (
-              <SheetComponent closeSheet={closeSheet} {...sheetProps} />
-            )}
-          </BaseBottomSheet>
+              enableHandlePanningGesture={
+                selectedSheet === 'forecast' ? false : true
+              }
+              enableDynamicSizing={selectedSheet === 'forecast' ? false : true}
+              onChange={(index) => {
+                if (index === -1) {
+                  closeSheet();
+                }
+              }}
+              onClose={closeSheet}
+              handleComponent={null}
+            >
+              {SheetComponent && (
+                <SheetComponent closeSheet={closeSheet} {...sheetProps} />
+              )}
+            </BaseBottomSheet>
+          )
         )}
 
         {isActive && (

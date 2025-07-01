@@ -61,12 +61,6 @@ export default StyleSheet.create({
     alignItems: 'center',
     marginBottom: 5,
   },
-  logoImage: {
-    width: 20,
-    height: 20,
-    resizeMode: 'contain',
-    marginRight: 5,
-  },
   title: {
     marginLeft: 5,
     fontSize: 10,
@@ -80,24 +74,6 @@ export default StyleSheet.create({
     marginLeft: 10,
   },
   footer: {},
-  shortCode: {
-    height: 24,
-    // width:24,
-    borderRadius: 8,
-    borderWidth: 1,
-    paddingHorizontal: 4,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  iconMarking: {
-    height: 24,
-    width: 24,
-    borderRadius: 8,
-    borderWidth: 1,
-    padding: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   icon: {
     width: 20,
     height: 20,

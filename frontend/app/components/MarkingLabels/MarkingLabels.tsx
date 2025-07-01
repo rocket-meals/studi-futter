@@ -22,6 +22,7 @@ import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { Markings, Profiles } from '@/constants/types';
 import { useMyContrastColor } from '@/helper/colorHelper';
 import { iconLibraries } from '../Drawer/CustomDrawerContent';
+import MarkingIcon from '../MarkingIcon';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
@@ -29,6 +30,7 @@ import { RootState } from '@/redux/reducer';
 const MarkingLabels: React.FC<MarkingLabelProps> = ({
   markingId,
   handleMenuSheet,
+  size = 30,
 }) => {
   const { theme } = useTheme();
   const dispatch = useDispatch();
@@ -209,110 +211,10 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
     mode === 'dark'
   );
 
-  const iconParts = marking?.icon?.split(':') || [];
-  const [library, name] = iconParts;
-
-  const Icon = library && iconLibraries[library];
   return (
     <View style={styles.row}>
       <View style={styles.col}>
-        {marking?.icon && !markingImage?.uri ? (
-          handleMenuSheet ? (
-            <Tooltip
-              placement='top'
-              trigger={(triggerProps) => (
-                <Pressable
-                  {...triggerProps}
-                  onPress={() => openMarkingLabel(marking)}
-                  onHoverIn={() => setShowTooltip(true)}
-                  onHoverOut={() => setShowTooltip(false)}
-                >
-                  <View
-                    style={{
-                      ...styles.shortCode,
-                      backgroundColor: MarkingBackgroundColor || 'transparent',
-                      borderWidth: marking?.hide_border ? 0 : 1,
-                      borderColor: MarkingColor,
-                    }}
-                  >
-                    <Icon name={name} size={20} color={MarkingColor} />
-                  </View>
-                </Pressable>
-              )}
-            >
-              <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
-                <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                  {`${markingText}`}
-                </TooltipText>
-              </TooltipContent>
-            </Tooltip>
-          ) : (
-            <View
-              style={{
-                ...styles.shortCode,
-                backgroundColor: MarkingBackgroundColor || 'transparent',
-                borderWidth: marking?.hide_border ? 0 : 1,
-                borderColor: MarkingColor,
-              }}
-            >
-              <Icon name={name} size={20} color={MarkingColor} />
-            </View>
-          )
-        ) : marking?.short_code && !markingImage?.uri ? (
-          handleMenuSheet ? (
-            <Tooltip
-              placement='top'
-              trigger={(triggerProps) => (
-                <Pressable
-                  {...triggerProps}
-                  onPress={() => openMarkingLabel(marking)}
-                  onHoverIn={() => setShowTooltip(true)}
-                  onHoverOut={() => setShowTooltip(false)}
-                >
-                  <View
-                    style={{
-                      ...styles.shortCode,
-                      backgroundColor: MarkingBackgroundColor || 'transparent',
-                      borderWidth: marking?.hide_border ? 0 : 1,
-                      borderColor: MarkingColor,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: MarkingColor,
-                        fontSize: 16,
-                        lineHeight: 18,
-                      }}
-                    >
-                      {marking?.short_code}
-                    </Text>
-                  </View>
-                </Pressable>
-              )}
-            >
-              <TooltipContent bg={theme.tooltip.background} py='$1' px='$2'>
-                <TooltipText fontSize='$sm' color={theme.tooltip.text}>
-                  {`${markingText}`}
-                </TooltipText>
-              </TooltipContent>
-            </Tooltip>
-          ) : (
-            <View
-              style={{
-                ...styles.shortCode,
-                backgroundColor: MarkingBackgroundColor || 'transparent',
-                borderWidth: marking?.hide_border ? 0 : 1,
-                borderColor: MarkingColor,
-              }}
-            >
-              <Text
-                style={{ color: MarkingColor, fontSize: 16, lineHeight: 18 }}
-              >
-                {marking?.short_code}
-              </Text>
-            </View>
-          )
-        ) : handleMenuSheet ? (
+        {handleMenuSheet ? (
           <Tooltip
             placement='top'
             trigger={(triggerProps) => (
@@ -322,18 +224,7 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
                 onHoverIn={() => setShowTooltip(true)}
                 onHoverOut={() => setShowTooltip(false)}
               >
-                <Image
-                  source={markingImage}
-                  style={[
-                    styles.icon,
-                    markingImage.uri && {
-                      backgroundColor: marking?.background_color
-                        ? marking?.background_color
-                        : 'transparent',
-                      borderRadius: marking?.background_color ? 8 : 0,
-                    },
-                  ]}
-                />
+                <MarkingIcon marking={marking} size={size} />
               </Pressable>
             )}
           >
@@ -344,17 +235,7 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
             </TooltipContent>
           </Tooltip>
         ) : (
-          <Image
-            source={markingImage}
-            style={[
-              styles.icon,
-              markingImage.uri && {
-                backgroundColor:
-                  marking?.background_color && marking?.background_color,
-                borderRadius: marking?.background_color ? 8 : 0,
-              },
-            ]}
-          />
+          <MarkingIcon marking={marking} size={size} />
         )}
         <Tooltip
           placement='top'

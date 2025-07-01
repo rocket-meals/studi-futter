@@ -90,7 +90,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
   const router = useRouter();
   const wikisHelper = new WikisHelper();
   const activeIndex = state.index;
-  const { user, isManagement } = useSelector(
+  const { user, isManagement, isDevMode } = useSelector(
     (state: RootState) => state.authReducer
   );
   const {
@@ -121,11 +121,34 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
     ? appSettings?.news_area_color
     : projectColor;
 
-  const contrastColor = myContrastColor(
-    housing_area_color,
-    theme,
-    mode === 'dark'
-  );
+  const getContrastColor = (routeName: string) => {
+    let backgroundColor = projectColor;
+
+    switch (routeName) {
+      case 'account-balance/index':
+        backgroundColor = balance_area_color;
+        break;
+      case 'course-timetable/index':
+        backgroundColor = course_timetable_area_color;
+        break;
+      case 'campus':
+        backgroundColor = campus_area_color;
+        break;
+      case 'foodoffers':
+        backgroundColor = foods_area_color;
+        break;
+      case 'housing':
+        backgroundColor = housing_area_color;
+        break;
+      case 'news/index':
+        backgroundColor = news_area_color;
+        break;
+      default:
+        backgroundColor = projectColor;
+    }
+
+    return myContrastColor(backgroundColor, theme, mode === 'dark');
+  };
 
   const isActive = (routeName: string) => {
     const activeRoute = state.routes[activeIndex].name;
@@ -169,7 +192,9 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
 
   const getMenuLabelStyle = (routeName: string) => ({
     ...styles.menuLabel,
-    color: isActive(routeName) ? contrastColor : theme.inactiveText,
+    color: isActive(routeName)
+      ? getContrastColor(routeName)
+      : theme.inactiveText,
   });
 
   const handleLogout = async () => {
@@ -279,6 +304,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       });
     }
 
+
     if (isManagement) {
       menuItems.push({
         label: translate(TranslationKeys.role_management),
@@ -286,7 +312,15 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         iconLibName: Ionicons,
         activeKey: 'management/index',
         route: 'management/index',
-        position: 8,
+        position: 9,
+      });
+      menuItems.push({
+        label: translate(TranslationKeys.experimentell),
+        iconName: 'flask',
+        iconLibName: MaterialCommunityIcons,
+        activeKey: 'experimentell/index',
+        route: 'experimentell/index',
+        position: 9.5,
       });
     }
 
@@ -370,7 +404,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
                   size={24}
                   color={
                     isActive(item.activeKey)
-                      ? contrastColor
+                      ? getContrastColor(item.activeKey)
                       : theme.inactiveIcon
                   }
                 />
@@ -389,7 +423,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
                 size={28}
                 color={
                   isActive('settings/index')
-                    ? contrastColor
+                    ? getContrastColor('settings/index')
                     : theme.inactiveIcon
                 }
               />

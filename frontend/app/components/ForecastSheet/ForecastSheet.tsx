@@ -5,7 +5,9 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Platform,
 } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
@@ -66,12 +68,17 @@ const ForecastSheet: React.FC<ForecastSheetProps> = ({
           percentage = (matchingData.value_real / max) * 100;
         } else if (matchingData.value_forecast_current) {
           percentage = (matchingData.value_forecast_current / max) * 100;
-        } else {
-          percentage = 0;
         }
       }
 
-      return parseFloat(percentage.toFixed(1));
+      // Round to nearest 10 and enforce a minimum of 10 for any value > 0
+      if (percentage > 0) {
+        percentage = Math.max(10, Math.round(percentage / 10) * 10);
+      } else {
+        percentage = 0;
+      }
+
+      return percentage;
     });
 
     const colors = chartData.map((percentage) => {
@@ -135,14 +142,35 @@ const ForecastSheet: React.FC<ForecastSheetProps> = ({
   useFocusEffect(
     useCallback(() => {
       if (chartData && chartData?.datasets[0]?.data?.length) {
-        const firstNonZeroIndex = chartData.datasets[0].data.findIndex(
+        const data = chartData.datasets[0].data;
+        const now = new Date();
+        const currentIndex = now.getHours() * 4 + Math.floor(now.getMinutes() / 15);
+
+        let targetIndex = data.slice(currentIndex).findIndex(
           (value: number) => value > 0
         );
-        if (firstNonZeroIndex !== -1) {
-          scrollViewRef.current?.scrollTo({
-            x: Math.max(0, firstNonZeroIndex * 101 + 100),
-            animated: true,
-          });
+
+        if (targetIndex !== -1) {
+          targetIndex += currentIndex;
+        } else {
+          // No values after the current time, jump to two steps before the last value
+          for (let i = data.length - 1; i >= 0; i--) {
+            if (data[i] > 0) {
+              targetIndex = Math.max(0, i - 2);
+              break;
+            }
+          }
+        }
+
+        if (targetIndex !== -1 && targetIndex !== undefined) {
+          const offsetX = Math.max(0, targetIndex * 101 + 100);
+          if (Platform.OS === 'web') {
+            scrollViewRef.current?.scrollTo({ x: offsetX, animated: true });
+          } else {
+            setTimeout(() => {
+              scrollViewRef.current?.scrollTo({ x: offsetX, animated: true });
+            }, 300);
+          }
         }
       }
     }, [chartData])
@@ -154,12 +182,23 @@ const ForecastSheet: React.FC<ForecastSheetProps> = ({
     >
       <View
         style={{
-          ...styles.sheetHeader,
+          ...styles.header,
           paddingRight: isWeb ? 10 : 0,
           paddingTop: isWeb ? 10 : 0,
         }}
       >
-        <View />
+        <View style={styles.placeholder} />
+        <View
+          style={[styles.handle, { backgroundColor: theme.sheet.closeBg }]}
+        />
+        <TouchableOpacity
+          style={[styles.closeButton, { backgroundColor: theme.sheet.closeBg }]}
+          onPress={closeSheet}
+        >
+          <AntDesign name='close' size={24} color={theme.sheet.closeIcon} />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.titleContainer}>
         <Text
           style={{
             ...styles.sheetHeading,

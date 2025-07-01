@@ -23,6 +23,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useLocalSearchParams } from 'expo-router';
 import NetInfo from '@react-native-community/netinfo';
 import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
+import MarkingIcon from '@/components/MarkingIcon';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RootState } from '@/redux/reducer';
@@ -581,59 +582,22 @@ const Index = () => {
                 </Text>
                 <View style={styles.labelsContainer}>
                   {currentMarking &&
-                    currentMarking?.map((item: any) => {
-                      const iconParts = item?.icon?.split(':') || [];
-                      const [library, name] = iconParts;
-                      const Icon = library && iconLibraries[library];
-                      if (item?.shortCode && !item?.image?.uri && !item?.icon) {
-                        return (
-                          <View
-                            style={{
-                              ...styles.shortCode,
-                              backgroundColor: item?.bgColor,
-                            }}
-                          >
-                            <Text style={{ color: item.color, fontSize: 18 }}>
-                              {item?.shortCode}
-                            </Text>
-                          </View>
-                        );
-                      }
-                      if (!item?.image?.uri && item?.icon) {
-                        return (
-                          <View
-                            style={{
-                              ...styles.shortCode,
-                              backgroundColor: item?.bgColor,
-                            }}
-                          >
-                            <Icon name={name} size={20} color={item.color} />
-                          </View>
-                        );
-                      }
-                      if (item?.image?.uri) {
-                        return (
-                          <View
-                            style={{
-                              width: 30,
-                              height: 30,
-                            }}
-                          >
-                            <Image
-                              source={item?.image?.uri}
-                              style={{
-                                ...styles.icon,
-                                backgroundColor: item?.bgColor && item?.bgColor,
-                                borderRadius: item?.bgColor
-                                  ? 8
-                                  : item.hide_border
-                                  ? 5
-                                  : 0,
-                              }}
-                            />
-                          </View>
-                        );
-                      }
+                    currentMarking?.map((item: any, idx: number) => {
+                      const marking = {
+                        icon: item.icon,
+                        short_code: item.shortCode,
+                        image_remote_url: item.image?.uri,
+                        background_color: item.bgColor,
+                        hide_border: item.hide_border,
+                      } as any;
+                      return (
+                        <MarkingIcon
+                          key={idx}
+                          marking={marking}
+                          size={30}
+                          color={item.color}
+                        />
+                      );
                     })}
                 </View>
               </View>

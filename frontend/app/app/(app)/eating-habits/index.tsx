@@ -29,6 +29,9 @@ import { replaceLottieColors } from '@/helper/animationHelper';
 import { myContrastColor } from '@/helper/colorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
+import BaseBottomSheet from '@/components/BaseBottomSheet';
+import MarkingBottomSheet from '@/components/MarkingBottomSheet';
+import type BottomSheet from '@gorhom/bottom-sheet';
 import { RootState } from '@/redux/reducer';
 
 const index = () => {
@@ -47,6 +50,16 @@ const index = () => {
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
+  const menuSheetRef = useRef<BottomSheet>(null);
+  const [isActive, setIsActive] = useState(false);
+
+  const openMenuSheet = () => {
+    menuSheetRef?.current?.expand();
+  };
+
+  const closeMenuSheet = () => {
+    menuSheetRef?.current?.close();
+  };
 
 
   useFocusEffect(
@@ -67,6 +80,15 @@ const index = () => {
         setAmimationJson(null);
       };
     }, [appSettings?.animations_auto_start])
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      setIsActive(true);
+      return () => {
+        setIsActive(false);
+      };
+    }, [])
   );
 
   useEffect(() => {
@@ -154,13 +176,20 @@ const index = () => {
             <View style={styles.feedbackLabelsContainer}>
               {markings?.map((marking) => {
                 return (
-                  <MarkingLabels key={marking?.id} markingId={marking?.id} />
+                  <MarkingLabels
+                    key={marking?.id}
+                    markingId={marking?.id}
+                    handleMenuSheet={openMenuSheet}
+                  />
                 );
               })}
             </View>
           </View>
         </ScrollView>
       </View>
+      {isActive && (
+        <MarkingBottomSheet ref={menuSheetRef} onClose={closeMenuSheet} />
+      )}
     </SafeAreaView>
   );
 };

@@ -54,4 +54,8 @@ export default StyleSheet.create({
     fontFamily: 'Poppins_400Regular',
   },
   dummy: {},
+  sheetBackground: {
+    borderTopRightRadius: 30,
+    borderTopLeftRadius: 30,
+  },
 });

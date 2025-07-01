@@ -12,21 +12,6 @@ export default StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
   },
-  shortCode: {
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#2E2E2E',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 5,
-  },
-  iconMarking: {
-    borderRadius: 8,
-    borderWidth: 1,
-    padding: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   mainContainer: {
     margin: 10,
   },
@@ -34,12 +19,6 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
-  },
-  logoImage: {
-    width: 30,
-    height: 30,
-    marginRight: 5,
-    borderRadius: 25,
   },
   title: {
     marginLeft: 5,

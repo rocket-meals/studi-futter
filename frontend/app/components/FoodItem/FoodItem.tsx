@@ -42,6 +42,7 @@ import { TranslationKeys } from '@/locales/keys';
 import useToast from '@/hooks/useToast';
 import { handleFoodRating } from '@/helper/feedback';
 import { RootState } from '@/redux/reducer';
+import CardDimensionHelper from '@/helper/CardDimensionHelper';
 
 const selectFoodState = (state: RootState) => state.food;
 
@@ -189,38 +190,8 @@ const FoodItem: React.FC<FoodItemProps> = memo(
       router.navigate('/price-group');
     };
 
-    const getCardDimension = () => {
-      const dimensionMap = [
-        { min: 960, max: 1110, value: 300 },
-        { min: 750, max: 840, value: 350 },
-        { min: 710, max: 750, value: 330 },
-        { min: 650, max: 709, value: 300 },
-        { min: 570, max: Infinity, value: 260 },
-        { min: 530, max: Infinity, value: 240 },
-        { min: 500, max: Infinity, value: 220 },
-        { min: 450, max: Infinity, value: 210 },
-        { min: 380, max: Infinity, value: 180 },
-        { min: 360, max: Infinity, value: 170 },
-        { min: 340, max: Infinity, value: 160 },
-        { min: 320, max: Infinity, value: 150 },
-        { min: 300, max: Infinity, value: 140 },
-        { min: 280, max: Infinity, value: 130 },
-      ];
-
-      for (const { min, max, value } of dimensionMap) {
-        if (screenWidth > min && screenWidth < max) return value;
-      }
-
-      return 120; // Default value
-    };
-
-    const getCardWidth = () => {
-      const offset = screenWidth < 500 ? 10 : screenWidth < 900 ? 25 : 35;
-      return screenWidth / amountColumnsForcard - offset;
-    };
-
     useEffect(() => {
-      getCardWidth();
+      CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard);
     }, [amountColumnsForcard, screenWidth]);
 
     return (
@@ -234,8 +205,11 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                 ...styles.card,
                 width:
                   amountColumnsForcard === 0
-                    ? getCardDimension()
-                    : getCardWidth(),
+                    ? CardDimensionHelper.getCardDimension(screenWidth)
+                    : CardDimensionHelper.getCardWidth(
+                        screenWidth,
+                        amountColumnsForcard
+                      ),
                 backgroundColor: theme.card.background,
                 borderWidth: dislikedMarkings.length > 0 ? 3 : 0,
                 borderColor: '#FF000095',
@@ -258,8 +232,11 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                   ...styles.imageContainer,
                   height:
                     amountColumnsForcard === 0
-                      ? getCardDimension()
-                      : getCardWidth(),
+                      ? CardDimensionHelper.getCardDimension(screenWidth)
+                      : CardDimensionHelper.getCardWidth(
+                          screenWidth,
+                          amountColumnsForcard
+                        ),
                 }}
               >
                 <Image

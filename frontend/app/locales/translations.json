@@ -2303,6 +2303,16 @@
     "tr": "Harita",
     "zh": "地图"
   },
+  "leaflet_map": {
+    "de": "Leaflet Karte",
+    "en": "Leaflet Map",
+    "ar": "خريطة ليفليت",
+    "es": "Mapa Leaflet",
+    "fr": "Carte Leaflet",
+    "ru": "Карта Leaflet",
+    "tr": "Leaflet Haritası",
+    "zh": "Leaflet 地图"
+  },
   "news": {
     "de": "News",
     "en": "News",
@@ -2362,6 +2372,26 @@
     "ru": "Пищевые привычки",
     "tr": "Yeme Alışkanlıkları",
     "zh": "饮食习惯"
+  },
+  "experimentell": {
+    "de": "Experimentell",
+    "en": "Experimentell",
+    "ar": "Experimentell",
+    "es": "Experimentell",
+    "fr": "Experimentell",
+    "ru": "Experimentell",
+    "tr": "Experimentell",
+    "zh": "Experimentell"
+  },
+  "vertical_image_scroll": {
+    "de": "Vertikaler Bildlauf",
+    "en": "Vertical Image Scroll",
+    "ar": "تمرير الصور عمودياً",
+    "es": "Desplazamiento vertical de imágenes",
+    "fr": "Défilement vertical d'images",
+    "ru": "Вертикальная прокрутка изображений",
+    "tr": "Dikey Resim Kaydırma",
+    "zh": "垂直图片滚动"
   },
   "markings": {
     "de": "Kennzeichnungen",
@@ -3032,6 +3062,26 @@
     "ru": "Поддержка и часто задаваемые вопросы",
     "tr": "Destek ve SSS",
     "zh": "支持和常见问题解答"
+  },
+  "events": {
+    "de": "Events",
+    "en": "Events",
+    "ar": "الأحداث",
+    "es": "Eventos",
+    "fr": "Événements",
+    "ru": "События",
+    "tr": "Etkinlikler",
+    "zh": "活动"
+  },
+  "reset_seen_popup_events": {
+    "de": "Gesehene Pop-up Events zurücksetzen",
+    "en": "Reset seen pop-up events",
+    "ar": "إعادة تعيين أحداث النوافذ المنبثقة المُشاهدة",
+    "es": "Restablecer eventos emergentes vistos",
+    "fr": "Réinitialiser les pop-up événements vus",
+    "ru": "Сбросить просмотренные всплывающие события",
+    "tr": "Görülen açılır etkinlikleri sıfırla",
+    "zh": "重置已查看的弹窗事件"
   },
   "optional": {
     "de": "Optional",
