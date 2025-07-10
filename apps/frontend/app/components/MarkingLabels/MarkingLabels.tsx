@@ -19,7 +19,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
 import styles from './styles';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
-import { Markings, Profiles } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { useMyContrastColor } from '@/helper/colorHelper';
 import { iconLibraries } from '../Drawer/CustomDrawerContent';
 import MarkingIcon from '../MarkingIcon';
@@ -59,7 +59,7 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
     (mark: any) => mark.markings_id === markingId
   );
 
-  const openMarkingLabel = (marking: Markings) => {
+  const openMarkingLabel = (marking: DatabaseTypes.Markings) => {
     if (handleMenuSheet) {
       dispatch({
         type: SET_MARKING_DETAILS,
@@ -75,7 +75,7 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
       const profile = (await profileHelper.fetchProfileById(
         user?.profile,
         {}
-      )) as Profiles;
+      )) as DatabaseTypes.Profiles;
       if (profile) {
         dispatch({ type: UPDATE_PROFILE, payload: profile });
       }
@@ -165,7 +165,7 @@ const MarkingLabels: React.FC<MarkingLabelProps> = ({
         // Update profile on the server
         const result = (await profileHelper.updateProfile(
           profileData
-        )) as Profiles;
+        )) as DatabaseTypes.Profiles;
         if (result) {
           fetchProfile();
           if (like) {

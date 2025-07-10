@@ -1,7 +1,7 @@
 import {defineHook} from '@directus/extensions-sdk';
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
-import {CollectionNames} from "../helpers/CollectionNames";
-import {DirectusFiles, Mails} from "../databaseTypes/types";
+import {CollectionNames} from "repo-depkit-common";
+import {DatabaseTypes} from "repo-depkit-common"
 import {EmailOptions, MailService as MailServiceType} from "@directus/api/dist/services/mail";
 import {DEFAULT_HTML_TEMPLATE} from "../helpers/html/HtmlGenerator";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
@@ -60,7 +60,7 @@ export default defineHook(async ({schedule, action, filter}, apiContext) => {
 	});
 
 	// filter all update actions where from value running to start want to change, since this is not allowed
-	filter<Partial<Mails>>(CollectionNames.MAILS+'.items.create', async (input: Partial<Mails>, meta, eventContext) => {
+	filter<Partial<DatabaseTypes.Mails>>(CollectionNames.MAILS+'.items.create', async (input: Partial<DatabaseTypes.Mails>, meta, eventContext) => {
 		// TODO: Maybe outsource this into a workflow instead of a filter
 		let myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
 
@@ -107,7 +107,7 @@ export default defineHook(async ({schedule, action, filter}, apiContext) => {
 				let attachments_create = input.attachments.create;
 				if(attachments_create){
 					for(let attachment of attachments_create){
-						let directus_files_id_raw = attachment.directus_files_id as DirectusFiles | string | undefined;
+						let directus_files_id_raw = attachment.directus_files_id as DatabaseTypes.DirectusFiles | string | undefined;
 						if(!!directus_files_id_raw){
 							if(typeof directus_files_id_raw === 'string') {
 								directus_files_ids.push(directus_files_id_raw);

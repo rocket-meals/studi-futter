@@ -1,8 +1,8 @@
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 import { CollectionHelper } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
-import { Markings, MarkingsGroups } from '@/constants/types'; // Assuming Markings is the required type
+import { DatabaseTypes } from 'repo-depkit-common'; // Assuming DatabaseTypes.Markings is the required type
 
-export class MarkingGroupsHelper extends CollectionHelper<MarkingsGroups> {
+export class MarkingGroupsHelper extends CollectionHelper<DatabaseTypes.MarkingsGroups> {
   constructor(client?: any) {
     // Pass the collection name 'markings' and an optional API client
     super('markings_groups', client || ServerAPI.getClient());
@@ -47,12 +47,12 @@ export class MarkingGroupsHelper extends CollectionHelper<MarkingsGroups> {
   }
 
   // Create a new marking groups entry
-  async createMarkingGroups(entryData: Markings) {
+  async createMarkingGroups(entryData: DatabaseTypes.Markings) {
     return await this.createItem(entryData);
   }
 
   // Update an existing marking groups entry by ID
-  async updateMarkingGroupsById(id: string, updatedData: Markings) {
+  async updateMarkingGroupsById(id: string, updatedData: DatabaseTypes.Markings) {
     return await this.updateItem(id, updatedData);
   }
 

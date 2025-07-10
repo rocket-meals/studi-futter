@@ -6,11 +6,11 @@ import { useMyContrastColor } from '@/helper/colorHelper';
 import { iconLibraries } from '../Drawer/CustomDrawerContent';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import styles from './styles';
-import { Markings } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { RootState } from '@/redux/reducer';
 
 interface MarkingIconProps {
-  marking: Markings;
+  marking: DatabaseTypes.Markings;
   size?: number;
   color?: string;
   compact?: boolean;

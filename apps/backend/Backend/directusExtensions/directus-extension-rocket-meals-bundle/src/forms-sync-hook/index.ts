@@ -2,16 +2,8 @@ import {defineHook} from "@directus/extensions-sdk";
 import {EnvVariableHelper, SyncForCustomerEnum} from "../helpers/EnvVariableHelper";
 import {FormSyncHannover} from "./customers/hannover/FormSyncHannover";
 import {registerHookToCreateFormAnswersForFormSubmission} from "./RegisterHookCreateFormSubmissionsFormAnswers";
-import {CollectionNames} from "../helpers/CollectionNames";
-import {
-    DirectusFiles,
-    DirectusUsers,
-    FormAnswers, FormExtracts,
-    FormFields,
-    Forms,
-    FormSubmissions,
-    Mails
-} from "../databaseTypes/types";
+import {CollectionNames} from "repo-depkit-common";
+import {DatabaseTypes} from "repo-depkit-common"
 import {FormSubmissionState} from "./FormImportTypes";
 import {RegisterFunctions} from "@directus/extensions";
 import {ApiContext} from "../helpers/ApiContext";
@@ -22,7 +14,7 @@ import {FormHelper} from "../helpers/form/FormHelper";
 import {MyFileTypes} from "../helpers/FilesServiceHelper";
 
 function registerHookPresentCreateFormSubmissionIllegalState(registerFunctions: RegisterFunctions, apiContext: ApiContext){
-    registerFunctions.filter<Partial<FormSubmissions>>(CollectionNames.FORM_SUBMISSIONS+".items.create", async (input, meta, eventContext) => {
+    registerFunctions.filter<Partial<DatabaseTypes.FormSubmissions>>(CollectionNames.FORM_SUBMISSIONS+".items.create", async (input, meta, eventContext) => {
         if(input.state !== FormSubmissionState.DRAFT && !!input.state){ // if state is set and not draft -> throw error
             throw new Error("Only form submissions with state draft are allowed to be created.");
         }
@@ -31,7 +23,7 @@ function registerHookPresentCreateFormSubmissionIllegalState(registerFunctions: 
 }
 
 function registerHookPreventUpdateFormSubmissionIllegalState(registerFunctions: RegisterFunctions, apiContext: ApiContext){
-    registerFunctions.filter<Partial<FormSubmissions>>(CollectionNames.FORM_SUBMISSIONS+".items.update", async (input, meta, eventContext) => {
+    registerFunctions.filter<Partial<DatabaseTypes.FormSubmissions>>(CollectionNames.FORM_SUBMISSIONS+".items.update", async (input, meta, eventContext) => {
         let myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
         let form_submission_ids = meta.keys as PrimaryKey[];
         for(let form_submission_id of form_submission_ids){
@@ -52,7 +44,7 @@ function registerHookPreventUpdateFormSubmissionIllegalState(registerFunctions: 
 
 function registerHookHandleFormSubmissionDateSubmitted(registerFunctions: RegisterFunctions, apiContext: ApiContext){
     // Handle the update of the form submission state
-    registerFunctions.filter<Partial<FormSubmissions>>(CollectionNames.FORM_SUBMISSIONS+".items.update", async (input, meta, eventContext) => {
+    registerFunctions.filter<Partial<DatabaseTypes.FormSubmissions>>(CollectionNames.FORM_SUBMISSIONS+".items.update", async (input, meta, eventContext) => {
         if(input.state === FormSubmissionState.SUBMITTED){
             input.date_submitted = new Date().toISOString();
         }
@@ -65,7 +57,7 @@ function registerHookHandleFormSubmissionDateSubmitted(registerFunctions: Regist
 
 function registerHookCheckAllRequiredFieldsAreFilled(registerFunctions: RegisterFunctions, apiContext: ApiContext){
     // Check if all required fields are filled
-    registerFunctions.filter<Partial<FormSubmissions>>(CollectionNames.FORM_SUBMISSIONS+".items.update", async (input, meta, eventContext) => {
+    registerFunctions.filter<Partial<DatabaseTypes.FormSubmissions>>(CollectionNames.FORM_SUBMISSIONS+".items.update", async (input, meta, eventContext) => {
         // only if state is set to submitted
         if(input.state === FormSubmissionState.SUBMITTED){
             if(!!input.form_answers){ // tell user to first create/save the form answers
@@ -139,8 +131,8 @@ export type FormExtractFormAnswerValueFileSingle = {
     id: number
 }
 export type FormExtractFormAnswerValueFileSingleOrString = FormExtractFormAnswerValueFileSingle | string
-export type FormExtractFormAnswer = Omit<FormAnswers, "value_image" | "value_files"> & {value_image: DirectusFiles | undefined | null, value_files: FormExtractFormAnswerValueFileSingleOrString[]}
-export type FormExtractRelevantInformationSingle = {form_field_id: string, sort: number | null | undefined, form_field: FormFields, form_answer: FormExtractFormAnswer }
+export type FormExtractFormAnswer = Omit<DatabaseTypes.FormAnswers, "value_image" | "value_files"> & {value_image: DatabaseTypes.DirectusFiles | undefined | null, value_files: FormExtractFormAnswerValueFileSingleOrString[]}
+export type FormExtractRelevantInformationSingle = {form_field_id: string, sort: number | null | undefined, form_field: DatabaseTypes.FormFields, form_answer: FormExtractFormAnswer }
 export type FormExtractRelevantInformation = FormExtractRelevantInformationSingle[]
 
 function registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions: RegisterFunctions, apiContext: ApiContext){
@@ -269,7 +261,7 @@ function registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions: 
 
                         const recipient_user_raw = form_extract.recipient_user; // if the recipient email is the user who submitted the form
                         if(recipient_user_raw){
-                            let recipient_user: DirectusUsers | null = null;
+                            let recipient_user: DatabaseTypes.DirectusUsers | null = null;
                             if(typeof recipient_user_raw === "string"){
                                 let user = await myDatabaseHelper.getUsersHelper().readOne(recipient_user_raw);
                                 if(!user){
@@ -291,7 +283,7 @@ function registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions: 
                         }
 
                         console.log("Get form_extract_form_fields for form_extract id: " + form_extract_id);
-                        let relevant_form_fields: FormFields[] = [];
+                        let relevant_form_fields: DatabaseTypes.FormFields[] = [];
                         if(form_extract.all_fields){
                             relevant_form_fields = form_fields;
                         } else {
@@ -363,9 +355,9 @@ function registerHookSendMailAfterFormSubmissionStateSyncing(registerFunctions: 
 }
 
 async function sendFormExtractMail(
-    form: Forms,
-    formExtract: FormExtracts,
-    formSubmission: FormSubmissions,
+    form: DatabaseTypes.Forms,
+    formExtract: DatabaseTypes.FormExtracts,
+    formSubmission: DatabaseTypes.FormSubmissions,
     formExtractRelevantInformation: FormExtractRelevantInformation,
     recipient_emails: string[],
     myDatabaseHelper: MyDatabaseHelper
@@ -405,8 +397,8 @@ async function sendFormExtractMail(
           "delete": []
         }
 
-        let send_attachments_as_links = !!formExtract.send_attachments_as_links;
-        let mail: Partial<Mails> = {
+        let send_attachments_as_links = !!formExtract?.send_attachments_as_links;
+        let mail: Partial<DatabaseTypes.Mails> = {
             recipient: recipient_email,
             markdown_content: "Anbei finden Sie eine Kopie des Formulars: " + form_name+"\n\n",
             subject: subject,

@@ -1,6 +1,6 @@
 import {TranslationHelper} from "../helpers/TranslationHelper";
 import {NewsParserInterface, NewsTypeForParser} from "./NewsParserInterface";
-import {WorkflowsRuns} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 import {WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
 
 export class DemoNews_Parser implements NewsParserInterface{
@@ -9,7 +9,7 @@ export class DemoNews_Parser implements NewsParserInterface{
 
     }
 
-    async getNewsItems(workflowRun?: WorkflowsRuns, logger?: WorkflowRunLogger): Promise<NewsTypeForParser[]> {
+    async getNewsItems(workflowRun?: DatabaseTypes.WorkflowsRuns, logger?: WorkflowRunLogger): Promise<NewsTypeForParser[]> {
         return [this.getDemoNewsItem("1"), this.getDemoNewsItem("2"), this.getDemoNewsItem("3")];
     }
 

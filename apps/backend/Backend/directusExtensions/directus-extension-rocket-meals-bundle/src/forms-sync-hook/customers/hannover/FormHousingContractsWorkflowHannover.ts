@@ -10,7 +10,7 @@ import {
     FormImportSyncFormSubmissions
 } from "../../FormImportTypes";
 import {WorkflowResultHash} from "../../../helpers/itemServiceHelpers/WorkflowsRunHelper";
-import {FormAnswers} from "../../../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 import {WorkflowRunLogger} from "../../../workflows-runs-hook/WorkflowRunJobInterface";
 
 
@@ -40,7 +40,7 @@ export class FormHousingContractsWorkflowHannover extends FormImportSyncWorkflow
         return new WorkflowResultHash(hash);
     }
 
-    private static getFormImportSyncFormAnswerValue(contract: ImportHousingContract, key: keyof ImportHousingContract): Partial<FormAnswers> {
+    private static getFormImportSyncFormAnswerValue(contract: ImportHousingContract, key: keyof ImportHousingContract): Partial<DatabaseTypes.FormAnswers> {
         let value_raw = contract[key];
 
         switch (key) {

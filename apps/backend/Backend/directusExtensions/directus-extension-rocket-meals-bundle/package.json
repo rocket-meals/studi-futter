@@ -123,16 +123,16 @@
 				"name": "push-notification-hook",
 				"source": "src/push-notification-hook/index.ts"
 			},
-			{
-				"type": "endpoint",
-				"name": "redirect-with-token-endpoint",
-				"source": "src/redirect-with-token-endpoint/index.ts"
-			},
-			{
-				"type": "endpoint",
-				"name": "proof-key-code-exchange-endpoint",
-				"source": "src/proof-key-code-exchange-endpoint/index.ts"
-			},
+                        {
+                                "type": "endpoint",
+                                "name": "redirect-with-token-endpoint",
+                                "source": "src/redirect-with-token-endpoint/index.ts"
+                        },
+                        {
+                                "type": "endpoint",
+                                "name": "proof-key-code-exchange-endpoint",
+                                "source": "src/proof-key-code-exchange-endpoint/index.ts"
+                        },
 			{
 				"type": "hook",
 				"name": "users-avatar-delete-hook",
@@ -167,9 +167,9 @@
 		"add": "directus-extension add"
 	},
 	"devDependencies": {
-		"@directus/api": "11.1.0",
-		"@directus/extensions-sdk": "11.0.3",
-		"@directus/types": "10.1.1",
+		"@directus/api": "28.0.3",
+		"@directus/extensions-sdk": "14.0.0",
+		"@directus/types": "13.2.0",
 		"@types/fs-extra": "^11.0.4",
 		"@types/jest": "^29.5.12",
 		"@types/js-yaml": "^4.0.9",
@@ -188,7 +188,7 @@
 		"typescript": "^5.4.5"
 	},
 	"dependencies": {
-		"@directus/memory": "2.0.1",
+		"@directus/memory": "3.0.6",
 		"@directus/sdk": "^18.0.0",
 		"@types/moment": "^2.13.0",
 		"@types/object-hash": "^3.0.6",

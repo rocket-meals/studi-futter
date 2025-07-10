@@ -1,8 +1,8 @@
-import { FoodsFeedbacks } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 
-export class FoodFeedbackHelper extends CollectionHelper<FoodsFeedbacks> {
+export class FoodFeedbackHelper extends CollectionHelper<DatabaseTypes.FoodsFeedbacks> {
   constructor(client?: any) {
     // Pass the collection name and API client
     super('foods_feedbacks', client || ServerAPI.getClient());
@@ -88,10 +88,10 @@ export class FoodFeedbackHelper extends CollectionHelper<FoodsFeedbacks> {
   async updateFoodFeedback(
     foodId: string,
     profileId: string,
-    // ownFeedback: FoodsFeedbacks | null | undefined,
-    feedback: FoodsFeedbacks
+    // ownFeedback: DatabaseTypes.FoodsFeedbacks | null | undefined,
+    feedback: DatabaseTypes.FoodsFeedbacks
   ) {
-    // const resourceCollectionHelper = new CollectionHelper<FoodsFeedbacks>(TABLE_NAME_FOODS_FEEDBACKS);
+    // const resourceCollectionHelper = new CollectionHelper<DatabaseTypes.FoodsFeedbacks>(TABLE_NAME_FOODS_FEEDBACKS);
 
     let foodFeedback = Object.values(feedback)?.length > 2 ? feedback : null;
     // Create a new feedback if it doesn't exist
@@ -99,7 +99,7 @@ export class FoodFeedbackHelper extends CollectionHelper<FoodsFeedbacks> {
       foodFeedback = (await this.createItem({
         food: foodId,
         profile: profileId,
-      })) as FoodsFeedbacks;
+      })) as DatabaseTypes.FoodsFeedbacks;
       foodFeedback = { ...foodFeedback, ...feedback };
     }
 

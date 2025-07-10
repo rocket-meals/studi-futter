@@ -1,7 +1,7 @@
 // small jest test
 import {describe, it} from '@jest/globals';
-import {CanteenFoodFeedbackReportSchedules} from "../../databaseTypes/types";
-import {DateHelper} from "../../helpers/DateHelper";
+import {DatabaseTypes} from "repo-depkit-common";
+import {DateHelper} from "repo-depkit-common";
 import {ReportSchedule} from "../ReportSchedule";
 
 describe("TestFoodFeedbackReportScheduleNextReportDateDue Test", () => {
@@ -12,7 +12,7 @@ describe("TestFoodFeedbackReportScheduleNextReportDateDue Test", () => {
         const sendReportAtHour = 6;
         const sendReportAtMinute = 0;
         const sendReportAtHhMmPadded = `${sendReportAtHour.toString().padStart(2, '0')}:${sendReportAtMinute.toString().padStart(2, '0')}`;
-        let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
+        let recipientEntry: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules> = {
             enabled: true,
             send_report_at_hh_mm: sendReportAtHhMmPadded,
             period_days_offset: 0,
@@ -61,7 +61,7 @@ describe("TestFoodFeedbackReportScheduleNextReportDateDue Test", () => {
         const sendReportAtHour = 6;
         const sendReportAtMinute = 0;
         const sendReportAtHhMmPadded = `${sendReportAtHour.toString().padStart(2, '0')}:${sendReportAtMinute.toString().padStart(2, '0')}`;
-        let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
+        let recipientEntry: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules> = {
             enabled: true,
             send_report_at_hh_mm: sendReportAtHhMmPadded,
             period_days_offset: 3,// although this is not 0, we expect the report to be due today
@@ -111,7 +111,7 @@ describe("TestFoodFeedbackReportScheduleNextReportDateDue Test", () => {
         const sendReportAtHour = 6;
         const sendReportAtMinute = 0;
         const sendReportAtHhMmPadded = `${sendReportAtHour.toString().padStart(2, '0')}:${sendReportAtMinute.toString().padStart(2, '0')}`;
-        let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
+        let recipientEntry: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules> = {
             enabled: true,
             send_report_at_hh_mm: sendReportAtHhMmPadded,
             period_days_offset: 0,
@@ -160,7 +160,7 @@ describe("TestFoodFeedbackReportScheduleNextReportDateDue Test", () => {
             const sendReportAtHour = 6;
             const sendReportAtMinute = 0;
             const sendReportAtHhMmPadded = `${sendReportAtHour.toString().padStart(2, '0')}:${sendReportAtMinute.toString().padStart(2, '0')}`;
-            let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
+            let recipientEntry: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules> = {
                 enabled: true,
                 send_report_at_hh_mm: sendReportAtHhMmPadded,
                 period_days_offset: 0,
@@ -208,7 +208,7 @@ describe("TestFoodFeedbackReportScheduleNextReportDateDue Test", () => {
         const sendReportAtHour = 6;
         const sendReportAtMinute = 0;
         const sendReportAtHhMmPadded = `${sendReportAtHour.toString().padStart(2, '0')}:${sendReportAtMinute.toString().padStart(2, '0')}`;
-        let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
+        let recipientEntry: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules> = {
             enabled: true,
             send_report_at_hh_mm: sendReportAtHhMmPadded,
             period_days_offset: 4,// we want to send the report 4 days before the offer date
@@ -259,7 +259,7 @@ describe("TestFoodFeedbackReportScheduleNextReportDateDue Test", () => {
         const sendReportAtHour = 6;
         const sendReportAtMinute = 0;
         const sendReportAtHhMmPadded = `${sendReportAtHour.toString().padStart(2, '0')}:${sendReportAtMinute.toString().padStart(2, '0')}`;
-        let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
+        let recipientEntry: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules> = {
             enabled: true,
             send_report_at_hh_mm: sendReportAtHhMmPadded,
             period_days_offset: 0,
@@ -292,7 +292,7 @@ describe("TestFoodFeedbackReportScheduleNextReportDateDue Test", () => {
         const sendReportAtHour = 6;
         const sendReportAtMinute = 0;
         const sendReportAtHhMmPadded = `${sendReportAtHour.toString().padStart(2, '0')}:${sendReportAtMinute.toString().padStart(2, '0')}`;
-        let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
+        let recipientEntry: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules> = {
             enabled: false,
             send_report_at_hh_mm: sendReportAtHhMmPadded,
             period_days_offset: 0,

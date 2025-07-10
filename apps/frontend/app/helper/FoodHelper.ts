@@ -1,4 +1,4 @@
-import { Foods } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper } from './collectionHelper';
 
 export async function loadMostLikedOrDislikedFoods(
@@ -7,7 +7,7 @@ export async function loadMostLikedOrDislikedFoods(
   minRatingAmount: number | undefined,
   bestFirst: boolean
 ) {
-  const collectionHelper = new CollectionHelper<Foods>('foods');
+  const collectionHelper = new CollectionHelper<DatabaseTypes.Foods>('foods');
   if (!minRatingAmount) {
     minRatingAmount = 1;
   }

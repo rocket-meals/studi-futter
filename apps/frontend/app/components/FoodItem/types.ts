@@ -1,13 +1,13 @@
 import { SHEET_COMPONENTS } from '@/app/(app)/foodoffers';
-import {Foodoffers, Foods, FoodoffersMarkings, Canteens} from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 
 export interface FoodItemProps {
-  item: Foodoffers;
-  canteen: Canteens;
+  item: DatabaseTypes.Foodoffers;
+  canteen: DatabaseTypes.Canteens;
   // handleNavigation: (id: string, foodId: string) => void;
   handleMenuSheet: (sheet: keyof typeof SHEET_COMPONENTS) => void;
   handleImageSheet: (id: string) => void;
   handleEatingHabitsSheet: (sheet: keyof typeof SHEET_COMPONENTS) => void;
-  // setItemMarkings: React.Dispatch<React.SetStateAction<FoodoffersMarkings[]>>;
+  // setItemMarkings: React.Dispatch<React.SetStateAction<DatabaseTypes.FoodoffersMarkings[]>>;
   setSelectedFoodId: React.Dispatch<React.SetStateAction<string>>;
 }

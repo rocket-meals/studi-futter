@@ -2,7 +2,7 @@ import {MarkingParserInterface, MarkingsTypeForParser} from "./MarkingParserInte
 import {CSVExportParser} from "./CSVExportParser";
 import {TranslationHelper, TranslationsFromParsingType} from "../helpers/TranslationHelper";
 import {SystemFileHelper} from "../helpers/SystemFileHelper";
-import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
+import {EventContext} from "@directus/types";
 
 const FIELD_MARKING_TRANSLATION_NAME = "name"
 

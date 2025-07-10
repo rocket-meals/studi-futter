@@ -1,6 +1,6 @@
 import {ApiExtensionContext} from "@directus/extensions";
 import {ItemsService} from "./ItemsServiceCreator";
-import {AssetsService, SharesService} from "@directus/api";
+import {AssetsService, SharesService} from "./MyServiceClassHelpers";
 
 // https://github.com/directus/directus/blob/main/api/src/services/index.ts
 /**

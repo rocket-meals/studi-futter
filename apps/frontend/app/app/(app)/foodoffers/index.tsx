@@ -37,11 +37,7 @@ import {
   SET_SELECTED_DATE,
   UPDATE_PROFILE,
 } from '@/redux/Types/types';
-import {
-  Businesshours,
-  CanteensFeedbacksLabels,
-  Foodoffers,
-} from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import {
   Entypo,
   FontAwesome6,
@@ -149,7 +145,9 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const { appElements } = useSelector((state: RootState) => state.appElements);
   const { selectedCanteen, selectedCanteenFoodOffers, canteenFeedbackLabels } =
     useSelector((state: RootState) => state.canteenReducer);
-  const [prefetchedFoodOffers, setPrefetchedFoodOffers] = useState<Record<string, Foodoffers[]>>({});
+  const [prefetchedFoodOffers, setPrefetchedFoodOffers] = useState<
+    Record<string, Record<string, DatabaseTypes.Foodoffers[]>>
+  >({});
   const foods_area_color = appSettings?.foods_area_color
     ? appSettings?.foods_area_color
     : primaryColor;
@@ -319,7 +317,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     try {
       const businessHours = (await businessHoursHelper.fetchBusinessHours(
         {}
-      )) as Businesshours[];
+      )) as DatabaseTypes.Businesshours[];
       dispatch({ type: SET_BUSINESS_HOURS, payload: businessHours });
     } catch (error) {
       console.error('Error fetching business hours:', error);
@@ -383,7 +381,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     return format(day, 'dd.MM.yyyy'); // Return the date if it's not Today, Yesterday, or Tomorrow
   };
 
-  const updateSort = (id: FoodSortOption, foodOffers: Foodoffers[]) => {
+  const updateSort = (id: FoodSortOption, foodOffers: DatabaseTypes.Foodoffers[]) => {
     // Copy food offers to avoid mutation
     let copiedFoodOffers = [...foodOffers];
 
@@ -462,11 +460,13 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const fetchFoods = async () => {
     try {
       setLoading(true);
-      let foodOffers = prefetchedFoodOffers[selectedDate];
+      const canteenId = selectedCanteen?.id as string;
+      let foodOffers =
+        prefetchedFoodOffers[canteenId]?.[selectedDate];
 
       if (!foodOffers) {
         const foodData = await fetchFoodOffersByCanteen(
-          selectedCanteen?.id,
+          canteenId,
           selectedDate
         );
         foodOffers = foodData?.data || [];
@@ -474,7 +474,10 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
       setPrefetchedFoodOffers((prev) => ({
         ...prev,
-        [selectedDate]: foodOffers,
+        [canteenId]: {
+          ...(prev[canteenId] || {}),
+          [selectedDate]: foodOffers,
+        },
       }));
 
       // Prefetch next two days
@@ -482,11 +485,17 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
         const date = addDays(new Date(selectedDate), i)
           .toISOString()
           .split('T')[0];
-        if (!prefetchedFoodOffers[date]) {
-          fetchFoodOffersByCanteen(selectedCanteen?.id, date)
+        if (!prefetchedFoodOffers[canteenId]?.[date]) {
+          fetchFoodOffersByCanteen(canteenId, date)
             .then((res) => {
               const offers = res?.data || [];
-              setPrefetchedFoodOffers((p) => ({ ...p, [date]: offers }));
+              setPrefetchedFoodOffers((p) => ({
+                ...p,
+                [canteenId]: {
+                  ...(p[canteenId] || {}),
+                  [date]: offers,
+                },
+              }));
             })
             .catch((e) => console.error('Error prefetching Food Offers:', e));
         }
@@ -510,7 +519,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
       setFeedbackLabelsLoading(true);
       // Fetch Canteen Feedback Labels
       const canteenFeedbackLabels =
-        (await canteenFeedbackLabelHelper.fetchCanteenFeedbackLabels()) as CanteensFeedbacksLabels[];
+        (await canteenFeedbackLabelHelper.fetchCanteenFeedbackLabels()) as DatabaseTypes.CanteensFeedbacksLabels[];
       dispatch({
         type: SET_CANTEEN_FEEDBACK_LABELS,
         payload: canteenFeedbackLabels,
@@ -540,7 +549,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const memoizedCanteenFeedbackLabels = useMemo(
     () =>
       canteenFeedbackLabels?.map(
-        (label: CanteensFeedbacksLabels, index: number) => (
+        (label: DatabaseTypes.CanteensFeedbacksLabels, index: number) => (
           <CanteenFeedbackLabels
             key={label?.id || `feedback-label-${index}`}
             label={label}
@@ -553,17 +562,18 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const canteenFeedbackLabelsExist = canteenFeedbackLabels?.length > 0;
 
   const nextAvailableDate = useMemo(() => {
+    const canteenId = selectedCanteen?.id as string;
     for (let i = 1; i <= 2; i++) {
       const date = addDays(new Date(selectedDate), i)
         .toISOString()
         .split('T')[0];
-      const offers = prefetchedFoodOffers[date];
+      const offers = prefetchedFoodOffers[canteenId]?.[date];
       if (offers && offers.length > 0) {
         return date;
       }
     }
     return null;
-  }, [prefetchedFoodOffers, selectedDate]);
+  }, [prefetchedFoodOffers, selectedCanteen, selectedDate]);
 
   const getWeekdayKey = (date: string) => {
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -962,7 +972,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 </View>
               ) : selectedCanteenFoodOffers &&
                 selectedCanteenFoodOffers?.length > 0 ? (
-                selectedCanteenFoodOffers?.map((item: Foodoffers) => (
+                selectedCanteenFoodOffers?.map((item: DatabaseTypes.Foodoffers) => (
                   <FoodItem
                     canteen={selectedCanteen}
                     item={item}

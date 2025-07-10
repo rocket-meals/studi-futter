@@ -1,11 +1,6 @@
-import {
-    CanteenFoodFeedbackReportSchedules,
-    Canteens,
-    CanteensFeedbacksLabels,
-    Foods,
-    FoodsFeedbacksLabels
-} from "../databaseTypes/types";
-import {DateHelper} from "../helpers/DateHelper";
+import {DatabaseTypes} from "repo-depkit-common"
+
+import {DateHelper} from "repo-depkit-common";
 import {ApiContext} from "../helpers/ApiContext";
 import {FieldFilter, Filter} from "@directus/types/dist/filter";
 import {AssetHelperDirectusBackend, AssetHelperTransformOptions} from "../helpers/AssetHelperDirectusBackend";
@@ -100,7 +95,7 @@ export class ReportGenerator {
         this.myDatabaseHelper = new MyDatabaseHelper(apiContext);
     }
 
-    static getCanteenAliasList(canteenEntries: Record<string, Canteens>){
+    static getCanteenAliasList(canteenEntries: Record<string, DatabaseTypes.Canteens>){
         let canteen_alias_list = [];
         for(let canteenKey in canteenEntries){
             let canteen = canteenEntries[canteenKey];
@@ -138,7 +133,7 @@ export class ReportGenerator {
      * @param canteenEntries
      * @return {Promise<{report_feedback_period_days: *, foods: {}}>}
      */
-    async generateReportJSON(reportSchedule: CanteenFoodFeedbackReportSchedules, startDate: Date, endDate: Date, canteenEntries: Record<string, Canteens>): Promise<ReportType>{
+    async generateReportJSON(reportSchedule: DatabaseTypes.CanteenFoodFeedbackReportSchedules, startDate: Date, endDate: Date, canteenEntries: Record<string, DatabaseTypes.Canteens>): Promise<ReportType>{
 
         let dateStartHumanReadable = DateHelper.getHumanReadableDate(startDate, true);
         let dateEndHumanReadable = DateHelper.getHumanReadableDate(endDate, true);
@@ -237,7 +232,7 @@ export class ReportGenerator {
         return ReportStatusTrafficLightValues.YELLOW;
     }
 
-    async getReportForCanteenFeedbacks(reportSchedule: CanteenFoodFeedbackReportSchedules, startDate: Date, endDate: Date, canteenEntries: Record<string, Canteens>) {
+    async getReportForCanteenFeedbacks(reportSchedule: DatabaseTypes.CanteenFoodFeedbackReportSchedules, startDate: Date, endDate: Date, canteenEntries: Record<string, DatabaseTypes.Canteens>) {
         let canteens_feedbacks: ReportCanteenEntryType[] = [];
 
         let canteenFeedbackLabelsWithTranslations = await this.myDatabaseHelper.getCanteenFeedbackLabelsHelper().readByQuery({
@@ -365,7 +360,7 @@ export class ReportGenerator {
         return canteens_feedbacks;
     }
 
-    async getCanteenFeedbackCounts(filterLabel: FieldFilter, filterLikes: FieldFilter, filterDislikes: FieldFilter, filterDateUpdatedFeedbackLabelEntries: Filter[], canteen: Canteens | null = null) {
+    async getCanteenFeedbackCounts(filterLabel: FieldFilter, filterLikes: FieldFilter, filterDislikes: FieldFilter, filterDateUpdatedFeedbackLabelEntries: Filter[], canteen: DatabaseTypes.Canteens | null = null) {
         const canteenFilter: FieldFilter = canteen ? { canteen: { _eq: canteen.id } } : {};
 
         const amount_positive_new = await this.myDatabaseHelper.getCanteenFeedbackLabelsEntriesHelper().countItems({
@@ -423,10 +418,10 @@ export class ReportGenerator {
         };
     }
 
-    async getReportForFoodFeedbacks(reportSchedule: CanteenFoodFeedbackReportSchedules, startDate: Date, endDate: Date, canteenEntries: Record<string, Canteens>, foodAverageRating: number | undefined){
+    async getReportForFoodFeedbacks(reportSchedule: DatabaseTypes.CanteenFoodFeedbackReportSchedules, startDate: Date, endDate: Date, canteenEntries: Record<string, DatabaseTypes.Canteens>, foodAverageRating: number | undefined){
         let foods: ReportFoodEntryType[] = [];
 
-        let foodDict: {[key: string]: Foods} = {};
+        let foodDict: {[key: string]: DatabaseTypes.Foods} = {};
         let canteenKeys = Object.keys(canteenEntries);
         for(let canteenKey of canteenKeys){
             let canteenEntry = canteenEntries[canteenKey];
@@ -528,13 +523,13 @@ export class ReportGenerator {
         return foods;
     }
 
-    getTranslationOfFeedbackLabel(feedbackLabelWithTranslation: FoodsFeedbacksLabels | CanteensFeedbacksLabels): string {
+    getTranslationOfFeedbackLabel(feedbackLabelWithTranslation: DatabaseTypes.FoodsFeedbacksLabels | DatabaseTypes.CanteensFeedbacksLabels): string {
         // TODO: Read FoodsFeedbacksLabelsTranslations and return the text
         // TODO: Maybe create a translation helper for the backend similar to the one in the frontend
         return feedbackLabelWithTranslation?.alias || feedbackLabelWithTranslation.id;
     }
 
-    async getReportFeedbackLabelsList(reportSchedule: CanteenFoodFeedbackReportSchedules, food_id: string, dictFeedbackLabelsWithTranslation: Record<string, FoodsFeedbacksLabels>, startDate: Date, endDate: Date): Promise<ReportFoodEntryLabelType[]> {
+    async getReportFeedbackLabelsList(reportSchedule: DatabaseTypes.CanteenFoodFeedbackReportSchedules, food_id: string, dictFeedbackLabelsWithTranslation: Record<string, DatabaseTypes.FoodsFeedbacksLabels>, startDate: Date, endDate: Date): Promise<ReportFoodEntryLabelType[]> {
         const foodFeedbackLabelEntriesService = this.myDatabaseHelper.getFoodFeedbackLabelEntriesHelper();
 
         const filterLikes = {

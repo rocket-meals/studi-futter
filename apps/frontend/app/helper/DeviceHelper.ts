@@ -1,6 +1,6 @@
 import {Dimensions, PixelRatio, useWindowDimensions} from 'react-native';
 import {EdgeInsets, useSafeAreaInsets} from 'react-native-safe-area-context';
-import {Devices} from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import * as DeviceInfo from 'expo-device';
 import {DeviceType} from 'expo-device';
 import usePlatformHelper from '@/helper/platformHelper';
@@ -122,8 +122,8 @@ export function getIsLandScape(): boolean {
 	return isLandscape;
 }
 
-export function getCurrentDevice(deviceInformationsId: string | undefined, devices: any): Devices | undefined {
-	let foundDevice: undefined | Devices = undefined;
+export function getCurrentDevice(deviceInformationsId: string | undefined, devices: any): DatabaseTypes.Devices | undefined {
+	let foundDevice: undefined | DatabaseTypes.Devices = undefined;
 	if (deviceInformationsId) {
 		for (const device of devices) {
 			if (getDeviceIdentifier(device) === deviceInformationsId) {
@@ -135,11 +135,11 @@ export function getCurrentDevice(deviceInformationsId: string | undefined, devic
 	return foundDevice;
 }
 
-export function getDeviceIdentifier(device: Partial<Devices>) {
+export function getDeviceIdentifier(device: Partial<DatabaseTypes.Devices>) {
 	return device.platform+'_'+device.brand+'_'+device.system_version;
 }
 
-export function getDeviceInformationWithoutPushToken(): Partial<Devices> { // Promise<DeviceInformationType>
+export function getDeviceInformationWithoutPushToken(): Partial<DatabaseTypes.Devices> { // Promise<DeviceInformationType>
 	const { getPlatformDisplayName, isIOS, isAndroid, isWeb } = usePlatformHelper();
     const windowWidth = Dimensions.get('screen').width;
 	const windowHeight = Dimensions.get('screen').height;

@@ -39,7 +39,7 @@ import * as Linking from 'expo-linking';
 import useToast from '@/hooks/useToast';
 import { getTitleFromTranslation } from '@/helper/resourceHelper';
 import { WikisHelper } from '@/redux/actions/Wikis/Wikis';
-import { Wikis } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { IconProps } from '@expo/vector-icons/build/createIconSet';
 import { AntDesign } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
@@ -221,7 +221,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
 
   const getWikis = async () => {
     try {
-      const response = (await wikisHelper.fetchWikis()) as Wikis[];
+      const response = (await wikisHelper.fetchWikis()) as DatabaseTypes.Wikis[];
       if (response) {
         dispatch({ type: SET_WIKIS, payload: response });
       }
@@ -324,7 +324,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
       });
     }
 
-    // Add Wikis dynamically with position sorting
+    // Add DatabaseTypes.Wikis dynamically with position sorting
     if (wikis) {
       const wikiMenuItems = wikis
         .filter((wiki: any) => wiki.show_in_drawer) // Only show relevant wikis

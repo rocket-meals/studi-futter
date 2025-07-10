@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
 import { isWeb } from '@/constants/Constants';
 import { FormAnswersHelper } from '@/redux/actions/Forms/FormAnswers';
-import { FormAnswers } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { deleteDirectusFile } from '@/constants/HelperFunctions';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
@@ -88,7 +88,7 @@ const ImageUpload = ({
       if (!value?.name) {
         const formAnswer = (await formAnswersHelper.fetchFormsById(id, {
           fields: ['id', 'value_image'],
-        })) as FormAnswers;
+        })) as DatabaseTypes.FormAnswers;
 
         if (formAnswer && formAnswer?.value_image) {
           const isFileDeleted = await deleteDirectusFile(
@@ -100,7 +100,7 @@ const ImageUpload = ({
               {
                 value_image: null,
               }
-            )) as FormAnswers;
+            )) as DatabaseTypes.FormAnswers;
 
             if (deleteResponse) {
               onChange(id, null, custom_type);

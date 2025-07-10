@@ -2,7 +2,7 @@ import {defineHook} from '@directus/extensions-sdk';
 import {FileServiceCreator} from "../helpers/ItemsServiceCreator";
 import {EventHelper} from "../helpers/EventHelper";
 import {Filter} from "@directus/types/dist/filter";
-import {DirectusFiles} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 
 export default defineHook(async ({action, filter}, apiContext) => {
 	const fileServiceCreator = new FileServiceCreator(apiContext);
@@ -41,10 +41,10 @@ export default defineHook(async ({action, filter}, apiContext) => {
 			}
 		}
 
-		const partialDirectusFileUploadedBy: Partial<DirectusFiles> = {
+		const partialDirectusFileUploadedBy: Partial<DatabaseTypes.DirectusFiles> = {
 			uploaded_by: userWhoDeletes
 		}
-		const partialDirectusFileModifiedBy: Partial<DirectusFiles> = {
+		const partialDirectusFileModifiedBy: Partial<DatabaseTypes.DirectusFiles> = {
 			modified_by: userWhoDeletes
 		}
 

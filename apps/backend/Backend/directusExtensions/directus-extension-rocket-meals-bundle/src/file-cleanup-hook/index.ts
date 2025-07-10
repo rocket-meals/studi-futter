@@ -3,9 +3,9 @@ import {RegisterFunctions} from "@directus/extensions";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {WorkflowScheduleHelper} from "../workflows-runs-hook";
 import {SingleWorkflowRun, WorkflowEnum, WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
-import {DirectusFiles, WorkflowsRuns} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
-import {CollectionNames} from "../helpers/CollectionNames";
+import {CollectionNames} from "repo-depkit-common";
 import {Query} from "@directus/types";
 import {ByteSizeHelper} from "../helpers/ByteSizeHelper";
 
@@ -45,7 +45,7 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
         return WorkflowEnum.fileCleanup;
     }
 
-    async runJob(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<WorkflowsRuns>> {
+    async runJob(workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<DatabaseTypes.WorkflowsRuns>> {
         await logger.appendLog("Starting file cleanup job.");
 
 
@@ -106,7 +106,7 @@ export class FileCleanupWorkflow extends SingleWorkflowRun {
                             // define the SpecificCollection type
                             type SpecificCollection = {
                                 // the fieldForDirectusFileId is a string
-                                [key: string]: string | DirectusFiles
+                                [key: string]: string | DatabaseTypes.DirectusFiles
                             }
 
                             let collectionHelper = myDatabaseHelper.getItemsServiceHelper<SpecificCollection>(collectionName as CollectionNames);

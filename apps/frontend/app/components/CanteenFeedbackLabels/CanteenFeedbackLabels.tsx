@@ -12,10 +12,7 @@ import {
   getIconComponent,
   getTextFromTranslation,
 } from '@/helper/resourceHelper';
-import {
-  CanteensFeedbacksLabelsEntries,
-  FoodsFeedbacksLabelsEntries,
-} from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   DELETE_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES,
@@ -67,11 +64,11 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({
   const labelData = useMemo(() => {
     return (
       ownCanteenFeedBackLabelEntries?.find(
-        (entry: CanteensFeedbacksLabelsEntries) =>
+        (entry: DatabaseTypes.CanteensFeedbacksLabelsEntries) =>
           entry.label === label?.id &&
           entry.canteen === selectedCanteen?.id &&
           isSameDay(entry.date, date)
-      ) || ({} as FoodsFeedbacksLabelsEntries)
+      ) || ({} as DatabaseTypes.FoodsFeedbacksLabelsEntries)
     );
   }, [ownCanteenFeedBackLabelEntries, date]);
 
@@ -98,7 +95,7 @@ const CanteenFeedbackLabels: React.FC<CanteenFeedbackLabelProps> = ({
         likeStats,
         selectedCanteen.id,
         date
-      )) as CanteensFeedbacksLabelsEntries;
+      )) as DatabaseTypes.CanteensFeedbacksLabelsEntries;
     getLabelEntries(label?.id);
     dispatch({
       type: result

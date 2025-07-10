@@ -1,7 +1,7 @@
 import {ApiContext} from "./ApiContext";
 import {EventContext as ExtentContextDirectusTypes} from "@directus/types";
 import {ItemsServiceHelper} from "./ItemsServiceHelper";
-import {CustomDirectusTypes, DirectusUsers} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 import {ServerInfo} from "./ItemsServiceCreator";
 import {createDirectus, rest, serverInfo} from "@directus/sdk";
 
@@ -15,7 +15,7 @@ export interface MyDatabaseTestableHelperInterface {
 export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterface {
     private cachedServerInfo: ServerInfo | undefined = undefined;
     private cachedClient: any | undefined = undefined;
-    public useOfflineServerInfo: boolean = false;
+    public useOfflineServerInfo: boolean = true;
 
     getServerUrl(): string {
         return 'https://test.rocket-meals.de/rocket-meals/api';
@@ -50,7 +50,7 @@ export class MyDatabaseTestableHelper implements MyDatabaseTestableHelperInterfa
 
     public getPublicClient(){
         if(!this.cachedClient){
-            this.cachedClient = createDirectus<CustomDirectusTypes>(this.getServerUrl()).with(rest());
+            this.cachedClient = createDirectus<DatabaseTypes.CustomDirectusTypes>(this.getServerUrl()).with(rest());
         }
         return this.cachedClient;
     }
@@ -69,6 +69,6 @@ export interface MyDatabaseHelperInterface extends MyDatabaseTestableHelperInter
     apiContext: ApiContext;
     eventContext: ExtentContextDirectusTypes | undefined;
 
-    getUsersHelper(): ItemsServiceHelper<DirectusUsers>;
+    getUsersHelper(): ItemsServiceHelper<DatabaseTypes.DirectusUsers>;
 
 }

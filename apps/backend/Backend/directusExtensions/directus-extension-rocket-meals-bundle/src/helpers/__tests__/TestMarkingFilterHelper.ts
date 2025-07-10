@@ -1,8 +1,6 @@
 // small jest test
 import {describe, expect, it} from '@jest/globals';
-import {LanguageCodes, LanguageCodesType, TranslationsFromParsingType, TranslationHelper} from "../TranslationHelper";
-import {PrimaryKey} from "@directus/types";
-import {Markings, MarkingsExclusions} from "../../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 import {MarkingFilterHelper, MarkingWithIdAndExclusionRulesOnly} from "../MarkingFilterHelper";
 
 const marking_id_meat = "meat_marking_id";
@@ -13,12 +11,12 @@ const marking_id_sugar = "pork_sugar_id";
 
 let marking_exclusion_current_id = 1;
 
-const marking_exclusion_rule_vegan_is_restricted_by_chicken: MarkingsExclusions = {
+const marking_exclusion_rule_vegan_is_restricted_by_chicken: DatabaseTypes.MarkingsExclusions = {
     id: marking_exclusion_current_id++,
     restricted_markings_id: marking_id_vegan,
     restricted_by_markings_id: marking_id_chicken
 };
-const marking_exclusion_rule_vegan_is_restricted_by_meat: MarkingsExclusions = {
+const marking_exclusion_rule_vegan_is_restricted_by_meat: DatabaseTypes.MarkingsExclusions = {
     id: marking_exclusion_current_id++,
     restricted_markings_id: marking_id_vegan,
     restricted_by_markings_id: marking_id_meat

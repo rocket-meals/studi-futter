@@ -1,8 +1,8 @@
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 import { CollectionHelper } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
-import { FoodsFeedbacksLabelsEntries } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 
-export class FoodFeedbackLabelEntryHelper extends CollectionHelper<FoodsFeedbacksLabelsEntries> {
+export class FoodFeedbackLabelEntryHelper extends CollectionHelper<DatabaseTypes.FoodsFeedbacksLabelsEntries> {
   constructor(client?: any) {
     super('foods_feedbacks_labels_entries', client || ServerAPI.getClient());
   }
@@ -58,7 +58,7 @@ export class FoodFeedbackLabelEntryHelper extends CollectionHelper<FoodsFeedback
     foodId: string,
     profile_id: string,
     foodFeedbackLabelEntriesData:
-      | FoodsFeedbacksLabelsEntries[]
+      | DatabaseTypes.FoodsFeedbacksLabelsEntries[]
       | null
       | undefined,
     foodFeedbackLabelId: string,
@@ -76,7 +76,7 @@ export class FoodFeedbackLabelEntryHelper extends CollectionHelper<FoodsFeedback
     let isNewEntry = !existingEntry;
 
     // Prepare new entry data
-    const newFoodFeedbackLabelEntry: Partial<FoodsFeedbacksLabelsEntries> = {
+    const newFoodFeedbackLabelEntry: Partial<DatabaseTypes.FoodsFeedbacksLabelsEntries> = {
       food: foodId,
       label: foodFeedbackLabelId,
       like,
@@ -87,7 +87,7 @@ export class FoodFeedbackLabelEntryHelper extends CollectionHelper<FoodsFeedback
     if (isNewEntry) {
       existingEntry = (await this.createItem(
         newFoodFeedbackLabelEntry
-      )) as FoodsFeedbacksLabelsEntries;
+      )) as DatabaseTypes.FoodsFeedbacksLabelsEntries;
     }
 
     // Handle missing entry

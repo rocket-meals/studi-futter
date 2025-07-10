@@ -5,6 +5,7 @@ on:
     branches: [master]
     paths:
       - 'apps/frontend/app/**'
+      - 'packages/common/**'
       - '.github/workflows/**'
 
 jobs:

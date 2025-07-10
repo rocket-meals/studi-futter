@@ -1,8 +1,8 @@
-import { FormCategories } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper } from '@/helper/collectionHelper';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
-export class FormCategoriesHelper extends CollectionHelper<FormCategories> {
+export class FormCategoriesHelper extends CollectionHelper<DatabaseTypes.FormCategories> {
   constructor(client?: any) {
     super('form_categories', client || ServerAPI.getClient());
   }

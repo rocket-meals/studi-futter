@@ -6,7 +6,7 @@ import {
     WashingmachinesTypeForParser,
     WashingmachinesTypeForParserOmmited
 } from "./../WashingmachineParserInterface";
-import {DateHelper} from "../../helpers/DateHelper";
+import {DateHelper} from "repo-depkit-common";
 
 type IntercardWasher = {
     terminalNr: number,

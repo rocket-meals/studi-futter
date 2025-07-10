@@ -11,7 +11,7 @@ import styles from './styles';
 import { isWeb } from '@/constants/Constants';
 import NewsItem from '@/components/NewsItem/NewsItem';
 import { NewsHelper } from '@/redux/actions/News/News';
-import { News } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { useDispatch, useSelector } from 'react-redux';
 import { SET_NEWS } from '@/redux/Types/types';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
@@ -34,7 +34,7 @@ const index = () => {
 
   const fetchAllNews = async () => {
   setLoading(true);
-  const newsData = (await newsHelper.fetchNews({})) as News[];
+  const newsData = (await newsHelper.fetchNews({})) as DatabaseTypes.News[];
 
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
@@ -94,7 +94,7 @@ const index = () => {
             </View>
           ) : (
             news &&
-            news?.map((item: News, index: number) => {
+            news?.map((item: DatabaseTypes.News, index: number) => {
               if (item?.translations?.length > 1) {
                 return <NewsItem key={item?.id} news={item} />;
               }

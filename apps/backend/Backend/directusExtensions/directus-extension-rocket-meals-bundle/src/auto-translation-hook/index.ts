@@ -10,7 +10,7 @@ import {ItemsServiceHelper} from "../helpers/ItemsServiceHelper";
 import {AutoTranslationSettingsHelper} from "../helpers/itemServiceHelpers/AutoTranslationSettingsHelper";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {EventContext} from "@directus/types";
-import {CollectionNames} from "../helpers/CollectionNames";
+import {CollectionNames} from "repo-depkit-common";
 
 export const scheduleNameAutoTranslation = "auto-translation";
 

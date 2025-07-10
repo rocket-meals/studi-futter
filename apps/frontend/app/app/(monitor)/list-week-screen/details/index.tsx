@@ -26,7 +26,7 @@ import { useLocalSearchParams } from 'expo-router';
 import moment from 'moment';
 import { useLanguage } from '@/hooks/useLanguage';
 import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
-import { FoodsCategories, Markings, MarkingsGroups } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
 import { MarkingHelper } from '@/redux/actions/Markings/Markings';
 import { UPDATE_MARKINGS } from '@/redux/Types/types';
@@ -140,7 +140,7 @@ const index = () => {
           if (!newCategories[categoryId]) {
             const result = (await foodCategoriesHelper.fetchFoodCategoriesById(
               categoryId
-            )) as FoodsCategories;
+            )) as DatabaseTypes.FoodsCategories;
             if (result) {
               newCategories[categoryId] = {
                 alias: result?.alias,
@@ -260,10 +260,10 @@ const index = () => {
     try {
       const markingResult = (await markingHelper.fetchMarkings(
         {}
-      )) as Markings[];
+      )) as DatabaseTypes.Markings[];
       const markingGroupResult = (await markingGroupsHelper.fetchMarkingGroups(
         {}
-      )) as MarkingsGroups[];
+      )) as DatabaseTypes.MarkingsGroups[];
 
       // Use the sortMarkingsByGroup function to sort markings
       const sortedMarkings = sortMarkingsByGroup(markingResult, markingGroupResult);

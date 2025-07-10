@@ -14,7 +14,7 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { excerpt, getImageUrl } from '@/constants/HelperFunctions';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Buildings, Canteens } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { CanteenHelper } from '@/redux/actions';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { TranslationKeys } from '@/locales/keys';
@@ -36,7 +36,7 @@ const CanteenSelectionSheet: React.FC<CanteenSelectionSheetProps> = ({
   );
   const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
 
-  const handleSelectCanteen = (canteen: Canteens) => {
+  const handleSelectCanteen = (canteen: DatabaseTypes.Canteens) => {
     dispatch({ type: SET_SELECTED_CANTEEN, payload: canteen });
     closeSheet();
   };
@@ -45,7 +45,7 @@ const CanteenSelectionSheet: React.FC<CanteenSelectionSheetProps> = ({
     try {
       const buildingsData = (await buildingsHelper.fetchBuildings(
         {}
-      )) as Buildings[];
+      )) as DatabaseTypes.Buildings[];
       const buildings = buildingsData || [];
 
       const buildingsDict = buildings.reduce(
@@ -60,7 +60,7 @@ const CanteenSelectionSheet: React.FC<CanteenSelectionSheetProps> = ({
 
       const canteensData = (await canteenHelper.fetchCanteens(
         {}
-      )) as Canteens[];
+      )) as DatabaseTypes.Canteens[];
 
       const filteredCanteens = canteensData.filter((canteen) => {
         const status = canteen.status || '';

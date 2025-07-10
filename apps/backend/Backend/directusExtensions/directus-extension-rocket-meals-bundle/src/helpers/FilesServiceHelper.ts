@@ -6,12 +6,12 @@ import {
     MutationOptions
 } from "./ItemsServiceCreator";
 import {ItemsServiceHelper} from "./ItemsServiceHelper";
-import {CollectionNames} from "./CollectionNames";
+import {CollectionNames} from "repo-depkit-common";
 import {PrimaryKey} from "@directus/types";
-import {DirectusFiles} from "../databaseTypes/types";
-import {AssetsService} from "@directus/api";
+import {DatabaseTypes} from "repo-depkit-common";
 import {Readable} from "node:stream";
 import type {Stat} from "@directus/storage";
+import {AssetsService} from "./MyServiceClassHelpers";
 import {CreateShareLinkOptionForDirectusFiles, ShareDirectusFileMethod, ShareServiceHelper} from "./ShareServiceHelper";
 import { Buffer } from "node:buffer";
 import {MyDatabaseHelperInterface} from "./MyDatabaseHelperInterface";
@@ -26,7 +26,7 @@ export enum MyFileTypes {
     TXT = "text/plain",
 }
 
-export class FilesServiceHelper extends ItemsServiceHelper<DirectusFiles> implements FilesService, ShareDirectusFileMethod {
+export class FilesServiceHelper extends ItemsServiceHelper<DatabaseTypes.DirectusFiles> implements FilesService, ShareDirectusFileMethod {
 
     constructor(myDatabaseHelper: MyDatabaseHelperInterface) {
         super(myDatabaseHelper, CollectionNames.DIRECTUS_FILES);
@@ -94,7 +94,7 @@ export class FilesServiceHelper extends ItemsServiceHelper<DirectusFiles> implem
         return filesService.uploadOne(stream, data, primaryKey, opts);
     }
 
-    async importOne(importURL: string, body: Partial<DirectusFiles>): Promise<PrimaryKey> {
+    async importOne(importURL: string, body: Partial<DatabaseTypes.DirectusFiles>): Promise<PrimaryKey> {
         let filesService = await this.getItemsService();
         return filesService.importOne(importURL, body);
     }

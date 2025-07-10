@@ -1,7 +1,7 @@
-import { FoodsFeedbacksLabelsTranslations } from "@/constants/types";
+import { DatabaseTypes } from 'repo-depkit-common';
 
 export interface FeedbackLabelProps {
-  label: Array<FoodsFeedbacksLabelsTranslations>;
+  label: Array<DatabaseTypes.FoodsFeedbacksLabelsTranslations>;
   imageUrl?: string | null | undefined;
   icon?: string;
   labelEntries: any;

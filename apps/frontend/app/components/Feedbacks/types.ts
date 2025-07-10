@@ -1,7 +1,7 @@
-import { Foods } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 
 export interface FeedbacksProps {
-  foodDetails: Foods;
+  foodDetails: DatabaseTypes.Foods;
   canteenId?: string;
   offerId: string;
 }

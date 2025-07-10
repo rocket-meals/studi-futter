@@ -1,9 +1,9 @@
 import { defineHook } from '@directus/extensions-sdk';
 import axios from "axios";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
-import {CanteenFoodFeedbackReportSchedules, PushNotifications} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common";
 import {ItemsServiceHelper} from "../helpers/ItemsServiceHelper";
-import {CollectionNames} from "../helpers/CollectionNames";
+import {CollectionNames} from "repo-depkit-common";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 
 const SCHEDULE_NAME = "push_notification";
@@ -19,7 +19,7 @@ export default defineHook(async ({filter}, apiContext) => {
 	const myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
 	// Trigger before the item is created or updated
-	filter<Partial<PushNotifications>>(collectionName+'.items.create', async (input: any, {collection}) => {
+	filter<Partial<DatabaseTypes.PushNotifications>>(collectionName+'.items.create', async (input: any, {collection}) => {
 		//console.log("items.create")
 		//console.log("input")
 		//console.log(input)#
@@ -33,7 +33,7 @@ export default defineHook(async ({filter}, apiContext) => {
 		return input;
 	});
 
-	filter<Partial<PushNotifications>>(collectionName+'.items.update', async (input: Partial<PushNotifications>, {keys, collection}) => {
+	filter<Partial<DatabaseTypes.PushNotifications>>(collectionName+'.items.update', async (input: Partial<DatabaseTypes.PushNotifications>, {keys, collection}) => {
 		let itemService = myDatabaseHelper.getPushNotificationsHelper();
 
 		// Fetch the current item from the database
@@ -74,7 +74,7 @@ export default defineHook(async ({filter}, apiContext) => {
 	});
 
 	// Function to send Expo push notification
-	async function sendNotification(payload: PushNotifications, input: any) {
+	async function sendNotification(payload: DatabaseTypes.PushNotifications, input: any) {
 		console.log("Sending notification...")
 		console.log("Payload:")
 		console.log(payload)

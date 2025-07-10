@@ -1,5 +1,5 @@
 import {SingleWorkflowRun, WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
-import {FormAnswers, FormFields, Forms, FormSubmissions, WorkflowsRuns} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
 import {FormImportSyncFormSubmissions} from "./FormImportTypes";
@@ -17,7 +17,7 @@ export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
     abstract getFormInternalCustomId(): string;
     abstract getFormAlias(): string;
 
-    async runJob(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<WorkflowsRuns>> {
+    async runJob(workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<DatabaseTypes.WorkflowsRuns>> {
         const workflowRunHelper = myDatabaseHelper.getWorkflowsRunsHelper();
         await logger.appendLog("Creating needed data.");
         await this.createNeededData(logger);
@@ -43,10 +43,10 @@ export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
             await logger.appendLog("New data found. Running workflow.");
 
             // Now that we have new housing protocols, we can synchronize them with the database
-            const searchForm: Partial<Forms> = {
+            const searchForm: Partial<DatabaseTypes.Forms> = {
                 internal_custom_id: this.getFormInternalCustomId(),
             }
-            const createForm: Partial<Forms> = {
+            const createForm: Partial<DatabaseTypes.Forms> = {
                 internal_custom_id: this.getFormInternalCustomId(),
                 alias: this.getFormAlias(),
             }
@@ -63,7 +63,7 @@ export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
                 let formFields = await myDatabaseHelper.getFormsFieldsHelper().findItems({
                     form: form.id
                 });
-                let dictFormFieldExternalImportIdToFormFieldId: {[key: string]: FormFields} = {};
+                let dictFormFieldExternalImportIdToFormFieldId: {[key: string]: DatabaseTypes.FormFields} = {};
                 for(let formField of formFields){
                     let external_import_id = formField.external_import_id;
                     if(external_import_id){
@@ -85,7 +85,7 @@ export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
                     currentIndexOfFormSubmission++;
                     let internal_custom_id = formSubmission.internal_custom_id;
                     await logger.appendLog("Processing (" + currentIndexOfFormSubmission + "/" + amountOfFormSubmissions + "): " + internal_custom_id);
-                    let searchFormSubmission: Partial<FormSubmissions> = {
+                    let searchFormSubmission: Partial<DatabaseTypes.FormSubmissions> = {
                         form: form.id,
                         internal_custom_id: internal_custom_id, // identifier for the housing contract for future reference
                     }
@@ -94,13 +94,13 @@ export abstract class FormImportSyncWorkflow extends SingleWorkflowRun {
                         //await logger.appendLog("- does not exist. Creating.");
                         //await logger.appendLog(JSON.stringify(formSubmission, null, 2));
                         let alias = formSubmission.alias;
-                        let createFormSubmission: Partial<FormSubmissions> = {
+                        let createFormSubmission: Partial<DatabaseTypes.FormSubmissions> = {
                             form: form.id,
                             internal_custom_id: internal_custom_id, // identifier for the form submission for future reference
                             alias: alias,
                         }
 
-                        let createFormAnswers: Partial<FormAnswers>[] = [];
+                        let createFormAnswers: Partial<DatabaseTypes.FormAnswers>[] = [];
                         // now we need to fill the form answers with the data from the housing contract
                         // iterate over all data fields of the housing contract
                         let formAnswers = formSubmission.form_answers;

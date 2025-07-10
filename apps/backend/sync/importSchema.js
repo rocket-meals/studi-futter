@@ -31,7 +31,7 @@ console.log(JSON.stringify(currentPackageJson, null, 4));
 const DirectusSyncVersion = currentPackageJson.dependencies['directus-sync'];
 
 // Path to the .env file
-const envFilePath = path.resolve(__dirname, './../../.env');
+const envFilePath = path.resolve(__dirname, './../../../.env');
 
 // Read the contents of the .env file
 const envFile = fs.readFileSync(envFilePath, 'utf8');

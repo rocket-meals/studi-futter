@@ -1,8 +1,8 @@
-import { Forms } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper } from '@/helper/collectionHelper';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
-export class FormsHelper extends CollectionHelper<Forms> {
+export class FormsHelper extends CollectionHelper<DatabaseTypes.Forms> {
   constructor(client?: any) {
     super('forms', client || ServerAPI.getClient());
   }

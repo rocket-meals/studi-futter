@@ -181,6 +181,24 @@ const index = () => {
         <TouchableOpacity
           style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }}
           onPress={() => {
+            router.navigate('/rss-feed-config');
+          }}
+        >
+          <View style={styles.col}>
+            <FontAwesome name='rss-square' color={theme.screen.icon} size={22} />
+            <Text style={{ ...styles.body, color: theme.screen.text }}>
+              {translate(TranslationKeys.rss_feed)}
+            </Text>
+          </View>
+          <Entypo
+            name='chevron-small-right'
+            color={theme.screen.icon}
+            size={24}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }}
+          onPress={() => {
             router.navigate('/form-categories');
           }}
         >

@@ -20,7 +20,7 @@ import {
 } from '@/redux/Types/types';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { excerpt, getImageUrl } from '@/constants/HelperFunctions';
-import { Buildings, Canteens } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { RootState } from '@/redux/reducer';
 
@@ -47,7 +47,7 @@ const Home = () => {
     }
   };
 
-  const handleSelectCanteen = (canteen: Canteens) => {
+  const handleSelectCanteen = (canteen: DatabaseTypes.Canteens) => {
     dispatch({ type: SET_SELECTED_CANTEEN, payload: canteen });
     router.push('/(app)/foodoffers');
   };
@@ -57,7 +57,7 @@ const Home = () => {
       setLoading(true);
       const buildingsData = (await buildingsHelper.fetchBuildings(
         {}
-      )) as Buildings[];
+      )) as DatabaseTypes.Buildings[];
       const buildings = buildingsData || [];
 
       const buildingsDict = buildings.reduce(
@@ -72,7 +72,7 @@ const Home = () => {
 
       const canteensData = (await canteenHelper.fetchCanteens(
         {}
-      )) as Canteens[];
+      )) as DatabaseTypes.Canteens[];
 
       const filteredCanteens = canteensData.filter((canteen) => {
         const status = canteen.status || '';

@@ -1,4 +1,4 @@
-import { FoodoffersMarkings } from "@/constants/types";
+import { DatabaseTypes } from 'repo-depkit-common';
 
 export interface EatingHabitsSheetProps {
   closeSheet: () => void;

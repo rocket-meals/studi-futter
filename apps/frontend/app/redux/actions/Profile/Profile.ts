@@ -1,8 +1,8 @@
-import { Profiles } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper } from '@/helper/collectionHelper'; // Your helper
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // Your API client
 
-export class ProfileHelper extends CollectionHelper<Profiles> {
+export class ProfileHelper extends CollectionHelper<DatabaseTypes.Profiles> {
   constructor(client?: any) {
     super('profiles', client || ServerAPI.getClient());
   }
@@ -62,6 +62,6 @@ export class ProfileHelper extends CollectionHelper<Profiles> {
 }
 
 export async function deleteProfileRemote(id: string | number) {
-  const profileCollectionHelper = new CollectionHelper<Profiles>('profiles');
+  const profileCollectionHelper = new CollectionHelper<DatabaseTypes.Profiles>('profiles');
   await profileCollectionHelper.deleteItem(id);
 }

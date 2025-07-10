@@ -15,7 +15,7 @@ import { useSelector } from 'react-redux';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { FormsSubmissionsHelper } from '@/redux/actions/Forms/FormSubmitions';
-import { FormSubmissions } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 
@@ -43,7 +43,7 @@ const SubmissionWarningModal: React.FC<SubmissionWarningModalProps> = ({
         user_locked_by: String(user?.id),
         date_started: new Date().toISOString(),
       }
-    )) as FormSubmissions;
+    )) as DatabaseTypes.FormSubmissions;
     if (update) {
       setIsVisible(false);
       setLoading(false);

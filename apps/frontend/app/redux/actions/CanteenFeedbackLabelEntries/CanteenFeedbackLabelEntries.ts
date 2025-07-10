@@ -1,9 +1,9 @@
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 import { CollectionHelper } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
-import { CanteensFeedbacksLabelsEntries } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { itemStatus } from '@/constants/Constants';
 
-export class CanteenFeedbackLabelEntryHelper extends CollectionHelper<CanteensFeedbacksLabelsEntries> {
+export class CanteenFeedbackLabelEntryHelper extends CollectionHelper<DatabaseTypes.CanteensFeedbacksLabelsEntries> {
   constructor(client?: any) {
     super('canteens_feedbacks_labels_entries', client || ServerAPI.getClient());
   }
@@ -71,7 +71,7 @@ export class CanteenFeedbackLabelEntryHelper extends CollectionHelper<CanteensFe
   async updateCanteenFeedbackLabelEntry(
     profile_id: string,
     canteenFeedbackLabelEntriesData:
-      | CanteensFeedbacksLabelsEntries[]
+      | DatabaseTypes.CanteensFeedbacksLabelsEntries[]
       | null
       | undefined,
     canteenFeedbackLabelId: string,
@@ -93,7 +93,7 @@ export class CanteenFeedbackLabelEntryHelper extends CollectionHelper<CanteensFe
     let isNewEntry = !existingEntry;
 
     // Prepare new entry data
-    const newFoodFeedbackLabelEntry: Partial<CanteensFeedbacksLabelsEntries> = {
+    const newFoodFeedbackLabelEntry: Partial<DatabaseTypes.CanteensFeedbacksLabelsEntries> = {
       canteen: canteen_id,
       label: canteenFeedbackLabelId,
       status: itemStatus,
@@ -106,7 +106,7 @@ export class CanteenFeedbackLabelEntryHelper extends CollectionHelper<CanteensFe
     if (isNewEntry) {
       existingEntry = (await this.createItem(
         newFoodFeedbackLabelEntry
-      )) as CanteensFeedbacksLabelsEntries;
+      )) as DatabaseTypes.CanteensFeedbacksLabelsEntries;
     }
 
     // Handle missing entry

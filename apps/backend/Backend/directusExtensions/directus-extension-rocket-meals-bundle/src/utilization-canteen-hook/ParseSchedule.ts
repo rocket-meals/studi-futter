@@ -1,22 +1,23 @@
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
-import {Canteens, Cashregisters, UtilizationsGroups, WorkflowsRuns} from "../databaseTypes/types";
-import {DateHelper} from "../helpers/DateHelper";
+
+import {DatabaseTypes} from "repo-depkit-common";
+import {DateHelper} from "repo-depkit-common";
 import {WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
 import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
 
 export class ParseSchedule {
 
     private myDatabaseHelper: MyDatabaseHelper;
-    private workflowRun: WorkflowsRuns;
+    private workflowRun: DatabaseTypes.WorkflowsRuns;
     private logger: WorkflowRunLogger;
 
-    constructor(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger) {
+    constructor(workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger) {
         this.myDatabaseHelper = myDatabaseHelper;
         this.workflowRun = workflowRun;
         this.logger = logger;
     }
 
-    async parse(): Promise<Partial<WorkflowsRuns>>{
+    async parse(): Promise<Partial<DatabaseTypes.WorkflowsRuns>>{
         await this.logger.appendLog("Starting");
         await this.logger.appendLog("this.myDatabaseHelper.apiContext exists: "+!!this.myDatabaseHelper.apiContext);
 
@@ -42,7 +43,7 @@ export class ParseSchedule {
         }
     }
 
-    async calcForecastForCanteen(canteen: Canteens){
+    async calcForecastForCanteen(canteen: DatabaseTypes.Canteens){
         //console.log("UtilizationSchedule: calc for canteen - label: "+canteen?.alias);
         await this.logger.appendLog("Calculating forecast for canteen - label: "+canteen?.alias);
         //console.log(canteen);
@@ -84,7 +85,7 @@ export class ParseSchedule {
         }
     }
 
-    async createUtilizationEntry(utilization_group: UtilizationsGroups, date_start: Date, date_end: Date){
+    async createUtilizationEntry(utilization_group: DatabaseTypes.UtilizationsGroups, date_start: Date, date_end: Date){
         let itemService = this.myDatabaseHelper.getUtilizationEntriesHelper();
         await itemService.createOne({
             utilization_group: utilization_group?.id,
@@ -93,7 +94,7 @@ export class ParseSchedule {
         });
     }
 
-    async getUtilizationEntry(utilization_group: UtilizationsGroups, date_start: Date, date_end: Date){
+    async getUtilizationEntry(utilization_group: DatabaseTypes.UtilizationsGroups, date_start: Date, date_end: Date){
         //console.log("getUtilizationEntry");
         let itemService = this.myDatabaseHelper.getUtilizationEntriesHelper();
 
@@ -143,7 +144,7 @@ export class ParseSchedule {
          */
     }
 
-    async countCashRegistersTransactionsForInterval(cashregisters: Cashregisters[], date_start: Date, date_end: Date){
+    async countCashRegistersTransactionsForInterval(cashregisters: DatabaseTypes.Cashregisters[], date_start: Date, date_end: Date){
         let transactions = 0;
         //console.log("")
         //console.log("countCashRegistersTransactionsForInterval")
@@ -169,7 +170,7 @@ export class ParseSchedule {
         return transactions;
     }
 
-    async updateUtilizationEntryForCanteenAtDate(canteen: Canteens, utilization_group: UtilizationsGroups, cashregisters: Cashregisters[], date: Date, intervalMinutes: number){
+    async updateUtilizationEntryForCanteenAtDate(canteen: DatabaseTypes.Canteens, utilization_group: DatabaseTypes.UtilizationsGroups, cashregisters: DatabaseTypes.Cashregisters[], date: Date, intervalMinutes: number){
 
         let now = new Date();
 
@@ -232,7 +233,7 @@ export class ParseSchedule {
      * @param date_start
      * @param date_end
      */
-    async predictUtilizationForInterval(utilization_group: UtilizationsGroups, cashregisters: Cashregisters[], canteen: Canteens, date_start: Date, date_end: Date){
+    async predictUtilizationForInterval(utilization_group: DatabaseTypes.UtilizationsGroups, cashregisters: DatabaseTypes.Cashregisters[], canteen: DatabaseTypes.Canteens, date_start: Date, date_end: Date){
         // calc forecast - kept very simple
         let date_start_last_week = new Date(date_start)
         date_start_last_week.setDate(date_start.getDate()-7);
@@ -286,11 +287,11 @@ export class ParseSchedule {
         });
     }
 
-    async getAllCashregistersForCanteen(canteen: Canteens){
+    async getAllCashregistersForCanteen(canteen: DatabaseTypes.Canteens){
         return await this.myDatabaseHelper.getCashregisterHelper().getCashregistersForCanteen(canteen.id);
     }
 
-    async findOrCreateOrUpdateUtilizationGroupForCanteen(canteen: Canteens) {
+    async findOrCreateOrUpdateUtilizationGroupForCanteen(canteen: DatabaseTypes.Canteens) {
         //console.log("findOrCreateOrUpdateUtilizationGroupForCanteen")
         const canteenItemService = this.myDatabaseHelper.getCanteensHelper();
         let utilization_group_id = canteen?.utilization_group;

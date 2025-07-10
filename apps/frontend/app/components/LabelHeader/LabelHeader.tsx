@@ -1,8 +1,8 @@
-import { Dimensions, Image, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { useSelector } from 'react-redux';
-import { getImageUrl } from '@/constants/HelperFunctions';
+import CompanyImage from '@/components/CompanyImage';
 import { RootState } from '@/redux/reducer';
 
 const LabelHeader: React.FC<{ Label: any; isConnected?: Boolean }> = ({
@@ -14,9 +14,6 @@ const LabelHeader: React.FC<{ Label: any; isConnected?: Boolean }> = ({
   const [logoStyle, setLogoStyle] = useState(styles.logo);
   const { width } = Dimensions.get('window');
   const { appSettings } = useSelector((state: RootState) => state.settings);
-  const companyImage =
-    appSettings?.company_image &&
-    getImageUrl(String(appSettings?.company_image))?.split('?')[0];
   const updateLogoStyle = useCallback(() => {
     setLogoStyle({
       width: width < 600 ? 150 : width > 600 ? 300 : 300,
@@ -55,7 +52,7 @@ const LabelHeader: React.FC<{ Label: any; isConnected?: Boolean }> = ({
       }}
     >
       <View style={styles.logoContainer}>
-        <Image source={{ uri: companyImage }} style={logoStyle} />
+        <CompanyImage appSettings={appSettings} style={logoStyle} />
       </View>
       <View style={{ ...styles.row }}>
         <View style={styles.labelText}>

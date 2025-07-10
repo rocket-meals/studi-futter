@@ -28,7 +28,7 @@ import {
 import { RootDrawerParamList } from './types';
 import { useFocusEffect, useNavigation } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { Apartments, Buildings } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import {
   SET_APARTMENTS,
   SET_APARTMENTS_DICT,
@@ -68,7 +68,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const [apartmentsDispatched, setApartmentsDispatched] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [distanceAdded, setDistanceAdded] = useState(false);
-  const [selectedBuilding, setSelectedBuilding] = useState<Buildings | null>();
+  const [selectedBuilding, setSelectedBuilding] = useState<DatabaseTypes.Buildings | null>();
   const [selectedApartmentId, setSelectedApartementId] = useState<string>('');
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
@@ -132,7 +132,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
       // Fetch all apartments
       const apartmentData = (await apartmentsHelper.fetchApartments(
         {}
-      )) as Apartments[];
+      )) as DatabaseTypes.Apartments[];
       const apartments = apartmentData || [];
 
       if (apartments && apartments?.length > 0) {
@@ -140,7 +140,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
           apartments.map(async (apartment) => {
             const buildingData = (await buildingsHelper.fetchBuildingById(
               String(apartment?.building)
-            )) as Buildings;
+            )) as DatabaseTypes.Buildings;
 
             return {
               ...apartment,
@@ -190,8 +190,8 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     }
   }, [selectedBuilding, apartmentsDispatched]);
 
-  const addDistance = (apartments: Apartments[]) => {
-    let campusWithDistance: Array<Buildings> = [];
+  const addDistance = (apartments: DatabaseTypes.Apartments[]) => {
+    let campusWithDistance: Array<DatabaseTypes.Buildings> = [];
     if (apartments) {
       apartments?.forEach((apartment: any) => {
         const distance = Number(
@@ -213,7 +213,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     if (selectedCanteen?.building) {
       const buildingData = (await buildingsHelper.fetchBuildingById(
         selectedCanteen.building
-      )) as Buildings;
+      )) as DatabaseTypes.Buildings;
       const building = buildingData || [];
       if (building) {
         setSelectedBuilding(building);
@@ -228,7 +228,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     fetchAllApartments();
   }, []);
 
-  const updateSort = (id: ApartmentSortOption, apartments: Apartments[]) => {
+  const updateSort = (id: ApartmentSortOption, apartments: DatabaseTypes.Apartments[]) => {
     // Copy food offers to avoid mutation
     setLoading(true);
     let copiedApartments = [...apartments];
@@ -269,7 +269,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     if (!apartments) return apartments;
 
     return apartments.sort((a, b) => {
-      // Priority 1: Apartments marked as free (no `available_from`)
+      // Priority 1: DatabaseTypes.Apartments marked as free (no `available_from`)
       const isFreeA = !a.available_from;
       const isFreeB = !b.available_from;
 
@@ -281,7 +281,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     });
   };
 
-  const sortApartmentsWithDistance = (apartments: Apartments[]) => {
+  const sortApartmentsWithDistance = (apartments: DatabaseTypes.Apartments[]) => {
     if (apartments) {
       return apartments?.sort((a: any, b: any) => a.distance - b.distance);
     } else {
@@ -289,7 +289,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     }
   };
 
-  const sortApartmentsAlphabetically = (apartments: Apartments[]) => {
+  const sortApartmentsAlphabetically = (apartments: DatabaseTypes.Apartments[]) => {
     if (apartments) {
       return apartments?.sort((a: any, b: any) =>
         a.alias.localeCompare(b.alias)
@@ -299,7 +299,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     }
   };
 
-  const sortApartmentsByAvailableDate = (apartments: Apartments[]) => {
+  const sortApartmentsByAvailableDate = (apartments: DatabaseTypes.Apartments[]) => {
     if (!apartments) return apartments;
 
     return apartments.sort((a, b) => {

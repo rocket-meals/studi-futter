@@ -41,7 +41,7 @@ import { myContrastColor } from '@/helper/colorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RootState } from '@/redux/reducer';
-import { FoodsAttributes } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { FoodAttributesHelper } from '@/redux/actions/FoodAttributes/FoodAttributes';
 
 type FoodAttribute = {
@@ -93,14 +93,14 @@ const Index = () => {
   const getAllFoodAttributes = async () => {
     try {
       const result =
-        (await foodAttributesHelper.fetchAllFoodAttributes()) as FoodsAttributes[];
+        (await foodAttributesHelper.fetchAllFoodAttributes()) as DatabaseTypes.FoodsAttributes[];
       if (result) {
         const attributesDict = result.reduce((acc, attr) => {
           if (attr.id) {
             acc[attr.id] = attr;
           }
           return acc;
-        }, {} as Record<string, FoodsAttributes>);
+        }, {} as Record<string, DatabaseTypes.FoodsAttributes>);
         dispatch({ type: SET_FOOD_ATTRIBUTES, payload: result });
         dispatch({ type: SET_FOOD_ATTRIBUTES_DICT, payload: attributesDict });
       }

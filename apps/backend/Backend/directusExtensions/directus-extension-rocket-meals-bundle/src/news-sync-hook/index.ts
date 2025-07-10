@@ -8,7 +8,7 @@ import {StudentenwerkOsnabrueckNews_Parser} from "./osnabrueck/StudentenwerkOsna
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {WorkflowScheduleHelper} from "../workflows-runs-hook";
 import {SingleWorkflowRun, WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
-import {WorkflowsRuns} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
 
 
@@ -25,7 +25,7 @@ class NewsParseWorkflow extends SingleWorkflowRun {
         return "news-sync";
     }
 
-    async runJob(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<WorkflowsRuns>> {
+    async runJob(workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<DatabaseTypes.WorkflowsRuns>> {
         await logger.appendLog("Starting sync news parsing");
         try{
             const parseSchedule = new NewsParseSchedule(workflowRun, myDatabaseHelper, logger, this.newsParserInterface);

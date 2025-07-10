@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchFoodDetailsById } from '@/redux/actions/FoodOffers/FoodOffers';
 import { excerpt } from '@/constants/HelperFunctions';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
-import { FoodsFeedbacks } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import {
   DELETE_FOOD_FEEDBACK_LOCAL,
   UPDATE_FOOD_FEEDBACK_LOCAL,
@@ -117,7 +117,7 @@ const NotificationScreen = () => {
 
   // Update notification status
   const updateFoodFeedbackNotification = async (
-    feedbackData: FoodsFeedbacks
+    feedbackData: DatabaseTypes.FoodsFeedbacks
   ) => {
     try {
       const payload = {
@@ -128,7 +128,7 @@ const NotificationScreen = () => {
         String(feedbackData?.food),
         profile?.id,
         payload
-      )) as FoodsFeedbacks;
+      )) as DatabaseTypes.FoodsFeedbacks;
       if (updateFeedbackResult?.id) {
         dispatch({
           type: UPDATE_FOOD_FEEDBACK_LOCAL,

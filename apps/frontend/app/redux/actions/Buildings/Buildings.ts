@@ -1,8 +1,8 @@
-import { Buildings } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper } from '@/helper/collectionHelper';
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 
-export class BuildingsHelper extends CollectionHelper<Buildings> {
+export class BuildingsHelper extends CollectionHelper<DatabaseTypes.Buildings> {
   constructor(client?: any) {
     // Pass the collection name and API client
     super('buildings', client || ServerAPI.getClient());

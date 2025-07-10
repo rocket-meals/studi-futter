@@ -1,12 +1,12 @@
 import {WashingmachineParseSchedule} from "./WashingmachineParseSchedule";
 import {defineHook} from "@directus/extensions-sdk";
-import {CollectionNames} from "../helpers/CollectionNames";
+import {CollectionNames} from "repo-depkit-common";
 import {DemoWashingmachineParser} from "./testParser/DemoWashingmachineParser";
 import {WashingmachineParserInterface} from "./WashingmachineParserInterface";
 import {EnvVariableHelper, SyncForCustomerEnum} from "../helpers/EnvVariableHelper";
 import {StudentenwerkOsnabrueckWashingmachineParser} from "./osnabrueck/StudentenwerkOsnabrueckWashingmachineParser";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
-import {Washingmachines, WashingmachinesJobs, WorkflowsRuns} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 import {WorkflowScheduleHelper} from "../workflows-runs-hook";
 import {RegisterFunctions} from "@directus/extensions";
 import {SingleWorkflowRun, WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
@@ -16,13 +16,13 @@ import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum
 function registerWashingmachinesFilterUpdate(apiContext: any, registerFunctions: RegisterFunctions) {
     const {filter} = registerFunctions;
     // Washingmachines Jobs Creation
-    filter<Washingmachines>(CollectionNames.WASHINGMACHINES+'.items.update', async (input: Washingmachines, {keys, collection}, eventContext) => {
+    filter<DatabaseTypes.Washingmachines>(CollectionNames.WASHINGMACHINES+'.items.update', async (input: DatabaseTypes.Washingmachines, {keys, collection}, eventContext) => {
         // Fetch the current item from the database
         if (!keys || keys.length === 0) {
             throw new Error("No keys provided for update");
         }
         let washingmachines_ids = keys;
-        let washingmachine_new: Partial<Washingmachines> = input;
+        let washingmachine_new: Partial<DatabaseTypes.Washingmachines> = input;
         let new_date_finished = washingmachine_new.date_finished;
 
         const hasWashingmachineNewPropertyDateFinished = Object.prototype.hasOwnProperty.call(washingmachine_new, 'date_finished');
@@ -59,7 +59,7 @@ function registerWashingmachinesFilterUpdate(apiContext: any, registerFunctions:
                             // Round duration to the nearest 10-minute interval
                             const duration_rounded_10min_calculated = Math.ceil(duration_in_minutes / 10) * 10;
 
-                            let partialWashingmachineJob: Partial<WashingmachinesJobs> = {
+                            let partialWashingmachineJob: Partial<DatabaseTypes.WashingmachinesJobs> = {
                                 date_start: current_date_stated,
                                 date_end: current_date_finished,
                                 duration_calculated: hh_mm_ss,
@@ -97,7 +97,7 @@ class WashingmachinesWorkflow extends SingleWorkflowRun {
         return "washingmachines-parse";
     }
 
-    async runJob(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<WorkflowsRuns>> {
+    async runJob(workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<DatabaseTypes.WorkflowsRuns>> {
         await logger.appendLog("Starting washingmachine parsing");
 
         const parseSchedule = new WashingmachineParseSchedule(workflowRun, myDatabaseHelper, logger, this.usedParser);

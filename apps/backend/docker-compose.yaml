@@ -37,7 +37,10 @@ services:
       # By default, uploads are stored in /directus/uploads
       # Always make sure your volumes matches the storage root when using
       # local driver
-      - ./Backend/uploads:/directus/uploads
+      # Currently in: rocket-meals/apps/backend/docker-compose.yaml
+      # We want the uploads to be persistent at rocket-meals/data/database_file_uploads
+      # the relative path is therefore ./..(apps)/..(rocket-meals)/data/database_file_uploads
+      - ./../../data/database_file_uploads:/directus/uploads
       # Make sure to also mount the volume when using SQLite
       #- ./Backend/database:/directus/database
       # If you want to load extensions from the host
@@ -162,7 +165,10 @@ services:
     # platform: linux/amd64
     restart: ${RESTART}
     volumes:
-      - ./database:/var/lib/postgresql/data
+      # Currently in: rocket-meals/apps/backend/docker-compose.yaml
+      # We want the uploads to be persistent at rocket-meals/data/database_file_uploads
+      # the relative path is therefore ./..(apps)/..(rocket-meals)/data/database
+      - ./../../data/database:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U directus" ]
       interval: 10s
@@ -193,7 +199,9 @@ services:
       - PGHOST=rocket-meals-database
       - DELETE_OLDER_THAN=44640
     volumes:
-      - ./database_backups:/dump
+      # We want the uploads to be persistent at rocket-meals/data/database_file_uploads
+      # the relative path is therefore ./..(apps)/..(rocket-meals)/data/database_backups
+      - ./../../data/database_backups:/dump
     command: dump-cron
     depends_on:
       - rocket-meals-database
@@ -206,7 +214,9 @@ services:
       context: ./dockerDatabaseBackupRestore
       dockerfile: Dockerfile
     volumes:
-      - ./database_backups:/dump   # Ensure this matches the directory name
+      # We want the uploads to be persistent at rocket-meals/data/database_file_uploads
+      # the relative path is therefore ./..(apps)/..(rocket-meals)/data/database_backups
+      - ./../../data/database_backups:/dump   # Ensure this matches the directory name
     environment:
       PGUSER: "directus"
       PGPASSWORD: "directus"

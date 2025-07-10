@@ -1,26 +1,24 @@
 import type {
     Accountability,
+    EventContext,
     Item as DirectusItem,
     PermissionsAction,
     PrimaryKey,
     Query,
+    BusboyFileStream,
     SchemaOverview
 } from '@directus/types';
 import type {Knex} from 'knex';
 import {ApiContext} from "./ApiContext";
-import {EventContext as EventContextForFlows} from "@directus/extensions/node_modules/@directus/types/dist/events";
-import {BusboyFileStream} from "@directus/extensions/node_modules/@directus/types/dist/files";
-import {DirectusFiles} from "../databaseTypes/types";
 import {Readable} from "node:stream";
-import {EventContext as EventContextForServices} from "@directus/types";
-import {EnvVariableHelper} from "./EnvVariableHelper";
+import {DatabaseTypes} from "repo-depkit-common";
 
-export type MyEventContext = EventContextForFlows | EventContextForServices;
+export type MyEventContext = EventContext;
 
 export type FileServiceReadable = Readable;
 export type FileServiceBusboyFileStream = BusboyFileStream;
 export type FileServiceSteamType = FileServiceReadable | FileServiceBusboyFileStream;
-export type FileServiceFileStream = Partial<DirectusFiles> & { storage: string };
+export type FileServiceFileStream = Partial<DatabaseTypes.DirectusFiles> & { storage: string };
 
 export type AbstractServiceOptions = {
     knex?: Knex | undefined;
@@ -122,7 +120,7 @@ export class ItemsServiceCreator extends GetItemsService{
 
 }
 
-export interface FilesService extends ItemsService<DirectusFiles> {
+export interface FilesService extends ItemsService<DatabaseTypes.DirectusFiles> {
     uploadOne(
         stream: FileServiceSteamType,
         data: FileServiceFileStream,
@@ -130,10 +128,10 @@ export interface FilesService extends ItemsService<DirectusFiles> {
         opts?: MutationOptions,
     ): Promise<PrimaryKey>;
 
-    importOne(importURL: string, body: Partial<DirectusFiles>): Promise<PrimaryKey>
-    createOne(data: Partial<DirectusFiles>, opts?: MutationOptions): Promise<PrimaryKey>
+    importOne(importURL: string, body: Partial<DatabaseTypes.DirectusFiles>): Promise<PrimaryKey>
+    createOne(data: Partial<DatabaseTypes.DirectusFiles>, opts?: MutationOptions): Promise<PrimaryKey>
     deleteMany(keys: PrimaryKey[]): Promise<PrimaryKey[]>
-    readByQuery(query: Query, opts?: QueryOptions | undefined): Promise<DirectusFiles[]>
+    readByQuery(query: Query, opts?: QueryOptions | undefined): Promise<DatabaseTypes.DirectusFiles[]>
 
 }
 

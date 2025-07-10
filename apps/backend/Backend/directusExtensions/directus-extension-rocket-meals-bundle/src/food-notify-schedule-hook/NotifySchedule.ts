@@ -1,7 +1,7 @@
 import {TranslationHelper} from "../helpers/TranslationHelper";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
-import {DateHelper} from "../helpers/DateHelper";
-import {Devices, Foodoffers, Foods, WorkflowsRuns} from "../databaseTypes/types";
+import {DateHelper} from "repo-depkit-common";
+import {DatabaseTypes} from "repo-depkit-common"
 import {WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
 import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
 
@@ -10,11 +10,11 @@ const SCHEDULE_NAME = "FoodNotifySchedule";
 export class NotifySchedule {
 
     private myDatabaseHelper: MyDatabaseHelper;
-    private workflowRun: WorkflowsRuns;
+    private workflowRun: DatabaseTypes.WorkflowsRuns;
     private logger: WorkflowRunLogger;
 
     constructor(
-        workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger
+        workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger
     ) {
         this.myDatabaseHelper = myDatabaseHelper;
         this.workflowRun = workflowRun;
@@ -22,7 +22,7 @@ export class NotifySchedule {
     }
 
 
-    async notify(aboutMealsInDays = 1): Promise<Partial<WorkflowsRuns>> {
+    async notify(aboutMealsInDays = 1): Promise<Partial<DatabaseTypes.WorkflowsRuns>> {
         let devicesService = this.myDatabaseHelper.getDevicesHelper();
 
         await this.logger.appendLog("Start food notify schedule");
@@ -68,13 +68,13 @@ export class NotifySchedule {
                         await this.logger.appendLog("-- Profile is interested in this canteen");
                     }
 
-                    const profileDevices = profile.devices as Devices[];
+                    const profileDevices = profile.devices as DatabaseTypes.Devices[];
 
                     let expoPushTokensDict = this.getExpoPushTokensToDevicesDict(profileDevices);
 
                     let expoPushTokens = Object.keys(expoPushTokensDict);
                     for(let expoPushToken of expoPushTokens) {
-                        let devices = expoPushTokensDict[expoPushToken] as Devices[];
+                        let devices = expoPushTokensDict[expoPushToken] as DatabaseTypes.Devices[];
                         //console.log("Notify devices: "+devices.length+" about food: "+food_id);
                         await this.logger.appendLog("--- Notify devices: "+devices.length+" about food: "+food_id);
                         try{
@@ -100,7 +100,7 @@ export class NotifySchedule {
                             // we will remove the pushTokenObj from all but the last updated device
                             await this.logger.appendLog("--- we will remove the pushTokenObj from all but the last updated device");
                             let recentDateUpdated: Date | null = null;
-                            let recentDevice: Devices | null = null;
+                            let recentDevice: DatabaseTypes.Devices | null = null;
                             for(let device of devices) {
                                 if(!!device.date_updated) {
                                     let device_date_updated = new Date(device.date_updated);
@@ -146,13 +146,13 @@ export class NotifySchedule {
         }
     }
 
-    getExpoPushTokenFromDevice(device: Devices) {
+    getExpoPushTokenFromDevice(device: DatabaseTypes.Devices) {
         let pushTokenObj = device.pushTokenObj as any;
         return pushTokenObj?.pushtokenObj?.data;
     }
 
-    getExpoPushTokensToDevicesDict(devices: Devices[]): {[key: string]: Devices[]} {
-        let expoPushTokensDict: {[key: string]: Devices[]} = {};
+    getExpoPushTokensToDevicesDict(devices: DatabaseTypes.Devices[]): {[key: string]: DatabaseTypes.Devices[]} {
+        let expoPushTokensDict: {[key: string]: DatabaseTypes.Devices[]} = {};
         for (let device of devices) {
             let expoPushToken = this.getExpoPushTokenFromDevice(device);
             if(expoPushToken) {
@@ -164,7 +164,7 @@ export class NotifySchedule {
         return expoPushTokensDict
     }
 
-    async notifyExpoPushTokenAboutFoodOffer(expoPushToken: string, foodOffer: Foodoffers, foodWithTranslations: Foods, language: string, aboutMealsInDays: number, date: Date) {
+    async notifyExpoPushTokenAboutFoodOffer(expoPushToken: string, foodOffer: DatabaseTypes.Foodoffers, foodWithTranslations: DatabaseTypes.Foods, language: string, aboutMealsInDays: number, date: Date) {
         // Create a new push_notification entry in the database
         let pushNotificationService = this.myDatabaseHelper.getPushNotificationsHelper();
         /**
@@ -227,7 +227,7 @@ export class NotifySchedule {
         return DateHelper.getHumanReadableDate(date, false);
     }
 
-    getFoodNameTranslation(foodWithTranslations: Foods, profileLanguage: string) {
+    getFoodNameTranslation(foodWithTranslations: DatabaseTypes.Foods, profileLanguage: string) {
         return TranslationHelper.getTranslation(foodWithTranslations?.translations, profileLanguage, "name") || "ein Gericht";
     }
 

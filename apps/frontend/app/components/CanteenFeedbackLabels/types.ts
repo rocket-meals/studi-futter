@@ -1,7 +1,7 @@
-import { CanteensFeedbacksLabels, CanteensFeedbacksLabelsTranslations, FoodsFeedbacksLabelsTranslations } from "@/constants/types";
+import { DatabaseTypes } from 'repo-depkit-common';
 
 export interface CanteenFeedbackLabelProps {
-  label: CanteensFeedbacksLabels;
+  label: DatabaseTypes.CanteensFeedbacksLabels;
   date: string;
 }
 

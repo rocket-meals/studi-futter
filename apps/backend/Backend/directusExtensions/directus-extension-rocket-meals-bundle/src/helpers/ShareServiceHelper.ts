@@ -1,7 +1,7 @@
 import {ApiContext} from "./ApiContext";
-import {CollectionNames} from "./CollectionNames";
+import {CollectionNames} from "repo-depkit-common";
 import {EventContext, PrimaryKey} from "@directus/types";
-import {DirectusPermissions, FilesShares} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common";
 import {EnvVariableHelper} from "./EnvVariableHelper";
 import {Accountability} from "@directus/types/dist/accountability";
 import {ItemsServiceHelper} from "./ItemsServiceHelper";
@@ -41,7 +41,7 @@ export class ShareServiceHelper implements ShareDirectusFileMethod {
     }
 
     async createDirectusFilesShareLink(options: CreateShareLinkOptionForDirectusFiles): Promise<string | null> {
-        let filesSharesHelper = new ItemsServiceHelper<FilesShares>(this.myDatabaseHelper, CollectionNames.FILES_SHARES);
+        let filesSharesHelper = new ItemsServiceHelper<DatabaseTypes.FilesShares>(this.myDatabaseHelper, CollectionNames.FILES_SHARES);
         let filesSharesItemId = await filesSharesHelper.createOne({
             file: options.directus_files_id as string,
         });
@@ -83,7 +83,7 @@ export class ShareServiceHelper implements ShareDirectusFileMethod {
         let ShareService = this.apiContext.services.SharesService;
         let schema = this?.eventContext?.schema || await this.apiContext.getSchema();
 
-        let permissions: DirectusPermissions[] = [];
+        let permissions: DatabaseTypes.DirectusPermissions[] = [];
 
         // ATTENTION ! The accountability must be set! ShareService does not work without it. It uses the accountability to determine the permissions.
         let accountability: Accountability = {
@@ -93,6 +93,8 @@ export class ShareServiceHelper implements ShareDirectusFileMethod {
             // @ts-ignore
             roles: [role_admin_id],
             admin: true,
+            app: true,
+            ip: null
         }
 
         let database = this?.eventContext?.database || this.apiContext.database;

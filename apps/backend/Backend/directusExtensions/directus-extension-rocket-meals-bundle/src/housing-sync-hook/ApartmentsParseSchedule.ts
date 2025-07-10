@@ -1,6 +1,6 @@
 import {ApartmentParserInterface, ApartmentsForParser} from "./ApartmentParserInterface";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
-import {WorkflowsRuns} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 import {WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
 import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
 
@@ -8,10 +8,10 @@ export class ApartmentsParseSchedule {
 
     private parser: ApartmentParserInterface;
     private myDatabaseHelper: MyDatabaseHelper;
-    private workflowRun: WorkflowsRuns;
+    private workflowRun: DatabaseTypes.WorkflowsRuns;
     private logger: WorkflowRunLogger;
 
-    constructor(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger, parser: ApartmentParserInterface) {
+    constructor(workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger, parser: ApartmentParserInterface) {
         this.parser = parser;
         this.myDatabaseHelper = myDatabaseHelper;
         this.workflowRun = workflowRun;

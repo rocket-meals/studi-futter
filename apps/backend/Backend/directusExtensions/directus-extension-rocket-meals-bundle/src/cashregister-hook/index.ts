@@ -4,13 +4,9 @@ import {defineHook} from "@directus/extensions-sdk";
 import {EnvVariableHelper, SyncForCustomerEnum} from "../helpers/EnvVariableHelper";
 import {CashregisterTransactionParserInterface} from "./CashregisterTransactionParserInterface";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
-import {
-    ResultHandleWorkflowRunsWantToRun, SingleWorkflowRun,
-    WorkflowRunJobInterface,
-    WorkflowRunLogger
-} from "../workflows-runs-hook/WorkflowRunJobInterface";
-import {WorkflowsRuns} from "../databaseTypes/types";
-import {WorkflowScheduleHelper, WorkflowScheduler} from "../workflows-runs-hook";
+import {SingleWorkflowRun, WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
+import {DatabaseTypes} from "repo-depkit-common"
+import {CronObject, WorkflowScheduleHelper, WorkflowScheduler} from "../workflows-runs-hook";
 import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
 
 
@@ -27,7 +23,7 @@ class CashRegisterWorkflow extends SingleWorkflowRun {
         return "cashregister-parse";
     }
 
-    async runJob(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<WorkflowsRuns>> {
+    async runJob(workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<DatabaseTypes.WorkflowsRuns>> {
         await logger.appendLog("Starting cashregister parsing");
 
         const parseSchedule = new ParseSchedule(workflowRun, myDatabaseHelper, logger, this.usedParser);
@@ -46,6 +42,8 @@ class CashRegisterWorkflow extends SingleWorkflowRun {
 
 export default defineHook(async ({action, init, filter, schedule}, apiContext) => {
     let usedParser: CashregisterTransactionParserInterface | null = null;
+    let cronObject: CronObject | null = null;
+
     switch (EnvVariableHelper.getSyncForCustomer()) {
         case SyncForCustomerEnum.TEST:
             usedParser = null;
@@ -55,6 +53,7 @@ export default defineHook(async ({action, init, filter, schedule}, apiContext) =
             break;
         case SyncForCustomerEnum.OSNABRUECK:
             usedParser = new Cashregisters_SWOSY("https://share.sw-os.de/swosy-kassendaten-2h", `Nils:qYoTHeyPyRljfEGRWW52`);
+            cronObject = WorkflowScheduleHelper.EVERY_HOUR;
             break;
     }
 
@@ -62,7 +61,9 @@ export default defineHook(async ({action, init, filter, schedule}, apiContext) =
         return;
     }
 
-
+    if(!cronObject) {
+        return;
+    }
 
     let myDatabaseHelper = new MyDatabaseHelper(apiContext);
 
@@ -72,6 +73,6 @@ export default defineHook(async ({action, init, filter, schedule}, apiContext) =
         workflowId: "cashregister-parse",
         myDatabaseHelper: myDatabaseHelper,
         schedule: schedule,
-        cronOject: WorkflowScheduleHelper.EVERY_DAY_AT_17_59,
+        cronOject: cronObject,
     });
 });

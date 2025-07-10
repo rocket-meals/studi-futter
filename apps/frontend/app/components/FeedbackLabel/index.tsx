@@ -9,7 +9,7 @@ import {
   getIconComponent,
   getTextFromTranslation,
 } from '@/helper/resourceHelper';
-import { FoodsFeedbacksLabelsEntries } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { FoodFeedbackLabelEntryHelper } from '@/redux/actions/FoodFeeedbackLabelEntries/FoodFeedbackLabelEntries';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -61,10 +61,10 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({
   const labelData = useMemo(() => {
     return (
       labelEntries?.find(
-        (entry: FoodsFeedbacksLabelsEntries) =>
+        (entry: DatabaseTypes.FoodsFeedbacksLabelsEntries) =>
           entry.label === label[0]?.foods_feedbacks_labels_id &&
           entry.food === foodId
-      ) || ({} as FoodsFeedbacksLabelsEntries)
+      ) || ({} as DatabaseTypes.FoodsFeedbacksLabelsEntries)
     );
   }, [label, labelEntries]);
 
@@ -92,7 +92,7 @@ const FeedbackLabel: React.FC<FeedbackLabelProps> = ({
         likeStats,
         selectedCanteen?.id,
         offerId
-      )) as FoodsFeedbacksLabelsEntries;
+      )) as DatabaseTypes.FoodsFeedbacksLabelsEntries;
     dispatch({
       type: result
         ? UPDATE_OWN_FOOD_FEEDBACK_LABEL_ENTRIES_LOCAL

@@ -10,7 +10,7 @@ import {
     WorkflowRunJobInterface,
     WorkflowRunLogger
 } from "../workflows-runs-hook/WorkflowRunJobInterface";
-import {WorkflowsRuns} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
 
 class HousingSyncWorkflow extends SingleWorkflowRun{
@@ -26,7 +26,7 @@ class HousingSyncWorkflow extends SingleWorkflowRun{
         return "housing-sync";
     }
 
-    async runJob(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<WorkflowsRuns>> {
+    async runJob(workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<DatabaseTypes.WorkflowsRuns>> {
         await logger.appendLog("Starting sync housing parsing");
         try{
             const parseSchedule = new ApartmentsParseSchedule(workflowRun, myDatabaseHelper, logger, this.parserInterface);

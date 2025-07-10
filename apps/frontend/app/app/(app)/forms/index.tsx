@@ -10,7 +10,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { Entypo } from '@expo/vector-icons';
-import { Forms } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useSelector } from 'react-redux';
 import { getFromCategoryTranslation } from '@/helper/resourceHelper';
@@ -26,7 +26,7 @@ const index = () => {
   const [loading, setLoading] = useState(false);
   const { category_id } = useLocalSearchParams();
   const { language } = useSelector((state: RootState) => state.settings);
-  const [forms, setForms] = useState<Forms[]>([]);
+  const [forms, setForms] = useState<DatabaseTypes.Forms[]>([]);
   const formsHelper = new FormsHelper();
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
@@ -36,7 +36,7 @@ const index = () => {
     setLoading(true);
     const result = (await formsHelper.fetchForms({
       filter: { category: { _eq: category_id }, status: { _eq: 'published' } },
-    })) as Forms[];
+    })) as DatabaseTypes.Forms[];
     if (result) {
       setLoading(false);
       setForms(result);

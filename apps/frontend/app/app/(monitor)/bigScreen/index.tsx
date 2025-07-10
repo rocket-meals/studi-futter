@@ -2,7 +2,6 @@ import {
   Animated,
   Dimensions,
   Easing,
-  Image,
   ScrollView,
   Text,
   View,
@@ -24,11 +23,12 @@ import { useLocalSearchParams } from 'expo-router';
 import NetInfo from '@react-native-community/netinfo';
 import { iconLibraries } from '@/components/Drawer/CustomDrawerContent';
 import MarkingIcon from '@/components/MarkingIcon';
+import CompanyImage from '@/components/CompanyImage';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RootState } from '@/redux/reducer';
 import { FoodCategoriesHelper } from '@/redux/actions/FoodCategories/FoodCategories';
-import { FoodoffersCategories, FoodsCategories } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import {
   SET_FOOD_CATEGORIES,
   SET_FOOD_OFFERS_CATEGORIES,
@@ -72,9 +72,6 @@ const Index = () => {
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const { canteens } = useSelector((state: RootState) => state.canteenReducer);
   const [selectedCanteen, setSelectedCanteen] = useState<any>(null);
-  const companyImage =
-    appSettings?.company_image &&
-    getImageUrl(String(appSettings?.company_image))?.split('?')[0];
   const foods_area_color = appSettings?.foods_area_color
     ? appSettings?.foods_area_color
     : projectColor;
@@ -96,7 +93,7 @@ const Index = () => {
     try {
       const result = (await foodCategoriesHelper.fetchFoodCategories(
         {}
-      )) as FoodsCategories[];
+      )) as DatabaseTypes.FoodsCategories[];
       if (result) {
         dispatch({ type: SET_FOOD_CATEGORIES, payload: result });
       }
@@ -110,7 +107,7 @@ const Index = () => {
       const result =
         (await foodOffersCategoriesHelper.fetchFoodOffersCategories(
           {}
-        )) as FoodoffersCategories[];
+        )) as DatabaseTypes.FoodoffersCategories[];
       if (result) {
         dispatch({ type: SET_FOOD_OFFERS_CATEGORIES, payload: result });
       }
@@ -384,7 +381,7 @@ const Index = () => {
         >
           <View style={styles.headerCol1}>
             <View style={styles.logoContainer}>
-              <Image source={{ uri: companyImage }} style={logoStyle} />
+              <CompanyImage appSettings={appSettings} style={logoStyle} />
             </View>
             <View style={styles.labelText}>
               <View style={styles.row}>

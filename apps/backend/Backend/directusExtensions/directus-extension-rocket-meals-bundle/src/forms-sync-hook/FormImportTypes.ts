@@ -1,8 +1,7 @@
-import {FormAnswers} from "../databaseTypes/types";
-
+import {DatabaseTypes} from "repo-depkit-common"
 // Define the extracted value_ keys
 export const FIELD_VALUE_KEY_PREFIX = "value_";
-export type KeyOfFormAnswersValueFieldsType = Extract<keyof FormAnswers, `${typeof FIELD_VALUE_KEY_PREFIX}${string}`>;
+export type KeyOfFormAnswersValueFieldsType = Extract<keyof DatabaseTypes.FormAnswers, `${typeof FIELD_VALUE_KEY_PREFIX}${string}`>;
 
 // Ensure FIELD_VALUE_KEY contains all necessary mappings
 export const FormAnswersValueFieldKeys: Record<KeyOfFormAnswersValueFieldsType, KeyOfFormAnswersValueFieldsType> = {
@@ -23,7 +22,7 @@ export enum FormSubmissionState {
     FAILED = "failed", // Eingereicht und System hat nicht verarbeitet
 }
 
-export type FormImportSyncFormAnswer = Partial<FormAnswers> & {external_import_id: string}
+export type FormImportSyncFormAnswer = Partial<DatabaseTypes.FormAnswers> & {external_import_id: string}
 export type FormImportSyncFormAnswers = FormImportSyncFormAnswer[]
 
 export type FormImportSyncFormSubmissions = {

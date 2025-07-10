@@ -30,7 +30,7 @@ import { useFocusEffect, useNavigation } from 'expo-router';
 import BuildingItem from '@/components/BuildingItem/BuildingItem';
 import { useDispatch, useSelector } from 'react-redux';
 import { CampusHelper } from '@/redux/actions/Campus/Campus';
-import { Buildings } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import {
   SET_CAMPUSES,
   SET_CAMPUSES_DICT,
@@ -63,7 +63,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [campusesDispatched, setCampusesDispatched] = useState(false);
-  const [selectedBuilding, setSelectedBuilding] = useState<Buildings | null>();
+  const [selectedBuilding, setSelectedBuilding] = useState<DatabaseTypes.Buildings | null>();
   const [isActive, setIsActive] = useState(false);
   const [distanceAdded, setDistanceAdded] = useState(false);
   const [selectedApartmentId, setSelectedApartementId] = useState<string>('');
@@ -119,7 +119,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
   const fetchAllCampuses = async () => {
     setLoading(true);
-    const campusData = (await campusHelper.fetchCampus({})) as Buildings[];
+    const campusData = (await campusHelper.fetchCampus({})) as DatabaseTypes.Buildings[];
     const campuses = campusData || [];
     if (campuses) {
       const attributesDict = campuses.reduce((acc, campus) => {
@@ -127,14 +127,14 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
           acc[campus.id] = campus;
         }
         return acc;
-      }, {} as Record<string, Buildings>);
+      }, {} as Record<string, DatabaseTypes.Buildings>);
       dispatch({ type: SET_CAMPUSES, payload: campuses });
       dispatch({ type: SET_CAMPUSES_DICT, payload: attributesDict });
       setCampusesDispatched(true);
     }
   };
 
-  const updateSort = (id: CampusSortOption, campuses: Buildings[]) => {
+  const updateSort = (id: CampusSortOption, campuses: DatabaseTypes.Buildings[]) => {
     setLoading(true);
     let copiedCampuses = [...campuses];
 
@@ -181,8 +181,8 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     }
   }, [selectedBuilding, campusesDispatched]);
 
-  const addDistance = (campuses: Buildings[]) => {
-    let campusWithDistance: Array<Buildings> = [];
+  const addDistance = (campuses: DatabaseTypes.Buildings[]) => {
+    let campusWithDistance: Array<DatabaseTypes.Buildings> = [];
     if (campuses) {
       campuses?.forEach((campus: any) => {
         const distance = calculateDistanceInMeter(
@@ -198,7 +198,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     }
   };
 
-  const sortCampusesWithDistance = (campuses: Buildings[]) => {
+  const sortCampusesWithDistance = (campuses: DatabaseTypes.Buildings[]) => {
     if (campuses) {
       return campuses?.sort((a: any, b: any) => a.distance - b.distance);
     } else {
@@ -206,7 +206,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     }
   };
 
-  const sortCampusesAlphabetically = (campuses: Buildings[]) => {
+  const sortCampusesAlphabetically = (campuses: DatabaseTypes.Buildings[]) => {
     if (campuses) {
       return campuses?.sort((a: any, b: any) => a.alias.localeCompare(b.alias));
     } else {
@@ -218,7 +218,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     if (selectedCanteen?.building) {
       const buildingData = (await buildingsHelper.fetchBuildingById(
         String(selectedCanteen.building)
-      )) as Buildings;
+      )) as DatabaseTypes.Buildings;
       const building = buildingData || [];
       if (building) {
         setSelectedBuilding(building);

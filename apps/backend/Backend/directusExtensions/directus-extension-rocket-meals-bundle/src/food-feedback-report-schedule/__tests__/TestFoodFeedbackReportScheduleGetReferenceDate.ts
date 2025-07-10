@@ -1,10 +1,9 @@
 // small jest test
 import {describe, it} from '@jest/globals';
-import {CanteenFoodFeedbackReportSchedules} from "../../databaseTypes/types";
-import {DateHelper} from "../../helpers/DateHelper";
+import {DatabaseTypes} from "repo-depkit-common";
+import {DateHelper} from "repo-depkit-common";
 import {ReportSchedule} from "../ReportSchedule";
 import {FoodofferDateType} from "../../food-sync-hook/FoodParserInterface";
-import {ReportGenerator} from "../ReportGenerator";
 
 describe("TestFoodFeedbackReportScheduleGetReferenceDate Test", () => {
 
@@ -12,7 +11,7 @@ describe("TestFoodFeedbackReportScheduleGetReferenceDate Test", () => {
         const sendReportAtHour = 6;
         const sendReportAtMinute = 0;
         const sendReportAtHhMmPadded = `${sendReportAtHour.toString().padStart(2, '0')}:${sendReportAtMinute.toString().padStart(2, '0')}`;
-        let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
+        let recipientEntry: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules> = {
             enabled: true,
             send_report_at_hh_mm: sendReportAtHhMmPadded,
             period_days_offset: 0,
@@ -65,7 +64,7 @@ describe("TestFoodFeedbackReportScheduleGetReferenceDate Test", () => {
         const sendReportAtHhMmPadded = `${sendReportAtHour.toString().padStart(2, '0')}:${sendReportAtMinute.toString().padStart(2, '0')}`;
         let startDay = 1; // 1st of July is a Monday
         let offset = 3; // 3 days offset
-        let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
+        let recipientEntry: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules> = {
             enabled: true,
             send_report_at_hh_mm: sendReportAtHhMmPadded,
             period_days_offset: offset,
@@ -119,7 +118,7 @@ describe("TestFoodFeedbackReportScheduleGetReferenceDate Test", () => {
         const sendReportAtHour = 6;
         const sendReportAtMinute = 0;
         const sendReportAtHhMmPadded = `${sendReportAtHour.toString().padStart(2, '0')}:${sendReportAtMinute.toString().padStart(2, '0')}`;
-        let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
+        let recipientEntry: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules> = {
             enabled: true,
             send_report_at_hh_mm: sendReportAtHhMmPadded,
             period_days_offset: 0,
@@ -164,7 +163,7 @@ describe("TestFoodFeedbackReportScheduleGetReferenceDate Test", () => {
         const sendReportAtHour = 6;
         const sendReportAtMinute = 0;
         const sendReportAtHhMmPadded = `${sendReportAtHour.toString().padStart(2, '0')}:${sendReportAtMinute.toString().padStart(2, '0')}`;
-        let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
+        let recipientEntry: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules> = {
             enabled: true,
             send_report_at_hh_mm: sendReportAtHhMmPadded,
             period_days_offset: 0,
@@ -209,7 +208,7 @@ describe("TestFoodFeedbackReportScheduleGetReferenceDate Test", () => {
         const sendReportAtHour = 6;
         const sendReportAtMinute = 0;
         const sendReportAtHhMmPadded = `${sendReportAtHour.toString().padStart(2, '0')}:${sendReportAtMinute.toString().padStart(2, '0')}`;
-        let recipientEntry: Partial<CanteenFoodFeedbackReportSchedules> = {
+        let recipientEntry: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules> = {
             enabled: false,
             send_report_at_hh_mm: sendReportAtHhMmPadded,
             period_days_offset: 0,

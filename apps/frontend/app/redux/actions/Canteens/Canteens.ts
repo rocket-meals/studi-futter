@@ -1,8 +1,8 @@
-import { Canteens } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 
-export class CanteenHelper extends CollectionHelper<Canteens> {
+export class CanteenHelper extends CollectionHelper<DatabaseTypes.Canteens> {
   constructor(client?: any) {
     // Pass the collection name and API client
     super('canteens', client || ServerAPI.getClient());

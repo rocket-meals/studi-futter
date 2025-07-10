@@ -1,8 +1,8 @@
 import {NewsParserInterface, NewsTypeForParser} from "./NewsParserInterface";
 import {TranslationHelper} from "../helpers/TranslationHelper";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
-import {News, WorkflowsRuns} from "../databaseTypes/types";
-import {CollectionNames} from "../helpers/CollectionNames";
+import {DatabaseTypes} from "repo-depkit-common"
+import {CollectionNames} from "repo-depkit-common";
 import {WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
 import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
 import {WorkflowResultHash} from "../helpers/itemServiceHelpers/WorkflowsRunHelper";
@@ -14,9 +14,9 @@ export class NewsParseSchedule {
     private parser: NewsParserInterface;
     private myDatabaseHelper: MyDatabaseHelper;
     private logger: WorkflowRunLogger;
-    private workflowRun: WorkflowsRuns;
+    private workflowRun: DatabaseTypes.WorkflowsRuns;
 
-    constructor(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger, parser: NewsParserInterface) {
+    constructor(workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger, parser: NewsParserInterface) {
         this.workflowRun = workflowRun;
         this.myDatabaseHelper = myDatabaseHelper;
         this.logger = logger;
@@ -27,7 +27,7 @@ export class NewsParseSchedule {
         return await this.myDatabaseHelper.getWorkflowsRunsHelper().getPreviousResultHash(this.workflowRun, this.logger);
     }
 
-    async parse(): Promise<Partial<WorkflowsRuns>> {
+    async parse(): Promise<Partial<DatabaseTypes.WorkflowsRuns>> {
         await this.logger.appendLog("Starting sync news parsing");
 
         try {
@@ -75,11 +75,11 @@ export class NewsParseSchedule {
         return await itemService.findOrCreateItem(searchJson, searchJson);
     }
 
-    async updateNewsTranslations(item: News, newsJSON: NewsTypeForParser) {
+    async updateNewsTranslations(item: DatabaseTypes.News, newsJSON: NewsTypeForParser) {
         await TranslationHelper.updateItemTranslations(item, newsJSON.translations, "news_id", CollectionNames.NEWS, this.myDatabaseHelper);
     }
 
-    async updateOtherFields(item: News, newsJSON: NewsTypeForParser) {
+    async updateOtherFields(item: DatabaseTypes.News, newsJSON: NewsTypeForParser) {
         let itemService = this.myDatabaseHelper.getNewsHelper();
         await itemService.updateOne(item?.id, newsJSON.basicNews);
     }

@@ -1,18 +1,18 @@
-import {CollectionNames} from "./../CollectionNames";
-import {Cashregisters, CashregistersTransactions} from "../../databaseTypes/types";
+import {CollectionNames} from "repo-depkit-common";;
+import {DatabaseTypes} from "repo-depkit-common"
 import {CashregistersTransactionsForParser} from "../../cashregister-hook/CashregisterTransactionParserInterface";
 import {ItemsServiceHelper} from "../ItemsServiceHelper";
-import {DateHelper} from "../DateHelper";
+import {DateHelper} from "repo-depkit-common";
 import {MyDatabaseHelperInterface} from "../MyDatabaseHelperInterface";
 
 export class CashregisterHelper {
 
-    private cashregisterServiceHelper: ItemsServiceHelper<Cashregisters>;
-    private cashregisterTransactionsServiceHelper: ItemsServiceHelper<CashregistersTransactions>;
+    private cashregisterServiceHelper: ItemsServiceHelper<DatabaseTypes.Cashregisters>;
+    private cashregisterTransactionsServiceHelper: ItemsServiceHelper<DatabaseTypes.CashregistersTransactions>;
 
     constructor(myDatabaseHelper: MyDatabaseHelperInterface) {
-        this.cashregisterServiceHelper = new ItemsServiceHelper<Cashregisters>(myDatabaseHelper, CollectionNames.CASHREGISTERS);
-        this.cashregisterTransactionsServiceHelper = new ItemsServiceHelper<CashregistersTransactions>(myDatabaseHelper, CollectionNames.CASHREGISTERS_TRANSACTIONS);
+        this.cashregisterServiceHelper = new ItemsServiceHelper<DatabaseTypes.Cashregisters>(myDatabaseHelper, CollectionNames.CASHREGISTERS);
+        this.cashregisterTransactionsServiceHelper = new ItemsServiceHelper<DatabaseTypes.CashregistersTransactions>(myDatabaseHelper, CollectionNames.CASHREGISTERS_TRANSACTIONS);
     }
 
     async getCashregistersForCanteen(canteen_id: string) {
@@ -54,7 +54,7 @@ export class CashregisterHelper {
     }
 
     async findOrCreateCashregisterTransaction(cashregistersTransactionsForParser: CashregistersTransactionsForParser, cashregister_id: string) {
-        let obj_json: Partial<CashregistersTransactions> = cashregistersTransactionsForParser.baseData
+        let obj_json: Partial<DatabaseTypes.CashregistersTransactions> = cashregistersTransactionsForParser.baseData
         obj_json.id = cashregistersTransactionsForParser.baseData.id; // just to be sure that the external_identifier is set
 
         const searchQuery = {

@@ -1,8 +1,8 @@
-import { AppElements } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper } from '@/helper/collectionHelper';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
-export class AppElementsHelper extends CollectionHelper<AppElements> {
+export class AppElementsHelper extends CollectionHelper<DatabaseTypes.AppElements> {
   constructor(client?: any) {
     super('app_elements', client || ServerAPI.getClient());
   }

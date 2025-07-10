@@ -11,7 +11,7 @@ import { excerpt, getImageUrl } from '@/constants/HelperFunctions';
 import { useLanguage } from '@/hooks/useLanguage';
 import { CanteenHelper } from '@/redux/actions';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
-import { Buildings, Canteens } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { SET_BUILDINGS, SET_CANTEENS } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
@@ -37,7 +37,7 @@ const ManagementCanteensSheet: React.FC<ManagementCanteensSheetProps> = ({
     try {
       const buildingsData = (await buildingsHelper.fetchBuildings(
         {}
-      )) as Buildings[];
+      )) as DatabaseTypes.Buildings[];
       const buildings = buildingsData || [];
 
       const buildingsDict = buildings.reduce(
@@ -52,7 +52,7 @@ const ManagementCanteensSheet: React.FC<ManagementCanteensSheetProps> = ({
 
       const canteensData = (await canteenHelper.fetchCanteens(
         {}
-      )) as Canteens[];
+      )) as DatabaseTypes.Canteens[];
 
       const filteredCanteens = canteensData.filter((canteen) => {
         const status = canteen.status || '';

@@ -31,7 +31,7 @@ import useToast from '@/hooks/useToast';
 import { FormAnswersHelper } from '@/redux/actions/Forms/FormAnswers';
 import SubmissionWarningModal from '@/components/SubmissionWarningModal/SubmissionWarningModal';
 import { FormsSubmissionsHelper } from '@/redux/actions/Forms/FormSubmitions';
-import { Buildings, FormAnswers, FormSubmissions } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import SingleLineInput from '@/components/SingleLineInput/SingleLineInput';
 import MultiLineInput from '@/components/MultiLineInput/MultiLineInput';
 import IBANInput from '@/components/IBANInput/IBANInput';
@@ -88,7 +88,7 @@ const index = () => {
   const [loading, setLoading] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [isWarning, setIsWarning] = useState(false);
-  const [formAnswers, setFormAnswers] = useState<FormAnswers[]>([]);
+  const [formAnswers, setFormAnswers] = useState<DatabaseTypes.FormAnswers[]>([]);
   const [loadingCollection, setLoadingCollection] = useState(false);
   const [collectionData, setCollectionData] = useState<any>([]);
   const [selectedState, setSelectedState] = useState('');
@@ -209,7 +209,7 @@ const index = () => {
   const checkValidity = async () => {
     const result = (await formsSubmissionsHelper.fetchFormubmissionById(
       String(form_submission_id)
-    )) as FormSubmissions;
+    )) as DatabaseTypes.FormSubmissions;
     if (result) {
       dispatch({ type: SET_FORM_SUBMISSION, payload: result });
       if (result?.user_locked_by && result?.user_locked_by !== user?.id) {
@@ -225,7 +225,7 @@ const index = () => {
             user_locked_by: String(user?.id),
             date_started: new Date().toISOString(),
           }
-        )) as FormSubmissions;
+        )) as DatabaseTypes.FormSubmissions;
       }
     } else {
       toast('Please reload the page', 'error');
@@ -243,7 +243,7 @@ const index = () => {
 
     const result = (await formAnswersHelper.fetchFormAnswers({
       filter: { form_submission: { _eq: form_submission_id } },
-    })) as FormAnswers[];
+    })) as DatabaseTypes.FormAnswers[];
 
     if (result) {
       const sortedResult = result.sort((a, b) => {
@@ -321,7 +321,7 @@ const index = () => {
               data.map(async (apartment: any) => {
                 const buildingData = (await buildingsHelper.fetchBuildingById(
                   apartment?.building
-                )) as Buildings;
+                )) as DatabaseTypes.Buildings;
 
                 return {
                   ...apartment,

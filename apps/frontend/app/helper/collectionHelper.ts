@@ -12,7 +12,7 @@ import {
   aggregate,
   withToken,
 } from '@directus/sdk';
-import { CustomDirectusTypes } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
 // Define types for queries and filters
@@ -62,11 +62,11 @@ export type AggregateQuery<CollectionScheme> = {
 
 export class CollectionHelper<CollectionScheme> {
   private collection: string;
-  private client: DirectusClient<CustomDirectusTypes> & RestClient<any>;
+  private client: DirectusClient<DatabaseTypes.CustomDirectusTypes> & RestClient<any>;
 
   constructor(
     collection: string,
-    client?: DirectusClient<CustomDirectusTypes> & RestClient<any>
+    client?: DirectusClient<DatabaseTypes.CustomDirectusTypes> & RestClient<any>
   ) {
     this.collection = collection;
     this.client = client ?? ServerAPI.getClient();

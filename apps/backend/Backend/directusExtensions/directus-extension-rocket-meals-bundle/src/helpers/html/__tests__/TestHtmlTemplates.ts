@@ -36,7 +36,7 @@ describe("Html Template Test", () => {
         }
     });
 
-    it("Test html generation of default emplate", async () => {
+    it("Test html generation of default template", async () => {
         let html = await getTestHtmlForBaseGermanMarkdownContent();
         let savePath = TestArtifacts.saveTestArtifact(html, "html/" + HtmlTemplatesEnum.BASE_GERMAN_MARKDOWN_CONTENT + ".html");
         expect(html).toBeTruthy();

@@ -1,19 +1,7 @@
 import React from 'react';
 import { MaterialCommunityIcons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
-import {
-  BuildingsTranslations,
-  Foodoffers,
-  Foods,
-  FoodsCategories,
-  FoodoffersCategories,
-  FormCategoriesTranslations,
-  FormFieldsTranslations,
-  FormsTranslations,
-  MarkingsTranslations,
-  NewsTranslations,
-  WikisTranslations,
-} from '@/constants/types';
-import { StringHelper } from './stringHelper';
+import { DatabaseTypes } from 'repo-depkit-common';
+import { StringHelper } from 'repo-depkit-common';
 
 export type TranslationEntry = {
   languages_code: string;
@@ -109,9 +97,9 @@ export const getFoodAttributesTranslation = (
   return translation?.name || '';
 };
 
-export const getFoodCategoryName = (
-  categories: FoodsCategories[],
-  category: string | FoodsCategories | null | undefined,
+const getFoodCategoryName = (
+  categories: DatabaseTypes.FoodsCategories[],
+  category: string | DatabaseTypes.FoodsCategories | null | undefined,
   languageCode: string
 ): string => {
   if (!category) return '';
@@ -127,9 +115,9 @@ export const getFoodCategoryName = (
   return translation?.name || '';
 };
 
-export const getFoodOfferCategoryName = (
-  categories: FoodoffersCategories[],
-  category: string | FoodoffersCategories | null | undefined,
+const getFoodOfferCategoryName = (
+  categories: DatabaseTypes.FoodoffersCategories[],
+  category: string | DatabaseTypes.FoodoffersCategories | null | undefined,
   languageCode: string
 ): string => {
   if (!category) return '';
@@ -188,7 +176,7 @@ const getDescriptionFromTranslation = (
   return translation?.description || '';
 };
 
-const extractFoodDetails = (food: Foodoffers) => {
+const extractFoodDetails = (food: DatabaseTypes.Foodoffers) => {
   const {
     fat_g,
     protein_g,
@@ -298,7 +286,7 @@ export function isRatingNegative(rating: number | null | undefined): boolean {
 }
 
 export function getFoodName(
-  food: string | Foods | null | undefined,
+  food: string | DatabaseTypes.Foods | null | undefined,
   languageCode: string
 ) {
   if (typeof food === 'object' && food !== null) {

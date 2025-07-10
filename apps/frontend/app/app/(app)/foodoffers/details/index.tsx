@@ -15,12 +15,7 @@ import {
   getpreviousFeedback,
   numToOneDecimal,
 } from '@/constants/HelperFunctions';
-import {
-  Foods,
-  FoodsFeedbacks,
-  FoodsTranslations,
-  Profiles,
-} from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -213,7 +208,7 @@ export default function FoodDetailsScreen() {
   }, [foodAttributes, foodAttributeGroups, foodDetails, foodCategories, foodOfferCategories]);
 
   const renderContent = useCallback(
-    (foodDetails: Foods) => {
+    (foodDetails: DatabaseTypes.Foods) => {
       switch (activeTab) {
         case 'feedbacks':
           return (
@@ -272,7 +267,7 @@ export default function FoodDetailsScreen() {
         foodDetails?.id,
         profile?.id,
         payload
-      )) as FoodsFeedbacks;
+      )) as DatabaseTypes.FoodsFeedbacks;
       if (updateFeedbackResult?.id) {
         dispatch({
           type: UPDATE_FOOD_FEEDBACK_LOCAL,
@@ -385,7 +380,7 @@ export default function FoodDetailsScreen() {
       const result = (await profileHelper.updateProfile({
         ...profile,
         devices: newDevices,
-      })) as Profiles;
+      })) as DatabaseTypes.Profiles;
       if (result) {
         dispatch({
           type: UPDATE_PROFILE,

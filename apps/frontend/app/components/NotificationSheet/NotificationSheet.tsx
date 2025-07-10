@@ -24,7 +24,7 @@ import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { myContrastColor } from '@/helper/colorHelper';
 import { TranslationKeys } from '@/locales/keys';
-import { FoodsFeedbacks } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { RootState } from '@/redux/reducer';
 
 const NotificationSheet: React.FC<NotificationSheetProps> = ({
@@ -108,7 +108,7 @@ const NotificationSheet: React.FC<NotificationSheetProps> = ({
         foodDetails?.id,
         profile?.id,
         payload
-      )) as FoodsFeedbacks;
+      )) as DatabaseTypes.FoodsFeedbacks;
       if (updateFeedbackResult?.id) {
         dispatch({
           type: UPDATE_FOOD_FEEDBACK_LOCAL,

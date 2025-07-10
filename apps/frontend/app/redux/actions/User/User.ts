@@ -4,14 +4,14 @@
 import {AuthenticationData} from '@directus/sdk';
 import {configureStore} from '@/redux/store';
 // import {PersistentSecureStore} from '@/helper/syncState/PersistentSecureStore';
-import {DirectusRoles, DirectusUsers} from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import {ServerAPI} from '@/redux/actions/Auth/Auth';
 // import {useSynchedRolesDict} from "@/states/SynchedRoles";
 // import {useIsDemo} from "@/states/SynchedDemo";
 // import {RoleHelper} from "@/helper/role/RoleHelper";
 // import {PermissionHelper, PermissionHelperObject} from "@/helper/permission/PermissionHelper";
 
-export type CachedUserInformation = DirectusUsers | undefined;
+export type CachedUserInformation = DatabaseTypes.DirectusUsers | undefined;
 
 export function useLogoutCallback(): () => void {
 	return async () => {
@@ -46,7 +46,7 @@ export function useLogoutCallback(): () => void {
 // 	return [currentUser, setUserWithCache]
 // }
 
-function isDirectusUserAnonymous(user: DirectusUsers | undefined) {
+function isDirectusUserAnonymous(user: DatabaseTypes.DirectusUsers | undefined) {
 	if (!user) return true
 	return user?.id === undefined || user?.id === null
 }
@@ -71,7 +71,7 @@ export function getAnonymousUser(): any {
 	}
 }
 
-// export function useCurrentUser(): [DirectusUsers | undefined, (newValue: any) => void] {
+// export function useCurrentUser(): [DatabaseTypes.DirectusUsers | undefined, (newValue: any) => void] {
 // 	const [currentUserRaw, setCurrentUserRaw] = useCurrentUserRaw()
 // 	// TODO: Update cached user
 // 	const setUserWithCache = (newValue: any) => {
@@ -87,7 +87,7 @@ export function getAnonymousUser(): any {
 // 	return [currentUser, setUserWithCache]
 // }
 
-// export function useCurrentRole(): DirectusRoles | null {
+// export function useCurrentRole(): DatabaseTypes.DirectusRoles | null {
 // 	const [currentUser, setCurrentUser] = useCurrentUser()
 // 	const [rolesDict, setRolesDict] = useSynchedRolesDict()
 // 	const role_id = currentUser?.role

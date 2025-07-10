@@ -1,8 +1,8 @@
-import { Wikis } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 
-export class WikisHelper extends CollectionHelper<Wikis> {
+export class WikisHelper extends CollectionHelper<DatabaseTypes.Wikis> {
   constructor(client?: any) {
     // Pass the collection name and API client
     super('wikis', client || ServerAPI.getClient());

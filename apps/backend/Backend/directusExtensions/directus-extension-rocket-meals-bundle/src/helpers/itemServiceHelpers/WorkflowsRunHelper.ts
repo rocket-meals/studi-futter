@@ -1,4 +1,4 @@
-import {WorkflowsRuns} from "../../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 import {ItemsServiceHelper} from "../ItemsServiceHelper";
 import {WorkflowRunLogger} from "../../workflows-runs-hook/WorkflowRunJobInterface";
 import {WORKFLOW_RUN_STATE} from "./WorkflowsRunEnum";
@@ -23,12 +23,12 @@ export class WorkflowResultHash {
     }
 }
 
-export class WorkflowsRunHelper extends ItemsServiceHelper<WorkflowsRuns> {
+export class WorkflowsRunHelper extends ItemsServiceHelper<DatabaseTypes.WorkflowsRuns> {
 
     /**
      * @throws {Error}
      */
-    async getPreviousResultHash(workflowRun: WorkflowsRuns, logger: WorkflowRunLogger): Promise<WorkflowResultHash | Error> {
+    async getPreviousResultHash(workflowRun: DatabaseTypes.WorkflowsRuns, logger: WorkflowRunLogger): Promise<WorkflowResultHash | Error> {
         //console.log("getPreviousResultHash");
         // we need to search in workflowruns for the last successful run of this schedule and get the result_hash
         // if there is no successful run, we return null

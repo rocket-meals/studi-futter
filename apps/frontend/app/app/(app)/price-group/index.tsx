@@ -22,7 +22,7 @@ import { useFocusEffect } from 'expo-router';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { Profiles } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { RootState } from '@/redux/reducer';
 import { myContrastColor } from '@/helper/colorHelper';
 
@@ -106,7 +106,7 @@ const index = () => {
       setSelectedOption(option);
       const payload = { ...profile, price_group: option };
       if (profile.id) {
-        const result = (await profileHelper.updateProfile(payload)) as Profiles;
+        const result = (await profileHelper.updateProfile(payload)) as DatabaseTypes.Profiles;
         if (result) {
           dispatch({ type: UPDATE_PROFILE, payload });
         }

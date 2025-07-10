@@ -5,7 +5,7 @@ import Constants from 'expo-constants';
 import usePlatformHelper from '@/helper/platformHelper';
 import {IosAuthorizationStatus} from 'expo-notifications/src/NotificationPermissions.types';
 import { getDeviceInformationWithoutPushToken } from './DeviceHelper';
-import { Devices, Profiles } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 // import {useSynchedDevices} from "@/states/SynchedDevices";
 
 export type NotificationObjType = {
@@ -20,19 +20,19 @@ export class NotificationHelper {
 		return Constants.expoConfig?.extra?.eas?.projectId;
 	}
 
-	static useNotificationPermission(profile: Profiles): [boolean, NotificationObjType, (timestamp?: string) => void, () => void] {
+	static useNotificationPermission(profile: DatabaseTypes.Profiles): [boolean, NotificationObjType, (timestamp?: string) => void, () => void] {
         const devices = profile?.devices || [];
-        let deviceInformationsWithoutPushToken: Partial<Devices> = getDeviceInformationWithoutPushToken();
+        let deviceInformationsWithoutPushToken: Partial<DatabaseTypes.Devices> = getDeviceInformationWithoutPushToken();
         let deviceInformationsId = getDeviceIdentifier(deviceInformationsWithoutPushToken);
         let currentDevice = getCurrentDevice(deviceInformationsId);
 
 
-	function getDeviceIdentifier(device: Partial<Devices>) {
+	function getDeviceIdentifier(device: Partial<DatabaseTypes.Devices>) {
 		return device.platform+'_'+device.brand+'_'+device.system_version;
 	}
     
-        function getCurrentDevice(deviceInformationsId: string | undefined): Devices | undefined {
-            let foundDevice: undefined | Devices = undefined;
+        function getCurrentDevice(deviceInformationsId: string | undefined): DatabaseTypes.Devices | undefined {
+            let foundDevice: undefined | DatabaseTypes.Devices = undefined;
             if (deviceInformationsId) {
                 for (const device of devices) {
                     if (getDeviceIdentifier(device) === deviceInformationsId) {

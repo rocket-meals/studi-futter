@@ -1,8 +1,8 @@
-import { AppFeedbacks } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper } from '@/helper/collectionHelper';
 import { ServerAPI } from '@/redux/actions/Auth/Auth';
 
-export class AppFeedback extends CollectionHelper<AppFeedbacks> {
+export class AppFeedback extends CollectionHelper<DatabaseTypes.AppFeedbacks> {
   constructor(client?: any) {
     // Pass the collection name and API client
     super('app_feedbacks', client || ServerAPI.getClient());

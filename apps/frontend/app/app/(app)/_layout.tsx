@@ -5,26 +5,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useDispatch, useSelector } from 'react-redux';
 import { Redirect, useGlobalSearchParams } from 'expo-router';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
-import {
-  AppElements,
-  AppSettings,
-  Businesshours,
-  BusinesshoursGroups,
-  CanteensFeedbacksLabelsEntries,
-  CollectionsDatesLastUpdate,
-  FoodoffersCategories,
-  FoodsAttributes,
-  FoodsAttributesGroups,
-  FoodsCategories,
-  FoodsFeedbacks,
-  FoodsFeedbacksLabels,
-  FoodsFeedbacksLabelsEntries,
-  Markings,
-  MarkingsGroups,
-  PopupEvents,
-  Profiles,
-  Wikis,
-} from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import {
   SET_APP_ELEMENTS,
   SET_APP_SETTINGS,
@@ -144,7 +125,7 @@ export default function Layout() {
       const foodFeedbackLabels =
         (await foodfeedbackLabelHelper.fetchFoodFeedbackLabels(
           {}
-        )) as FoodsFeedbacksLabels[];
+        )) as DatabaseTypes.FoodsFeedbacksLabels[];
       if (foodFeedbackLabels) {
         dispatch({
           type: UPDATE_FOOD_FEEDBACK_LABELS,
@@ -163,7 +144,7 @@ export default function Layout() {
       const profile = (await profileHelper.fetchProfileById(
         user?.profile,
         {}
-      )) as Profiles;
+      )) as DatabaseTypes.Profiles;
       if (profile?.id) {
         getOwnFeedback(profile?.id);
         getFeedbackEntries(profile?.id);
@@ -180,7 +161,7 @@ export default function Layout() {
       // Fetch own feedback
       const result = (await foodFeedbackHelper.fetchFoodFeedbackByProfileId(
         id
-      )) as FoodsFeedbacks[];
+      )) as DatabaseTypes.FoodsFeedbacks[];
       if (result) {
         dispatch({ type: UPDATE_OWN_FOOD_FEEDBACK, payload: result });
       }
@@ -194,7 +175,7 @@ export default function Layout() {
       const result =
         (await foodFeedbackLabelEntryHelper.fetchFoodFeedbackLabelEntriesByProfile(
           id
-        )) as FoodsFeedbacksLabelsEntries[];
+        )) as DatabaseTypes.FoodsFeedbacksLabelsEntries[];
       if (result) {
         dispatch({
           type: UPDATE_OWN_FOOD_FEEDBACK_LABEL_ENTRIES,
@@ -211,7 +192,7 @@ export default function Layout() {
       const result =
         (await canteenFeedbackLabelEntryHelper.fetchCanteenFeedbackLabelEntriesByProfile(
           id
-        )) as CanteensFeedbacksLabelsEntries[];
+        )) as DatabaseTypes.CanteensFeedbacksLabelsEntries[];
       if (result) {
         dispatch({
           type: SET_OWN_CANTEEN_FEEDBACK_LABEL_ENTRIES,
@@ -227,10 +208,10 @@ export default function Layout() {
     try {
       const markingResult = (await markingHelper.fetchMarkings(
         {}
-      )) as Markings[];
+      )) as DatabaseTypes.Markings[];
       const markingGroupResult = (await markingGroupsHelper.fetchMarkingGroups(
         {}
-      )) as MarkingsGroups[];
+      )) as DatabaseTypes.MarkingsGroups[];
 
       // Use the sortMarkingsByGroup function to sort markings
       const sortedMarkings = sortMarkingsByGroup(markingResult, markingGroupResult);
@@ -243,7 +224,7 @@ export default function Layout() {
 
   const getNews = async () => {
     try {
-      const result = (await newsHelper.fetchNews({})) as News[];
+      const result = (await newsHelper.fetchNews({})) as DatabaseTypes.News[];
       if (result) {
         const today = new Date().toISOString().split('T')[0];
         const sortedNews = [...result].sort((a, b) => {
@@ -273,7 +254,7 @@ export default function Layout() {
     try {
       const result = (await foodCategoriesHelper.fetchFoodCategories(
         {}
-      )) as FoodsCategories[];
+      )) as DatabaseTypes.FoodsCategories[];
       if (result) {
         dispatch({ type: SET_FOOD_CATEGORIES, payload: sortBySortField(result) });
       }
@@ -287,7 +268,7 @@ export default function Layout() {
       const result =
         (await foodOffersCategoriesHelper.fetchFoodOffersCategories(
           {}
-        )) as FoodoffersCategories[];
+        )) as DatabaseTypes.FoodoffersCategories[];
       if (result) {
         dispatch({
           type: SET_FOOD_OFFERS_CATEGORIES,
@@ -302,14 +283,14 @@ export default function Layout() {
   const getAllFoodAttributes = async () => {
     try {
       const result =
-        (await foodAttributesHelper.fetchAllFoodAttributes()) as FoodsAttributes[];
+        (await foodAttributesHelper.fetchAllFoodAttributes()) as DatabaseTypes.FoodsAttributes[];
       if (result) {
         const attributesDict = result.reduce((acc, attr) => {
           if (attr.id) {
             acc[attr.id] = attr;
           }
           return acc;
-        }, {} as Record<string, FoodsAttributes>);
+        }, {} as Record<string, DatabaseTypes.FoodsAttributes>);
         dispatch({ type: SET_FOOD_ATTRIBUTES, payload: result });
         dispatch({ type: SET_FOOD_ATTRIBUTES_DICT, payload: attributesDict });
       }
@@ -323,7 +304,7 @@ export default function Layout() {
       const result =
         (await foodAttributeGroupHelper.fetchAllFoodAttributeGroups(
           {}
-        )) as FoodsAttributesGroups[];
+        )) as DatabaseTypes.FoodsAttributesGroups[];
       if (result) {
         dispatch({ type: SET_FOOD_ATTRIBUTE_GROUPS, payload: result });
       }
@@ -336,7 +317,7 @@ export default function Layout() {
     try {
       const result = (await businessHoursGroupsHelper.fetchBusinessHoursGroups(
         {}
-      )) as BusinesshoursGroups[];
+      )) as DatabaseTypes.BusinesshoursGroups[];
       if (result) {
         dispatch({ type: SET_BUSINESS_HOURS_GROUPS, payload: result });
       }
@@ -349,7 +330,7 @@ export default function Layout() {
     try {
       const businessHours = (await businessHoursHelper.fetchBusinessHours(
         {}
-      )) as Businesshours[];
+      )) as DatabaseTypes.Businesshours[];
       dispatch({ type: SET_BUSINESS_HOURS, payload: businessHours });
     } catch (error) {
       console.error('Error fetching business hours:', error);
@@ -358,7 +339,7 @@ export default function Layout() {
 
   const getWikis = async () => {
     try {
-      const response = (await wikisHelper.fetchWikis()) as Wikis[];
+      const response = (await wikisHelper.fetchWikis()) as DatabaseTypes.Wikis[];
       if (response) {
         dispatch({ type: SET_WIKIS, payload: response });
       }
@@ -371,7 +352,7 @@ export default function Layout() {
     try {
       const result = (await appSettingsHelper.fetchAppSettings(
         {}
-      )) as AppSettings;
+      )) as DatabaseTypes.AppSettings;
       if (result) {
         dispatch({ type: SET_APP_SETTINGS, payload: result });
       }
@@ -383,7 +364,7 @@ export default function Layout() {
   const getAllEvents = async () => {
     try {
       const response =
-        (await popupEventsHelper.fetchAllPopupEvents()) as PopupEvents[];
+        (await popupEventsHelper.fetchAllPopupEvents()) as DatabaseTypes.PopupEvents[];
       if (response) {
         const currentDate = new Date();
 
@@ -395,7 +376,7 @@ export default function Layout() {
             : 'show_on_web';
 
         const filteredEvents = response
-          .filter((event: PopupEvents) => {
+          .filter((event: DatabaseTypes.PopupEvents) => {
             const start = event.date_start ? new Date(event.date_start) : null;
             const end = event.date_end ? new Date(event.date_end) : null;
 
@@ -428,7 +409,7 @@ export default function Layout() {
     try {
       const result = (await appElementsHelper.fetchAllAppElements(
         {}
-      )) as AppElements[];
+      )) as DatabaseTypes.AppElements[];
       if (result) {
         dispatch({ type: SET_APP_ELEMENTS, payload: result });
       }
@@ -486,7 +467,7 @@ export default function Layout() {
       const result =
         (await collectionLastUpdateHelper.fetchCollectionDatesLastUpdate(
           {}
-        )) as CollectionsDatesLastUpdate[];
+        )) as DatabaseTypes.CollectionsDatesLastUpdate[];
       if (result) {
         const serverMap = transformUpdateDatesToMap(result);
         if (

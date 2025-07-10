@@ -1,4 +1,4 @@
-import {DirectusFiles} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 import {MyDatabaseTestableHelperInterface} from "./MyDatabaseHelperInterface";
 
 export type DirectusFilesAssetHelperOptions = {
@@ -33,7 +33,7 @@ export class DirectusFilesAssetHelper {
 
 
     public static getDirectAssetUrlByObjectOrId(
-        directusFile: DirectusFiles | string,
+        directusFile: DatabaseTypes.DirectusFiles | string,
         myDatabaseTestableHelperInterface: MyDatabaseTestableHelperInterface,
         options?: DirectusFileTransformOptions
     ): string {
@@ -50,7 +50,7 @@ export class DirectusFilesAssetHelper {
      * @param myDatabaseTestableHelperInterface
      * @param options
      */
-    public static getDirectAssetUrl(directusFile: DirectusFiles, myDatabaseTestableHelperInterface: MyDatabaseTestableHelperInterface, options?: DirectusFileTransformOptions): string {
+    public static getDirectAssetUrl(directusFile: DatabaseTypes.DirectusFiles, myDatabaseTestableHelperInterface: MyDatabaseTestableHelperInterface, options?: DirectusFileTransformOptions): string {
         return DirectusFilesAssetHelper.getDirectAssetUrlById(directusFile.id, myDatabaseTestableHelperInterface, options);
     }
 

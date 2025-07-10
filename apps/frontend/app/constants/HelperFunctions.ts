@@ -1,11 +1,11 @@
 import { UPDATE_LOGIN } from '@/redux/Types/types';
 import * as Crypto from 'expo-crypto';
 import { Platform } from 'react-native';
-import { DirectusUsers } from './types';
 import Server from './ServerUrl';
-import { NumberHelper } from '@/helper/numberHelper';
-import { StringHelper } from '@/helper/stringHelper';
+import { NumberHelper } from 'repo-depkit-common';
 import { ServerAPI } from '@/redux/actions';
+import {StringHelper} from 'repo-depkit-common';
+import {DatabaseTypes} from 'repo-depkit-common';
 
 export const generateCodeVerifier = async () => {
   const bytesMinAmount = 32;
@@ -35,7 +35,7 @@ export const generateCodeChallenge = async (codeVerifier: string) => {
 // Update the login status
 export const updateLoginStatus = async (
   dispatch: any,
-  payload: DirectusUsers
+  payload: DatabaseTypes.DirectusUsers
 ) => {
   dispatch({ type: UPDATE_LOGIN, payload });
 };

@@ -1,10 +1,11 @@
-import {getCollectionPropertyDetails, getCollectionPropertyNames} from "../../databaseTypes/dataBaseTypesTsMorph";
-import {CollectionNames} from "../../helpers/CollectionNames";
+import {CollectionHelper} from "repo-depkit-common-backend";
+
+import {CollectionNames} from "repo-depkit-common";;
 import {FIELD_VALUE_KEY_PREFIX, FormAnswersValueFieldKeys} from "../FormImportTypes";
 
 describe("Form Answer Value Fields Test", () => {
     it("All value_ keys from KeyOfFormAnswersValueFieldsType should be present in FormAnswersValueFieldKeys (compile-time check)", () => {
-        let collectionPropertiesNames = getCollectionPropertyNames(CollectionNames.FORM_ANSWERS);
+        let collectionPropertiesNames = CollectionHelper.getCollectionPropertyNames(CollectionNames.FORM_ANSWERS);
         let filteredCollectionPropertiesNames = collectionPropertiesNames.filter(name => name.startsWith(FIELD_VALUE_KEY_PREFIX));
         // check if FormAnswersValueFieldKeys contains exactly the same keys as filteredCollectionPropertiesNames
         let dictImplementedAnswerValueFields: Record<string, string> = {};

@@ -18,10 +18,10 @@ import {
   getpreviousFeedback,
   numToOneDecimal,
 } from '@/constants/HelperFunctions';
-import { FoodsFeedbacks } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
 import useToast from '@/hooks/useToast';
-import { DateHelper } from '@/helper/dateHelper';
+import { DateHelper } from 'repo-depkit-common';
 import {
   DELETE_FOOD_FEEDBACK_LOCAL,
   UPDATE_FOOD_FEEDBACK_LOCAL,
@@ -111,7 +111,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({
         foodDetails?.id,
         profile?.id,
         { ...previousFeedback, comment: string, canteen: foodOfferCanteenId }
-      )) as FoodsFeedbacks;
+      )) as DatabaseTypes.FoodsFeedbacks;
       // Dispatch the correct action
       dispatch({
         type: result?.id

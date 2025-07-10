@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Apartments, Washingmachines } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { differenceInSeconds, format, isAfter, isBefore } from 'date-fns';
 import washingmachine from '@/assets/animations/washingmachine/washingmachine.json';
 import washingmachineEmpty from '@/assets/animations/washingmachine/washingmachineEmpty.json';
@@ -21,7 +21,7 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
   const { theme } = useTheme();
   const apartmentsHelper = new ApartmentsHelper();
   const [washingMachines, setWashingMachines] = useState<
-    Washingmachines[] | any[]
+    DatabaseTypes.Washingmachines[] | any[]
   >();
   const [loading, setLoading] = useState(false);
   const { primaryColor, appSettings } = useSelector(
@@ -64,7 +64,7 @@ const WashingMachines: React.FC<any> = ({ campusDetails }) => {
 
     const response = (await apartmentsHelper.fetchApartmentWithWashingMachines(
       apartmentId
-    )) as Apartments;
+    )) as DatabaseTypes.Apartments;
     if (response.washingmachines) {
       setWashingMachines(response?.washingmachines);
     }

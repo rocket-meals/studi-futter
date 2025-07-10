@@ -1,7 +1,7 @@
-import { CollectionsDatesLastUpdate } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 
 export const transformUpdateDatesToMap = (
-  array: CollectionsDatesLastUpdate[]
+  array: DatabaseTypes.CollectionsDatesLastUpdate[]
 ): Record<string, string> => {
   const map: Record<string, string> = {};
   array.forEach((item) => {

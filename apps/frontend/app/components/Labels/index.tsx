@@ -7,7 +7,7 @@ import FoodLabelingInfo from '../FoodLabelingInfo';
 import MarkingLabels from '../MarkingLabels/MarkingLabels';
 import { getFoodOffer } from '@/constants/HelperFunctions';
 import { studentUnionUrl } from '@/constants/Constants';
-import { FoodoffersMarkings, Markings, MarkingsGroups } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { createSelector } from 'reselect';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
@@ -57,7 +57,7 @@ const Labels: React.FC<LabelsProps> = ({
   const foodOffer = useSelector(selectFoodOffer(offerId));
 
   // State for marking groups
-  const [markingGroups, setMarkingGroups] = useState<MarkingsGroups[]>([]);
+  const [markingGroups, setMarkingGroups] = useState<DatabaseTypes.MarkingsGroups[]>([]);
 
   // Fetch marking groups
   useEffect(() => {
@@ -81,10 +81,10 @@ const Labels: React.FC<LabelsProps> = ({
 
     // First, map food offer markings to actual marking objects
     const mappedMarkings = foodOffer.markings
-      ?.map((marking: FoodoffersMarkings) =>
-        markings.find((mark: Markings) => mark.id === marking?.markings_id)
+      ?.map((marking: DatabaseTypes.FoodoffersMarkings) =>
+        markings.find((mark: DatabaseTypes.Markings) => mark.id === marking?.markings_id)
       )
-      .filter((mark: any): mark is Markings => Boolean(mark));
+      .filter((mark: any): mark is DatabaseTypes.Markings => Boolean(mark));
 
     // Then sort them using the sortMarkingsByGroup function
     return sortMarkingsByGroup(mappedMarkings, markingGroups);
@@ -96,7 +96,7 @@ const Labels: React.FC<LabelsProps> = ({
         {translate(TranslationKeys.markings)}
       </Text>
 
-      {foodMarkings?.map((marking: Markings) => (
+      {foodMarkings?.map((marking: DatabaseTypes.Markings) => (
         <MarkingLabels
           key={marking.id}
           markingId={marking.id}

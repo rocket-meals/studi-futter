@@ -1,6 +1,6 @@
-import {CollectionNames} from "../helpers/CollectionNames";
+import {CollectionNames} from "repo-depkit-common";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
-import {FormAnswers, FormSubmissions} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 import {PrimaryKey} from "@directus/types";
 import {RegisterFunctions} from "@directus/extensions";
 import {ApiContext} from "../helpers/ApiContext";
@@ -11,7 +11,7 @@ import {ApiContext} from "../helpers/ApiContext";
  * @param apiContext
  */
 export function registerHookToCreateFormAnswersForFormSubmission(registerFunctions: RegisterFunctions, apiContext: ApiContext){
-    registerFunctions.filter<Partial<FormSubmissions>>(CollectionNames.FORM_SUBMISSIONS+".items.create", async (input, meta, eventContext) => {
+    registerFunctions.filter<Partial<DatabaseTypes.FormSubmissions>>(CollectionNames.FORM_SUBMISSIONS+".items.create", async (input, meta, eventContext) => {
         let myDatabaseHelper = new MyDatabaseHelper(apiContext, eventContext);
 
         let form_id: PrimaryKey | undefined = undefined;
@@ -36,7 +36,7 @@ export function registerHookToCreateFormAnswersForFormSubmission(registerFunctio
         // Check which form_answers are already passed
         // @ts-ignore - this way directus will create the relation
         let passedCreateFormAnswers: Partial<FormAnswers>[] = input.form_answers?.create || [];
-        let passedCreateFormAnswerFieldIdsDict: {[key: string]: Partial<FormAnswers>} = {};
+        let passedCreateFormAnswerFieldIdsDict: {[key: string]: Partial<DatabaseTypes.FormAnswers>} = {};
         for(let formAnswer of passedCreateFormAnswers){
             let formFieldOfFormAnswer = formAnswer.form_field;
             let formFieldIdOfFormAnswer: string | undefined = undefined;
@@ -62,7 +62,7 @@ export function registerHookToCreateFormAnswersForFormSubmission(registerFunctio
         });
 
         // now we want to add all form_fields that are not yet in the passedCreateFormAnswers
-        let createFields: Partial<FormAnswers>[] = passedCreateFormAnswers;
+        let createFields: Partial<DatabaseTypes.FormAnswers>[] = passedCreateFormAnswers;
         for(let form_field of form_fields){
             if(passedCreateFormAnswerFieldIdsDict[form_field.id]){
                 continue; // we already have a form_answer for this form_field

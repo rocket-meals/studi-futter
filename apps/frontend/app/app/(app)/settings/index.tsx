@@ -80,7 +80,7 @@ import {
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { Profiles } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { RootState } from '@/redux/reducer';
 
 const Settings = () => {
@@ -135,7 +135,7 @@ const Settings = () => {
       const result = (await profileHelper.updateProfile({
         ...profile,
         nickname: nickname?.trim(),
-      })) as Profiles;
+      })) as DatabaseTypes.Profiles;
       if (result) {
         dispatch({
           type: UPDATE_PROFILE,

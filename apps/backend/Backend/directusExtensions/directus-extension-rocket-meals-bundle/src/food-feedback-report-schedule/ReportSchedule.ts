@@ -1,19 +1,13 @@
 import moment from "moment"
 import {ReportGenerator, ReportType} from "./ReportGenerator";
 import {ItemsServiceCreator} from "../helpers/ItemsServiceCreator";
-import {CollectionNames} from "../helpers/CollectionNames";
+import {CollectionNames} from "repo-depkit-common";
 import {ApiContext} from "../helpers/ApiContext";
-import {
-    CanteenFoodFeedbackReportSchedules,
-    CanteenFoodFeedbackReportSchedulesCanteens,
-    CanteenFoodFeedbackReportSchedulesReportRecipients,
-    Canteens,
-    ReportRecipients
-} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common";
+
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
-import {DateHelper, Weekday} from "../helpers/DateHelper";
-import {PrimaryKey} from "@directus/types";
-import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
+import {DateHelper, Weekday} from "repo-depkit-common";
+import {EventContext, PrimaryKey} from "@directus/types";
 import {DictHelper} from "../helpers/DictHelper";
 import {HtmlTemplatesEnum} from "../helpers/html/HtmlGenerator";
 
@@ -93,7 +87,7 @@ export class ReportSchedule {
         }
     }
 
-    static getStartDateBasedOnReferenceDate(referenceDate: Date, reportSchedule: Partial<CanteenFoodFeedbackReportSchedules>): Date {
+    static getStartDateBasedOnReferenceDate(referenceDate: Date, reportSchedule: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules>): Date {
         // use foodoffers_days_limit to get the start date of the report. foodoffers_days_limit is the amount of days before the reference date
         const DEFAULT_FOODOFFERS_DAYS_LIMIT = 1;
         let foodoffers_days_limit = reportSchedule.period_days_amount || DEFAULT_FOODOFFERS_DAYS_LIMIT;
@@ -113,10 +107,10 @@ export class ReportSchedule {
         return startDate;
     }
 
-    async getRecipientEmailList(reportSchedule: CanteenFoodFeedbackReportSchedules): Promise<string[]>{
+    async getRecipientEmailList(reportSchedule: DatabaseTypes.CanteenFoodFeedbackReportSchedules): Promise<string[]>{
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
 
-        let report_schedule_report_recipients_service = await itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportSchedulesReportRecipients>(CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES_REPORT_RECIPIENTS)
+        let report_schedule_report_recipients_service = await itemsServiceCreator.getItemsService<DatabaseTypes.CanteenFoodFeedbackReportSchedulesReportRecipients>(CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES_REPORT_RECIPIENTS)
 
         let report_schedule_report_recipients = await report_schedule_report_recipients_service.readByQuery({
             filter: {
@@ -135,7 +129,7 @@ export class ReportSchedule {
             }
         }
 
-        let report_recipients_service = await itemsServiceCreator.getItemsService<ReportRecipients>(CollectionNames.REPORT_RECIPIENTS)
+        let report_recipients_service = await itemsServiceCreator.getItemsService<DatabaseTypes.ReportRecipients>(CollectionNames.REPORT_RECIPIENTS)
         let report_recipients = await report_recipients_service.readMany(report_recipients_primary_keys);
 
         let list: string[] = [];
@@ -151,9 +145,9 @@ export class ReportSchedule {
 
 
 
-    async getCanteenEntries(recipientEntry: CanteenFoodFeedbackReportSchedules): Promise<Record<string, Canteens>>{
+    async getCanteenEntries(recipientEntry: DatabaseTypes.CanteenFoodFeedbackReportSchedules): Promise<Record<string, DatabaseTypes.Canteens>>{
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
-        let itemService = await itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportSchedulesCanteens>(CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES_CANTEENS)
+        let itemService = await itemsServiceCreator.getItemsService<DatabaseTypes.CanteenFoodFeedbackReportSchedulesCanteens>(CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES_CANTEENS)
         let scheduleCanteens = await itemService.readByQuery({
             filter: {
                 canteen_food_feedback_report_schedules_id: {
@@ -179,14 +173,14 @@ export class ReportSchedule {
             }
         }
 
-        let canteenService = await itemsServiceCreator.getItemsService<Canteens>(CollectionNames.CANTEENS)
+        let canteenService = await itemsServiceCreator.getItemsService<DatabaseTypes.Canteens>(CollectionNames.CANTEENS)
         let canteensList = await canteenService.readMany(canteen_primary_keys);
         let canteensAsDict = DictHelper.transformListToDict(canteensList, (canteen => canteen.id));
         return canteensAsDict
     }
 
 
-    private getCanteenAliasForMail(canteenEntries: Record<string, Canteens>){
+    private getCanteenAliasForMail(canteenEntries: Record<string, DatabaseTypes.Canteens>){
         let canteen_alias_list = ReportGenerator.getCanteenAliasList(canteenEntries);
         const previewAmount = 3;
         let canteen_alias = "";
@@ -200,7 +194,7 @@ export class ReportSchedule {
         return canteenEntries.length +" Mensen ("+canteen_alias+")";
     }
 
-    async sendReport(generated_report_data: ReportType, recipientEntry: CanteenFoodFeedbackReportSchedules, canteensDict: Record<string, Canteens>, toMail: string){
+    async sendReport(generated_report_data: ReportType, recipientEntry: DatabaseTypes.CanteenFoodFeedbackReportSchedules, canteensDict: Record<string, DatabaseTypes.Canteens>, toMail: string){
         let canteen_alias = this.getCanteenAliasForMail(canteensDict);
 
         let dateHumanReadable = generated_report_data.dateHumanReadable;
@@ -215,11 +209,11 @@ export class ReportSchedule {
         })
     }
 
-    async setNextReportDate(reportSchedule: CanteenFoodFeedbackReportSchedules){
+    async setNextReportDate(reportSchedule: DatabaseTypes.CanteenFoodFeedbackReportSchedules){
         //console.log(SCHEDULE_NAME + " setNextReportDate")
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
         let tablename = TABLENAME_CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES;
-        let itemService = await itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportSchedules>(tablename)
+        let itemService = await itemsServiceCreator.getItemsService<DatabaseTypes.CanteenFoodFeedbackReportSchedules>(tablename)
         // update when the next report is due
         let now = new Date();
         let new_date_next_report_is_due_iso = ReportSchedule.getNextReportIsDueDateIsoOrNull(reportSchedule, now);
@@ -242,7 +236,7 @@ export class ReportSchedule {
         }
     }
 
-    async updateReportLogSuccess(generateReportForDate: Date, recipientEntry: CanteenFoodFeedbackReportSchedules){
+    async updateReportLogSuccess(generateReportForDate: Date, recipientEntry: DatabaseTypes.CanteenFoodFeedbackReportSchedules){
         let logMessage = `
             Report was sent successfully for the date: ${generateReportForDate}
             Sent at: ${new Date().toISOString()}
@@ -250,19 +244,19 @@ export class ReportSchedule {
         await this.updateReportLog(recipientEntry, "Report was sent successfully for the date: " + generateReportForDate, true);
     }
 
-    async logReportSendError(recipientEntry: CanteenFoodFeedbackReportSchedules, err: any){
+    async logReportSendError(recipientEntry: DatabaseTypes.CanteenFoodFeedbackReportSchedules, err: any){
         //console.log(SCHEDULE_NAME + " logReportSendError:")
         //console.log(err);
         await this.updateReportLog(recipientEntry, "Report sending failed: " + err.toString(), false);
     }
 
-    async updateReportLog(recipientEntry: CanteenFoodFeedbackReportSchedules, log: string, success: boolean){
+    async updateReportLog(recipientEntry: DatabaseTypes.CanteenFoodFeedbackReportSchedules, log: string, success: boolean){
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
 
         try{
             let tablename = TABLENAME_CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES;
-            let itemService = await itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportSchedules>(tablename)
-            let updateData: Partial<CanteenFoodFeedbackReportSchedules> = {
+            let itemService = await itemsServiceCreator.getItemsService<DatabaseTypes.CanteenFoodFeedbackReportSchedules>(tablename)
+            let updateData: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules> = {
                 report_status_log: log,
                 report_send_successfully: success
             }
@@ -274,14 +268,14 @@ export class ReportSchedule {
     }
 
 
-    async getReferenceDateOfTheReportOrNull(recipientEntry: CanteenFoodFeedbackReportSchedules){
+    async getReferenceDateOfTheReportOrNull(recipientEntry: DatabaseTypes.CanteenFoodFeedbackReportSchedules){
         //console.log("#############");
         //console.log(SCHEDULE_NAME + " getDateForWhichTheReportShouldBeSend")
 
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
         //console.log("Checking if report is due for to_recipient_email: " + recipientEntry.to_recipient_email);
         let tablename = TABLENAME_CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES;
-        let itemService = await itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportSchedules>(tablename)
+        let itemService = await itemsServiceCreator.getItemsService<DatabaseTypes.CanteenFoodFeedbackReportSchedules>(tablename)
 
         // okay, now we have to calculate the date for which the report should be generated
         let now = new Date();
@@ -312,7 +306,7 @@ export class ReportSchedule {
         }
     }
 
-    public static getReferenceDate(recipientEntry: Partial<CanteenFoodFeedbackReportSchedules>, now: Date): Date | null {
+    public static getReferenceDate(recipientEntry: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules>, now: Date): Date | null {
         if(!recipientEntry.enabled){
             return null;
         }
@@ -330,7 +324,7 @@ export class ReportSchedule {
         return new Date(date_for_which_the_report_should_be_generated_iso);
     }
 
-    public static splitSendReportAtHhMm(recipientEntry: Partial<CanteenFoodFeedbackReportSchedules>){
+    public static splitSendReportAtHhMm(recipientEntry: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules>){
         let send_report_at_hh_mm = recipientEntry.send_report_at_hh_mm;
         let send_report_at_hh_mm_splits = send_report_at_hh_mm?.split(":");
         let send_report_at_hh = parseInt(send_report_at_hh_mm_splits?.[0] || "06");
@@ -343,7 +337,7 @@ export class ReportSchedule {
         }
     }
 
-    public static getNextReportIsDueToBeGeneratedDateOrNull(reportSchedule: Partial<CanteenFoodFeedbackReportSchedules>, now: Date): Date | null {
+    public static getNextReportIsDueToBeGeneratedDateOrNull(reportSchedule: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules>, now: Date): Date | null {
         if(!reportSchedule.enabled){
             return null;
         }
@@ -446,7 +440,7 @@ export class ReportSchedule {
         return date_next_report_is_due;
     }
 
-    public static getNextReportIsDueDateIsoOrNull(recipientEntry: Partial<CanteenFoodFeedbackReportSchedules>, now: Date): string | null {
+    public static getNextReportIsDueDateIsoOrNull(recipientEntry: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules>, now: Date): string | null {
         let nextReportIsDueDate = ReportSchedule.getNextReportIsDueToBeGeneratedDateOrNull(recipientEntry, now);
         if(!nextReportIsDueDate){
             return null;
@@ -457,7 +451,7 @@ export class ReportSchedule {
     public async getCanteenFoodFeedbackReportScheduleById(id: string){
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext, this.eventContext);
         let tablename = TABLENAME_CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES;
-        let itemService = await itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportSchedules>(tablename)
+        let itemService = await itemsServiceCreator.getItemsService<DatabaseTypes.CanteenFoodFeedbackReportSchedules>(tablename)
         try{
             let reportSchedule = await itemService.readOne(id);
             return reportSchedule;
@@ -470,10 +464,10 @@ export class ReportSchedule {
     }
 
     public static haveTimeSettingsChanged(
-        currentCanteenFoodFeedbackReportSchedules: Partial<CanteenFoodFeedbackReportSchedules>,
-        newCanteenFoodFeedbackReportSchedules: Partial<CanteenFoodFeedbackReportSchedules>
+        currentCanteenFoodFeedbackReportSchedules: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules>,
+        newCanteenFoodFeedbackReportSchedules: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules>
     ): boolean {
-        const fieldsToCheck: Array<keyof CanteenFoodFeedbackReportSchedules> = [
+        const fieldsToCheck: Array<keyof DatabaseTypes.CanteenFoodFeedbackReportSchedules> = [
             "enabled",
             "send_report_at_hh_mm",
             "send_on_mondays",
@@ -488,9 +482,9 @@ export class ReportSchedule {
         // Iterate over the fields and return true if any of the corresponding fields have changed
         return fieldsToCheck.some((field) => {
             // Only compare if the newCanteenFoodFeedbackReportSchedules field is defined
-            if (newCanteenFoodFeedbackReportSchedules[field as keyof CanteenFoodFeedbackReportSchedules] !== undefined) {
-                const currentValue = currentCanteenFoodFeedbackReportSchedules[field as keyof CanteenFoodFeedbackReportSchedules];
-                const newValue = newCanteenFoodFeedbackReportSchedules[field as keyof CanteenFoodFeedbackReportSchedules];
+            if (newCanteenFoodFeedbackReportSchedules[field as keyof DatabaseTypes.CanteenFoodFeedbackReportSchedules] !== undefined) {
+                const currentValue = currentCanteenFoodFeedbackReportSchedules[field as keyof DatabaseTypes.CanteenFoodFeedbackReportSchedules];
+                const newValue = newCanteenFoodFeedbackReportSchedules[field as keyof DatabaseTypes.CanteenFoodFeedbackReportSchedules];
 
                 // Check if the values are different
                 return currentValue !== newValue;
@@ -504,7 +498,7 @@ export class ReportSchedule {
     async getAllReportSchedules(){
         const itemsServiceCreator = new ItemsServiceCreator(this.apiContext);
         let tablename = TABLENAME_CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES;
-        let itemService = await itemsServiceCreator.getItemsService<CanteenFoodFeedbackReportSchedules>(tablename)
+        let itemService = await itemsServiceCreator.getItemsService<DatabaseTypes.CanteenFoodFeedbackReportSchedules>(tablename)
         let list = await itemService.readByQuery({
             limit: -1});
         return list;

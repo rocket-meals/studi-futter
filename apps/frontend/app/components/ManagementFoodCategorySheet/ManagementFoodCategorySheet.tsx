@@ -16,7 +16,7 @@ import { isWeb } from '@/constants/Constants';
 import { SET_DAY_PLAN } from '@/redux/Types/types';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { RootState } from '@/redux/reducer';
-import { FoodoffersCategories, FoodsCategories } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 
 const ManagementFoodCategorySheet: React.FC<
   ManagementFoodCategorySheetProps
@@ -24,7 +24,7 @@ const ManagementFoodCategorySheet: React.FC<
   const { theme } = useTheme();
   const dispatch = useDispatch();
   const [isCustom, setIsCustom] = useState(false);
-  const [list, setList] = useState<FoodsCategories[] | FoodoffersCategories[]>(
+  const [list, setList] = useState<DatabaseTypes.FoodsCategories[] | DatabaseTypes.FoodoffersCategories[]>(
     []
   );
   const { dayPlan } = useSelector((state: RootState) => state.management);

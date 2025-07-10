@@ -4,7 +4,7 @@ import {CSVExportParser} from "../../../food-sync-hook/CSVExportParser";
 import {HashHelper} from "../../../helpers/HashHelper";
 import iconv from 'iconv-lite';
 import {WorkflowRunLogger} from "../../../workflows-runs-hook/WorkflowRunJobInterface";
-import {DateHelper, DateHelperTimezone} from "../../../helpers/DateHelper";
+import {DateHelper, DateHelperTimezone} from "repo-depkit-common";
 import {StringHelper} from "repo-depkit-common";
 
 // VONUMMER: Haus-Wohnung-Wohnungsnummer

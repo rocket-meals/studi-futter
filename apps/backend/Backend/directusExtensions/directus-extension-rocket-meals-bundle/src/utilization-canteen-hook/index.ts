@@ -7,7 +7,7 @@ import {
     WorkflowRunJobInterface,
     WorkflowRunLogger
 } from "../workflows-runs-hook/WorkflowRunJobInterface";
-import {WorkflowsRuns} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
 
 class UtilizationCanteenCalculationWorkflow extends SingleWorkflowRun {
@@ -16,7 +16,7 @@ class UtilizationCanteenCalculationWorkflow extends SingleWorkflowRun {
         return "utilization-canteen-calculation";
     }
 
-    async runJob(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<WorkflowsRuns>> {
+    async runJob(workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<DatabaseTypes.WorkflowsRuns>> {
         await logger.appendLog("Starting utilization canteen calculation");
 
         try{

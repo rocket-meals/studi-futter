@@ -1,4 +1,3 @@
-import {HookExtensionContext} from "@directus/types";
 import {ApiExtensionContext, RegisterFunctions} from "@directus/extensions";
 import {MyDatabaseHelper} from "../../../helpers/MyDatabaseHelper";
 import {WorkflowScheduleHelper} from "../../../workflows-runs-hook";

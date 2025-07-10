@@ -9,25 +9,11 @@ import {
 } from "./FoodParserInterface";
 import {TranslationHelper} from "../helpers/TranslationHelper";
 import {MarkingParserInterface, MarkingsTypeForParser} from "./MarkingParserInterface";
-import {DateHelper} from "../helpers/DateHelper";
+import {DateHelper} from "repo-depkit-common";
 import {ListHelper} from "../helpers/ListHelper";
-import {
-    Canteens,
-    Foodoffers,
-    FoodoffersCategories,
-    FoodoffersMarkings,
-    Foods,
-    FoodsAttributes,
-    FoodsAttributesValues,
-    FoodsCategories,
-    FoodsMarkings,
-    FoodsTranslations,
-    Markings,
-    MarkingsTranslations,
-    WorkflowsRuns
-} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
-import {CollectionNames} from "../helpers/CollectionNames";
+import {CollectionNames} from "repo-depkit-common";
 import {DictMarkingsExclusions, MarkingFilterHelper} from "../helpers/MarkingFilterHelper";
 import {MyTimer, MyTimers} from "../helpers/MyTimer";
 import {WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
@@ -38,9 +24,9 @@ import {WorkflowResultHash} from "../helpers/itemServiceHelpers/WorkflowsRunHelp
 
 const SCHEDULE_NAME = "FoodParseSchedule";
 
-export type DictFoodsCategoryExternalIdentifierToFoodsCategory = Record<string, FoodsCategories>
-export type DictFoodsAttributesExternalIdentifiersToFoodsAttributes = Record<string, FoodsAttributes>
-export type DictFoodofferCategoriesExternalIdentifiersToFoodofferCategories = Record<string, FoodoffersCategories>
+export type DictFoodsCategoryExternalIdentifierToFoodsCategory = Record<string, DatabaseTypes.FoodsCategories>
+export type DictFoodsAttributesExternalIdentifiersToFoodsAttributes = Record<string, DatabaseTypes.FoodsAttributes>
+export type DictFoodofferCategoriesExternalIdentifiersToFoodofferCategories = Record<string, DatabaseTypes.FoodoffersCategories>
 
 export type FoodCreationHelperObject = {
     dictMarkingsExclusions: DictMarkingsExclusions,
@@ -56,10 +42,10 @@ export class ParseSchedule {
     //private previousMealOffersHash: string | null; // in multi instance environment this should be a field in the database
     //private finished: boolean; // in multi instance environment this should be a field in the database
     private myDatabaseHelper: MyDatabaseHelper;
-    private workflowRun: WorkflowsRuns;
+    private workflowRun: DatabaseTypes.WorkflowsRuns;
     private logger: WorkflowRunLogger;
 
-    constructor(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger, foodParser: FoodParserInterface | null, markingParser: MarkingParserInterface | null) {
+    constructor(workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger, foodParser: FoodParserInterface | null, markingParser: MarkingParserInterface | null) {
         this.myDatabaseHelper = myDatabaseHelper;
         this.workflowRun = workflowRun;
         this.logger = logger;
@@ -71,7 +57,7 @@ export class ParseSchedule {
         return await this.myDatabaseHelper.getWorkflowsRunsHelper().getPreviousResultHash(this.workflowRun, this.logger);
     }
 
-    async parse(): Promise<Partial<WorkflowsRuns>> {
+    async parse(): Promise<Partial<DatabaseTypes.WorkflowsRuns>> {
         //console.log("Start ParseSchedule and setting first log");
         await this.logger.appendLog("Starting");
         //console.log("Start ParseSchedule and setting first log - done");
@@ -203,7 +189,7 @@ export class ParseSchedule {
 
     async updateFoodAttributes(foodAttributesExternalIdentifiers: Record<string, string>){
         let externalIdentifiers = Object.keys(foodAttributesExternalIdentifiers);
-        let externalIdentifiersToFoodAttributesDict: Record<string, FoodsAttributes> = {};
+        let externalIdentifiersToFoodAttributesDict: Record<string, DatabaseTypes.FoodsAttributes> = {};
         for(let externalIdentifier of externalIdentifiers){
             let searchJSON = {
                 external_identifier: externalIdentifier
@@ -335,7 +321,7 @@ export class ParseSchedule {
         }
     }
 
-    async deleteAllFoodoffersForCanteenWithoutDates(canteen: Canteens) {
+    async deleteAllFoodoffersForCanteenWithoutDates(canteen: DatabaseTypes.Canteens) {
         let itemService = await this.myDatabaseHelper.getFoodoffersHelper();
         let itemsToDelete = await itemService.readByQuery({
             filter: {
@@ -352,7 +338,7 @@ export class ParseSchedule {
         await this.deleteFoodOffers(itemsToDelete, `Delete all food offers for canteen without dates: ${canteen.id} - amount: ${itemsToDelete.length}`);
     }
 
-    async deleteFoodOffersNewerOrEqualThanDate(foodofferDatesToDelete: FoodofferDateType[], canteen: Canteens) {
+    async deleteFoodOffersNewerOrEqualThanDate(foodofferDatesToDelete: FoodofferDateType[], canteen: DatabaseTypes.Canteens) {
         let oldestFoodofferDate: FoodofferDateType | null = null;
         for (let foodofferDateToDelete of foodofferDatesToDelete) {
             let foodofferDateToDeleteAsDate = new Date(DateHelper.foodofferDateTypeToString(foodofferDateToDelete));
@@ -383,7 +369,7 @@ export class ParseSchedule {
         }
     }
 
-    async deleteFoodOffers(foodoffers: Foodoffers[], notice: string) {
+    async deleteFoodOffers(foodoffers: DatabaseTypes.Foodoffers[], notice: string) {
         let itemService = await this.myDatabaseHelper.getFoodoffersHelper();
         let idsToDelete = foodoffers.map(item => item.id);
 
@@ -399,7 +385,7 @@ export class ParseSchedule {
         }
     }
 
-    async deleteAllFoodOffersNewerOrEqualThanDateForCanteen(iso8601StringDate: FoodofferDateType, canteen: Canteens) {
+    async deleteAllFoodOffersNewerOrEqualThanDateForCanteen(iso8601StringDate: FoodofferDateType, canteen: DatabaseTypes.Canteens) {
         const directusDateOnlyString = DateHelper.foodofferDateTypeToString(iso8601StringDate)
         await this.logger.appendLog("Delete food offers newer or equal than date: " + directusDateOnlyString + " for canteen: " + canteen.id);
 
@@ -461,7 +447,7 @@ export class ParseSchedule {
         }
     }
 
-    async assignMarkingsToFood(markings: Markings[], food: Foods, dictMarkingsExclusions: DictMarkingsExclusions) {
+    async assignMarkingsToFood(markings: DatabaseTypes.Markings[], food: DatabaseTypes.Foods, dictMarkingsExclusions: DictMarkingsExclusions) {
         let tablename = CollectionNames.FOODS_MARKINGS;
 
         const filteredMarkings = MarkingFilterHelper.filterMarkingByRestrictionRules(markings, dictMarkingsExclusions);
@@ -470,19 +456,19 @@ export class ParseSchedule {
             const searchJSON = food_marking_json;
             const createJSON = food_marking_json;
 
-            const foodMarkingsHelper = this.myDatabaseHelper.getItemsServiceHelper<FoodsMarkings>(tablename);
+            const foodMarkingsHelper = this.myDatabaseHelper.getItemsServiceHelper<DatabaseTypes.FoodsMarkings>(tablename);
             await foodMarkingsHelper.findOrCreateItem(searchJSON, createJSON);
         }
     }
 
-    async assignMarkingsToFoodoffer(markings: Markings[], foodoffer: Foodoffers, dictMarkingsExclusions: DictMarkingsExclusions) {
+    async assignMarkingsToFoodoffer(markings: DatabaseTypes.Markings[], foodoffer: DatabaseTypes.Foodoffers, dictMarkingsExclusions: DictMarkingsExclusions) {
         let tablename = CollectionNames.FOODOFFER_MARKINGS
 
         const filteredMarkings = MarkingFilterHelper.filterMarkingByRestrictionRules(markings, dictMarkingsExclusions);
 
         for (let marking of filteredMarkings) {
             let foodoffer_marking_json = {foodoffers_id: foodoffer.id, markings_id: marking.id};
-            const foodMarkingsHelper = this.myDatabaseHelper.getItemsServiceHelper<FoodoffersMarkings>(tablename);
+            const foodMarkingsHelper = this.myDatabaseHelper.getItemsServiceHelper<DatabaseTypes.FoodoffersMarkings>(tablename);
             await foodMarkingsHelper.createOne(foodoffer_marking_json);
         }
     }
@@ -491,12 +477,12 @@ export class ParseSchedule {
         return this.myDatabaseHelper.getFoodsHelper().updateOne(food.id, food);
     }
 
-    async updateFoodsAttributesValues(food: Foods, new_attribute_values: FoodParseFoodAttributesType, dictExternalIdentifierToFoodAttributes: DictFoodsAttributesExternalIdentifiersToFoodsAttributes){
+    async updateFoodsAttributesValues(food: DatabaseTypes.Foods, new_attribute_values: FoodParseFoodAttributesType, dictExternalIdentifierToFoodAttributes: DictFoodsAttributesExternalIdentifiersToFoodsAttributes){
         let foodWithOnlySetAttributesFields = this.getFoodsOrFoodoffersWithOnlySetAttributesFields(food, new_attribute_values, dictExternalIdentifierToFoodAttributes, {isFood: true, isFoodoffer: false});
         await this.myDatabaseHelper.getFoodsHelper().updateOne(food.id, foodWithOnlySetAttributesFields, {disableEventEmit: true});
     }
 
-    getFoodsOrFoodoffersWithOnlySetAttributesFields<T extends Partial<Foods | Foodoffers>>(foodOrFoodoffer: T, new_attribute_values: FoodParseFoodAttributesType, dictExternalIdentifierToFoodAttributes: DictFoodsAttributesExternalIdentifiersToFoodsAttributes, typeHelper: {isFood: boolean, isFoodoffer: boolean}): T {
+    getFoodsOrFoodoffersWithOnlySetAttributesFields<T extends Partial<DatabaseTypes.Foods | DatabaseTypes.Foodoffers>>(foodOrFoodoffer: T, new_attribute_values: FoodParseFoodAttributesType, dictExternalIdentifierToFoodAttributes: DictFoodsAttributesExternalIdentifiersToFoodsAttributes, typeHelper: {isFood: boolean, isFoodoffer: boolean}): T {
         let delteAttributeValuesRaw = foodOrFoodoffer.attribute_values;
         let deleteAttributeValuesIds: any[] = [];
         if(!!delteAttributeValuesRaw){
@@ -524,7 +510,7 @@ export class ParseSchedule {
                     foodoffer_id = foodOrFoodoffer.id;
                 }
 
-                let createJSON: Omit<FoodsAttributesValues, "id"> = {
+                let createJSON: Omit<DatabaseTypes.FoodsAttributesValues, "id"> = {
                     food_id: food_id,
                     foodoffer_id: foodoffer_id,
                     food_attribute: foodAttribute.id,
@@ -545,14 +531,14 @@ export class ParseSchedule {
         return foodOrFoodofferCopy;
     }
 
-    async updateFoodTranslations(foundFoodWithTranslations: Foods, foodsInformationForParser: FoodsInformationTypeForParser) {
-        await TranslationHelper.updateItemTranslationsForItemWithTranslationsFetched<Foods, FoodsTranslations>(foundFoodWithTranslations, foodsInformationForParser.translations, "foods_id", CollectionNames.FOODS, this.myDatabaseHelper);
+    async updateFoodTranslations(foundFoodWithTranslations: DatabaseTypes.Foods, foodsInformationForParser: FoodsInformationTypeForParser) {
+        await TranslationHelper.updateItemTranslationsForItemWithTranslationsFetched<DatabaseTypes.Foods, DatabaseTypes.FoodsTranslations>(foundFoodWithTranslations, foodsInformationForParser.translations, "foods_id", CollectionNames.FOODS, this.myDatabaseHelper);
     }
 
     async getOrCreateFoodsOnlyWithTranslations(foodsInformationForParserList: FoodsInformationTypeForParser[]){
         const myTimer = new MyTimer(SCHEDULE_NAME+ " - getOrCreateFoodsOnly");
         const foodsHelper = this.myDatabaseHelper.getFoodsHelper();
-        const foodsDict: Record<string, Foods> = {};
+        const foodsDict: Record<string, DatabaseTypes.Foods> = {};
 
         let index = 0;
         let amount = foodsInformationForParserList.length;
@@ -586,7 +572,7 @@ export class ParseSchedule {
         ); // Remove duplicates https://github.com/rocket-meals/rocket-meals/issues/151
 
         // create dict with all marking external identifiers
-        const dictMarkingExternalIdentifierToMarking: Record<string, Markings | null> = {};
+        const dictMarkingExternalIdentifierToMarking: Record<string, DatabaseTypes.Markings | null> = {};
         for(let foodsInformationForParser of foodsInformationForParserList){
             let marking_external_identifiers = foodsInformationForParser.marking_external_identifiers;
             for(let marking_external_identifier of marking_external_identifiers){
@@ -602,7 +588,7 @@ export class ParseSchedule {
         // create markings
         let markingExternalIdentifiers = Object.keys(dictMarkingExternalIdentifierToMarking);
         for (let markingExternalIdentifier of markingExternalIdentifiers) {
-            let marking: Markings | undefined | null = null;
+            let marking: DatabaseTypes.Markings | undefined | null = null;
             if(shouldCreateNewMarkings){
                 marking = await this.findOrCreateMarkingByExternalIdentifier(markingExternalIdentifier);
             } else {
@@ -627,7 +613,7 @@ export class ParseSchedule {
                 const basicFoodData = foodsInformationForParser.basicFoodData;
 
                 let marking_external_identifier_list = foodsInformationForParser.marking_external_identifiers;
-                let markings: Markings[] = [];
+                let markings: DatabaseTypes.Markings[] = [];
                 for (let marking_external_identifier of marking_external_identifier_list) {
                     let marking = dictMarkingExternalIdentifierToMarking[marking_external_identifier];
                     if(!!marking){
@@ -651,7 +637,7 @@ export class ParseSchedule {
         await this.logger.appendLog("Finished Update Foods");
     }
 
-    async assignFoodCategoryToFood(food: Foods, foodsInformationForParser: FoodsInformationTypeForParser, foodCategoryExternalIdentifiersToFoodCategoriesDict: DictFoodsCategoryExternalIdentifierToFoodsCategory){
+    async assignFoodCategoryToFood(food: DatabaseTypes.Foods, foodsInformationForParser: FoodsInformationTypeForParser, foodCategoryExternalIdentifiersToFoodCategoriesDict: DictFoodsCategoryExternalIdentifierToFoodsCategory){
         let foodCategoryExternalIdentifier = foodsInformationForParser.category_external_identifier;
         if(!!foodCategoryExternalIdentifier){
             let foodCategory = foodCategoryExternalIdentifiersToFoodCategoriesDict[foodCategoryExternalIdentifier];
@@ -679,7 +665,7 @@ export class ParseSchedule {
     }
 
 
-    getFoodofferToCreate(foodofferForParser: FoodoffersTypeForParser, canteen: Canteens, markings: Markings[], food: Foods, foodofferCategory: FoodoffersCategories | undefined, helperObject: FoodCreationHelperObject){
+    getFoodofferToCreate(foodofferForParser: FoodoffersTypeForParser, canteen: DatabaseTypes.Canteens, markings: DatabaseTypes.Markings[], food: DatabaseTypes.Foods, foodofferCategory: DatabaseTypes.FoodoffersCategories | undefined, helperObject: FoodCreationHelperObject){
 
         let food_id = foodofferForParser.food_id
         const basicFoodofferData = foodofferForParser.basicFoodofferData;
@@ -699,9 +685,9 @@ export class ParseSchedule {
             }
         });
 
-        let foodWithOnlySetAttributesFields = this.getFoodsOrFoodoffersWithOnlySetAttributesFields({} as Foodoffers, foodofferForParser.attribute_values,helperObject.dictExternalIdentifierToFoodAttributes, {isFood: false, isFoodoffer: true});
+        let foodWithOnlySetAttributesFields = this.getFoodsOrFoodoffersWithOnlySetAttributesFields({} as DatabaseTypes.Foodoffers, foodofferForParser.attribute_values,helperObject.dictExternalIdentifierToFoodAttributes, {isFood: false, isFoodoffer: true});
 
-        let foodOfferToCreate: Partial<Foodoffers> = {
+        let foodOfferToCreate: Partial<DatabaseTypes.Foodoffers> = {
             ...foodofferForParser.basicFoodofferData,
             canteen: canteen.id,
             food: food_id,
@@ -724,8 +710,8 @@ export class ParseSchedule {
         const amountOfRawMealOffers = foodofferListForParser.length;
         await this.logger.appendLog("Create Food Offers");
 
-        const dictCanteenExternalIdentifierToCanteen: Record<string, Canteens | null> = {};
-        const dictMarkingExternalIdentifierToMarking: Record<string, Markings |null> = {};
+        const dictCanteenExternalIdentifierToCanteen: Record<string, DatabaseTypes.Canteens | null> = {};
+        const dictMarkingExternalIdentifierToMarking: Record<string, DatabaseTypes.Markings |null> = {};
 
         // fill the dicts with null values
         for (let foodofferForParser of foodofferListForParser) {
@@ -754,7 +740,7 @@ export class ParseSchedule {
             shouldCreateNewMarkings = this.foodParser.shouldCreateNewMarkingsWhenTheyDoNotExistYet();
         }
         for (let markingExternalIdentifier of markingExternalIdentifiers) {
-            let marking: Markings | undefined | null = null;
+            let marking: DatabaseTypes.Markings | undefined | null = null;
             if(shouldCreateNewMarkings){
                 marking = await this.findOrCreateMarkingByExternalIdentifier(markingExternalIdentifier);
             } else {
@@ -766,7 +752,7 @@ export class ParseSchedule {
         }
 
         // dict foodsFound
-        const dictFoodsFound: Record<string, Foods | null> = {};
+        const dictFoodsFound: Record<string, DatabaseTypes.Foods | null> = {};
         for(let foodofferForParser of foodofferListForParser){
             let food_id = foodofferForParser.food_id;
             dictFoodsFound[food_id] = null;
@@ -781,13 +767,13 @@ export class ParseSchedule {
             }
         }
 
-        const foodoffersToCreate: Partial<Foodoffers>[] = [];
+        const foodoffersToCreate: Partial<DatabaseTypes.Foodoffers>[] = [];
         foodofferListForParser.map(async (foodofferForParser, index) => {
             const canteen = dictCanteenExternalIdentifierToCanteen[foodofferForParser.canteen_external_identifier];
             const canteenFound = !!canteen;
 
             const marking_external_identifiers = foodofferForParser.marking_external_identifiers;
-            const markings: Markings[] = [];
+            const markings: DatabaseTypes.Markings[] = [];
 
             for (let marking_external_identifier of marking_external_identifiers) {
                 const marking = dictMarkingExternalIdentifierToMarking[marking_external_identifier];
@@ -798,7 +784,7 @@ export class ParseSchedule {
             const markingsAllFound = markings.length === marking_external_identifiers.length;
 
             const foodofferCategoryExternalIdentifier = foodofferForParser.category_external_identifier;
-            let foodofferCategory: FoodoffersCategories | undefined = undefined;
+            let foodofferCategory: DatabaseTypes.FoodoffersCategories | undefined = undefined;
             if (!!foodofferCategoryExternalIdentifier) {
                 foodofferCategory = helperObject.foodofferCategoryExternalIdentifiersToFoodofferCategoriesDict[foodofferCategoryExternalIdentifier];
             }
@@ -862,7 +848,7 @@ export class ParseSchedule {
 
             if (!marking) {
                 // If marking does not exist, create a new one
-                let adaptedMarkingJSON: Partial<Markings> = {
+                let adaptedMarkingJSON: Partial<DatabaseTypes.Markings> = {
                     ...markingJSONCopy,
                     short_code: markingJSONCopy.external_identifier // Set short_code to external_identifier
                 }
@@ -882,8 +868,8 @@ export class ParseSchedule {
     }
 
 
-    async updateMarkingTranslations(marking: Markings, markingJSON: MarkingsTypeForParser) {
-        await TranslationHelper.updateItemTranslations<Markings, MarkingsTranslations>(marking, markingJSON.translations, "markings_id", CollectionNames.MARKINGS, this.myDatabaseHelper);
+    async updateMarkingTranslations(marking: DatabaseTypes.Markings, markingJSON: MarkingsTypeForParser) {
+        await TranslationHelper.updateItemTranslations<DatabaseTypes.Markings, DatabaseTypes.MarkingsTranslations>(marking, markingJSON.translations, "markings_id", CollectionNames.MARKINGS, this.myDatabaseHelper);
     }
 
 }

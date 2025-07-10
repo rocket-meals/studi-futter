@@ -30,12 +30,7 @@ import MarkingIcon from '@/components/MarkingIcon';
 import { FoodAttributesHelper } from '@/redux/actions/FoodAttributes/FoodAttributes';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import {
-  Buildings,
-  Canteens,
-  FoodsAttributes,
-  FoodsCategories,
-} from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { ColumnPercentages } from './types';
 import { RootState } from '@/redux/reducer';
 import { CanteenHelper } from '@/redux/actions';
@@ -67,7 +62,7 @@ const index = () => {
   const [foods, setFoods] = useState([]);
   const [optionalFoods, setOptionalFoods] = useState([]);
   const [foodMarkings, setFoodMarkings] = useState<any>({});
-  const [foodCategories, setFoodCategories] = useState<FoodsCategories[]>([]);
+  const [foodCategories, setFoodCategories] = useState<DatabaseTypes.FoodsCategories[]>([]);
   const [optionalFoodMarkings, setOptionalFoodMarkings] = useState<any>({});
   const [mainFoodCategories, setMainFoodCategories] = useState<any>({});
   const [optionalFoodCategories, setOptionalFoodCategories] = useState<any>({});
@@ -144,7 +139,7 @@ const index = () => {
     try {
       const result = (await foodCategoriesHelper.fetchFoodCategories(
         {}
-      )) as FoodsCategories[];
+      )) as DatabaseTypes.FoodsCategories[];
       if (result) {
         dispatch({ type: SET_FOOD_CATEGORIES, payload: result });
       }
@@ -199,7 +194,7 @@ const index = () => {
             attributeIds.map(async (id: string) => {
               const attr = (await foodAttributesHelper.fetchFoodAttributeById(
                 id
-              )) as FoodsAttributes;
+              )) as DatabaseTypes.FoodsAttributes;
               const title = attr?.translations
                 ? getFoodAttributesTranslation(attr.translations, language)
                 : '';
@@ -228,7 +223,7 @@ const index = () => {
     try {
       const buildingsData = (await buildingsHelper.fetchBuildings(
         {}
-      )) as Buildings[];
+      )) as DatabaseTypes.Buildings[];
       const buildings = buildingsData || [];
 
       const buildingsDict = buildings.reduce(
@@ -241,7 +236,7 @@ const index = () => {
 
       const canteensData = (await canteenHelper.fetchCanteens(
         {}
-      )) as Canteens[];
+      )) as DatabaseTypes.Canteens[];
 
       const filteredCanteens = canteensData.filter((canteen) => {
         const status = canteen.status || '';
@@ -286,7 +281,7 @@ const index = () => {
 
   const fetchSelectedCanteen = useCallback(async () => {
     if (!canteens_id) return;
-    let canteensData: Canteens[] = [];
+    let canteensData: DatabaseTypes.Canteens[] = [];
     if (!canteens || canteens.length === 0) {
       canteensData = await getCanteensWithBuildings();
     } else {
@@ -487,7 +482,7 @@ const index = () => {
   const fetchCurrentFoodCategory = async (
     foodList: any,
     setCategoryState: any,
-    foodCategories: FoodsCategories[]
+    foodCategories: DatabaseTypes.FoodsCategories[]
   ) => {
     if (!foodList) return;
 
@@ -496,7 +491,7 @@ const index = () => {
     for (const food of foodList) {
       if (food?.food?.food_category) {
         const category = foodCategories.find(
-          (cat: FoodsCategories) => cat.id === food?.food?.food_category
+          (cat: DatabaseTypes.FoodsCategories) => cat.id === food?.food?.food_category
         );
         if (category) {
           newCategories[food.id] = category;

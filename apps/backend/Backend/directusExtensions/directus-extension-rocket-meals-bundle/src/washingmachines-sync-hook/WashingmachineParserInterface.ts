@@ -1,6 +1,6 @@
-import {Washingmachines} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 
-export type WashingmachinesTypeForParserOmmited = Omit<Washingmachines, 'id' | 'user_created' | 'user_updated' |"status" | "date_stated" | "external_identifier"> & {
+export type WashingmachinesTypeForParserOmmited = Omit<DatabaseTypes.Washingmachines, 'id' | 'user_created' | 'user_updated' |"status" | "date_stated" | "external_identifier"> & {
     external_identifier: string
 }
 export type WashingmachinesTypeForParser = {

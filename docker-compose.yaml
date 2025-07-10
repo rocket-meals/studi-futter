@@ -1,26 +1,38 @@
 services:
+  prepare-data:
+    image: alpine:3.18
+    volumes:
+      - ./data:/data
+    working_dir: /data
+    entrypoint: ["/bin/sh", "-c", "./permissionDatabase.sh"]
+
   traefik:
     env_file:
       - .env
     extends:
       service: traefik
-      file: proxy/docker-compose.yaml
+      file: apps/proxy/docker-compose.yaml
 
   rocket-meals-directus:
     env_file:
       - .env
     depends_on:
+      prepare-data:
+        condition: service_completed_successfully
       rocket-meals-database:
         condition: service_healthy
       rocket-meals-cache:
         condition: service_started
     extends:
       service: rocket-meals-directus
-      file: backend/docker-compose.yaml
+      file: apps/backend/docker-compose.yaml
 
   rocket-meals-database:
     env_file:
       - .env
+    depends_on:
+      prepare-data:
+        condition: service_completed_successfully
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U directus" ]
       interval: 10s
@@ -28,21 +40,24 @@ services:
       retries: 5
     extends:
       service: rocket-meals-database
-      file: backend/docker-compose.yaml
+      file: apps/backend/docker-compose.yaml
 
   rocket-meals-database-backup:
     env_file:
       - .env
+    depends_on:
+      prepare-data:
+        condition: service_completed_successfully
     extends:
       service: rocket-meals-database-backup
-      file: backend/docker-compose.yaml
+      file: apps/backend/docker-compose.yaml
 
   rocket-meals-cache:
     env_file:
       - .env
     extends:
       service: rocket-meals-cache
-      file: backend/docker-compose.yaml
+      file: apps/backend/docker-compose.yaml
     networks:
       - directus_network
 

@@ -1,4 +1,4 @@
-import {WorkflowsRuns} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
 
@@ -12,11 +12,11 @@ export enum WorkflowEnum {
 
 export class WorkflowRunLogger {
 
-    private workflowRun: WorkflowsRuns;
+    private workflowRun: DatabaseTypes.WorkflowsRuns;
     private myDatabaseHelper: MyDatabaseHelper;
     private currentLog: string = "";
 
-    constructor(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper) {
+    constructor(workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper) {
         this.workflowRun = workflowRun;
         this.myDatabaseHelper = myDatabaseHelper;
         this.currentLog = workflowRun.log || "";
@@ -41,8 +41,8 @@ export class WorkflowRunLogger {
         await this.setLog(this.workflowRun.id, this.currentLog);
     }
 
-    getFinalLogWithStateAndParams(workflowrun: Partial<WorkflowsRuns>): Partial<WorkflowsRuns> {
-        let result: Partial<WorkflowsRuns> = {
+    getFinalLogWithStateAndParams(workflowrun: Partial<DatabaseTypes.WorkflowsRuns>): Partial<DatabaseTypes.WorkflowsRuns> {
+        let result: Partial<DatabaseTypes.WorkflowsRuns> = {
             ...workflowrun,
             ...{
                 log: this.currentLog
@@ -59,9 +59,9 @@ export interface WorkflowRunJobInterface {
     getDeleteFinishedWorkflowRunsAfterDays(): number | undefined;
     getDeleteFailedWorkflowRunsAfterDays(): number | undefined;
 
-    handleWorkflowRunsWantToRun(modifiableInput: Partial<WorkflowsRuns>, workflowruns: Partial<WorkflowsRuns>[], alreadyRunningWorkflowruns: WorkflowsRuns[]): ResultHandleWorkflowRunsWantToRun;
+    handleWorkflowRunsWantToRun(modifiableInput: Partial<DatabaseTypes.WorkflowsRuns>, workflowruns: Partial<DatabaseTypes.WorkflowsRuns>[], alreadyRunningWorkflowruns: DatabaseTypes.WorkflowsRuns[]): ResultHandleWorkflowRunsWantToRun;
 
-    runJob(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<WorkflowsRuns>>;
+    runJob(workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<DatabaseTypes.WorkflowsRuns>>;
 
 }
 
@@ -82,9 +82,9 @@ export abstract class SingleWorkflowRun implements WorkflowRunJobInterface {
      * Ensures that only one workflow run is running at a time.
      */
     handleWorkflowRunsWantToRun(
-        modifiableInput: Partial<WorkflowsRuns>,
-        workflowruns: Partial<WorkflowsRuns>[],
-        alreadyRunningWorkflowruns: WorkflowsRuns[]
+        modifiableInput: Partial<DatabaseTypes.WorkflowsRuns>,
+        workflowruns: Partial<DatabaseTypes.WorkflowsRuns>[],
+        alreadyRunningWorkflowruns: DatabaseTypes.WorkflowsRuns[]
     ): ResultHandleWorkflowRunsWantToRun {
 
         let answer: ResultHandleWorkflowRunsWantToRun = {
@@ -113,7 +113,7 @@ export abstract class SingleWorkflowRun implements WorkflowRunJobInterface {
      * but they are left abstract so subclasses must implement them.
      */
     abstract getWorkflowId(): string;
-    abstract runJob(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<WorkflowsRuns>>;
+    abstract runJob(workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<DatabaseTypes.WorkflowsRuns>>;
 
     getDeleteFailedWorkflowRunsAfterDays(): number | undefined {
         return undefined;

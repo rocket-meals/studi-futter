@@ -22,7 +22,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { isWeb } from '@/constants/Constants';
 import DeviceMock from '@/components/DeviceMock/DeviceMock';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { Wikis } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
 import { RootState } from '@/redux/reducer';
 import { TranslationKeys } from '@/locales/keys';
@@ -31,7 +31,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 const index = () => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
-  const [wiki, setWiki] = useState<Wikis>();
+  const [wiki, setWiki] = useState<DatabaseTypes.Wikis>();
   const [loading, setLoading] = useState(true);
   const { wikis, language, primaryColor } = useSelector(
     (state: RootState) => state.settings

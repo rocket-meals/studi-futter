@@ -1,11 +1,4 @@
-import {
-  Foodoffers,
-  Foods,
-  Markings,
-  MarkingsGroups,
-  FoodsCategories,
-  FoodoffersCategories,
-} from "@/constants/types";
+import { DatabaseTypes } from 'repo-depkit-common';
 
 export const normalizeSort = (value: any): number => {
   return value === undefined || value === null || value === "" ? Infinity : value;
@@ -32,7 +25,7 @@ export const sortBySortField = <T extends { sort?: number | null }>(
 
 import { getFoodName, isRatingNegative, isRatingPositive } from "./resourceHelper";
 
-export function sortByFoodName(foodOffers: Foodoffers[], languageCode: string) {
+export function sortByFoodName(foodOffers: DatabaseTypes.Foodoffers[], languageCode: string) {
     foodOffers.sort((a, b) => {
       let nameA = getFoodName(a.food, languageCode);
       let nameB = getFoodName(b.food, languageCode);
@@ -48,8 +41,8 @@ export function sortByFoodName(foodOffers: Foodoffers[], languageCode: string) {
 }
 
 export function sortByFoodCategory(
-  foodOffers: Foodoffers[],
-  categories: FoodsCategories[],
+  foodOffers: DatabaseTypes.Foodoffers[],
+  categories: DatabaseTypes.FoodsCategories[],
     languageCode: string
 ) {
   // 1) Alphabetisch (am wenigsten wichtig)
@@ -62,8 +55,8 @@ export function sortByFoodCategory(
 }
 
 function sortByFoodCategoryOnly(
-    foodOffers: Foodoffers[],
-    categories: FoodsCategories[]
+    foodOffers: DatabaseTypes.Foodoffers[],
+    categories: DatabaseTypes.FoodsCategories[]
 ) {
   const sortMap = new Map<string, number>();
   categories.forEach((cat) => {
@@ -93,8 +86,8 @@ function sortByFoodCategoryOnly(
 }
 
 export function sortByFoodOfferCategory(
-  foodOffers: Foodoffers[],
-  categories: FoodoffersCategories[],
+  foodOffers: DatabaseTypes.Foodoffers[],
+  categories: DatabaseTypes.FoodoffersCategories[],
     languageCode: string
 ) {
     // 1) Alphabetisch (am wenigsten wichtig)
@@ -107,8 +100,8 @@ export function sortByFoodOfferCategory(
 }
 
 function sortByFoodOfferCategoryOnly(
-    foodOffers: Foodoffers[],
-    categories: FoodoffersCategories[]
+    foodOffers: DatabaseTypes.Foodoffers[],
+    categories: DatabaseTypes.FoodoffersCategories[]
 ) {
   const sortMap = new Map<string, number>();
   categories.forEach((cat) => {
@@ -138,7 +131,7 @@ function sortByFoodOfferCategoryOnly(
 }
 
   // Working Own Favorite Sorting
-export function sortByOwnFavorite(foodOffers: Foodoffers[], ownFeedBacks: any) {
+export function sortByOwnFavorite(foodOffers: DatabaseTypes.Foodoffers[], ownFeedBacks: any) {
     const feedbackMap = new Map(
       ownFeedBacks.map((feedback: any) => [feedback.food, feedback.rating])
     );
@@ -161,10 +154,10 @@ export function sortByOwnFavorite(foodOffers: Foodoffers[], ownFeedBacks: any) {
   }
 
   // Working Public Favorite Sorting
-export function sortByPublicFavorite(foodOffers: Foodoffers[]) {
+export function sortByPublicFavorite(foodOffers: DatabaseTypes.Foodoffers[]) {
     foodOffers.sort((a, b) => {
-      const aFood: Foods = a.food || {};
-      const bFood: Foods = b.food || {};
+      const aFood: DatabaseTypes.Foods = a.food || {};
+      const bFood: DatabaseTypes.Foods = b.food || {};
       const getRatingCategory = (rating: number | null | undefined) => {
         if (isRatingNegative(rating)) return "negative";
         if (rating === null || rating === undefined) return "null";
@@ -187,12 +180,12 @@ export function sortByPublicFavorite(foodOffers: Foodoffers[]) {
   }
 
 
-export function sortByEatingHabits(foodOffers: Foodoffers[], profileMarkingsData: any) {
+export function sortByEatingHabits(foodOffers: DatabaseTypes.Foodoffers[], profileMarkingsData: any) {
     const profileMarkingsMap = new Map(
       profileMarkingsData?.map((marking: any) => [marking.markings_id, marking])
     );
     foodOffers.sort((a, b) => {
-      const calculateSortValue = (foodOffer: Foodoffers) => {
+      const calculateSortValue = (foodOffer: DatabaseTypes.Foodoffers) => {
         let sortValue = 0;
         const likeSortWeight = 1;
         const dislikeSortWeight = likeSortWeight * 2;
@@ -225,7 +218,7 @@ export function sortByEatingHabits(foodOffers: Foodoffers[], profileMarkingsData
   }
 
 
-export function sortMarkingsByGroup(markings: Markings[], markingGroups: MarkingsGroups[]): Markings[] {
+export function sortMarkingsByGroup(markings: DatabaseTypes.Markings[], markingGroups: DatabaseTypes.MarkingsGroups[]): DatabaseTypes.Markings[] {
   if (!markings || !markingGroups) {
     return markings || [];
   }
@@ -233,7 +226,7 @@ export function sortMarkingsByGroup(markings: Markings[], markingGroups: Marking
   const sortedGroups = sortBySortField(markingGroups);
 
   // Create a map for quick lookup of each marking's group
-  const markingToGroupMap = new Map<string, MarkingsGroups>();
+  const markingToGroupMap = new Map<string, DatabaseTypes.MarkingsGroups>();
   sortedGroups.forEach((group) => {
     group.markings.forEach((markingId) => {
       if (typeof markingId === 'string') {
@@ -245,13 +238,13 @@ export function sortMarkingsByGroup(markings: Markings[], markingGroups: Marking
   });
 
   // Helper function to get group sort value
-  const getGroupSort = (marking: Markings): number => {
+  const getGroupSort = (marking: DatabaseTypes.Markings): number => {
     const group = markingToGroupMap.get(marking.id);
     return normalizeSort(group?.sort);
   };
 
   // Helper function to get marking's own sort value
-  const getMarkingSort = (marking: Markings): number => {
+  const getMarkingSort = (marking: DatabaseTypes.Markings): number => {
     return normalizeSort(marking.sort);
   };
 
@@ -279,12 +272,12 @@ export function sortMarkingsByGroup(markings: Markings[], markingGroups: Marking
 }
 
 export function intelligentSort(
-    foodOffers: Foodoffers[],
+    foodOffers: DatabaseTypes.Foodoffers[],
     ownFeedbacks: any[],
     profileMarkings: any[],
     languageCode: string,
-    foodCategories: FoodsCategories[] = [],
-    foodOfferCategories: FoodoffersCategories[] = []
+    foodCategories: DatabaseTypes.FoodsCategories[] = [],
+    foodOfferCategories: DatabaseTypes.FoodoffersCategories[] = []
 ) {
   // 1) Alphabetisch (am wenigsten wichtig)
   sortByFoodName(foodOffers, languageCode);

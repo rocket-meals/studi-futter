@@ -10,7 +10,7 @@ import {FoodParserWithCustomerAdaptions} from "./FoodParserWithCustomerAdaptions
 import {EnvVariableHelper} from "../helpers/EnvVariableHelper";
 import {WorkflowScheduleHelper} from "../workflows-runs-hook";
 import {SingleWorkflowRun, WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
-import {WorkflowsRuns} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
 
 const SCHEDULE_NAME = "food_parse";
@@ -74,7 +74,7 @@ class FoodParseWorkflow extends SingleWorkflowRun {
         return "food-sync";
     }
 
-    async runJob(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<WorkflowsRuns>> {
+    async runJob(workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<DatabaseTypes.WorkflowsRuns>> {
         await logger.appendLog("Starting food parsing");
 
         try {

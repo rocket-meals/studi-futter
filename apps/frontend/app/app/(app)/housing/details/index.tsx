@@ -18,7 +18,7 @@ import Information from '@/components/Information';
 import BuildingDescription from '@/components/BuildingDescription';
 import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useSelector } from 'react-redux';
-import { Apartments } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import WashingMachines from '@/components/WashingMachines';
 import { myContrastColor } from '@/helper/colorHelper';
@@ -51,7 +51,7 @@ const details = () => {
   );
   const [activeTab, setActiveTab] = useState('information');
   const [loading, setLoading] = useState(false);
-  const [apartmentDetails, setApartmentDetails] = useState<Apartments | null>(
+  const [apartmentDetails, setApartmentDetails] = useState<DatabaseTypes.Apartments | null>(
     null
   );
   const [screenWidth, setScreenWidth] = useState(

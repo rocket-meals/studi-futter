@@ -1,8 +1,9 @@
-import {CollectionNames} from "../CollectionNames";
-import {AppSettings} from "../../databaseTypes/types";
+import {CollectionNames} from "repo-depkit-common";
+import {DatabaseTypes} from "repo-depkit-common"
+
 import {ApiContext} from "../ApiContext";
 import {ItemsServiceCreator} from "../ItemsServiceCreator";
-import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
+import {EventContext} from "@directus/types";
 
 export class AppSettingsHelper {
 
@@ -14,9 +15,9 @@ export class AppSettingsHelper {
         this.eventContext = eventContext
     }
 
-    async getAppSettings(): Promise<Partial<AppSettings> | undefined | null> {
+    async getAppSettings(): Promise<Partial<DatabaseTypes.AppSettings> | undefined | null> {
         const itemsServiceCreator = new ItemsServiceCreator(this.apiExtensionContext);
-        const itemsService = await itemsServiceCreator.getItemsService<AppSettings>(CollectionNames.APP_SETTINGS);
+        const itemsService = await itemsServiceCreator.getItemsService<DatabaseTypes.AppSettings>(CollectionNames.APP_SETTINGS);
         return await itemsService.readSingleton({});
     }
 

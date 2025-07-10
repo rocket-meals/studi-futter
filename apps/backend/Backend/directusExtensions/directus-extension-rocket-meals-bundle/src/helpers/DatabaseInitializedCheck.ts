@@ -1,4 +1,4 @@
-import {CollectionNames, getAllCollectionNames} from "./CollectionNames";
+import {CollectionNames, getAllCollectionNames} from "repo-depkit-common";
 import {ApiContext} from "./ApiContext";
 
 /**

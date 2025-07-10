@@ -1,6 +1,6 @@
 // small jest test
 import {describe, expect, it} from '@jest/globals';
-import {Foods, FoodsFeedbacks} from "../../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 import {FoodRatingCalculator} from "../FoodRatingCalculator";
 
 
@@ -15,13 +15,13 @@ describe("FoodRatingCalculator Test", () => {
     // Medium rating
     it("medium feedback rating", async () => {
         const rating_value = RATING_VALUE_AVG
-        let foodfeedbacks: Partial<FoodsFeedbacks>[] = [
+        let foodfeedbacks: Partial<DatabaseTypes.FoodsFeedbacks>[] = [
             {
                 rating: rating_value
             }
         ];
 
-        let food: Partial<Foods> = {};
+        let food: Partial<DatabaseTypes.Foods> = {};
 
         let result = FoodRatingCalculator.calculateFoodRating(food, foodfeedbacks);
         expect(result.rating_average).toBe(rating_value);
@@ -31,13 +31,13 @@ describe("FoodRatingCalculator Test", () => {
     // Low rating
     it("low feedback rating", async () => {
         const rating_value = RATING_VALUE_LOW
-        let foodfeedbacks: Partial<FoodsFeedbacks>[] = [
+        let foodfeedbacks: Partial<DatabaseTypes.FoodsFeedbacks>[] = [
             {
                 rating: rating_value
             }
         ];
 
-        let food: Partial<Foods> = {};
+        let food: Partial<DatabaseTypes.Foods> = {};
 
         let result = FoodRatingCalculator.calculateFoodRating(food, foodfeedbacks);
         expect(result.rating_average).toBe(rating_value);
@@ -47,13 +47,13 @@ describe("FoodRatingCalculator Test", () => {
     // High rating
     it("high feedback rating", async () => {
         const rating_value = RATING_VALUE_HIGH
-        let foodfeedbacks: Partial<FoodsFeedbacks>[] = [
+        let foodfeedbacks: Partial<DatabaseTypes.FoodsFeedbacks>[] = [
             {
                 rating: rating_value
             }
         ];
 
-        let food: Partial<Foods> = {};
+        let food: Partial<DatabaseTypes.Foods> = {};
 
         let result = FoodRatingCalculator.calculateFoodRating(food, foodfeedbacks);
         expect(result.rating_average).toBe(rating_value);
@@ -62,9 +62,9 @@ describe("FoodRatingCalculator Test", () => {
 
     // No rating
     it("no feedback rating", async () => {
-        let foodfeedbacks: Partial<FoodsFeedbacks>[] = [];
+        let foodfeedbacks: Partial<DatabaseTypes.FoodsFeedbacks>[] = [];
 
-        let food: Partial<Foods> = {};
+        let food: Partial<DatabaseTypes.Foods> = {};
 
         let result = FoodRatingCalculator.calculateFoodRating(food, foodfeedbacks);
         expect(result.rating_average).toBe(null);
@@ -76,7 +76,7 @@ describe("FoodRatingCalculator Test", () => {
         const rating_value1 = RATING_VALUE_LOW
         const rating_value2 = RATING_VALUE_HIGH
 
-        let foodfeedbacks: Partial<FoodsFeedbacks>[] = [
+        let foodfeedbacks: Partial<DatabaseTypes.FoodsFeedbacks>[] = [
             {
                 rating: rating_value1
             },
@@ -85,7 +85,7 @@ describe("FoodRatingCalculator Test", () => {
             }
         ];
 
-        let food: Partial<Foods> = {};
+        let food: Partial<DatabaseTypes.Foods> = {};
 
         let result = FoodRatingCalculator.calculateFoodRating(food, foodfeedbacks);
         expect(result.rating_average).toBe((rating_value1 + rating_value2) / 2);
@@ -94,13 +94,13 @@ describe("FoodRatingCalculator Test", () => {
 
     // Invalid rating is ignored above max
     it("invalid feedback rating above max", async () => {
-        let foodfeedbacks: Partial<FoodsFeedbacks>[] = [
+        let foodfeedbacks: Partial<DatabaseTypes.FoodsFeedbacks>[] = [
             {
                 rating: RATING_VALUE_INVALID_HIGH
             }
         ];
 
-        let food: Partial<Foods> = {};
+        let food: Partial<DatabaseTypes.Foods> = {};
 
         let result = FoodRatingCalculator.calculateFoodRating(food, foodfeedbacks);
         expect(result.rating_average).toBe(null);
@@ -109,13 +109,13 @@ describe("FoodRatingCalculator Test", () => {
 
     // Invalid rating is ignored below min
     it("invalid feedback rating below min", async () => {
-        let foodfeedbacks: Partial<FoodsFeedbacks>[] = [
+        let foodfeedbacks: Partial<DatabaseTypes.FoodsFeedbacks>[] = [
             {
                 rating: RATING_VALUE_INVALID_LOW
             }
         ];
 
-        let food: Partial<Foods> = {};
+        let food: Partial<DatabaseTypes.Foods> = {};
 
         let result = FoodRatingCalculator.calculateFoodRating(food, foodfeedbacks);
         expect(result.rating_average).toBe(null);
@@ -127,7 +127,7 @@ describe("FoodRatingCalculator Test", () => {
         const rating_value1 = RATING_VALUE_INVALID_LOW
         const rating_value2 = RATING_VALUE_INVALID_HIGH
 
-        let foodfeedbacks: Partial<FoodsFeedbacks>[] = [
+        let foodfeedbacks: Partial<DatabaseTypes.FoodsFeedbacks>[] = [
             {
                 rating: rating_value1
             },
@@ -136,7 +136,7 @@ describe("FoodRatingCalculator Test", () => {
             }
         ];
 
-        let food: Partial<Foods> = {};
+        let food: Partial<DatabaseTypes.Foods> = {};
 
         let result = FoodRatingCalculator.calculateFoodRating(food, foodfeedbacks);
         expect(result.rating_average).toBe(null);
@@ -149,7 +149,7 @@ describe("FoodRatingCalculator Test", () => {
         const rating_value2_invalid = RATING_VALUE_INVALID_HIGH
         const rating_value3_valid = RATING_VALUE_AVG
 
-        let foodfeedbacks: Partial<FoodsFeedbacks>[] = [
+        let foodfeedbacks: Partial<DatabaseTypes.FoodsFeedbacks>[] = [
             {
                 rating: rating_value1_invalid
             },
@@ -161,7 +161,7 @@ describe("FoodRatingCalculator Test", () => {
             }
         ];
 
-        let food: Partial<Foods> = {};
+        let food: Partial<DatabaseTypes.Foods> = {};
 
         let result = FoodRatingCalculator.calculateFoodRating(food, foodfeedbacks);
         expect(result.rating_average).toBe(rating_value3_valid);
@@ -173,7 +173,7 @@ describe("FoodRatingCalculator Test", () => {
         const rating_value1 = RATING_VALUE_LOW
         const rating_value2 = RATING_VALUE_HIGH
 
-        let foodfeedbacks: Partial<FoodsFeedbacks>[] = [
+        let foodfeedbacks: Partial<DatabaseTypes.FoodsFeedbacks>[] = [
             {
                 rating: rating_value1
             },
@@ -187,7 +187,7 @@ describe("FoodRatingCalculator Test", () => {
         const rating_value_legacy = 2.5;
         const rating_amount_legacy = 2;
 
-        let food: Partial<Foods> = {
+        let food: Partial<DatabaseTypes.Foods> = {
             rating_average_legacy: rating_value_legacy,
             rating_amount_legacy: rating_amount_legacy
         };
@@ -227,7 +227,7 @@ describe("FoodRatingCalculator Test", () => {
 
         let valid_rating_sum = 0;
         let valid_rating_amount = 0;
-        let foodfeedbacks: Partial<FoodsFeedbacks>[] = [];
+        let foodfeedbacks: Partial<DatabaseTypes.FoodsFeedbacks>[] = [];
         for(let i = 0; i < amount_feedbacks; i++){
             const random_index = Math.floor(Math.random() * rating_values_valid_and_invalid.length);
             const rating_value = rating_values_valid_and_invalid[random_index];
@@ -242,7 +242,7 @@ describe("FoodRatingCalculator Test", () => {
             }
         }
 
-        let food: Partial<Foods> = {};
+        let food: Partial<DatabaseTypes.Foods> = {};
 
         let result = FoodRatingCalculator.calculateFoodRating(food, foodfeedbacks);
         expect(result.rating_average).toBe(valid_rating_amount > 0 ? valid_rating_sum / valid_rating_amount : null);

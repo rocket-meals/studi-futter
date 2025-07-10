@@ -14,17 +14,17 @@ import {DirectusFilesAssetHelper} from "../DirectusFilesAssetHelper";
 import {MarkdownHelper} from "../html/MarkdownHelper";
 import {MyDatabaseTestableHelperInterface} from "../MyDatabaseHelperInterface";
 import {TranslationBackendKeys, TranslationsBackend} from "../TranslationsBackend";
-import {DateHelper, DateHelperTimezone} from "../DateHelper";
+import {DateHelper, DateHelperTimezone} from "repo-depkit-common";
 import {EnvVariableHelper} from "../EnvVariableHelper";
 import {HashHelper} from "../HashHelper";
-import {DirectusFiles} from "../../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 
 type FormFieldExampleData = {
     value_string?: string | null,
     value_number?: number | null,
     value_boolean?: boolean | null,
     value_date?: string | null,
-    value_image?: DirectusFiles | string | null,
+    value_image?: DatabaseTypes.DirectusFiles | string | null,
     value_files?: FormExtractFormAnswerValueFileSingleOrString[] | null,
     value_custom?: string | null,
 }
@@ -110,7 +110,7 @@ export class FormHelper {
         value_number?: number | null,
         value_boolean?: boolean | null,
         value_date?: string | null,
-        value_image?: DirectusFiles | string | null,
+        value_image?: DatabaseTypes.DirectusFiles | string | null,
         value_files?: FormExtractFormAnswerValueFileSingleOrString[] | null,
         value_custom?: string | null,
     }): FormExtractFormAnswer {
@@ -121,7 +121,7 @@ export class FormHelper {
         };
         let value_image = null;
         if(data.value_image){
-            value_image = data.value_image as DirectusFiles;
+            value_image = data.value_image as DatabaseTypes.DirectusFiles;
         };
 
         return {
@@ -192,7 +192,7 @@ export class FormHelper {
         return markdownContent;
     }
 
-    private static generateMarkdownForTypeImageValue(fieldName: string, value_image: DirectusFiles | string | null | undefined, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): string {
+    private static generateMarkdownForTypeImageValue(fieldName: string, value_image: DatabaseTypes.DirectusFiles | string | null | undefined, myDatabaseHelperInterface: MyDatabaseTestableHelperInterface): string {
         let assetUrl: undefined | string = undefined;
         if(value_image) {
             if (typeof value_image === "string" && value_image.startsWith("http")) {

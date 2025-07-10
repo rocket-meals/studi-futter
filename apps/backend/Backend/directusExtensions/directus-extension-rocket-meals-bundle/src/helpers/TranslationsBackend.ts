@@ -1,11 +1,3 @@
-import {PrimaryKey} from "@directus/types";
-import {Languages} from "../databaseTypes/types";
-import {ApiContext} from "./ApiContext";
-import {ItemsServiceCreator} from "./ItemsServiceCreator";
-import {EventContext} from "@directus/extensions/node_modules/@directus/types/dist/events";
-import {MyTimers} from "./MyTimer";
-
-
 export class LanguageCodes {
     public static readonly _codes = {
         de: "de-DE" as const,

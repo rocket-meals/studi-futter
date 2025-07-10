@@ -1,15 +1,15 @@
 // small jest test
 import {describe, it} from '@jest/globals';
-import {CanteenFoodFeedbackReportSchedules} from "../../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common";
 import {ReportSchedule} from "../ReportSchedule";
 
 describe("TestFoodFeedbackReportScheduleHaveTimeSettingsChanged Test", () => {
 
     it("Payload has no time settings passed", async () => {
-        const currentItem: Partial<CanteenFoodFeedbackReportSchedules> = {
+        const currentItem: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules> = {
             send_report_at_hh_mm: "12:00",
         };
-        const modifiable_payload: Partial<CanteenFoodFeedbackReportSchedules> = {
+        const modifiable_payload: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules> = {
 
         };
 
@@ -18,10 +18,10 @@ describe("TestFoodFeedbackReportScheduleHaveTimeSettingsChanged Test", () => {
     });
 
     it("Payload has time settings passed", async () => {
-        const currentItem: Partial<CanteenFoodFeedbackReportSchedules> = {
+        const currentItem: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules> = {
             send_report_at_hh_mm: "12:00",
         };
-        const modifiable_payload: Partial<CanteenFoodFeedbackReportSchedules> = {
+        const modifiable_payload: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules> = {
             send_report_at_hh_mm: "12:00",
         };
 
@@ -30,10 +30,10 @@ describe("TestFoodFeedbackReportScheduleHaveTimeSettingsChanged Test", () => {
     });
 
     it("Payload has time settings passed, but they are different", async () => {
-        const currentItem: Partial<CanteenFoodFeedbackReportSchedules> = {
+        const currentItem: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules> = {
             send_report_at_hh_mm: "12:00",
         };
-        const modifiable_payload: Partial<CanteenFoodFeedbackReportSchedules> = {
+        const modifiable_payload: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules> = {
             send_report_at_hh_mm: "13:00",
         };
 
@@ -42,10 +42,10 @@ describe("TestFoodFeedbackReportScheduleHaveTimeSettingsChanged Test", () => {
     });
 
     it("Payload has time settings passed, but currentItem has no time settings", async () => {
-        const currentItem: Partial<CanteenFoodFeedbackReportSchedules> = {
+        const currentItem: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules> = {
             send_report_at_hh_mm: null,
         };
-        const modifiable_payload: Partial<CanteenFoodFeedbackReportSchedules> = {
+        const modifiable_payload: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules> = {
             send_report_at_hh_mm: "13:00",
         };
 

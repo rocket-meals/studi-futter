@@ -4,7 +4,7 @@ import { Stack } from 'expo-router';
 import CustomStackHeader from '@/components/CustomStackHeader/CustomStackHeader';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
-import { AppSettings, Markings, MarkingsGroups } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
 import { MarkingHelper } from '@/redux/actions/Markings/Markings';
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,10 +26,10 @@ export default function MonitorLayout() {
   const { appSettings } = useSelector((state: RootState) => state.settings);
 
   const getMarkings = async () => {
-    const markingResult = (await markingHelper.fetchMarkings({})) as Markings[];
+    const markingResult = (await markingHelper.fetchMarkings({})) as DatabaseTypes.Markings[];
     const markingGroupResult = (await markingGroupsHelper.fetchMarkingGroups(
       {}
-    )) as MarkingsGroups[];
+    )) as DatabaseTypes.MarkingsGroups[];
 
     // Use the sortMarkingsByGroup function to sort markings
     const sortedMarkings = sortMarkingsByGroup(markingResult, markingGroupResult);
@@ -40,7 +40,7 @@ export default function MonitorLayout() {
   const getAppSettings = async () => {
     const result = (await appSettingsHelper.fetchAppSettings(
       {}
-    )) as AppSettings;
+    )) as DatabaseTypes.AppSettings;
     if (result) {
       dispatch({ type: SET_APP_SETTINGS, payload: result });
     }

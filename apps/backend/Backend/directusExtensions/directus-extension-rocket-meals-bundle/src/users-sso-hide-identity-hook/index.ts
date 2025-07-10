@@ -1,8 +1,8 @@
 import {defineHook} from '@directus/extensions-sdk';
 import {EventHelper} from "../helpers/EventHelper";
-import {DirectusUsers} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 
-function hasDifferentProviderThanDefault(partialUserInput: Partial<DirectusUsers>){
+function hasDifferentProviderThanDefault(partialUserInput: Partial<DatabaseTypes.DirectusUsers>){
 	const provider = partialUserInput.provider;
 	if(!provider){ // normally no provider is passed on creation as it is the default value
 		return false;
@@ -16,7 +16,7 @@ function hasDifferentProviderThanDefault(partialUserInput: Partial<DirectusUsers
 export default defineHook(async ({action, filter}, apiContext) => {
 
 	filter(EventHelper.USERS_CREATE_EVENT, async (input, meta, context) => {
-		const partialUserInput = input as Partial<DirectusUsers>
+		const partialUserInput = input as Partial<DatabaseTypes.DirectusUsers>
 		if(hasDifferentProviderThanDefault(partialUserInput)){
 			partialUserInput.first_name = null;
 			partialUserInput.last_name = null;

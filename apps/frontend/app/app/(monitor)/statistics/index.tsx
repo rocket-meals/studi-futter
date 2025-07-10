@@ -15,7 +15,7 @@ import {
   SET_MOST_DISLIKED_FOODS,
   SET_MOST_LIKED_FOODS,
 } from '@/redux/Types/types';
-import { Foods } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
 import ImageManagementSheet from '@/components/ImageManagementSheet/ImageManagementSheet';
@@ -116,7 +116,7 @@ const index = () => {
           </Text>
           <ScrollView>
             {mostLikedFoods &&
-              mostLikedFoods?.map((item: Foods) => (
+              mostLikedFoods?.map((item: DatabaseTypes.Foods) => (
                 <StatisticsCard
                   key={item.id}
                   food={item}
@@ -133,7 +133,7 @@ const index = () => {
           </Text>
           <ScrollView>
             {mostDislikedFoods &&
-              mostDislikedFoods?.map((item: Foods) => (
+              mostDislikedFoods?.map((item: DatabaseTypes.Foods) => (
                 <StatisticsCard
                   key={item.id}
                   food={item}

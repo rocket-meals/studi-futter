@@ -1,16 +1,16 @@
-import {FoodsCategories, Markings, MarkingsExclusions} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 
-export type DictMarkingsExclusions = Record<string, MarkingsExclusions>;
+export type DictMarkingsExclusions = Record<string, DatabaseTypes.MarkingsExclusions>;
 
 export type MarkingWithIdAndExclusionRulesOnly = {
     id: string,
-    excluded_by_markings: string[] | MarkingsExclusions[] | number[]
+    excluded_by_markings: string[] | DatabaseTypes.MarkingsExclusions[] | number[]
     [key: string]: any
 }
 
 export class MarkingFilterHelper{
 
-    static getDictMarkingsExclusions(markingsExclusions: MarkingsExclusions[]): DictMarkingsExclusions{
+    static getDictMarkingsExclusions(markingsExclusions: DatabaseTypes.MarkingsExclusions[]): DictMarkingsExclusions{
         let dictMarkingsExclusions: DictMarkingsExclusions = {};
         for(let markingExclusion of markingsExclusions){
             dictMarkingsExclusions[markingExclusion.id] = markingExclusion;
@@ -58,7 +58,7 @@ export class MarkingFilterHelper{
         // check what type the field excluded_by_markings is
         // if it is an array of strings, return it
         // if it is an array of objects, return the ids of the objects
-        let markingExclusionRulesForMarking = marking.excluded_by_markings as any[] | MarkingsExclusions[];
+        let markingExclusionRulesForMarking = marking.excluded_by_markings as any[] | DatabaseTypes.MarkingsExclusions[];
         const isArrayOfStringsOrNumbers = markingExclusionRulesForMarking.every((item) => {
             return typeof item === "string" || typeof item === "number";
         });

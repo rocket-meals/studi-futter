@@ -4,7 +4,7 @@ import {StudentenwerkOsnabrueckWashingmachineParser} from "../StudentenwerkOsnab
 import axios from "axios";
 import path from "path";
 import fs from "fs";
-import {DateHelper} from "../../../helpers/DateHelper";
+import {DateHelper} from "repo-depkit-common";
 
 const xml = fs.readFileSync(path.resolve(__dirname, './getAllTerminals.xml'), 'utf8');
 const html = fs.readFileSync(path.resolve(__dirname, './getAllTerminalsWeb.html'), 'utf8');

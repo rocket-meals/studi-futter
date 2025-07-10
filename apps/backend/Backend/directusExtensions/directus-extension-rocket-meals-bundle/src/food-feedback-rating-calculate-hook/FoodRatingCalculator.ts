@@ -1,4 +1,4 @@
-import {Foods, FoodsFeedbacks} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 import {ApiContext} from "../helpers/ApiContext";
 import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
 
@@ -53,7 +53,7 @@ export class FoodRatingCalculator{
 		return null;
 	}
 
-	static calculateFoodRating(food: Partial<Foods>, food_feedbacks: Partial<FoodsFeedbacks>[]){
+	static calculateFoodRating(food: Partial<DatabaseTypes.Foods>, food_feedbacks: Partial<DatabaseTypes.FoodsFeedbacks>[]){
 		let sum_rating_values = 0;
 		let rating_amount = 0;
 		for(let food_feedback of food_feedbacks){
@@ -94,7 +94,7 @@ export class FoodRatingCalculator{
 	async getFoodFeedbacksForFood(food_id: string){
 		let foodfeedbacksService = this.myDatabaseHelper.getFoodFeedbacksHelper();
 
-		let food_feedbacks: FoodsFeedbacks[] = [];
+		let food_feedbacks: DatabaseTypes.FoodsFeedbacks[] = [];
 		try{
 			food_feedbacks = await foodfeedbacksService.readByQuery({
 				filter: {
@@ -126,14 +126,14 @@ export class FoodRatingCalculator{
 			}
 		}
 
-		let food_feedbacks: FoodsFeedbacks[] = await this.getFoodFeedbacksForFood(food_id);
+		let food_feedbacks: DatabaseTypes.FoodsFeedbacks[] = await this.getFoodFeedbacksForFood(food_id);
 		let filtered_food_feedbacks = food_feedbacks.filter(food_feedback => !ignore_food_feedbacks_ids_dict[food_feedback.id]);
 
 		let {rating_average, rating_amount} = FoodRatingCalculator.calculateFoodRating(food, filtered_food_feedbacks);
 		await this.updateFoodRating(food, rating_average, rating_amount);
 	}
 
-	private async updateFoodRating(food: Foods, rating_average: number | null, rating_amount: number){
+	private async updateFoodRating(food: DatabaseTypes.Foods, rating_average: number | null, rating_amount: number){
 		let foodsService = this.myDatabaseHelper.getFoodsHelper();
 
 		await foodsService.updateOne(food.id, {

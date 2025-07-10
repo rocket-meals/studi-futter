@@ -1,9 +1,9 @@
 import { itemStatus } from '@/constants/Constants';
-import { FoodsCategories } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 
-export class FoodCategoriesHelper extends CollectionHelper<FoodsCategories> {
+export class FoodCategoriesHelper extends CollectionHelper<DatabaseTypes.FoodsCategories> {
   constructor(client?: any) {
     // Pass the collection name and API client
     super('foods_categories', client || ServerAPI.getClient());

@@ -13,7 +13,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
 import { useLanguage } from '@/hooks/useLanguage';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
-import { Buildings } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { BusinessHoursHelper } from '@/redux/actions/BusinessHours/BusinessHours';
 import { BusinessHour, HourSheetProps } from './types';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
@@ -96,7 +96,7 @@ const HourSheet: React.FC<HourSheetProps> = ({ closeSheet }) => {
       setLoading(true);
       const buildingData = (await buildingsHelper.fetchBuildingById(
         selectedCanteen.building as string
-      )) as Buildings;
+      )) as DatabaseTypes.Buildings;
 
       if (!buildingData?.businesshours?.length) {
         setHours(null);

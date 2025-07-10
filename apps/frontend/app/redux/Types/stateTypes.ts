@@ -1,29 +1,4 @@
-import {
-  Apartments,
-  AppElements,
-  AppSettings,
-  Buildings,
-  Businesshours,
-  BusinesshoursGroups,
-  Canteens,
-  CanteensFeedbacksLabels,
-  CanteensFeedbacksLabelsEntries,
-  DirectusUsers,
-  Foodoffers,
-  FoodoffersCategories,
-  FoodsAttributes,
-  FoodsAttributesGroups,
-  FoodsCategories,
-  FoodsFeedbacks,
-  FoodsFeedbacksLabels,
-  FoodsFeedbacksLabelsEntries,
-  FormSubmissions,
-  Markings,
-  News,
-  PopupEvents,
-  Profiles,
-  Wikis,
-} from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import {
   FoodSortOption,
   CampusSortOption,
@@ -31,8 +6,8 @@ import {
 } from '@/constants/SortingEnums';
 
 export interface AuthState {
-  user: DirectusUsers | Record<string, any> | null;
-  profile: Profiles;
+  user: DatabaseTypes.DirectusUsers | Record<string, any> | null;
+  profile: DatabaseTypes.Profiles;
   loggedIn: boolean;
   isManagement: boolean;
   isDevMode: boolean;
@@ -40,26 +15,26 @@ export interface AuthState {
 }
 
 export interface AppElementState {
-  appElements: AppElements[];
+  appElements: DatabaseTypes.AppElements[];
 }
 
 export interface ApartmentsState {
-  apartments: Apartments[];
-  apartmentsLocal: Apartments[];
-  unSortedApartments: Apartments[];
-  apartmentsDict: Record<string, Apartments>;
+  apartments: DatabaseTypes.Apartments[];
+  apartmentsLocal: DatabaseTypes.Apartments[];
+  unSortedApartments: DatabaseTypes.Apartments[];
+  apartmentsDict: Record<string, DatabaseTypes.Apartments>;
 }
 
 export interface CanteensState {
-  canteens: Canteens[];
-  buildings: Buildings[];
-  selectedCanteen: Canteens | null;
+  canteens: DatabaseTypes.Canteens[];
+  buildings: DatabaseTypes.Buildings[];
+  selectedCanteen: DatabaseTypes.Canteens | null;
   selectedCanteenFoodOffers: any[];
-  canteenFoodOffers: Foodoffers[];
-  businessHours: Businesshours[];
-  businessHoursGroups: BusinesshoursGroups[];
-  canteenFeedbackLabels: CanteensFeedbacksLabels[];
-  ownCanteenFeedBackLabelEntries: CanteensFeedbacksLabelsEntries[];
+  canteenFoodOffers: DatabaseTypes.Foodoffers[];
+  businessHours: DatabaseTypes.Businesshours[];
+  businessHoursGroups: DatabaseTypes.BusinesshoursGroups[];
+  canteenFeedbackLabels: DatabaseTypes.CanteensFeedbacksLabels[];
+  ownCanteenFeedBackLabelEntries: DatabaseTypes.CanteensFeedbacksLabelsEntries[];
 }
 
 export interface SettingsState {
@@ -70,25 +45,25 @@ export interface SettingsState {
   apartmentsSortBy: ApartmentSortOption;
   serverInfo: Record<string, any>;
   primaryColor: string;
-  appSettings: AppSettings;
+  appSettings: DatabaseTypes.AppSettings;
   language: string;
   firstDayOfTheWeek: { id: string; name: string };
   drawerPosition: 'left' | 'right';
   wikisPages: any[];
-  wikis: Wikis[];
+  wikis: DatabaseTypes.Wikis[];
   nickNameLocal: string;
   amountColumnsForcard: number;
 }
 
 export interface FoodState {
-  foodFeedbackLabels: FoodsFeedbacksLabels[];
-  ownFoodFeedbacks: FoodsFeedbacks[];
-  ownfoodFeedbackLabelEntries: FoodsFeedbacksLabelsEntries[];
-  markings: Markings[];
+  foodFeedbackLabels: DatabaseTypes.FoodsFeedbacksLabels[];
+  ownFoodFeedbacks: DatabaseTypes.FoodsFeedbacks[];
+  ownfoodFeedbackLabelEntries: DatabaseTypes.FoodsFeedbacksLabelsEntries[];
+  markings: DatabaseTypes.Markings[];
   selectedFoodMarkings: any[];
-  foodCategories: FoodsCategories[];
-  foodOfferCategories: FoodoffersCategories[];
-  markingDetails: Markings;
+  foodCategories: DatabaseTypes.FoodsCategories[];
+  foodOfferCategories: DatabaseTypes.FoodoffersCategories[];
+  markingDetails: DatabaseTypes.Markings;
   mostLikedFoods: any[];
   mostDislikedFoods: any[];
   foodCollection: Record<string, any>;
@@ -96,31 +71,31 @@ export interface FoodState {
   selectedDate: string;
 }
 
-interface ExtendedPopUpEvents extends PopupEvents {
+interface ExtendedPopUpEvents extends DatabaseTypes.PopupEvents {
   isOpen: boolean;
   isCurrent: number;
 }
 
 export interface FoodAttributesState {
-  foodAttributeGroups: FoodsAttributesGroups[];
-  foodAttributes: FoodsAttributes[];
-  foodAttributesDict: Record<string, FoodsAttributes>;
+  foodAttributeGroups: DatabaseTypes.FoodsAttributesGroups[];
+  foodAttributes: DatabaseTypes.FoodsAttributes[];
+  foodAttributesDict: Record<string, DatabaseTypes.FoodsAttributes>;
 }
 
 export interface FormState {
   filterBy: string;
-  formSubmission: FormSubmissions;
+  formSubmission: DatabaseTypes.FormSubmissions;
 }
 
 export interface CampusState {
-  campuses: Buildings[];
-  campusesLocal: Buildings[];
-  unSortedCampuses: Buildings[];
-  campusesDict: Record<string, Buildings>;
+  campuses: DatabaseTypes.Buildings[];
+  campusesLocal: DatabaseTypes.Buildings[];
+  unSortedCampuses: DatabaseTypes.Buildings[];
+  campusesDict: Record<string, DatabaseTypes.Buildings>;
 }
 
 export interface NewsState {
-  news: News[];
+  news: DatabaseTypes.News[];
 }
 
 export interface LastUpdatedState {
@@ -128,7 +103,7 @@ export interface LastUpdatedState {
 }
 
 interface DayPlan {
-  selectedCanteen: Canteens;
+  selectedCanteen: DatabaseTypes.Canteens;
   mealOfferCategory: { id: string; alias: string };
   isMenuCategory: boolean;
   nextFoodInterval: number;
@@ -139,14 +114,14 @@ interface DayPlan {
 }
 
 interface FoodPlan {
-  selectedCanteen: Canteens;
-  additionalSelectedCanteen: Canteens;
+  selectedCanteen: DatabaseTypes.Canteens;
+  additionalSelectedCanteen: DatabaseTypes.Canteens;
   nextFoodInterval: number;
   refreshInterval: number;
 }
 
 interface WeekPlan {
-  selectedCanteen: Canteens;
+  selectedCanteen: DatabaseTypes.Canteens;
   isAllergene: boolean;
   selectedWeek: {
     week: number;

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BACKUP_DIR="./database_backups"
+BACKUP_DIR="./../../database_backups"
 DB_CONTAINER="rocket-meals-database"
 DB_USER="directus"
 DB_NAME="directus"

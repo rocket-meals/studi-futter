@@ -29,7 +29,7 @@ import { isBefore, isEqual, parse } from 'date-fns';
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/colorHelper';
 import { TranslationKeys } from '@/locales/keys';
-import { Profiles } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { RootState } from '@/redux/reducer';
 
 const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
@@ -209,7 +209,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
       const result = (await profileHelper.updateProfile({
         ...profile,
         course_timetable: updatedTimetableString,
-      })) as Profiles;
+      })) as DatabaseTypes.Profiles;
       if (result) {
         dispatch({
           type: UPDATE_PROFILE,
@@ -237,7 +237,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
         const result = (await profileHelper.updateProfile({
           ...profile,
           course_timetable: courseTimetable,
-        })) as Profiles;
+        })) as DatabaseTypes.Profiles;
         if (result) {
           dispatch({
             type: UPDATE_PROFILE,
@@ -304,7 +304,7 @@ const CourseBottomSheet: React.FC<CourseBottomSheetProps> = ({
           const result = (await profileHelper.updateProfile({
             ...profile,
             course_timetable: courseTimetable,
-          })) as Profiles;
+          })) as DatabaseTypes.Profiles;
           if (result) {
             dispatch({
               type: UPDATE_PROFILE,

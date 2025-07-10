@@ -18,7 +18,7 @@ import Information from '@/components/Information';
 import BuildingDescription from '@/components/BuildingDescription';
 import { useLocalSearchParams } from 'expo-router';
 import { useSelector } from 'react-redux';
-import { Buildings } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -38,7 +38,7 @@ const details = () => {
   const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
   const [activeTab, setActiveTab] = useState('information');
   const [loading, setLoading] = useState(false);
-  const [campusDetails, setCampusDetails] = useState<Buildings | null>(null);
+  const [campusDetails, setCampusDetails] = useState<DatabaseTypes.Buildings | null>(null);
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );

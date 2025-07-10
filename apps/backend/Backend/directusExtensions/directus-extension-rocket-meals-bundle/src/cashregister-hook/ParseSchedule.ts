@@ -4,25 +4,25 @@ import {
     CashregistersTransactionsForParser,
     CashregisterTransactionParserInterface
 } from "./CashregisterTransactionParserInterface";
-import {WorkflowsRuns} from "../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 import {WorkflowRunLogger} from "../workflows-runs-hook/WorkflowRunJobInterface";
 import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
 
 export class ParseSchedule {
 
-    private workflowRun: WorkflowsRuns
+    private workflowRun: DatabaseTypes.WorkflowsRuns
     private logger: WorkflowRunLogger
     private myDatabaseHelper: MyDatabaseHelper
     private parser: CashregisterTransactionParserInterface;
 
-    constructor(workflowRun: WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger, parser: CashregisterTransactionParserInterface) {
+    constructor(workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger, parser: CashregisterTransactionParserInterface) {
         this.myDatabaseHelper = myDatabaseHelper;
         this.workflowRun = workflowRun;
         this.logger = logger;
         this.parser = parser;
     }
 
-    async parse(): Promise<Partial<WorkflowsRuns>>{
+    async parse(): Promise<Partial<DatabaseTypes.WorkflowsRuns>>{
         try {
             await this.logger.appendLog("Starting cashregister parsing");
 

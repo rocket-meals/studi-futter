@@ -5,7 +5,7 @@ import { TranslationHelper } from "../../helpers/TranslationHelper";
 import { NewsParserInterface, NewsTypeForParser } from "./../NewsParserInterface";
 import * as https from "node:https";
 //import undici, {Agent} from 'undici';
-import {WorkflowsRuns} from "../../databaseTypes/types";
+import {DatabaseTypes} from "repo-depkit-common"
 import {MyDatabaseHelper} from "../../helpers/MyDatabaseHelper";
 import {WorkflowRunLogger} from "../../workflows-runs-hook/WorkflowRunJobInterface";
 import axios from "axios";
@@ -21,7 +21,7 @@ export class StudentenwerkHannoverNews_Parser implements NewsParserInterface {
 
     constructor() { }
 
-    async getNewsItems(workflowRun?: WorkflowsRuns, logger?: WorkflowRunLogger, limitAmountNews?: number): Promise<NewsTypeForParser[]> {
+    async getNewsItems(workflowRun?: DatabaseTypes.WorkflowsRuns, logger?: WorkflowRunLogger, limitAmountNews?: number): Promise<NewsTypeForParser[]> {
         let realNewsItems = await this.getRealNewsItems(logger, limitAmountNews);
         return [...realNewsItems];
     }

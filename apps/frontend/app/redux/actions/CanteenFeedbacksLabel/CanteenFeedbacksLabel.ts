@@ -1,9 +1,9 @@
 import { itemStatus } from '@/constants/Constants';
-import { CanteensFeedbacksLabels } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 
-export class CanteenFeedbackLabelHelper extends CollectionHelper<CanteensFeedbacksLabels> {
+export class CanteenFeedbackLabelHelper extends CollectionHelper<DatabaseTypes.CanteensFeedbacksLabels> {
   constructor(client?: any) {
     // Pass the collection name and API client
     super('canteens_feedbacks_labels', client || ServerAPI.getClient());

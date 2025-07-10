@@ -3,7 +3,7 @@ import {
     WashingmachinesTypeForParser,
     WashingmachinesTypeForParserOmmited
 } from "../WashingmachineParserInterface";
-import {DateHelper} from "../../helpers/DateHelper";
+import {DateHelper} from "repo-depkit-common";
 
 export class DemoWashingmachineParser implements WashingmachineParserInterface {
 

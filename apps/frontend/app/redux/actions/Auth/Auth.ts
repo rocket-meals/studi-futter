@@ -21,11 +21,7 @@ import {
 	ServerInfoOutput
   } from '@directus/sdk';
   
-  import {
-	CustomDirectusTypes,
-	DirectusPolicies,
-	DirectusRoles
-  } from '@/constants/types';
+  import { DatabaseTypes } from 'repo-depkit-common';
   
   import { UrlHelper } from '@/constants/UrlHelper';
   import ServerConfiguration from '@/constants/ServerUrl';
@@ -78,7 +74,7 @@ import {
   
 	// Creates a public Directus client
 	static getPublicClient() {
-	  return createDirectus<CustomDirectusTypes>(this.getServerUrl()).with(rest());
+	  return createDirectus<DatabaseTypes.CustomDirectusTypes>(this.getServerUrl()).with(rest());
 	}
   
 	// Initializes authentication storage
@@ -160,7 +156,7 @@ import {
 	}
   
 	static async readRemoteRoles() {
-	  return this.getClient().request<DirectusRoles[]>(readRoles({
+	  return this.getClient().request<DatabaseTypes.DirectusRoles[]>(readRoles({
 		fields: ['*'],
 		deep: { users: { _limit: 0 }, policies: { _limit: 0 } },
 		limit: -1

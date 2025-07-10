@@ -1,8 +1,8 @@
 import {defineHook} from '@directus/extensions-sdk';
 import {ReportSchedule} from "./ReportSchedule";
 import {DatabaseInitializedCheck} from "../helpers/DatabaseInitializedCheck";
-import {CollectionNames} from "../helpers/CollectionNames";
-import {CanteenFoodFeedbackReportSchedules} from "../databaseTypes/types";
+import {CollectionNames} from "repo-depkit-common";
+import {DatabaseTypes} from "repo-depkit-common";
 
 const SCHEDULE_NAME = "food_feedback_report";
 
@@ -15,8 +15,8 @@ export default defineHook(async ({schedule, filter}, apiContext) => {
 	const collection = CollectionNames.CANTEEN_FOOD_FEEDBACK_REPORT_SCHEDULES;
 
 	// filter all update actions where from value running to start want to change, since this is not allowed
-	filter<Partial<CanteenFoodFeedbackReportSchedules>>(collection+'.items.update',
-		async (modifiable_payload: Partial<CanteenFoodFeedbackReportSchedules>, meta, eventContext) => {
+	filter<Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules>>(collection+'.items.update',
+		async (modifiable_payload: Partial<DatabaseTypes.CanteenFoodFeedbackReportSchedules>, meta, eventContext) => {
 			const pre = collection+'.items.update ';
 			//console.log(pre+"Canteen Food Feedback Report Schedule update");
 			const keys = meta.keys;

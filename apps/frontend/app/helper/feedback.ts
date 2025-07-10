@@ -1,4 +1,4 @@
-import { FoodsFeedbacks } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
 import {
   DELETE_FOOD_FEEDBACK_LOCAL,
@@ -39,7 +39,7 @@ export const handleFoodRating = async ({
       foodId,
       profileId || '',
       { ...previousFeedback, rating, canteen: canteenId }
-    )) as FoodsFeedbacks;
+    )) as DatabaseTypes.FoodsFeedbacks;
 
     dispatch({
       type: updateFeedbackResult?.id

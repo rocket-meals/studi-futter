@@ -11,7 +11,7 @@ import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { Entypo } from '@expo/vector-icons';
 import { FormCategoriesHelper } from '@/redux/actions/Forms/FormCategories';
-import { FormCategories } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { router, useFocusEffect } from 'expo-router';
 import { useSelector } from 'react-redux';
 import { getFromCategoryTranslation } from '@/helper/resourceHelper';
@@ -25,7 +25,7 @@ const index = () => {
   const { theme } = useTheme();
   const [loading, setLoading] = useState(false);
   const { language } = useSelector((state: RootState) => state.settings);
-  const [formCategories, setFormCategories] = useState<FormCategories[]>([]);
+  const [formCategories, setFormCategories] = useState<DatabaseTypes.FormCategories[]>([]);
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
@@ -35,7 +35,7 @@ const index = () => {
     setLoading(true);
     const result = (await formCategoriesHelper.fetchFormCategories({
       filter: { status: { _eq: 'published' } },
-    })) as FormCategories[];
+    })) as DatabaseTypes.FormCategories[];
 
     if (result) {
       setLoading(false);

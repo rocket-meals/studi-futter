@@ -1,8 +1,8 @@
-import { Businesshours } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { CollectionHelper } from '@/helper/collectionHelper'; // Reusing the CollectionHelper
 import { ServerAPI } from '@/redux/actions/Auth/Auth'; // API client
 
-export class BusinessHoursHelper extends CollectionHelper<Businesshours> {
+export class BusinessHoursHelper extends CollectionHelper<DatabaseTypes.Businesshours> {
   constructor(client?: any) {
     super('businesshours', client || ServerAPI.getClient());
   }

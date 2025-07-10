@@ -27,7 +27,7 @@ import {
   getDescriptionFromTranslation,
   getTextFromTranslation,
 } from '@/helper/resourceHelper';
-import { Foods, Markings, ProfilesMarkings } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   SET_MARKING_DETAILS,
@@ -74,7 +74,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
     const { theme } = useTheme();
     const { translate } = useLanguage();
     const { food } = item;
-    const foodItem = food as Foods;
+    const foodItem = food as DatabaseTypes.Foods;
     const markings = useSelector(selectMarkings);
     const { user, profile, isManagement } = useSelector(
       (state: RootState) => state.authReducer
@@ -133,7 +133,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
       () =>
         item?.markings?.filter((marking) =>
           profile?.markings?.some(
-            (profileMarking: ProfilesMarkings) =>
+            (profileMarking: DatabaseTypes.ProfilesMarkings) =>
               profileMarking?.markings_id === marking?.markings_id &&
               profileMarking?.like === false
           )
@@ -165,7 +165,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
     const markingsData = useMemo(
       () =>
         markings
-          ?.filter((m: Markings) =>
+          ?.filter((m: DatabaseTypes.Markings) =>
             item?.markings.some((mark) => mark.markings_id === m.id)
           )
           .slice(0, 2),
@@ -178,7 +178,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
       return () => subscription?.remove();
     }, []);
 
-    const openMarkingLabel = (marking: Markings) => {
+    const openMarkingLabel = (marking: DatabaseTypes.Markings) => {
       dispatch({
         type: SET_MARKING_DETAILS,
         payload: marking,

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import { Stack } from 'expo-router';
-import { Wikis } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { SET_WIKIS } from '@/redux/Types/types';
 import { useDispatch, useSelector } from 'react-redux';
 import { WikisHelper } from '@/redux/actions/Wikis/Wikis';
@@ -15,7 +15,7 @@ export default function FoodOfferLayout() {
 
   const getWikis = async () => {
     try {
-      const response = (await wikisHelper.fetchWikis()) as Wikis[];
+      const response = (await wikisHelper.fetchWikis()) as DatabaseTypes.Wikis[];
       if (response) {
         dispatch({ type: SET_WIKIS, payload: response });
       }

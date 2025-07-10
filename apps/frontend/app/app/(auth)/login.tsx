@@ -22,7 +22,7 @@ import {
 import AttentionSheet from '@/components/Login/AttentionSheet';
 import useToast from '@/hooks/useToast';
 import { updateLoginStatus } from '@/constants/HelperFunctions';
-import { AppSettings, DirectusUsers, Wikis } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { format } from 'date-fns';
 import { WikisHelper } from '@/redux/actions/Wikis/Wikis';
 import { AppSettingsHelper } from '@/redux/actions/AppSettings/AppSettings';
@@ -80,7 +80,7 @@ export default function Login() {
     try {
       const result = (await appSettingsHelper.fetchAppSettings(
         {}
-      )) as AppSettings;
+      )) as DatabaseTypes.AppSettings;
       if (result) {
         dispatch({ type: SET_APP_SETTINGS, payload: result });
       }
@@ -148,7 +148,7 @@ export default function Login() {
       }
       dispatch({ type: UPDATE_MANAGEMENT, payload: isManagement });
 
-      updateLoginStatus(dispatch, user as DirectusUsers);
+      updateLoginStatus(dispatch, user as DatabaseTypes.DirectusUsers);
       const currentDate = getCurrentDate();
 
       dispatch({
@@ -205,7 +205,7 @@ export default function Login() {
 
   const getWikis = async () => {
     try {
-      const response = (await wikisHelper.fetchWikis()) as Wikis[];
+      const response = (await wikisHelper.fetchWikis()) as DatabaseTypes.Wikis[];
       if (response) {
         dispatch({ type: SET_WIKIS, payload: response });
       }

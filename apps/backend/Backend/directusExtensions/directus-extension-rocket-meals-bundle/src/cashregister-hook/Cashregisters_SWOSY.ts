@@ -3,7 +3,7 @@ import {
     CashregistersTransactionsForParser,
     CashregisterTransactionParserInterface
 } from "./CashregisterTransactionParserInterface";
-import {DateHelper} from "../helpers/DateHelper";
+import {DateHelper} from "repo-depkit-common";
 
 const BUCHUNGSNUMMER = "BUCHUNGSNUMMER";
 const Datum = "Datum";

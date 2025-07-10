@@ -238,6 +238,7 @@ export enum TranslationKeys {
   course_timetable = 'course_timetable',
   experimentell = "experimentell",
   vertical_image_scroll = 'vertical_image_scroll',
+  rss_feed = 'rss_feed',
   eating_habits = 'eating_habits',
   markings = 'markings',
   category = 'category',

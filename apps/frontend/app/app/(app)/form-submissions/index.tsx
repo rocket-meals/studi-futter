@@ -18,7 +18,7 @@ import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { Entypo, FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useLanguage } from '@/hooks/useLanguage';
-import { FormSubmissions } from '@/constants/types';
+import { DatabaseTypes } from 'repo-depkit-common';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useSelector } from 'react-redux';
 import { isWeb } from '@/constants/Constants';
@@ -45,7 +45,7 @@ const index = () => {
     Dimensions.get('window').width
   );
   const formsSubmissionsHelper = new FormsSubmissionsHelper();
-  const [formSubmissions, setFormSubmissions] = useState<FormSubmissions[]>([]);
+  const [formSubmissions, setFormSubmissions] = useState<DatabaseTypes.FormSubmissions[]>([]);
   const [selectedOption, setSelectedOption] = useState<string>('draft');
   const { drawerPosition } = useSelector((state: RootState) => state.settings);
 
@@ -69,7 +69,7 @@ const index = () => {
         state: selectedOption || 'draft',
         form: form_id,
         alias: query ? query?.trim() : '',
-      })) as FormSubmissions[];
+      })) as DatabaseTypes.FormSubmissions[];
 
       if (result) {
         if (append) {
@@ -121,7 +121,7 @@ const index = () => {
     return () => subscription?.remove();
   }, []);
 
-  const renderItem = ({ item }: { item: FormSubmissions }) => {
+  const renderItem = ({ item }: { item: DatabaseTypes.FormSubmissions }) => {
     return (
       <TouchableOpacity
         style={{

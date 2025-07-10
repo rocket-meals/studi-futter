@@ -2403,6 +2403,16 @@
     "tr": "Dikey Resim Kaydırma",
     "zh": "垂直图片滚动"
   },
+  "rss_feed": {
+    "de": "RSS Feed",
+    "en": "RSS Feed",
+    "ar": "خلاصة RSS",
+    "es": "Fuente RSS",
+    "fr": "Flux RSS",
+    "ru": "RSS лента",
+    "tr": "RSS Beslemesi",
+    "zh": "RSS 提要"
+  },
   "markings": {
     "de": "Kennzeichnungen",
     "en": "Labels",
