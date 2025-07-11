@@ -2,6 +2,7 @@ import {
   Animated,
   Dimensions,
   Easing,
+  Image,
   ScrollView,
   Text,
   View,
