@@ -10,8 +10,8 @@ export type LocationType = {
  * @returns distance in meters rounded to the nearest integer
  */
 export function calculateDistanceInMeter(
-  selectedLocation: Array<number>,
-  targetLocation: Array<number>
+  selectedLocation: [number, number],
+  targetLocation: [number, number]
 ): number {
   if (selectedLocation && targetLocation) {
     const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
