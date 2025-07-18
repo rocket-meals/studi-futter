@@ -409,11 +409,11 @@ const index = () => {
       if (!offers) return [] as any[];
       const copied = [...offers];
       sortByFoodName(copied, language as string);
-      sortByFoodOfferCategoryOnly(copied, foodOfferCategories);
-      sortByFoodCategoryOnly(copied, foodCategories);
+      sortByFoodOfferCategoryOnly(copied, localFoodOfferCategories);
+      sortByFoodCategoryOnly(copied, localFoodCategories);
       return copied;
     },
-    [language, foodOfferCategories, foodCategories]
+    [language, localFoodCategories, localFoodOfferCategories]
   );
 
   const fetchFoods = async () => {
