@@ -18,6 +18,7 @@ import Information from '@/components/Information';
 import BuildingDescription from '@/components/BuildingDescription';
 import { useLocalSearchParams } from 'expo-router';
 import { useSelector } from 'react-redux';
+import { myContrastColor } from '@/helper/colorHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
@@ -31,9 +32,12 @@ const details = () => {
   const { theme } = useTheme();
   const { translate } = useLanguage();
   const { id } = useLocalSearchParams();
-  const { serverInfo, appSettings, primaryColor } = useSelector(
-    (state: RootState) => state.settings
-  );
+  const {
+    serverInfo,
+    appSettings,
+    primaryColor,
+    selectedTheme: mode,
+  } = useSelector((state: RootState) => state.settings);
   const { campusesDict } = useSelector((state: RootState) => state.campus);
   const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
   const [activeTab, setActiveTab] = useState('information');
@@ -45,6 +49,7 @@ const details = () => {
   const campus_area_color = appSettings?.campus_area_color
     ? appSettings?.campus_area_color
     : primaryColor;
+  const contrastColor = myContrastColor(campus_area_color, theme, mode === 'dark');
 
   const fetchCampusById = async () => {
     setLoading(true);
@@ -113,7 +118,7 @@ const details = () => {
   const themeStyles = {
     backgroundColor: campus_area_color,
     borderColor: campus_area_color,
-    color: theme.light,
+    color: contrastColor,
   };
 
   return (
@@ -254,7 +259,7 @@ const details = () => {
                           size={26}
                           color={
                             activeTab === 'information'
-                              ? theme.light
+                              ? contrastColor
                               : theme.screen.icon
                           }
                         />
@@ -290,7 +295,7 @@ const details = () => {
                           size={26}
                           color={
                             activeTab === 'description'
-                              ? theme.light
+                              ? contrastColor
                               : theme.screen.icon
                           }
                         />

@@ -7,6 +7,7 @@ on:
       - 'apps/frontend/app/**'
       - 'packages/common/**'
       - '.github/workflows/**'
+      - 'package.json'
 
 jobs:
   update:

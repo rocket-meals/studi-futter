@@ -36,8 +36,14 @@ import { RootState } from '@/redux/reducer';
 import { CanteenHelper } from '@/redux/actions';
 import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { FoodCategoriesHelper } from '@/redux/actions/FoodCategories/FoodCategories';
-import { SET_FOOD_CATEGORIES } from '@/redux/Types/types';
-import { sortMarkingsByGroup } from '@/helper/sortingHelper';
+import { FoodOffersCategoriesHelper } from '@/redux/actions/FoodOffersCategories/FoodOffersCategories';
+import { SET_FOOD_CATEGORIES, SET_FOOD_OFFERS_CATEGORIES } from '@/redux/Types/types';
+import {
+  sortMarkingsByGroup,
+  sortByFoodName,
+  sortByFoodOfferCategoryOnly,
+  sortByFoodCategoryOnly,
+} from '@/helper/sortingHelper';
 import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
 const index = () => {
   useSetPageTitle('list-day-screen');
@@ -52,17 +58,21 @@ const index = () => {
   const { translate } = useLanguage();
   const { theme } = useTheme();
   const rowHeight = 80;
-  const { markings, foodCategories: localFoodCategories } = useSelector(
-    (state: RootState) => state.food
-  );
+  const {
+    markings,
+    foodCategories: localFoodCategories,
+    foodOfferCategories: localFoodOfferCategories,
+  } = useSelector((state: RootState) => state.food);
   const canteenHelper = new CanteenHelper();
   const buildingsHelper = new BuildingsHelper();
   const foodAttributesHelper = new FoodAttributesHelper();
   const foodCategoriesHelper = new FoodCategoriesHelper();
+  const foodOffersCategoriesHelper = new FoodOffersCategoriesHelper();
   const [foods, setFoods] = useState([]);
   const [optionalFoods, setOptionalFoods] = useState([]);
   const [foodMarkings, setFoodMarkings] = useState<any>({});
   const [foodCategories, setFoodCategories] = useState<DatabaseTypes.FoodsCategories[]>([]);
+  const [foodOfferCategories, setFoodOfferCategories] = useState<DatabaseTypes.FoodoffersCategories[]>([]);
   const [optionalFoodMarkings, setOptionalFoodMarkings] = useState<any>({});
   const [mainFoodCategories, setMainFoodCategories] = useState<any>({});
   const [optionalFoodCategories, setOptionalFoodCategories] = useState<any>({});
@@ -148,6 +158,18 @@ const index = () => {
     }
   };
 
+  const getFoodOfferCategories = async () => {
+    try {
+      const result =
+        (await foodOffersCategoriesHelper.fetchFoodOffersCategories({})) as DatabaseTypes.FoodoffersCategories[];
+      if (result) {
+        dispatch({ type: SET_FOOD_OFFERS_CATEGORIES, payload: result });
+      }
+    } catch (error) {
+      console.error('Error fetching food offers categories:', error);
+    }
+  };
+
   useEffect(() => {
     if (localFoodCategories.length > 0) {
       setFoodCategories(localFoodCategories);
@@ -155,6 +177,14 @@ const index = () => {
       getFoodCategories();
     }
   }, [localFoodCategories]);
+
+  useEffect(() => {
+    if (localFoodOfferCategories.length > 0) {
+      setFoodOfferCategories(localFoodOfferCategories);
+    } else {
+      getFoodOfferCategories();
+    }
+  }, [localFoodOfferCategories]);
 
   useEffect(() => {
     const fetchAliases = async () => {
@@ -371,7 +401,19 @@ const index = () => {
       return () => {
         // setOptionalFoodAttributes(null);
       };
-    }, [optionalFoods, foodAttributesDataFull])
+  }, [optionalFoods, foodAttributesDataFull])
+  );
+
+  const sortFoodOffers = useCallback(
+    (offers: DatabaseTypes.Foodoffers[]) => {
+      if (!offers) return [] as any[];
+      const copied = [...offers];
+      sortByFoodName(copied, language as string);
+      sortByFoodOfferCategoryOnly(copied, foodOfferCategories);
+      sortByFoodCategoryOnly(copied, foodCategories);
+      return copied;
+    },
+    [language, foodOfferCategories, foodCategories]
   );
 
   const fetchFoods = async () => {
@@ -381,7 +423,8 @@ const index = () => {
         String(canteens_id),
         todayDate
       );
-      const foodOffers = foodData?.data || [];
+      let foodOffers = foodData?.data || [];
+      foodOffers = sortFoodOffers(foodOffers);
       setFoods(foodOffers);
 
       if (foodOffers?.length > 0) {
@@ -399,7 +442,8 @@ const index = () => {
         String(monitor_additional_canteens_id),
         todayDate
       );
-      const foodOffers = foodData?.data || [];
+      let foodOffers = foodData?.data || [];
+      foodOffers = sortFoodOffers(foodOffers);
       setOptionalFoods(foodOffers);
     } catch (error) {
       console.error('Error fetching Food Offers:', error);

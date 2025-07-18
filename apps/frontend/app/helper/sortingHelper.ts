@@ -54,7 +54,7 @@ export function sortByFoodCategory(
     return foodOffers;
 }
 
-function sortByFoodCategoryOnly(
+export function sortByFoodCategoryOnly(
     foodOffers: DatabaseTypes.Foodoffers[],
     categories: DatabaseTypes.FoodsCategories[]
 ) {
@@ -99,7 +99,7 @@ export function sortByFoodOfferCategory(
     return foodOffers;
 }
 
-function sortByFoodOfferCategoryOnly(
+export function sortByFoodOfferCategoryOnly(
     foodOffers: DatabaseTypes.Foodoffers[],
     categories: DatabaseTypes.FoodoffersCategories[]
 ) {

@@ -27,6 +27,8 @@ import { isWeb } from '@/constants/Constants';
 import FoodItem from '@/components/FoodItem/FoodItem';
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
+import useSelectedCanteen from '@/hooks/useSelectedCanteen';
+import useKioskMode from '@/hooks/useKioskMode';
 import { fetchFoodOffersByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
 import {
   SET_BUSINESS_HOURS,
@@ -73,12 +75,14 @@ import {
 import { format, addDays } from 'date-fns';
 import { BusinessHoursHelper } from '@/redux/actions/BusinessHours/BusinessHours';
 import PopupEventSheet from '@/components/PopupEventSheet/PopupEventSheet';
+import { PopupEventHelper } from '@/helper/PopupEventHelper';
 import { getAppElementTranslation } from '@/helper/resourceHelper';
 import noFoodOffersFound from '@/assets/animations/noFoodOffersFound.json';
 import LottieView from 'lottie-react-native';
 import { replaceLottieColors } from '@/helper/animationHelper';
 import { myContrastColor } from '@/helper/colorHelper';
 import { TranslationKeys } from '@/locales/keys';
+
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
 import { RootState } from '@/redux/reducer';
@@ -120,6 +124,10 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const [selectedSheet, setSelectedSheet] = useState<
     keyof typeof SHEET_COMPONENTS | null
   >(null);
+  const [sessionDismissed, setSessionDismissed] = useState<Set<string>>(
+    PopupEventHelper.getAll(),
+  );
+  const [currentPopupEvent, setCurrentPopupEvent] = useState<any | null>(null);
 
   const {
     sortBy,
@@ -143,8 +151,11 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     (state: RootState) => state.authReducer
   );
   const { appElements } = useSelector((state: RootState) => state.appElements);
-  const { selectedCanteen, selectedCanteenFoodOffers, canteenFeedbackLabels } =
-    useSelector((state: RootState) => state.canteenReducer);
+  const { selectedCanteenFoodOffers, canteenFeedbackLabels } = useSelector(
+    (state: RootState) => state.canteenReducer,
+  );
+  const selectedCanteen = useSelectedCanteen();
+  const kioskMode = useKioskMode();
   const [prefetchedFoodOffers, setPrefetchedFoodOffers] = useState<
     Record<string, Record<string, DatabaseTypes.Foodoffers[]>>
   >({});
@@ -247,13 +258,21 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   );
 
   useEffect(() => {
-    const currentEvent = popupEvents?.find((e: any) => e.isCurrent);
-    if (currentEvent) {
+    if (kioskMode) {
+      return;
+    }
+    const nextEvent = popupEvents?.find(
+      (e: any) => !e.isOpen && !PopupEventHelper.isDismissed(e.id),
+    );
+    if (nextEvent) {
+      setCurrentPopupEvent(nextEvent);
       setTimeout(() => {
         openEventSheet();
       }, 300);
+    } else {
+      setCurrentPopupEvent(null);
     }
-  }, [popupEvents]);
+  }, [popupEvents, kioskMode, sessionDismissed]);
 
   const openSheet = useCallback(
     (sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
@@ -275,25 +294,27 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   };
 
   const openEventSheet = () => {
+    if (kioskMode) return;
     eventSheetRef?.current?.expand();
   };
 
   const closeEventSheet = () => {
     eventSheetRef?.current?.close();
     setTimeout(() => {
-      const currentIndex = popupEvents?.findIndex((e: any) => e.isCurrent);
-
-      const updatedEvents = popupEvents.map((e: any, idx: number) => {
-        if (idx === currentIndex) {
-          return { ...e, isOpen: true, isCurrent: false };
-        } else if (idx === currentIndex + 1) {
-          return { ...e, isCurrent: true };
-        }
-        return e;
-      });
-
+      if (!currentPopupEvent) return;
+      const updatedEvents = popupEvents.map((e: any) =>
+        e.id === currentPopupEvent.id ? { ...e, isOpen: true } : e
+      );
       dispatch({ type: SET_POPUP_EVENTS, payload: updatedEvents });
+      setCurrentPopupEvent(null);
     }, 500);
+  };
+
+  const closeEventSheetForSession = () => {
+    eventSheetRef?.current?.close();
+    PopupEventHelper.dismiss(currentPopupEvent?.id);
+    setSessionDismissed(PopupEventHelper.getAll());
+    setCurrentPopupEvent(null);
   };
 
   useEffect(() => {
@@ -641,12 +662,17 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 </Tooltip>
 
                 {/* Canteen Heading */}
-                <Text style={{ ...styles.heading, color: theme.header.text }}>
-                  {excerpt(
-                    String(selectedCanteen?.alias),
-                    screenWidth > 800 ? 30 : 10
-                  ) || 'Food Offers'}
-                </Text>
+                <TouchableOpacity
+                  onPress={() => openSheet('canteen')}
+                  activeOpacity={0.7}
+                >
+                  <Text style={{ ...styles.heading, color: theme.header.text }}>
+                    {excerpt(
+                      String(selectedCanteen?.alias),
+                      screenWidth > 800 ? 30 : 10
+                    ) || 'Food Offers'}
+                  </Text>
+                </TouchableOpacity>
               </View>
               <View
                 style={{
@@ -1048,7 +1074,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
             )}
           </ScrollView>
         </View>
-        {isActive && (
+        {isActive && !kioskMode && popupEvents.length > 0 && (
           selectedSheet === 'menu' ? (
             <MarkingBottomSheet ref={bottomSheetRef} onClose={closeSheet} />
           ) : (
@@ -1082,7 +1108,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
           )
         )}
 
-        {isActive && (
+        {isActive && currentPopupEvent && (
           <BaseBottomSheet
             ref={eventSheetRef}
             index={-1}
@@ -1092,11 +1118,11 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
             }}
             enablePanDownToClose={false}
             handleComponent={null}
-            onClose={closeEventSheet}
+            onClose={closeEventSheetForSession}
           >
             <PopupEventSheet
               closeSheet={closeEventSheet}
-              eventData={popupEvents?.find((e: any) => e.isCurrent) || {}}
+              eventData={currentPopupEvent}
             />
           </BaseBottomSheet>
         )}

@@ -12,10 +12,10 @@
     "test": "jest --watchAll",
     "lint": "expo lint",
     "predeploy": "expo export -p web",
-    "deploy": "npm run copy-assets && gh-pages --nojekyll -d dist",
+    "deploy": "yarn run copy-assets && gh-pages --nojekyll -d dist",
     "copy-assets": "cpx \"node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/**/*\" \"dist/assets/node_modules/@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts\"",
     "deploy:gh:pages": "yarn run predeploy && yarn run deploy",
-    "deploy:local": "npm run export:web:dev && mkdir -p ./serveDist/rocket-meals && cp -r ./dist/* ./serveDist/rocket-meals/ && npx serve serveDist",
+    "deploy:local": "yarn run export:web:dev && mkdir -p ./serveDist/rocket-meals && cp -r ./dist/* ./serveDist/rocket-meals/ && npx serve serveDist",
     "export:web": "expo export --platform web",
     "export:web:dev": "expo export --platform web"
   },

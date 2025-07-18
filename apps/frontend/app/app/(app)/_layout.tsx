@@ -3,9 +3,11 @@ import { Drawer } from 'expo-router/drawer';
 import CustomDrawerContent from '@/components/Drawer/CustomDrawerContent';
 import { useTheme } from '@/hooks/useTheme';
 import { useDispatch, useSelector } from 'react-redux';
+import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { Redirect, useGlobalSearchParams } from 'expo-router';
+import useKioskMode from '@/hooks/useKioskMode';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { DatabaseTypes, AppLinks, AppScreens } from 'repo-depkit-common';
 import {
   SET_APP_ELEMENTS,
   SET_APP_SETTINGS,
@@ -57,6 +59,10 @@ import { TranslationKeys } from '@/locales/keys';
 import { CollectionLastUpdateHelper } from '@/redux/actions/CollectionLastUpdate/CollectionLastUpdate';
 import { transformUpdateDatesToMap } from '@/helper/dateMap';
 import { shouldFetch } from '@/helper/shouldFetch';
+import { updateLoginStatus } from '@/constants/HelperFunctions';
+import { format } from 'date-fns';
+import { CanteenHelper } from '@/redux/actions/Canteens/Canteens';
+import { SET_CANTEENS, SET_SELECTED_CANTEEN, UPDATE_PRIVACY_POLICY_DATE } from '@/redux/Types/types';
 // TODO: replace HashHelper with expo-crypto once packages can be installed
 import { HashHelper } from '@/helper/hashHelper';
 import { CollectionKeys } from '@/constants/collectionKeys';
@@ -68,6 +74,7 @@ export default function Layout() {
   const { theme } = useTheme();
   const { translate } = useLanguage();
   const { deviceMock } = useGlobalSearchParams();
+  const kioskMode = useKioskMode();
   const dispatch = useDispatch();
   const wikisHelper = new WikisHelper();
   const markingHelper = new MarkingHelper();
@@ -99,8 +106,54 @@ export default function Layout() {
   const { loggedIn, user } = useSelector(
     (state: RootState) => state.authReducer
   );
+  const { canteens } = useSelector(
+    (state: RootState) => state.canteenReducer
+  );
+  const selectedCanteen = useSelectedCanteen();
 
-  if (!loggedIn) {
+  useEffect(() => {
+    const autoLogin = async () => {
+      if (kioskMode && !loggedIn) {
+        updateLoginStatus(dispatch, { id: '' } as any);
+        const currentDate = format(new Date(), 'dd.MM.yyyy HH:mm:ss');
+        dispatch({ type: UPDATE_PRIVACY_POLICY_DATE, payload: currentDate });
+        const demoProfile: DatabaseTypes.Profiles = {
+          id: 'demo',
+          nickname: 'Demo User',
+          credit_balance: 20.5,
+          credit_balance_date_updated: currentDate,
+          credit_balance_last_transaction: 20.5,
+          markings: [],
+          buildings_favorites: [],
+          buildings_last_opened: [],
+          devices: [],
+        } as any;
+        dispatch({ type: UPDATE_PROFILE, payload: demoProfile });
+      }
+    };
+    autoLogin();
+  }, [kioskMode, loggedIn]);
+
+  useEffect(() => {
+    const selectCanteen = async () => {
+      if (kioskMode && !selectedCanteen) {
+        try {
+          const helper = new CanteenHelper();
+          const result = (await helper.fetchCanteens({})) as DatabaseTypes.Canteens[];
+          const published = result.filter((c) => c.status === 'published');
+          if (published.length > 0) {
+            dispatch({ type: SET_CANTEENS, payload: published });
+            dispatch({ type: SET_SELECTED_CANTEEN, payload: published[0] });
+          }
+        } catch (error) {
+          console.error('Error fetching canteens:', error);
+        }
+      }
+    };
+    selectCanteen();
+  }, [kioskMode, selectedCanteen]);
+
+  if (!loggedIn && !kioskMode) {
     return <Redirect href='/(auth)/login' />;
   }
 
@@ -362,6 +415,9 @@ export default function Layout() {
   };
 
   const getAllEvents = async () => {
+    if (kioskMode) {
+      return;
+    }
     try {
       const response =
         (await popupEventsHelper.fetchAllPopupEvents()) as DatabaseTypes.PopupEvents[];
@@ -471,6 +527,7 @@ export default function Layout() {
       if (result) {
         const serverMap = transformUpdateDatesToMap(result);
         if (
+          !kioskMode &&
           shouldFetch(
             [
               CollectionKeys.POPUP_EVENTS,
@@ -538,7 +595,7 @@ export default function Layout() {
           }}
         />
         <Drawer.Screen
-          name='foodoffers'
+          name={AppScreens.FOOD_OFFERS}
           options={{
             title: 'Canteens',
             headerShown: false,
@@ -667,6 +724,14 @@ export default function Layout() {
               />
             ),
             title: translate(TranslationKeys.vertical_image_scroll),
+          }}
+        />
+
+        <Drawer.Screen
+          name='chats'
+          options={{
+            title: translate(TranslationKeys.chats),
+            headerShown: false,
           }}
         />
 

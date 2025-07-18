@@ -13,10 +13,11 @@ import {
   CLEAR_POPUP_EVENTS_HASH,
   ON_LOGOUT,
 } from '@/redux/Types/types';
+import { persistor } from '@/redux/store';
 
 export const performLogout = async (
   dispatch: Dispatch,
-  router: { push: (args: { pathname: string; params?: Record<string, string> }) => void },
+  router: { replace: (args: { pathname: string; params?: Record<string, string> }) => void },
   asGuest: boolean = false,
 ) => {
   try {
@@ -36,7 +37,9 @@ export const performLogout = async (
     } else {
       dispatch({ type: ON_LOGOUT });
     }
-    router.push({ pathname: '/(auth)/login', params: { logout: 'true' } });
+    dispatch({ type: 'RESET_STORE' });
+    persistor.purge();
+    router.replace({ pathname: '/(auth)/login', params: { logout: 'true' } });
   } catch (error) {
     console.error('Error during logout:', error);
   }

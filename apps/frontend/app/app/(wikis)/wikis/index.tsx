@@ -22,7 +22,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { isWeb } from '@/constants/Constants';
 import DeviceMock from '@/components/DeviceMock/DeviceMock';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
-import { DatabaseTypes } from 'repo-depkit-common';
+import { DatabaseTypes, AppLinks, AppScreens } from 'repo-depkit-common';
 import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
 import { RootState } from '@/redux/reducer';
 import { TranslationKeys } from '@/locales/keys';
@@ -85,7 +85,7 @@ const index = () => {
         <View style={styles.row}>
           <View style={styles.col1}>
             <TouchableOpacity
-              onPress={() => router.navigate('/foodoffers')}
+              onPress={() => router.navigate(AppScreens.FOOD_OFFERS)}
               style={{ padding: 10 }}
             >
               <Ionicons name='arrow-back' size={24} color={theme.header.text} />

@@ -149,6 +149,16 @@
     "tr": "Geliştirici Modu Aktif",
     "zh": "开发者模式已启用"
   },
+  "backend_server": {
+    "de": "Backend-Server",
+    "en": "Backend Server",
+    "ar": "خادم الخلفية",
+    "es": "Servidor Backend",
+    "fr": "Serveur Backend",
+    "ru": "Сервер Бэкэнда",
+    "tr": "Arka Uç Sunucusu",
+    "zh": "后端服务器"
+  },
   "developer_homepage": {
     "de": "Entwickler-Homepage",
     "en": "Developer Homepage",
@@ -248,6 +258,26 @@
     "ru": "Искать здесь...",
     "tr": "Burada ara...",
     "zh": "在这里搜索..."
+  },
+  "search_campus_here": {
+    "de": "Campus suchen...",
+    "en": "Search campus here...",
+    "ar": "ابحث عن الحرم الجامعي هنا...",
+    "es": "Buscar campus aquí...",
+    "fr": "Rechercher le campus ici...",
+    "ru": "Искать кампус здесь...",
+    "tr": "Yerleşkeyi burada ara...",
+    "zh": "在这里搜索校园..."
+  },
+  "search_apartment_here": {
+    "de": "Apartment suchen...",
+    "en": "Search apartment here...",
+    "ar": "ابحث عن شقة هنا...",
+    "es": "Buscar apartamento aquí...",
+    "fr": "Rechercher un appartement ici...",
+    "ru": "Искать квартиру здесь...",
+    "tr": "Daireyi burada ara...",
+    "zh": "在这里搜索公寓..."
   },
   "type_here": {
     "de": "Hier eingeben...",
@@ -1016,8 +1046,8 @@
     "es": "Mostrar ofertas el",
     "fr": "Afficher les offres le",
     "ru": "Показать предложения на",
-    "tr": "Teklifleri g\u00f6ster",
-    "zh": "\u663e\u793a\u4f18\u60e0 \u5728"
+    "tr": "Teklifleri göster",
+    "zh": "显示优惠 在"
   },
   "error": {
     "de": "Fehler",
@@ -1168,6 +1198,26 @@
     "ru": "Расстояние рассчитывается на основе расстояния до выбранной вами столовой или, если вы специально запросили, до местоположения вашего устройства.",
     "tr": "Mesafe, seçtiğiniz kantine veya açıkça sorduysanız cihazınızın konumuna olan mesafeye göre hesaplanır.",
     "zh": "距离是根据您选择的食堂的距离或，如果您明确要求，根据您设备的位置计算的。"
+  },
+  "use_current_position_for_distance": {
+    "de": "Aktuelle Position für Entfernung nutzen",
+    "en": "Use current position for distance",
+    "ar": "استخدم الموقع الحالي للمسافة",
+    "es": "Usar la posición actual para la distancia",
+    "fr": "Utiliser la position actuelle pour la distance",
+    "ru": "Использовать текущую позицию для расстояния",
+    "tr": "Mesafe için mevcut konumu kullan",
+    "zh": "使用当前位置计算距离"
+  },
+  "distance": {
+    "de": "Entfernung",
+    "en": "Distance",
+    "ar": "المسافة",
+    "es": "Distancia",
+    "fr": "Distance",
+    "ru": "Расстояние",
+    "tr": "Mesafe",
+    "zh": "距离"
   },
   "coordinates": {
     "de": "Koordinaten",
@@ -2403,6 +2453,26 @@
     "tr": "Dikey Resim Kaydırma",
     "zh": "垂直图片滚动"
   },
+  "chats": {
+    "de": "Chats",
+    "en": "Chats",
+    "ar": "الدردشات",
+    "es": "Chats",
+    "fr": "Discussions",
+    "ru": "Чаты",
+    "tr": "Sohbetler",
+    "zh": "聊天"
+  },
+  "chat": {
+    "de": "Chat",
+    "en": "Chat",
+    "ar": "دردشة",
+    "es": "Chat",
+    "fr": "Chat",
+    "ru": "Чат",
+    "tr": "Sohbet",
+    "zh": "聊天"
+  },
   "rss_feed": {
     "de": "RSS Feed",
     "en": "RSS Feed",
@@ -2693,6 +2763,16 @@
     "tr": "Yemekhaneler",
     "zh": "食堂"
   },
+  "no_canteens_found": {
+    "de": "Keine Mensen gefunden.",
+    "en": "No canteens found.",
+    "ar": "لم يتم العثور على مقاصف.",
+    "es": "No se encontraron cantinas.",
+    "fr": "Aucune cantine trouvée.",
+    "ru": "Столовые не найдены.",
+    "tr": "Yemekhane bulunamadı.",
+    "zh": "未找到食堂。"
+  },
   "buildings": {
     "de": "Gebäude",
     "en": "Buildings",
@@ -2802,6 +2882,26 @@
     "ru": "Обновить",
     "tr": "Güncelle",
     "zh": "更新"
+  },
+  "update_available": {
+    "de": "Update verfügbar",
+    "en": "Update available",
+    "ar": "تحديث متاح",
+    "es": "Actualización disponible",
+    "fr": "Mise à jour disponible",
+    "ru": "Доступно обновление",
+    "tr": "Güncelleme mevcut",
+    "zh": "可用的更新"
+  },
+  "update_available_message": {
+    "de": "Eine neue Version ist verfügbar. Jetzt aktualisieren?",
+    "en": "A new version is available. Update now?",
+    "ar": "إصدار جديد متاح. هل ترغب في التحديث الآن?",
+    "es": "Hay una nueva versión disponible. ¿Actualizar ahora?",
+    "fr": "Une nouvelle version est disponible. Mettre à jour maintenant ?",
+    "ru": "Доступна новая версия. Обновиться?",
+    "tr": "Yeni bir sürüm mevcut. Şimdi güncelle?",
+    "zh": "有新版本。现在更新吗?"
   },
   "send": {
     "de": "Senden",
@@ -3283,246 +3383,246 @@
     "tr": "Pazar",
     "zh": "星期日"
   },
-"January": {
-  "en": "January",
-  "de": "Januar",
-  "ar": "يناير",
-  "es": "Enero",
-  "fr": "Janvier",
-  "ru": "Январь",
-  "tr": "Ocak",
-  "zh": "一月"
-},
-"February": {
-  "en": "February",
-  "de": "Februar",
-  "ar": "فبراير",
-  "es": "Febrero",
-  "fr": "Février",
-  "ru": "Февраль",
-  "tr": "Şubat",
-  "zh": "二月"
-},
-"March": {
-  "en": "March",
-  "de": "März",
-  "ar": "مارس",
-  "es": "Marzo",
-  "fr": "Mars",
-  "ru": "Март",
-  "tr": "Mart",
-  "zh": "三月"
-},
-"April": {
-  "en": "April",
-  "de": "April",
-  "ar": "أبريل",
-  "es": "Abril",
-  "fr": "Avril",
-  "ru": "Апрель",
-  "tr": "Nisan",
-  "zh": "四月"
-},
-"May": {
-  "en": "May",
-  "de": "Mai",
-  "ar": "مايو",
-  "es": "Mayo",
-  "fr": "Mai",
-  "ru": "Май",
-  "tr": "Mayıs",
-  "zh": "五月"
-},
-"June": {
-  "en": "June",
-  "de": "Juni",
-  "ar": "يونيو",
-  "es": "Junio",
-  "fr": "Juin",
-  "ru": "Июнь",
-  "tr": "Haziran",
-  "zh": "六月"
-},
-"July": {
-  "en": "July",
-  "de": "Juli",
-  "ar": "يوليو",
-  "es": "Julio",
-  "fr": "Juillet",
-  "ru": "Июль",
-  "tr": "Temmuz",
-  "zh": "七月"
-},
-"August": {
-  "en": "August",
-  "de": "August",
-  "ar": "أغسطس",
-  "es": "Agosto",
-  "fr": "Août",
-  "ru": "Август",
-  "tr": "Ağustos",
-  "zh": "八月"
-},
-"September": {
-  "en": "September",
-  "de": "September",
-  "ar": "سبتمبر",
-  "es": "Septiembre",
-  "fr": "Septembre",
-  "ru": "Сентябрь",
-  "tr": "Eylül",
-  "zh": "九月"
-},
-"October": {
-  "en": "October",
-  "de": "Oktober",
-  "ar": "أكتوبر",
-  "es": "Octubre",
-  "fr": "Octobre",
-  "ru": "Октябрь",
-  "tr": "Ekim",
-  "zh": "十月"
-},
-"November": {
-  "en": "November",
-  "de": "November",
-  "ar": "نوفمبر",
-  "es": "Noviembre",
-  "fr": "Novembre",
-  "ru": "Ноябрь",
-  "tr": "Kasım",
-  "zh": "十一月"
-},
-"December": {
-  "en": "December",
-  "de": "Dezember",
-  "ar": "ديسمبر",
-  "es": "Diciembre",
-  "fr": "Décembre",
-  "ru": "Декабрь",
-  "tr": "Aralık",
-  "zh": "十二月"
-},
-"Jan": {
-  "en": "Jan",
-  "de": "Jan",
-  "ar": "ينا",
-  "es": "Ene",
-  "fr": "Janv",
-  "ru": "Янв",
-  "tr": "Oca",
-  "zh": "1月"
-},
-"Feb": {
-  "en": "Feb",
-  "de": "Feb",
-  "ar": "فبر",
-  "es": "Feb",
-  "fr": "Févr",
-  "ru": "Фев",
-  "tr": "Şub",
-  "zh": "2月"
-},
-"Mar": {
-  "en": "Mar",
-  "de": "Mär",
-  "ar": "مار",
-  "es": "Mar",
-  "fr": "Mars",
-  "ru": "Мар",
-  "tr": "Mar",
-  "zh": "3月"
-},
-"Apr": {
-  "en": "Apr",
-  "de": "Apr",
-  "ar": "أبر",
-  "es": "Abr",
-  "fr": "Avr",
-  "ru": "Апр",
-  "tr": "Nis",
-  "zh": "4月"
-},
-"MayShort": {
-  "en": "May",
-  "de": "Mai",
-  "ar": "ماي",
-  "es": "May",
-  "fr": "Mai",
-  "ru": "Май",
-  "tr": "May",
-  "zh": "5月"
-},
-"Jun": {
-  "en": "Jun",
-  "de": "Jun",
-  "ar": "يون",
-  "es": "Jun",
-  "fr": "Juin",
-  "ru": "Июн",
-  "tr": "Haz",
-  "zh": "6月"
-},
-"Jul": {
-  "en": "Jul",
-  "de": "Jul",
-  "ar": "يول",
-  "es": "Jul",
-  "fr": "Juil",
-  "ru": "Июл",
-  "tr": "Tem",
-  "zh": "7月"
-},
-"Aug": {
-  "en": "Aug",
-  "de": "Aug",
-  "ar": "أغس",
-  "es": "Ago",
-  "fr": "Août",
-  "ru": "Авг",
-  "tr": "Ağu",
-  "zh": "8月"
-},
-"Sep": {
-  "en": "Sep",
-  "de": "Sep",
-  "ar": "سبت",
-  "es": "Sep",
-  "fr": "Sept",
-  "ru": "Сен",
-  "tr": "Eyl",
-  "zh": "9月"
-},
-"Oct": {
-  "en": "Oct",
-  "de": "Okt",
-  "ar": "أكت",
-  "es": "Oct",
-  "fr": "Oct",
-  "ru": "Окт",
-  "tr": "Eki",
-  "zh": "10月"
-},
-"Nov": {
-  "en": "Nov",
-  "de": "Nov",
-  "ar": "نوف",
-  "es": "Nov",
-  "fr": "Nov",
-  "ru": "Ноя",
-  "tr": "Kas",
-  "zh": "11月"
-},
-"Dec": {
-  "en": "Dec",
-  "de": "Dez",
-  "ar": "ديس",
-  "es": "Dic",
-  "fr": "Déc",
-  "ru": "Дек",
-  "tr": "Ara",
-  "zh": "12月"
-},
+  "January": {
+    "en": "January",
+    "de": "Januar",
+    "ar": "يناير",
+    "es": "Enero",
+    "fr": "Janvier",
+    "ru": "Январь",
+    "tr": "Ocak",
+    "zh": "一月"
+  },
+  "February": {
+    "en": "February",
+    "de": "Februar",
+    "ar": "فبراير",
+    "es": "Febrero",
+    "fr": "Février",
+    "ru": "Февраль",
+    "tr": "Şubat",
+    "zh": "二月"
+  },
+  "March": {
+    "en": "March",
+    "de": "März",
+    "ar": "مارس",
+    "es": "Marzo",
+    "fr": "Mars",
+    "ru": "Март",
+    "tr": "Mart",
+    "zh": "三月"
+  },
+  "April": {
+    "en": "April",
+    "de": "April",
+    "ar": "أبريل",
+    "es": "Abril",
+    "fr": "Avril",
+    "ru": "Апрель",
+    "tr": "Nisan",
+    "zh": "四月"
+  },
+  "May": {
+    "en": "May",
+    "de": "Mai",
+    "ar": "مايو",
+    "es": "Mayo",
+    "fr": "Mai",
+    "ru": "Май",
+    "tr": "Mayıs",
+    "zh": "五月"
+  },
+  "June": {
+    "en": "June",
+    "de": "Juni",
+    "ar": "يونيو",
+    "es": "Junio",
+    "fr": "Juin",
+    "ru": "Июнь",
+    "tr": "Haziran",
+    "zh": "六月"
+  },
+  "July": {
+    "en": "July",
+    "de": "Juli",
+    "ar": "يوليو",
+    "es": "Julio",
+    "fr": "Juillet",
+    "ru": "Июль",
+    "tr": "Temmuz",
+    "zh": "七月"
+  },
+  "August": {
+    "en": "August",
+    "de": "August",
+    "ar": "أغسطس",
+    "es": "Agosto",
+    "fr": "Août",
+    "ru": "Август",
+    "tr": "Ağustos",
+    "zh": "八月"
+  },
+  "September": {
+    "en": "September",
+    "de": "September",
+    "ar": "سبتمبر",
+    "es": "Septiembre",
+    "fr": "Septembre",
+    "ru": "Сентябрь",
+    "tr": "Eylül",
+    "zh": "九月"
+  },
+  "October": {
+    "en": "October",
+    "de": "Oktober",
+    "ar": "أكتوبر",
+    "es": "Octubre",
+    "fr": "Octobre",
+    "ru": "Октябрь",
+    "tr": "Ekim",
+    "zh": "十月"
+  },
+  "November": {
+    "en": "November",
+    "de": "November",
+    "ar": "نوفمبر",
+    "es": "Noviembre",
+    "fr": "Novembre",
+    "ru": "Ноябрь",
+    "tr": "Kasım",
+    "zh": "十一月"
+  },
+  "December": {
+    "en": "December",
+    "de": "Dezember",
+    "ar": "ديسمبر",
+    "es": "Diciembre",
+    "fr": "Décembre",
+    "ru": "Декабрь",
+    "tr": "Aralık",
+    "zh": "十二月"
+  },
+  "Jan": {
+    "en": "Jan",
+    "de": "Jan",
+    "ar": "ينا",
+    "es": "Ene",
+    "fr": "Janv",
+    "ru": "Янв",
+    "tr": "Oca",
+    "zh": "1月"
+  },
+  "Feb": {
+    "en": "Feb",
+    "de": "Feb",
+    "ar": "فبر",
+    "es": "Feb",
+    "fr": "Févr",
+    "ru": "Фев",
+    "tr": "Şub",
+    "zh": "2月"
+  },
+  "Mar": {
+    "en": "Mar",
+    "de": "Mär",
+    "ar": "مار",
+    "es": "Mar",
+    "fr": "Mars",
+    "ru": "Мар",
+    "tr": "Mar",
+    "zh": "3月"
+  },
+  "Apr": {
+    "en": "Apr",
+    "de": "Apr",
+    "ar": "أبر",
+    "es": "Abr",
+    "fr": "Avr",
+    "ru": "Апр",
+    "tr": "Nis",
+    "zh": "4月"
+  },
+  "MayShort": {
+    "en": "May",
+    "de": "Mai",
+    "ar": "ماي",
+    "es": "May",
+    "fr": "Mai",
+    "ru": "Май",
+    "tr": "May",
+    "zh": "5月"
+  },
+  "Jun": {
+    "en": "Jun",
+    "de": "Jun",
+    "ar": "يون",
+    "es": "Jun",
+    "fr": "Juin",
+    "ru": "Июн",
+    "tr": "Haz",
+    "zh": "6月"
+  },
+  "Jul": {
+    "en": "Jul",
+    "de": "Jul",
+    "ar": "يول",
+    "es": "Jul",
+    "fr": "Juil",
+    "ru": "Июл",
+    "tr": "Tem",
+    "zh": "7月"
+  },
+  "Aug": {
+    "en": "Aug",
+    "de": "Aug",
+    "ar": "أغس",
+    "es": "Ago",
+    "fr": "Août",
+    "ru": "Авг",
+    "tr": "Ağu",
+    "zh": "8月"
+  },
+  "Sep": {
+    "en": "Sep",
+    "de": "Sep",
+    "ar": "سبت",
+    "es": "Sep",
+    "fr": "Sept",
+    "ru": "Сен",
+    "tr": "Eyl",
+    "zh": "9月"
+  },
+  "Oct": {
+    "en": "Oct",
+    "de": "Okt",
+    "ar": "أكت",
+    "es": "Oct",
+    "fr": "Oct",
+    "ru": "Окт",
+    "tr": "Eki",
+    "zh": "10月"
+  },
+  "Nov": {
+    "en": "Nov",
+    "de": "Nov",
+    "ar": "نوف",
+    "es": "Nov",
+    "fr": "Nov",
+    "ru": "Ноя",
+    "tr": "Kas",
+    "zh": "11月"
+  },
+  "Dec": {
+    "en": "Dec",
+    "de": "Dez",
+    "ar": "ديس",
+    "es": "Dic",
+    "fr": "Déc",
+    "ru": "Дек",
+    "tr": "Ara",
+    "zh": "12月"
+  },
   "RATE_FOOD": {
     "de": "Speise bewerten",
     "en": "Rate Food",
@@ -3612,5 +3712,25 @@
     "ru": "Выберите отправку формы",
     "tr": "Bir Form Gönderimi Seçin",
     "zh": "选择一个表单提交"
+  },
+  "no_updates_available": {
+    "de": "Es gibt keine weiteren Updates, du scheinst das aktuellste Update zu haben.",
+    "en": "App is up to date",
+    "ar": "التطبيق محدث",
+    "es": "La aplicación está actualizada",
+    "fr": "L'application est à jour",
+    "ru": "Приложение обновлено",
+    "tr": "Uygulama güncel",
+    "zh": "应用已是最新版本"
+  },
+  "updates": {
+    "de": "Updates",
+    "en": "Updates",
+    "ar": "التحديثات",
+    "es": "Actualizaciones",
+    "fr": "Mises à jour",
+    "ru": "Обновления",
+    "tr": "Güncellemeler",
+    "zh": "更新"
   }
 }

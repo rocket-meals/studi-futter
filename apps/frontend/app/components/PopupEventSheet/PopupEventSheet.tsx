@@ -14,6 +14,7 @@ import {
   getTitleFromTranslation,
 } from '@/helper/resourceHelper';
 import RedirectButton from '../RedirectButton';
+import ProjectButton from '../ProjectButton';
 import { RootState } from '@/redux/reducer';
 
 const PopupEventSheet: React.FC<PopupEventSheetProps> = ({
@@ -293,12 +294,20 @@ const PopupEventSheet: React.FC<PopupEventSheetProps> = ({
       style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }}
       contentContainerStyle={styles.contentContainer}
     >
-      <View style={{
-        ...styles.sheetHeaderClose,
-        paddingRight: isWeb ? 10 : 0,
-        paddingTop: isWeb ? 10 : 0,
-        alignItems: 'flex-end',
-      }}>
+      <View
+        style={{
+          ...styles.sheetHeaderClose,
+          paddingRight: isWeb ? 10 : 0,
+          paddingTop: isWeb ? 10 : 0,
+          alignItems: 'center',
+        }}
+      >
+        {closeSheet && (
+          <ProjectButton
+            text='Schließen und nicht erneut anzeigen'
+            onPress={closeSheet}
+          />
+        )}
       </View>
       <View
         style={{

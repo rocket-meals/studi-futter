@@ -52,6 +52,16 @@ export class FilesServiceHelper extends ItemsServiceHelper<DatabaseTypes.Directu
         return filename;
     }
 
+    /**
+     * Upload a buffer as a new Directus file.
+     *
+     * @param buffer               File contents to upload
+     * @param filename             Desired file name
+     * @param fileType             MIME type of the file
+     * @param myDatabaseHelper     Helper used to access Directus services
+     * @param directus_folder_id   Optional folder id where the file should be stored
+     * @returns The id of the created file
+     */
     async uploadOneFromBuffer(buffer: Buffer, filename: string, fileType: MyFileTypes, myDatabaseHelper: MyDatabaseHelperInterface,  directus_folder_id?: string): Promise<PrimaryKey> {
         const filesHelper = new FilesServiceHelper(myDatabaseHelper);
 
@@ -84,6 +94,14 @@ export class FilesServiceHelper extends ItemsServiceHelper<DatabaseTypes.Directu
     }
 
 
+    /**
+     * Upload a stream to the Directus file service.
+     *
+     * @param stream       Input stream containing file data
+     * @param data         Metadata describing the file
+     * @param primaryKey   Optional file id to update instead of creating
+     * @param opts         Additional Directus mutation options
+     */
     async uploadOne(
         stream: FileServiceSteamType,
         data: FileServiceFileStream,
@@ -94,11 +112,23 @@ export class FilesServiceHelper extends ItemsServiceHelper<DatabaseTypes.Directu
         return filesService.uploadOne(stream, data, primaryKey, opts);
     }
 
+    /**
+     * Import a file from a remote URL into Directus.
+     *
+     * @param importURL   Remote URL to fetch the file from
+     * @param body        Additional metadata for the file
+     */
     async importOne(importURL: string, body: Partial<DatabaseTypes.DirectusFiles>): Promise<PrimaryKey> {
         let filesService = await this.getItemsService();
         return filesService.importOne(importURL, body);
     }
 
+    /**
+     * Retrieve the raw file content for a given file id.
+     *
+     * @param id Directus file id
+     * @returns Buffer containing the file's data
+     */
     async readFileContent(id: PrimaryKey): Promise<Buffer> {
         console.log("FilesServiceHelper.readFileContent: ", id);
         const AssetsService: AssetsService = this.apiContext.services.AssetsService
@@ -136,6 +166,12 @@ export class FilesServiceHelper extends ItemsServiceHelper<DatabaseTypes.Directu
         });
     }
 
+    /**
+     * Create a public share link for a Directus file.
+     *
+     * @param options Options used for creating the share entry
+     * @returns URL of the share link or null if creation failed
+     */
     createDirectusFilesShareLink(options: CreateShareLinkOptionForDirectusFiles): Promise<string | null> {
         let shareServiceHelper = new ShareServiceHelper(this.myDatabaseHelper);
         return shareServiceHelper.createDirectusFilesShareLink(options);

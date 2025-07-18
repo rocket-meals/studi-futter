@@ -1,16 +1,6 @@
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
-  card: {
-    borderRadius: 18,
-    justifyContent: 'space-between',
-    paddingBottom: 10,
-  },
-  imageContainer: {
-    width: '100%',
-    borderRadius: 18,
-    position: 'relative',
-  },
   overlay: {
     width: '100%',
     height: '100%',
@@ -20,13 +10,6 @@ export default StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.2)',
     borderTopRightRadius: 18,
     borderTopLeftRadius: 18,
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    borderTopRightRadius: 18,
-    borderTopLeftRadius: 18,
-    resizeMode: 'cover',
   },
   imageActionContainer: {
     width: '100%',
@@ -57,14 +40,9 @@ export default StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Poppins_400Regular',
   },
-  cardContent: {
-    alignItems: 'stretch',
-    justifyContent: 'center',
-    flex: 1,
-  },
   campusName: {
     fontSize: 16,
-    fontFamily: 'Poppins_700Bold',
+    fontFamily: 'Poppins_400Regular',
     textAlign: 'center',
     marginBottom: 5,
   },

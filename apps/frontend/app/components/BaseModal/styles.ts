@@ -1,4 +1,6 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
+
+const MAX_HEIGHT = Dimensions.get('window').height * 0.8;
 
 export const styles = StyleSheet.create({
   modalContainer: {
@@ -27,5 +29,9 @@ export const styles = StyleSheet.create({
     fontFamily: 'Poppins_700Bold',
     textAlign: 'center',
     width: '100%',
+  },
+  scrollView: {
+    width: '100%',
+    maxHeight: MAX_HEIGHT,
   },
 });

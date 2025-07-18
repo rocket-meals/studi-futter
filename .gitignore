@@ -24,8 +24,13 @@ apps/frontend/app/ios
 # Ignore all android generated files
 apps/frontend/app/android
 
-tools/screenshotGenerator/dist/
+apps/screenshotGenerator/dist/
+apps/screenshotGenerator/.yarn/
+apps/screenshotGenerator/.yarnrc.yml
 secrets/
+
+# Ignore built Directus extension
+apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/dist/
 
 # Virtual environment folder
 **/venv/

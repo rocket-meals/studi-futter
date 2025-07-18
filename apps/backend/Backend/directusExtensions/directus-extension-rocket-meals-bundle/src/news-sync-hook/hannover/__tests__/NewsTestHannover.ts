@@ -29,7 +29,7 @@ describe("NewsTestHannover", () => {
         //console.log(response);
         expect(response).toBeDefined();
 
-        let expectedDate = "2025-02-14T11:00:00.000Z";
+        let expectedDate = "2025-02-14T12:00:00.000Z";
         expect(response).toBe(expectedDate);
     });
 

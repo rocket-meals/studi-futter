@@ -28,6 +28,7 @@ import {
 import { RootDrawerParamList } from './types';
 import { useFocusEffect, useNavigation } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
+import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { DatabaseTypes } from 'repo-depkit-common';
 import {
   SET_APARTMENTS,
@@ -45,6 +46,8 @@ import BuildingSortSheet from '@/components/BuildingSortSheet/BuildingSortSheet'
 import useToast from '@/hooks/useToast';
 import { useLanguage } from '@/hooks/useLanguage';
 import ImageManagementSheet from '@/components/ImageManagementSheet/ImageManagementSheet';
+import DistanceModal from '@/components/DistanceModal';
+import * as Location from 'expo-location';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { TranslationKeys } from '@/locales/keys';
@@ -65,6 +68,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const [isActive, setIsActive] = useState(false);
   const sortSheetRef = useRef<BottomSheet>(null);
   const imageManagementSheetRef = useRef<BottomSheet>(null);
+  const [distanceModalVisible, setDistanceModalVisible] = useState(false);
   const [apartmentsDispatched, setApartmentsDispatched] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [distanceAdded, setDistanceAdded] = useState(false);
@@ -73,9 +77,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
-  const { selectedCanteen } = useSelector(
-    (state: RootState) => state.canteenReducer
-  );
+  const selectedCanteen = useSelectedCanteen();
   const {
     drawerPosition,
     apartmentsSortBy,
@@ -108,6 +110,14 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
   const closeImageManagementSheet = () => {
     imageManagementSheetRef?.current?.close();
+  };
+
+  const openDistanceSheet = () => {
+    setDistanceModalVisible(true);
+  };
+
+  const closeDistanceSheet = () => {
+    setDistanceModalVisible(false);
   };
 
   useFocusEffect(
@@ -220,6 +230,23 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
       }
     } else {
       toast('Please select canteen', 'error');
+    }
+  };
+
+  const useCurrentLocationForDistance = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        toast('Permission denied', 'error');
+        return;
+      }
+      const loc = await Location.getCurrentPositionAsync({});
+      setSelectedBuilding({
+        coordinates: { coordinates: [loc.coords.longitude, loc.coords.latitude] },
+      } as any);
+      closeDistanceSheet();
+    } catch (error) {
+      console.error('Error getting location:', error);
     }
   };
 
@@ -478,7 +505,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
               placeholderTextColor={theme.screen.placeholder}
               onChangeText={setQuery}
               value={query}
-              placeholder='Search campus here...'
+              placeholder={translate(TranslationKeys.search_apartment_here)}
             />
           </View>
           <View style={{ ...styles.campusContainer, gap: isWeb ? 10 : 10 }}>
@@ -500,6 +527,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                   apartment={apartment}
                   setSelectedApartementId={setSelectedApartementId}
                   openImageManagementSheet={openImageManagementSheet}
+                  openDistanceSheet={openDistanceSheet}
                 />
               ))
             ) : (
@@ -561,9 +589,17 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 setApartmentsDispatched(false);
                 fetchAllApartments();
               }}
-              fileName='buildings'
-            />
-          </BaseBottomSheet>
+            fileName='buildings'
+          />
+        </BaseBottomSheet>
+        )}
+
+        {isActive && (
+          <DistanceModal
+            visible={distanceModalVisible}
+            onClose={closeDistanceSheet}
+            onUseCurrentPosition={useCurrentLocationForDistance}
+          />
         )}
       </View>
     </SafeAreaView>

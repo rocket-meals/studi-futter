@@ -13,22 +13,35 @@ const PUBLIC_URL = env.PUBLIC_URL; // e.g. http://rocket-meals.de/rocket-meals/a
 const WILDCARD = "\\*"; // we need to escape the * as it is a special character in regex
 const WILDCARD_REPLACEMENT = "WILDCARD_REPLACEMENT";
 
+/**
+ * Check if a string starts with the portion of a whitelist entry before the wildcard.
+ *
+ * @param inputStr                       String to test
+ * @param whitelistStrWithWildcardReplacement  Whitelist entry with wildcards replaced
+ * @returns True if the input starts with the expected part of the whitelist entry
+ */
 function startsWithUntilWildcardReplacement(inputStr: string, whitelistStrWithWildcardReplacement: string): boolean {
-	// redirectUrl could be "/rocket-meals/login/.../"
-	// redirect_whitelist_entry_with_possible_wildcard_replacement could be "/rocket-meals/WILDCARD_REPLACEMENT/.../"
-	// we need to check if the redirectUrl starts with the redirect_whitelist_entry_with_possible_wildcard_replacement
-	let split = whitelistStrWithWildcardReplacement.split(WILDCARD_REPLACEMENT);
-	let first_part: string = split.length > 1 ? split[0] as string : whitelistStrWithWildcardReplacement;
-	// so /rocket-meals/ is the first part and the rest is the second part
-	// remove the last char if it is a slash
-	if(first_part.endsWith("/")){
-		first_part = first_part.slice(0, -1);
-	}
-	// check if the redirectUrl starts with the first part
-	return inputStr.startsWith(first_part);
+        // redirectUrl could be "/rocket-meals/login/.../"
+        // redirect_whitelist_entry_with_possible_wildcard_replacement could be "/rocket-meals/WILDCARD_REPLACEMENT/.../"
+        // we need to check if the redirectUrl starts with the redirect_whitelist_entry_with_possible_wildcard_replacement
+        let split = whitelistStrWithWildcardReplacement.split(WILDCARD_REPLACEMENT);
+        let first_part: string = split.length > 1 ? split[0] as string : whitelistStrWithWildcardReplacement;
+        // so /rocket-meals/ is the first part and the rest is the second part
+        // remove the last char if it is a slash
+        if(first_part.endsWith("/")){
+                first_part = first_part.slice(0, -1);
+        }
+        // check if the redirectUrl starts with the first part
+        return inputStr.startsWith(first_part);
 }
 
-// function to check if a url is allowed/matches a whitelist entry
+/**
+ * Check if a redirect URL matches a given whitelist entry.
+ *
+ * @param redirect_whitelist_entry Whitelist pattern that may contain wildcards
+ * @param redirectUrl              Parsed redirect URL
+ * @returns True when the URL is permitted
+ */
 function isRedirectUrlAllowedForWhitelistEntry(redirect_whitelist_entry: string | undefined, redirectUrl: URL): boolean {
 	if(!redirect_whitelist_entry){
 		return false;
@@ -123,12 +136,18 @@ function isRedirectUrlAllowedForWhitelistEntry(redirect_whitelist_entry: string 
 	}
 }
 
+/**
+ * Validate a URL string and return a URL object or null.
+ *
+ * @param url Raw URL string
+ * @returns Parsed URL or null when invalid
+ */
 function getValidUrl(url: string): URL | null {
-	try {
-		return new URL(url);
-	} catch (e) {
-		return null;
-	}
+        try {
+                return new URL(url);
+        } catch (e) {
+                return null;
+        }
 }
 
 

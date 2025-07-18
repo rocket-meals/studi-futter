@@ -1,5 +1,5 @@
 import React, { forwardRef, useCallback, useMemo } from 'react';
-import { Dimensions, View, TouchableOpacity } from 'react-native';
+import { Dimensions, View, TouchableOpacity, Text } from 'react-native';
 import BottomSheet, {
   BottomSheetBackdrop,
   type BottomSheetProps,
@@ -15,12 +15,13 @@ import styles from './styles';
 export interface BaseBottomSheetProps
   extends Omit<BottomSheetProps, 'backdropComponent'> {
   onClose?: () => void;
+  title?: string;
 }
 
 const MAX_HEIGHT = Dimensions.get('window').height * 0.8;
 
 const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(
-  ({ onClose, children, backgroundStyle, onChange, ...props }, ref) => {
+  ({ onClose, title, children, backgroundStyle, onChange, ...props }, ref) => {
     const renderBackdrop = useCallback(
       (backdropProps: BottomSheetBackdropProps) => (
         <BottomSheetBackdrop
@@ -55,7 +56,6 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(
       <BottomSheet
         ref={ref}
         snapPoints={snapPoints}
-        enableDynamicSizing
         maxDynamicContentSize={MAX_HEIGHT}
         backdropComponent={renderBackdrop}
         backgroundStyle={backgroundStyle}
@@ -63,15 +63,18 @@ const BaseBottomSheet = forwardRef<BottomSheet, BaseBottomSheetProps>(
         onChange={handleChange}
         {...props}
       >
-        <View style={[styles.header, { backgroundColor: headerBg }]}>
-          <View style={styles.placeholder} />
-          <View style={[styles.handle, { backgroundColor: handleColor }]} />
-          <TouchableOpacity
-            style={[styles.closeButton, { backgroundColor: theme.sheet.closeBg }]}
-            onPress={onClose}
-          >
-            <AntDesign name='close' size={24} color={theme.sheet.closeIcon} />
-          </TouchableOpacity>
+        <View style={[styles.headerContainer, { backgroundColor: headerBg }]}>
+          <View style={styles.handleRow}>
+            <View style={styles.placeholder} />
+            <View style={[styles.handle, { backgroundColor: handleColor }]} />
+            <TouchableOpacity
+              style={[styles.closeButton, { backgroundColor: theme.sheet.closeBg }]}
+              onPress={onClose}
+            >
+              <AntDesign name='close' size={24} color={theme.sheet.closeIcon} />
+            </TouchableOpacity>
+          </View>
+          {title && <Text style={[styles.title, { color: theme.sheet.text }]}>{title}</Text>}
         </View>
         {children}
       </BottomSheet>

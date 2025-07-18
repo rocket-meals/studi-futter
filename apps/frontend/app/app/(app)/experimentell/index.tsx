@@ -8,15 +8,17 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { useSelector } from 'react-redux';
+import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { RootState } from '@/redux/reducer';
 
 const index = () => {
   useSetPageTitle(TranslationKeys.experimentell);
   const { translate } = useLanguage();
   const { theme } = useTheme();
-  const { selectedCanteen, buildings } = useSelector(
+  const { buildings } = useSelector(
     (state: RootState) => state.canteenReducer
   );
+  const selectedCanteen = useSelectedCanteen();
 
   const buildingPosition = useMemo(() => {
     if (selectedCanteen?.building) {
@@ -76,6 +78,18 @@ const index = () => {
             <MaterialCommunityIcons name='image-multiple' color={theme.screen.icon} size={24} />
             <Text style={{ ...styles.body, color: theme.screen.text }}>
               {translate(TranslationKeys.vertical_image_scroll)}
+            </Text>
+          </View>
+          <Entypo name='chevron-small-right' color={theme.screen.icon} size={24} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }}
+          onPress={() => router.push('/chats')}
+        >
+          <View style={styles.col}>
+            <MaterialCommunityIcons name='chat' color={theme.screen.icon} size={24} />
+            <Text style={{ ...styles.body, color: theme.screen.text }}>
+              {translate(TranslationKeys.chats)}
             </Text>
           </View>
           <Entypo name='chevron-small-right' color={theme.screen.icon} size={24} />

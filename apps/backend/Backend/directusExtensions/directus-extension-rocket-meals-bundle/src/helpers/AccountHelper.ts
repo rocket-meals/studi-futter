@@ -2,6 +2,7 @@
  * Helper for Account things
  */
 export class AccountHelper {
+    
     /**
      * Set the accountablility to admin
      * @param accountability the given accountability

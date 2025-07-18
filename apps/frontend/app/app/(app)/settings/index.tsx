@@ -29,9 +29,11 @@ import {
 } from '@expo/vector-icons';
 import { isWeb } from '@/constants/Constants';
 import SettingList from '@/components/SettingList/SettingList';
+import { useExpoUpdateChecker } from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
 import NicknameSheet from '@/components/NicknameSheet/NicknameSheet';
 import ColorSchemeSheet from '@/components/ColorSchemeSheet/ColorSchemeSheet';
 import DrawerPositionSheet from '@/components/DrawerPositionSheet/DrawerPositionSheet';
+import ServerSelectionSheet from '@/components/ServerSelectionSheet/ServerSelectionSheet';
 import { router, useFocusEffect } from 'expo-router';
 import {
   themes,
@@ -40,7 +42,9 @@ import {
   AmountColumn,
   days,
 } from '../../../constants/SettingData';
+import { devConfig, swosyConfig, studiFutterConfig, type CustomerConfig } from '@/config';
 import { useDispatch, useSelector } from 'react-redux';
+import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import AmountColumns from '@/components/AmountColumn/AmountColumns';
 import { useLanguage } from '@/hooks/useLanguage';
 import {
@@ -78,6 +82,7 @@ import {
   showFormatedPrice,
 } from '@/constants/HelperFunctions';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
+import { ServerAPI } from '@/redux/actions';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { DatabaseTypes } from 'repo-depkit-common';
@@ -100,7 +105,9 @@ const Settings = () => {
   const amountColumnSheetRef = useRef<BottomSheet>(null);
   const firstDaySheetRef = useRef<BottomSheet>(null);
   const colorSchemeSheetRef = useRef<BottomSheet>(null);
+  const serverSheetRef = useRef<BottomSheet>(null);
   const [disabled, setDisabled] = useState(false);
+  const { manualCheck } = useExpoUpdateChecker();
   const {
     user,
     profile,
@@ -118,9 +125,7 @@ const Settings = () => {
     amountColumnsForcard,
     serverInfo,
   } = useSelector((state: RootState) => state.settings);
-  const { selectedCanteen } = useSelector(
-    (state: RootState) => state.canteenReducer
-  );
+  const selectedCanteen = useSelectedCanteen();
   const [windowWidth, setWindowWidth] = useState(
     Dimensions.get('window').width
   );
@@ -221,6 +226,25 @@ const Settings = () => {
 
   const closeFirstDayModal = () => {
     firstDaySheetRef?.current?.close();
+  };
+
+  // server selection
+  const openServerSheet = () => {
+    serverSheetRef?.current?.expand();
+  };
+
+  const closeServerSheet = () => {
+    serverSheetRef?.current?.close();
+  };
+
+  const handleSelectServer = async (config: CustomerConfig) => {
+    ServerAPI.serverUrlCustom = config.server_url;
+    await AsyncStorage.setItem('server_url_custom', config.server_url);
+    await performLogout(dispatch, router);
+  };
+
+  const handleCheckForUpdates = () => {
+    manualCheck();
   };
 
   const changeLanguage = (language: {
@@ -551,7 +575,13 @@ const Settings = () => {
                 color={theme.screen.icon}
               />
             }
-            handleFunction={() => openFirstDayModal()}
+          handleFunction={() => openFirstDayModal()}
+          />
+          <SettingList
+            leftIcon={<Ionicons name='cloud-download-outline' size={24} color={theme.screen.icon} />}
+            label={translate(TranslationKeys.CHECK_FOR_APP_UPDATES)}
+            rightIcon={<Octicons name='chevron-right' size={24} color={theme.screen.icon} />}
+            handleFunction={handleCheckForUpdates}
           />
           {user?.id ? (
             <SettingList
@@ -727,6 +757,23 @@ const Settings = () => {
               {translate(TranslationKeys.developerModeActive)}
             </Text>
           )}
+          {isManagement && isDevMode && (
+            <SettingList
+              leftIcon={
+                <MaterialCommunityIcons
+                  name='server'
+                  size={24}
+                  color={theme.screen.icon}
+                />
+              }
+              label={translate(TranslationKeys.backend_server)}
+              value={serverInfo?.info?.project?.project_name}
+              rightIcon={
+                <Octicons name='chevron-right' size={24} color={theme.screen.icon} />
+              }
+              handleFunction={openServerSheet}
+            />
+          )}
         </View>
       </ScrollView>
       {isActive && (
@@ -863,12 +910,29 @@ const Settings = () => {
             handleComponent={null}
             onClose={closeDrawerSheet}
           >
-            <DrawerPositionSheet
-              closeSheet={closeDrawerSheet}
-              selectedPosition={drawerPosition}
-              onSelect={(position) => {
-                handleDrawerPosition(position);
-              }}
+          <DrawerPositionSheet
+            closeSheet={closeDrawerSheet}
+            selectedPosition={drawerPosition}
+            onSelect={(position) => {
+              handleDrawerPosition(position);
+            }}
+          />
+          </BaseBottomSheet>
+          <BaseBottomSheet
+            ref={serverSheetRef}
+            index={-1}
+            backgroundStyle={{
+              ...styles.sheetBackground,
+              backgroundColor: theme.sheet.sheetBg,
+            }}
+            enablePanDownToClose
+            handleComponent={null}
+            onClose={closeServerSheet}
+          >
+            <ServerSelectionSheet
+              closeSheet={closeServerSheet}
+              selectedServer={ServerAPI.getServerUrl()}
+              onSelect={handleSelectServer}
             />
           </BaseBottomSheet>
         </>

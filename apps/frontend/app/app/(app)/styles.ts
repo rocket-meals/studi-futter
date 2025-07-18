@@ -51,4 +51,23 @@ export default StyleSheet.create({
     top: 5,
     right: 5,
   },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    gap: 10,
+  },
+  continueButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  continueLabel: {
+    fontSize: 16,
+    fontFamily: 'Poppins_400Regular',
+    marginLeft: 5,
+  },
 });

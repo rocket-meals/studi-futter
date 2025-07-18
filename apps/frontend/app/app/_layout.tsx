@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Slot } from 'expo-router';
 import { RootSiblingParent } from 'react-native-root-siblings';
 import {
@@ -36,6 +36,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { GluestackUIProvider } from '@gluestack-ui/themed';
 import { config } from '@gluestack-ui/config';
 import ExpoUpdateLoader from '@/components/ExpoUpdateLoader/ExpoUpdateLoader';
+import ExpoUpdateChecker from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
 
 ServerAPI.createAuthentificationStorage(
   async () => {
@@ -74,6 +75,14 @@ export default function Layout() {
     Poppins_900Black_Italic,
   });
 
+  useEffect(() => {
+    AsyncStorage.getItem('server_url_custom').then((url) => {
+      if (url) {
+        ServerAPI.serverUrlCustom = url;
+      }
+    });
+  }, []);
+
   if (!fontsLoaded) {
     return (
       <View
@@ -102,17 +111,19 @@ export default function Layout() {
             <RootSiblingParent>
               <ThemeProvider>
                 <ServerStatusLoader>
-                  <KeyboardAvoidingView
-                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                    style={{ flex: 1, backgroundColor: theme.screen.iconBg }}
-                  >
-                    <SafeAreaView
+                  <ExpoUpdateChecker>
+                    <KeyboardAvoidingView
+                      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                       style={{ flex: 1, backgroundColor: theme.screen.iconBg }}
-                      edges={['top', 'bottom']}
                     >
-                      <Slot />
-                    </SafeAreaView>
-                  </KeyboardAvoidingView>
+                      <SafeAreaView
+                        style={{ flex: 1, backgroundColor: theme.screen.iconBg }}
+                        edges={['top', 'bottom']}
+                      >
+                        <Slot />
+                      </SafeAreaView>
+                    </KeyboardAvoidingView>
+                  </ExpoUpdateChecker>
                 </ServerStatusLoader>
               </ThemeProvider>
             </RootSiblingParent>

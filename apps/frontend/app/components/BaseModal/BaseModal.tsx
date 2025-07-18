@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
 import Modal from 'react-native-modal';
 import { AntDesign } from '@expo/vector-icons';
 import { styles } from './styles';
@@ -71,7 +71,13 @@ const BaseModal: React.FC<BaseModalProps> = ({
             {title}
           </Text>
         )}
-        {children}
+        <ScrollView
+          style={styles.scrollView}
+          nestedScrollEnabled
+          contentContainerStyle={{ flexGrow: 1 }}
+        >
+          {children}
+        </ScrollView>
       </View>
     </Modal>
   );

@@ -19,8 +19,6 @@ const MarkingBottomSheet = forwardRef<BottomSheet, MarkingBottomSheetProps>(
         backgroundStyle={{ backgroundColor: theme.sheet.sheetBg }}
         enablePanDownToClose
         handleComponent={null}
-        enableHandlePanningGesture={false}
-        enableContentPanningGesture={false}
         onClose={onClose}
       >
         <MenuSheet closeSheet={onClose} />

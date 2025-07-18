@@ -18,6 +18,7 @@ import { myContrastColor } from '@/helper/colorHelper';
 
 export interface MyMarkdownProps {
   content: string;
+  textColor?: string;
 }
 
 export const replaceLinebreaks = (sourceContent: string) => {
@@ -33,7 +34,7 @@ export const replaceLinebreaks = (sourceContent: string) => {
   return sourceContent;
 };
 
-const MyMarkdown: React.FC<MyMarkdownProps> = ({ content }) => {
+const MyMarkdown: React.FC<MyMarkdownProps> = ({ content, textColor: textColorProp }) => {
   const { primaryColor, selectedTheme } = useSelector(
     (state: RootState) => state.settings
   );
@@ -61,7 +62,7 @@ const MyMarkdown: React.FC<MyMarkdownProps> = ({ content }) => {
   const source = { html: result || '' };
 
   const fontSize = 16;
-  const textColor = theme.sheet.text;
+  const textColor = textColorProp ?? theme.sheet.text;
   const contrastColor = myContrastColor(primaryColor, theme, selectedTheme === 'dark');
 
   const tagsStyles = {

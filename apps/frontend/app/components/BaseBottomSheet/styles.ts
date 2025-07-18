@@ -1,14 +1,16 @@
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
-  header: {
+  headerContainer: {
     width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     borderTopRightRadius: 28,
     borderTopLeftRadius: 28,
     padding: 10,
+  },
+  handleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   closeButton: {
     width: 45,
@@ -27,5 +29,11 @@ export default StyleSheet.create({
   placeholder: {
     width: 45,
     height: 45,
+  },
+  title: {
+    marginTop: 10,
+    textAlign: 'center',
+    fontSize: 18,
+    fontFamily: 'Poppins_700Bold',
   },
 });

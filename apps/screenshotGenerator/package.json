@@ -2,12 +2,9 @@
   "name": "screenshotgenerator",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "test": "jest",
-    "start": "node dist/index.js",
-    "debug": "yarn run build && yarn run start -- --repositoryOwner rocket-meals --repositoryName rocket-meals --screenshotDir ./screenshots"
+    "start": "tsx src/index.ts",
+    "debug": "yarn run start -- --repositoryOwner rocket-meals --repositoryName rocket-meals --screenshotDir ./screenshots"
   },
   "author": "",
   "license": "ISC",
@@ -16,11 +13,13 @@
     "@types/node": "^22.5.0",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
+    "tsx": "^4.7.0",
     "typescript": "^5.5.4"
   },
   "dependencies": {
     "puppeteer": "^23.1.1",
     "sharp": "^0.33.5",
-    "yargs": "^17.7.2"
+    "yargs": "^17.7.2",
+    "repo-depkit-common": "*"
   }
 }

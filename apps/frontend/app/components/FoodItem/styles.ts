@@ -1,21 +1,6 @@
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
-  card: {
-    borderRadius: 21,
-    justifyContent: 'space-between',
-    paddingBottom: 10,
-  },
-  cardContent: {
-    alignItems: 'stretch',
-    borderTopWidth: 3,
-    flex: 1,
-  },
-  imageContainer: {
-    width: '100%',
-    borderRadius: 18,
-    position: 'relative',
-  },
   editImageButton: {
     position: 'absolute',
     bottom: 10,
@@ -63,13 +48,6 @@ export default StyleSheet.create({
   categoryLogo: {
     width: 40,
     height: 40,
-    resizeMode: 'cover',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    borderTopRightRadius: 18,
-    borderTopLeftRadius: 18,
     resizeMode: 'cover',
   },
   foodName: {

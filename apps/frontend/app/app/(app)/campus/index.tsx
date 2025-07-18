@@ -29,6 +29,7 @@ import { RootDrawerParamList } from './types';
 import { useFocusEffect, useNavigation } from 'expo-router';
 import BuildingItem from '@/components/BuildingItem/BuildingItem';
 import { useDispatch, useSelector } from 'react-redux';
+import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { CampusHelper } from '@/redux/actions/Campus/Campus';
 import { DatabaseTypes } from 'repo-depkit-common';
 import {
@@ -41,6 +42,8 @@ import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { calculateDistanceInMeter } from '@/helper/distanceHelper';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
+import DistanceModal from '@/components/DistanceModal';
+import * as Location from 'expo-location';
 import BuildingSortSheet from '@/components/BuildingSortSheet/BuildingSortSheet';
 import useToast from '@/hooks/useToast';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -76,14 +79,13 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const { campuses, campusesLocal, unSortedCampuses } = useSelector(
     (state: RootState) => state.campus
   );
-  const { selectedCanteen } = useSelector(
-    (state: RootState) => state.canteenReducer
-  );
+  const selectedCanteen = useSelectedCanteen();
   const drawerNavigation =
     useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
 
   const sortSheetRef = useRef<BottomSheet>(null);
   const imageManagementSheetRef = useRef<BottomSheet>(null);
+  const [distanceModalVisible, setDistanceModalVisible] = useState(false);
 
   const openSortSheet = () => {
     sortSheetRef.current?.expand();
@@ -99,6 +101,14 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
   const closeImageManagementSheet = () => {
     imageManagementSheetRef?.current?.close();
+  };
+
+  const openDistanceSheet = () => {
+    setDistanceModalVisible(true);
+  };
+
+  const closeDistanceSheet = () => {
+    setDistanceModalVisible(false);
   };
 
   useFocusEffect(
@@ -225,6 +235,23 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
       }
     } else {
       toast('Please select canteen', 'error');
+    }
+  };
+
+  const useCurrentLocationForDistance = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        toast('Permission denied', 'error');
+        return;
+      }
+      const loc = await Location.getCurrentPositionAsync({});
+      setSelectedBuilding({
+        coordinates: { coordinates: [loc.coords.longitude, loc.coords.latitude] },
+      } as any);
+      closeDistanceSheet();
+    } catch (error) {
+      console.error('Error getting location:', error);
     }
   };
 
@@ -374,7 +401,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
               placeholderTextColor={theme.screen.placeholder}
               onChangeText={setQuery}
               value={query}
-              placeholder='Search campus here...'
+              placeholder={translate(TranslationKeys.search_campus_here)}
             />
           </View>
           <View style={{ ...styles.campusContainer, gap: isWeb ? 10 : 10 }}>
@@ -396,6 +423,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                   campus={campus}
                   setSelectedApartementId={setSelectedApartementId}
                   openImageManagementSheet={openImageManagementSheet}
+                  openDistanceSheet={openDistanceSheet}
                 />
               ))
             ) : (
@@ -456,9 +484,17 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 setCampusesDispatched(false);
                 fetchAllCampuses();
               }}
-              fileName='buildings'
-            />
-          </BaseBottomSheet>
+            fileName='buildings'
+          />
+        </BaseBottomSheet>
+        )}
+
+        {isActive && (
+          <DistanceModal
+            visible={distanceModalVisible}
+            onClose={closeDistanceSheet}
+            onUseCurrentPosition={useCurrentLocationForDistance}
+          />
         )}
       </View>
     </SafeAreaView>
