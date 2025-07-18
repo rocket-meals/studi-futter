@@ -68,7 +68,7 @@ import { HashHelper } from '@/helper/hashHelper';
 import { CollectionKeys } from '@/constants/collectionKeys';
 import { RootState } from '@/redux/reducer';
 import { sortMarkingsByGroup, sortBySortField } from '@/helper/sortingHelper';
-
+import { SET_NEWS } from '@/redux/Types/types';
 
 export default function Layout() {
   const { theme } = useTheme();
