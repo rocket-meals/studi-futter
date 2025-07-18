@@ -111,7 +111,6 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   const businessHoursHelper = new BusinessHoursHelper();
   const canteenFeedbackLabelHelper = new CanteenFeedbackLabelHelper();
   const [loading, setLoading] = useState(false);
-  const [isActive, setIsActive] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [beforeElement, setBeforeElement] = useState<any>(null);
   const [afterElement, setAfterElement] = useState<any>(null);
@@ -248,15 +247,6 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     setAfterElement(after);
   }, [appElements, appSettings]);
 
-  useFocusEffect(
-    useCallback(() => {
-      setIsActive(true);
-      return () => {
-        setIsActive(false);
-      };
-    }, [])
-  );
-
   useEffect(() => {
     if (kioskMode) {
       return;
@@ -318,12 +308,12 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
   };
 
   useEffect(() => {
-    if (isActive && selectedSheet) {
+    if (selectedSheet) {
       setTimeout(() => {
         bottomSheetRef.current?.expand();
       }, 150);
     }
-  }, [selectedSheet, isActive]);
+  }, [selectedSheet]);
 
   const closeSheet = useCallback(() => {
     bottomSheetRef.current?.snapToIndex(-1);
@@ -1074,7 +1064,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
             )}
           </ScrollView>
         </View>
-        {isActive && !kioskMode && popupEvents.length > 0 && (
+        {!kioskMode && popupEvents.length > 0 && (
           selectedSheet === 'menu' ? (
             <MarkingBottomSheet ref={bottomSheetRef} onClose={closeSheet} />
           ) : (
@@ -1108,7 +1098,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
           )
         )}
 
-        {isActive && currentPopupEvent && (
+        {currentPopupEvent && (
           <BaseBottomSheet
             ref={eventSheetRef}
             index={-1}
