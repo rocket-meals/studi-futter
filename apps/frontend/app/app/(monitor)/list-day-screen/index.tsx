@@ -568,7 +568,11 @@ const index = () => {
       const interval = setInterval(() => {
         if (!foodsScrollRef.current) return;
 
-        const visibleRows = Math.floor(tableMaxHeight / rowHeight);
+        const currentHeight =
+          foods?.length > 0 && optionalFoods?.length > 0
+            ? tableMaxHeight / 2 - 20
+            : tableMaxHeight;
+        const visibleRows = Math.floor(currentHeight / rowHeight);
         const remainingRows = foods.length - (foodScrollIndex + visibleRows);
 
         let nextIndex;
@@ -590,14 +594,24 @@ const index = () => {
 
       return () => clearInterval(interval);
     }
-  }, [foods, foodScrollIndex, nextPageIntervalInSeconds, tableMaxHeight]);
+  }, [
+    foods,
+    optionalFoods,
+    foodScrollIndex,
+    nextPageIntervalInSeconds,
+    tableMaxHeight,
+  ]);
 
   useEffect(() => {
     if (optionalFoods?.length > 0 && nextPageIntervalInSeconds) {
       const interval = setInterval(() => {
         if (!optionalFoodsScrollRef.current) return;
 
-        const visibleRows = Math.floor(tableMaxHeight / rowHeight);
+        const currentHeight =
+          foods?.length > 0 && optionalFoods?.length > 0
+            ? tableMaxHeight / 2 - 20
+            : tableMaxHeight;
+        const visibleRows = Math.floor(currentHeight / rowHeight);
         const remainingRows =
           optionalFoods.length - (optionalFoodScrollIndex + visibleRows);
 
@@ -622,6 +636,7 @@ const index = () => {
     }
   }, [
     optionalFoods,
+    foods,
     optionalFoodScrollIndex,
     nextPageIntervalInSeconds,
     tableMaxHeight,
