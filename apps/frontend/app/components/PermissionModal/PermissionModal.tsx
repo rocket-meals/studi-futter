@@ -1,19 +1,16 @@
 import {
-  ActivityIndicator,
   Dimensions,
   Text,
   TouchableOpacity,
 } from 'react-native';
-import React, { useState } from 'react';
+import React from 'react';
 import BaseModal from '@/components/BaseModal';
 import { styles } from './styles';
 import { PermissionModalProps } from './types';
 import { useRouter } from 'expo-router';
-import { useDispatch, useSelector } from 'react-redux';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ON_LOGOUT } from '@/redux/Types/types';
+import { useSelector } from 'react-redux';
+import { useLogoutCallback } from '@/redux/actions/User/User';
 import { useLanguage } from '@/hooks/useLanguage';
-import { persistor } from '@/redux/store';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import { myContrastColor } from '@/helper/colorHelper';
@@ -29,23 +26,12 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
     (state: RootState) => state.settings
   );
   const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const dispatch = useDispatch();
+  const onLogout = useLogoutCallback();
 
-  const handleLogout = async () => {
-    try {
-      setLoading(true);
-      await AsyncStorage.multiRemove(['auth_data', 'persist:root']);
-      dispatch({ type: ON_LOGOUT });
-      dispatch({ type: 'RESET_STORE' });
-      persistor.purge();
-      setLoading(false);
-      router.replace('/(auth)/login');
-    } catch (error) {
-      setLoading(false);
-      console.error('Error during logout:', error);
-    }
+  const handleLogout = () => {
+    onLogout();
+    router.replace('/(auth)/login');
   };
 
   return (
@@ -71,14 +57,10 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
         }}
         onPress={handleLogout}
       >
-        {loading ? (
-          <ActivityIndicator size={22} color={theme.background} />
-        ) : (
-          <Text style={{ ...styles.loginLabel, color: contrastColor }}>
-            {translate(TranslationKeys.sign_in)} /{' '}
-            {translate(TranslationKeys.create_account)}
-          </Text>
-        )}
+        <Text style={{ ...styles.loginLabel, color: contrastColor }}>
+          {translate(TranslationKeys.sign_in)} /{' '}
+          {translate(TranslationKeys.create_account)}
+        </Text>
       </TouchableOpacity>
     </BaseModal>
   );
