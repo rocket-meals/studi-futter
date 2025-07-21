@@ -25,6 +25,8 @@ import {
   
   import { UrlHelper } from '@/constants/UrlHelper';
   import ServerConfiguration from '@/constants/ServerUrl';
+  import { setApiBaseUrl } from '@/redux/actions/ApiService/ApiService';
+  import { setBaseURL } from '@/interceptor';
   
   interface ExtendedProperties {
 	project: {
@@ -57,7 +59,15 @@ import {
 	static ParamNameForAccessToken = 'directus_refresh_token';
 	static PROVIDER_NAME_APPLE = 'apple';
 	static PROVIDER_NAME_GOOGLE = 'google';
-	static simpleAuthentificationStorage: AuthenticationStorage | null = null;
+        static simpleAuthentificationStorage: AuthenticationStorage | null = null;
+
+        static updateServerUrl(url: string) {
+          this.serverUrlCustom = url;
+          ServerConfiguration.setServerUrl(url);
+          setApiBaseUrl(url);
+          setBaseURL(url);
+          this.client = null;
+        }
   
 	// Retrieves server URL
 	static getServerUrl() {

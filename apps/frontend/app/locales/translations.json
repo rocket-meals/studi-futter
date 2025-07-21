@@ -2443,6 +2443,16 @@
     "tr": "Experimentell",
     "zh": "Experimentell"
   },
+  "debug_logout": {
+    "de": "Debug Logout",
+    "en": "Debug Logout",
+    "ar": "Debug Logout",
+    "es": "Debug Logout",
+    "fr": "Debug Logout",
+    "ru": "Debug Logout",
+    "tr": "Debug Logout",
+    "zh": "Debug Logout"
+  },
   "vertical_image_scroll": {
     "de": "Vertikaler Bildlauf",
     "en": "Vertical Image Scroll",
@@ -2452,6 +2462,16 @@
     "ru": "Вертикальная прокрутка изображений",
     "tr": "Dikey Resim Kaydırma",
     "zh": "垂直图片滚动"
+  },
+  "foodoffers_scroll": {
+    "de": "Speiseplan-Scroll",
+    "en": "Food Offers Scroll",
+    "ar": "تمرير عروض الطعام",
+    "es": "Desplazamiento de ofertas de comida",
+    "fr": "Défilement des offres de repas",
+    "ru": "Прокрутка предложений блюд",
+    "tr": "Yemek Teklifleri Kaydırma",
+    "zh": "餐饮提供滚动"
   },
   "chats": {
     "de": "Chats",

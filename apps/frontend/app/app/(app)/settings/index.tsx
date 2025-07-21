@@ -238,7 +238,7 @@ const Settings = () => {
   };
 
   const handleSelectServer = async (config: CustomerConfig) => {
-    ServerAPI.serverUrlCustom = config.server_url;
+    ServerAPI.updateServerUrl(config.server_url);
     await AsyncStorage.setItem('server_url_custom', config.server_url);
     await performLogout(dispatch, router);
   };

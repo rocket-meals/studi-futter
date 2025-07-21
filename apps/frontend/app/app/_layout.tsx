@@ -78,7 +78,7 @@ export default function Layout() {
   useEffect(() => {
     AsyncStorage.getItem('server_url_custom').then((url) => {
       if (url) {
-        ServerAPI.serverUrlCustom = url;
+        ServerAPI.updateServerUrl(url);
       }
     });
   }, []);

@@ -6,6 +6,10 @@ const axiosInstance = axios.create({
   timeout: 60000, // Adjust timeout as necessary
 });
 
+export const setBaseURL = (url: string) => {
+  axiosInstance.defaults.baseURL = url;
+};
+
 // Function to set token dynamically
 export const setAuthorizationToken = (token: string | null) => {
   if (token) {

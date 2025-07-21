@@ -60,8 +60,8 @@ const authReducer = (state = initialState, actions: any) => {
     }
     case CLEAR_ANONYMOUSLY: {
       return {
-        ...state,
-        loggedIn: false,
+        ...initialState,
+        isDevMode: state.isDevMode,
       };
     }
     case ON_LOGOUT: {

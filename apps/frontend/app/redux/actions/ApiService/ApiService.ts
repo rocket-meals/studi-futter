@@ -9,6 +9,10 @@ const api = axios.create({
   },
 });
 
+export const setApiBaseUrl = (url: string) => {
+  api.defaults.baseURL = url;
+};
+
 // Token Request
 export const fetchToken = async (codeVerifier: string, code: string) => {
   const endpoint = '/proof-key-code-exchange/token';
