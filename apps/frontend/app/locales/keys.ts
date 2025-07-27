@@ -250,6 +250,7 @@ export enum TranslationKeys {
   rate_app = 'rate_app',
   app_download = 'app_download',
   react_native_qrcode_svg = 'react_native_qrcode_svg',
+  settings_list_check = 'settings_list_check',
   vertical_image_scroll = 'vertical_image_scroll',
   foodoffers_scroll = 'foodoffers_scroll',
   chats = 'chats',

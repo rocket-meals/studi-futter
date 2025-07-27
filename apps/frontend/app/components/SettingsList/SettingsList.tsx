@@ -128,14 +128,16 @@ const styles = StyleSheet.create({
   textWrapper: {
     flex: 1,
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
-    justifyContent: 'space-between',
   },
   titleContainer: {
     flexShrink: 1,
+    minWidth: 0,
   },
   valueContainer: {
     marginLeft: 8,
+    flexShrink: 0,
   },
   title: {
     fontSize: 16,

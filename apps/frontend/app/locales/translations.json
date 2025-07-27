@@ -2503,6 +2503,16 @@
     "tr": "React Native QRCode SVG",
     "zh": "React Native QRCode SVG"
   },
+  "settings_list_check": {
+    "de": "Settings List Check",
+    "en": "Settings List Check",
+    "ar": "Settings List Check",
+    "es": "Settings List Check",
+    "fr": "Settings List Check",
+    "ru": "Settings List Check",
+    "tr": "Settings List Check",
+    "zh": "Settings List Check"
+  },
   "vertical_image_scroll": {
     "de": "Vertikaler Bildlauf",
     "en": "Vertical Image Scroll",
