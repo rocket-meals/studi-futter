@@ -130,6 +130,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   titleContainer: {
     flexShrink: 1,
@@ -145,6 +146,7 @@ const styles = StyleSheet.create({
   },
   value: {
     fontSize: 13,
+    textAlign: 'right',
   },
   rightWrapper: {
     width: 34,
