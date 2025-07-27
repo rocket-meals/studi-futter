@@ -10,7 +10,13 @@ import {
 } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 import { router } from 'expo-router';
-import SupportFAQ from '../../../components/SupportFAQ/SupportFAQ';
+import SettingsList from '@/components/SettingsList';
+import {
+  MaterialIcons,
+  Ionicons,
+  MaterialCommunityIcons,
+  Octicons,
+} from '@expo/vector-icons';
 import styles from './styles';
 import { useLanguage } from '@/hooks/useLanguage';
 import useToast from '@/hooks/useToast';
@@ -29,7 +35,7 @@ const supportfaq = () => {
   const [windowWidth, setWindowWidth] = useState(
     Dimensions.get('window').width
   );
-  const { serverInfo, appSettings } = useSelector(
+  const { serverInfo, appSettings, primaryColor } = useSelector(
     (state: RootState) => state.settings
   );
 
@@ -83,133 +89,116 @@ const supportfaq = () => {
             />
           </View>
 
+          <Text style={{ ...styles.groupHeading, color: theme.screen.text }}>
+            {translate(TranslationKeys.feedback_support_faq)}
+          </Text>
           <View
             style={[
               styles.section,
               { width: windowWidth > 600 ? '85%' : '95%' },
             ]}
           >
-            <SupportFAQ
-              icon='feedback'
-              label={`${translate(TranslationKeys.feedback)} & ${translate(
-                TranslationKeys.support
-              )}`}
-              text=''
-              onPress={() => router.navigate('/feedback-support')}
-              isArrowRight={true}
-              redirectIcon={false}
+            <SettingsList
+              iconBgColor={primaryColor}
+              leftIcon={<MaterialIcons name='feedback' size={24} color={theme.screen.icon} />}
+              label={`${translate(TranslationKeys.feedback)} & ${translate(TranslationKeys.support)}`}
+              rightIcon={<Octicons name='chevron-right' size={24} color={theme.screen.icon} />}
+              handleFunction={() => router.navigate('/feedback-support')}
+              groupPosition={profile?.id ? 'top' : 'single'}
             />
             {profile?.id && (
-              <SupportFAQ
-                icon='email'
+              <SettingsList
+                iconBgColor={primaryColor}
+                leftIcon={<MaterialCommunityIcons name='email' size={24} color={theme.screen.icon} />}
                 label={translate(TranslationKeys.my_support_tickets)}
-                redirectIcon={false}
-                text=''
-                onPress={() => {
-                  if (profile?.id) {
-                    router.navigate('/support-ticket');
-                  } else {
-                    toast(
-                      'No permission to view My Support Tickets. Please log in.',
-                      'error'
-                    );
-                  }
-                }}
+                rightIcon={<Octicons name='chevron-right' size={24} color={theme.screen.icon} />}
+                handleFunction={() => router.navigate('/support-ticket')}
+                groupPosition='bottom'
               />
             )}
           </View>
 
+          <Text style={{ ...styles.groupHeading, color: theme.screen.text }}>App</Text>
           <View
             style={[
               styles.section,
               { width: windowWidth > 600 ? '85%' : '95%' },
             ]}
           >
-            <SupportFAQ
-              icon='logo-apple'
+            <SettingsList
+              iconBgColor={primaryColor}
+              leftIcon={<Ionicons name='logo-apple' size={24} color={theme.screen.icon} />}
               label='Apple Store'
-              text=''
-              isArrowRight={false}
-              onPress={() => {
+              rightIcon={<Octicons name='chevron-right' size={24} color={theme.screen.icon} />}
+              handleFunction={() => {
                 if (appSettings?.app_stores_url_to_apple) {
                   openInBrowser(appSettings?.app_stores_url_to_apple);
                 }
               }}
+              groupPosition='top'
             />
-            <SupportFAQ
-              icon='logo-google-playstore'
+            <SettingsList
+              iconBgColor={primaryColor}
+              leftIcon={<Ionicons name='logo-google-playstore' size={24} color={theme.screen.icon} />}
               label='Google Play Store'
-              text=''
-              isArrowRight={false}
-              onPress={() => {
+              rightIcon={<Octicons name='chevron-right' size={24} color={theme.screen.icon} />}
+              handleFunction={() => {
                 if (appSettings?.app_stores_url_to_google) {
                   openInBrowser(appSettings?.app_stores_url_to_google);
                 }
               }}
+              groupPosition='middle'
             />
-            <SupportFAQ
-              icon='email'
+            <SettingsList
+              iconBgColor={primaryColor}
+              leftIcon={<MaterialCommunityIcons name='email' size={24} color={theme.screen.icon} />}
               label={translate(TranslationKeys.email)}
-              isArrowRight={false}
-              text='info@rocket-meals.de'
-              onPress={() => {
-                Linking.openURL(`mailto:info@rocket-meals.de`);
+              value='info@rocket-meals.de'
+              rightIcon={<Octicons name='chevron-right' size={24} color={theme.screen.icon} />}
+              handleFunction={() => {
+                Linking.openURL('mailto:info@rocket-meals.de');
               }}
+              groupPosition='bottom'
             />
           </View>
 
+          <Text style={{ ...styles.groupHeading, color: theme.screen.text }}>
+            {translate(TranslationKeys.project_name)}
+          </Text>
           <View
             style={[
               styles.section,
               { width: windowWidth > 600 ? '85%' : '95%' },
             ]}
           >
-            <View
-              style={{ ...styles.row, backgroundColor: theme.screen.iconBg }}
-            >
-              <View style={styles.leftView}>
-                <Text
-                  style={[
-                    styles.linkText,
-                    {
-                      color: theme.screen.text,
-                      fontSize: windowWidth < 500 ? 14 : 18,
-                    },
-                  ]}
-                >
-                  {translate(TranslationKeys.project_name)}
-                </Text>
-              </View>
-              <View style={styles.textIcon}>
-                <Text
-                  style={[
-                    styles.iconText,
-                    {
-                      color: theme.screen.text,
-                      fontSize: windowWidth < 500 ? 14 : 18,
-                    },
-                  ]}
-                >
-                  {projectName?.length > 0 ? projectName : 'SWOSY Test'}
-                </Text>
-              </View>
-            </View>
-
-            <SupportFAQ
+            <SettingsList
+              iconBgColor={primaryColor}
+              leftIcon={<MaterialIcons name='info' size={24} color={theme.screen.icon} />}
+              label={translate(TranslationKeys.project_name)}
+              value={projectName?.length > 0 ? projectName : 'SWOSY Test'}
+              groupPosition='top'
+            />
+            <SettingsList
+              iconBgColor={primaryColor}
+              leftIcon={<MaterialIcons name='developer-mode' size={24} color={theme.screen.icon} />}
               label={translate(TranslationKeys.developer)}
-              isArrowRight={false}
-              text='Baumgartner Software UG'
-              onPress={() => {
+              value='Baumgartner Software UG'
+              rightIcon={<Octicons name='chevron-right' size={24} color={theme.screen.icon} />}
+              handleFunction={() => {
                 openInBrowser('https://baumgartner-software.de/homepage/');
               }}
+              groupPosition='middle'
             />
-            <SupportFAQ
+            <SettingsList
+              iconBgColor={primaryColor}
+              leftIcon={<MaterialIcons name='apps' size={24} color={theme.screen.icon} />}
               label={translate(TranslationKeys.software_name)}
-              text='Rocket Meals'
-              isArrowRight={false}
-              onPress={() => {
+              value='Rocket Meals'
+              rightIcon={<Octicons name='chevron-right' size={24} color={theme.screen.icon} />}
+              handleFunction={() => {
                 openInBrowser('https://rocket-meals.de/homepage/');
               }}
+              groupPosition='bottom'
             />
           </View>
         </View>

@@ -12,6 +12,7 @@ const ProjectButton: React.FC<ProjectButtonProps> = ({
   onPress,
   iconLeft,
   iconRight,
+  style,
 }) => {
   const { primaryColor, selectedTheme } = useSelector(
     (state: RootState) => state.settings
@@ -31,7 +32,7 @@ const ProjectButton: React.FC<ProjectButtonProps> = ({
 
   return (
     <TouchableOpacity
-      style={[styles.container, { backgroundColor: primaryColor }]}
+      style={[styles.container, { backgroundColor: primaryColor }, style]}
       onPress={onPress}
     >
       {iconLeft}

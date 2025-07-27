@@ -7,7 +7,6 @@ export default StyleSheet.create({
     flex: 1,
     backgroundColor: '#F9F9F9',
     // alignItems: 'center',
-    paddingTop: 50,
     // justifyContent:'center'
   },
   sheetView: {
@@ -20,6 +19,8 @@ export default StyleSheet.create({
   },
   contentContainer: {
     alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 40,
   },
 
   imageContainer: {
@@ -43,11 +44,11 @@ export default StyleSheet.create({
 
   infoContainer: {
     // width: width * 0.9,
-
-    padding: 15,
+    paddingHorizontal: 0,
+    paddingVertical: 0,
     elevation: 3,
     marginTop: 20,
-    marginBottom: 20
+    marginBottom: 20,
   },
   infoRow: {
     flexDirection: 'row',

@@ -25,6 +25,7 @@ import { TranslationKeys } from '@/locales/keys';
 import { useTheme } from '@/hooks/useTheme';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/reducer';
+import { myContrastColor } from '@/helper/colorHelper';
 
 interface ExpoUpdateCheckerProps {
   children?: ReactNode;
@@ -41,7 +42,10 @@ const ExpoUpdateChecker: React.FC<ExpoUpdateCheckerProps> = ({ children }) => {
   const { isSmartPhone } = usePlatformHelper();
   const { translate } = useLanguage();
   const { theme } = useTheme();
-  const { primaryColor } = useSelector((state: RootState) => state.settings);
+  const { primaryColor, selectedTheme: mode } = useSelector(
+    (state: RootState) => state.settings
+  );
+  const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 
   const [modalVisible, setModalVisible] = useState(false);
   const [updating, setUpdating] = useState(false);
@@ -125,9 +129,9 @@ const ExpoUpdateChecker: React.FC<ExpoUpdateCheckerProps> = ({ children }) => {
                 style={[modalStyles.saveButton, { backgroundColor: primaryColor }]}
               >
                 {updating ? (
-                  <ActivityIndicator color={theme.activeText} />
+                  <ActivityIndicator color={contrastColor} />
                 ) : (
-                  <Text style={[modalStyles.buttonText, { color: theme.activeText }]}>
+                  <Text style={[modalStyles.buttonText, { color: contrastColor }]}>
                     {translate(TranslationKeys.to_update)}
                   </Text>
                 )}

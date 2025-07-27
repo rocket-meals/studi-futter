@@ -15,6 +15,8 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import CardWithText from '../CardWithText/CardWithText';
+import CardDimensionHelper from '@/helper/CardDimensionHelper';
+import AvailableFromModal from '../AvailableFromModal';
 
 const ApartmentItem: React.FC<BuildingItemProps> = ({
   apartment,
@@ -36,6 +38,7 @@ const ApartmentItem: React.FC<BuildingItemProps> = ({
   const [screenWidth, setScreenWidth] = useState(
     Dimensions.get('window').width
   );
+  const [showFreeModal, setShowFreeModal] = useState(false);
   const housing_area_color = appSettings?.housing_area_color
     ? appSettings?.housing_area_color
     : projectColor;
@@ -62,42 +65,21 @@ const ApartmentItem: React.FC<BuildingItemProps> = ({
     return () => subscription?.remove();
   }, []);
 
-  const getCardDimension = () => {
-    if (screenWidth < 1110 && screenWidth > 960) return 300;
-    else if (screenWidth < 840 && screenWidth > 750) return 350;
-    else if (screenWidth < 750 && screenWidth > 710) return 330;
-    else if (screenWidth < 709 && screenWidth > 650) return 300;
-    else if (screenWidth > 570) return 260;
-    else if (screenWidth > 530) return 240;
-    else if (screenWidth > 500) return 220;
-    else if (screenWidth > 450) return 210;
-    else if (screenWidth > 380) return 180;
-    else if (screenWidth > 360) return 170;
-    else if (screenWidth > 340) return 160;
-    else if (screenWidth > 320) return 150;
-    else if (screenWidth > 300) return 140;
-    else if (screenWidth > 280) return 130;
-    else return 120;
-  };
+  const getCardDimension = () =>
+    CardDimensionHelper.getCardDimension(screenWidth);
 
-  const getCardWidth = () => {
-    if (screenWidth < 500) {
-      const width = screenWidth / amountColumnsForcard - 10;
-      return width;
-    } else if (screenWidth < 900) {
-      const width = screenWidth / amountColumnsForcard - 25;
-      return width;
-    } else {
-      const width = screenWidth / amountColumnsForcard - 35; // Adjust as needed for larger screens
-      return width;
-    }
-  };
+  const getCardWidth = () =>
+    CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard);
 
   useEffect(() => {
-    const cardWidth = getCardWidth();
+    const cardWidth = CardDimensionHelper.getCardWidth(
+      screenWidth,
+      amountColumnsForcard
+    );
   }, [amountColumnsForcard, screenWidth]);
 
   return (
+    <>
     <Tooltip
       placement='top'
       trigger={(triggerProps) => (
@@ -116,15 +98,23 @@ const ApartmentItem: React.FC<BuildingItemProps> = ({
           containerStyle={{
             ...styles.card,
             width:
-              amountColumnsForcard === 0 ? getCardDimension() : getCardWidth(),
+              amountColumnsForcard === 0
+                ? CardDimensionHelper.getCardDimension(screenWidth)
+                : CardDimensionHelper.getCardWidth(
+                    screenWidth,
+                    amountColumnsForcard
+                  ),
             backgroundColor: theme.card.background,
           }}
           imageContainerStyle={{
             ...styles.imageContainer,
             height:
               amountColumnsForcard === 0
-                ? getCardDimension()
-                : getCardWidth(),
+                ? CardDimensionHelper.getCardDimension(screenWidth)
+                : CardDimensionHelper.getCardWidth(
+                    screenWidth,
+                    amountColumnsForcard
+                  ),
           }}
           contentStyle={{
             ...styles.cardContent,
@@ -132,12 +122,31 @@ const ApartmentItem: React.FC<BuildingItemProps> = ({
           }}
           borderColor={housing_area_color}
           imageChildren={
-            <View style={styles.imageActionContainer}>
-              {isManagement ? (
-                <Tooltip
-                  placement='top'
-                  trigger={(triggerProps) => (
-                    <TouchableOpacity
+            <>
+              {apartment?.available_from && (
+                <TouchableOpacity
+                  style={{
+                    ...styles.freeBadge,
+                    backgroundColor: housing_area_color,
+                  }}
+                  onPress={() => setShowFreeModal(true)}
+                >
+                  <MaterialCommunityIcons
+                    name='door-open'
+                    size={20}
+                    color={contrastColor}
+                  />
+                  <Text style={{ ...styles.freeBadgeText, color: contrastColor }}>
+                    {translate(TranslationKeys.free_rooms)}
+                  </Text>
+                </TouchableOpacity>
+              )}
+              <View style={styles.imageActionContainer}>
+                {isManagement ? (
+                  <Tooltip
+                    placement='top'
+                    trigger={(triggerProps) => (
+                      <TouchableOpacity
                       {...triggerProps}
                       style={styles.editImageButton}
                       onPress={() => {
@@ -180,7 +189,8 @@ const ApartmentItem: React.FC<BuildingItemProps> = ({
                   {getDistanceUnit(apartment?.distance)}
                 </Text>
               </TouchableOpacity>
-            </View>
+              </View>
+            </>
           }
         >
           <Text style={{ ...styles.campusName, color: theme.screen.text }}>
@@ -197,6 +207,12 @@ const ApartmentItem: React.FC<BuildingItemProps> = ({
         </TooltipText>
       </TooltipContent>
     </Tooltip>
+    <AvailableFromModal
+      visible={showFreeModal}
+      onClose={() => setShowFreeModal(false)}
+      availableFrom={String(apartment?.available_from)}
+    />
+    </>
   );
 };
 

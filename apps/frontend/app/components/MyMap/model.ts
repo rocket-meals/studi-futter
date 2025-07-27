@@ -54,7 +54,8 @@ export type MapLayerType =
   | 'WMSTileLayer';
 
 export type MapMarker = {
-  icon: string;
+  icon?: string;
+  iconUrl?: string;
   iconAnchor?: PointTuple;
   id: string;
   position: LatLngLiteral;

@@ -28,8 +28,9 @@ import {
   Octicons,
 } from '@expo/vector-icons';
 import { isWeb } from '@/constants/Constants';
-import SettingList from '@/components/SettingList/SettingList';
+import SettingsList from '@/components/SettingsList';
 import { useExpoUpdateChecker } from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
+import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import NicknameSheet from '@/components/NicknameSheet/NicknameSheet';
 import ColorSchemeSheet from '@/components/ColorSchemeSheet/ColorSchemeSheet';
 import DrawerPositionSheet from '@/components/DrawerPositionSheet/DrawerPositionSheet';
@@ -124,6 +125,7 @@ const Settings = () => {
     firstDayOfTheWeek,
     amountColumnsForcard,
     serverInfo,
+    appSettings,
   } = useSelector((state: RootState) => state.settings);
   const selectedCanteen = useSelectedCanteen();
   const [windowWidth, setWindowWidth] = useState(
@@ -134,6 +136,10 @@ const Settings = () => {
   const languageCode = language;
 
   const languageName = Languages[languageCode as keyof typeof Languages];
+
+  const foods_area_color = appSettings?.foods_area_color
+    ? appSettings?.foods_area_color
+    : primaryColor;
 
   const saveNickname = async () => {
     if (user?.id) {
@@ -316,86 +322,122 @@ const Settings = () => {
             width: windowWidth < 500 ? '100%' : isWeb ? '80%' : '100%',
           }}
         >
-          {/* Account */}
-
-          <View
-            style={{
-              ...styles.list,
-              backgroundColor: theme.screen.iconBg,
-              paddingHorizontal: isWeb ? 20 : 10,
-            }}
-          >
-            <View style={{ ...styles.col }}>
-              <MaterialCommunityIcons
-                name='clipboard-account'
-                size={24}
-                color={theme.screen.icon}
-              />
-              <Text style={{ ...styles.label, color: theme.screen.text }}>
-                {translate(TranslationKeys.account)}
-              </Text>
-            </View>
-            <View style={{ ...styles.col, maxWidth: '60%' }}>
-              <Text
-                style={{
-                  ...styles.value,
-                  color: theme.screen.text,
-                  fontSize: isWeb ? 16 : 14,
-                  textAlign: 'right',
-                }}
-              >
-                {user?.id
-                  ? user?.id
-                  : translate(TranslationKeys.without_account)}
-              </Text>
-            </View>
-          </View>
-          {/* NickName */}
-          <SettingList
-            leftIcon={
-              <MaterialCommunityIcons
-                name='account'
-                size={24}
-                color={theme.screen.icon}
-              />
-            }
-            label={translate(TranslationKeys.nickname)}
-            value={profile?.id ? profile?.nickname : nickNameLocal}
-            rightIcon={
-              <MaterialCommunityIcons
-                name='pencil'
-                size={24}
-                color={theme.screen.icon}
-              />
-            }
-            handleFunction={() => {
-              openNicknameSheet();
-              setNickname(profile?.id ? profile?.nickname : nickNameLocal);
-              if (profile?.nickname === nickname) {
-                setDisabled(true);
-              } else {
-                setDisabled(false);
+          <SettingsGroupTitle>
+            {translate(TranslationKeys.group_account_personalization)}
+          </SettingsGroupTitle>
+          {/* Account & Nickname */}
+          <View style={{ gap: 0 }}>
+            <SettingsList
+              iconBgColor={primaryColor}
+              leftIcon={<MaterialCommunityIcons name='clipboard-account' size={24} color={theme.screen.icon} />}
+              label={translate(TranslationKeys.account)}
+              value={user?.id ? user?.id : translate(TranslationKeys.without_account)}
+              handleFunction={() => {}}
+              groupPosition='top'
+            />
+            {/* NickName */}
+            <SettingsList
+              iconBgColor={primaryColor}
+              leftIcon={
+                <MaterialCommunityIcons
+                  name='account'
+                  size={24}
+                  color={theme.screen.icon}
+                />
               }
-            }}
-          />
-          {/* Language */}
-          <SettingList
-            leftIcon={
-              <Ionicons name='language' size={24} color={theme.screen.icon} />
-            }
-            label={translate(TranslationKeys.language)}
-            value={languageName}
-            rightIcon={
-              <MaterialCommunityIcons
-                name='pencil'
-                size={20}
-                color={theme.screen.icon}
-              />
-            }
-            handleFunction={() => openLanguageModal()}
-          />
+              label={translate(TranslationKeys.nickname)}
+              value={profile?.id ? profile?.nickname : nickNameLocal}
+              rightIcon={
+                <MaterialCommunityIcons
+                  name='pencil'
+                  size={24}
+                  color={theme.screen.icon}
+                />
+              }
+              handleFunction={() => {
+                openNicknameSheet();
+                setNickname(profile?.id ? profile?.nickname : nickNameLocal);
+                if (profile?.nickname === nickname) {
+                  setDisabled(true);
+                } else {
+                  setDisabled(false);
+                }
+              }}
+              groupPosition='middle'
+            />
+            {user?.id ? (
+              <>
+                <SettingsList
+                  iconBgColor={primaryColor}
+                  leftIcon={
+                    <Entypo name='login' size={24} color={theme.screen.icon} />
+                  }
+                  label={translate(TranslationKeys.logout)}
+                  rightIcon={
+                    <Entypo name='login' size={24} color={theme.screen.icon} />
+                  }
+                  handleFunction={handleLogout}
+                  groupPosition='middle'
+                />
+                <SettingsList
+                  iconBgColor={primaryColor}
+                  leftIcon={
+                    <AntDesign
+                      name='deleteuser'
+                      size={24}
+                      color={theme.screen.icon}
+                    />
+                  }
+                  label={`${translate(TranslationKeys.account_delete)}`}
+                  rightIcon={
+                    <Octicons
+                      name='chevron-right'
+                      size={24}
+                      color={theme.screen.icon}
+                    />
+                  }
+                  handleFunction={handleDeleteAccount}
+                  groupPosition='middle'
+                />
+              </>
+            ) : (
+                <SettingsList
+                  iconBgColor={primaryColor}
+                  leftIcon={
+                    <Entypo name='login' size={24} color={theme.screen.icon} />
+                  }
+                  label={translate(TranslationKeys.sign_in)}
+                  rightIcon={
+                    <Entypo name='login' size={24} color={theme.screen.icon} />
+                  }
+                  handleFunction={handleLogin}
+                  groupPosition='middle'
+                />
+              )}
+            <SettingsList
+              iconBgColor={primaryColor}
+              leftIcon={
+                <Ionicons name='language' size={24} color={theme.screen.icon} />
+              }
+              label={translate(TranslationKeys.language)}
+              value={languageName}
+              rightIcon={
+                <MaterialCommunityIcons
+                  name='pencil'
+                  size={20}
+                  color={theme.screen.icon}
+                />
+              }
+              handleFunction={() => openLanguageModal()}
+              groupPosition='bottom'
+            />
+          </View>
+          <SettingsGroupTitle>
+            {translate(TranslationKeys.group_canteen_usage)}
+          </SettingsGroupTitle>
           {/* Canteen */}
-          <SettingList
+          <View style={{ gap: 0 }}>
+            <SettingsList iconBgColor={foods_area_color}
             leftIcon={
               <MaterialIcons
                 name='restaurant-menu'
@@ -413,26 +455,9 @@ const Settings = () => {
               />
             }
             handleFunction={openCanteenSheet}
+            groupPosition='top'
           />
-          <SettingList
-            leftIcon={
-              <Ionicons
-                name='bag-add-sharp'
-                size={24}
-                color={theme.screen.icon}
-              />
-            }
-            label={translate(TranslationKeys.eating_habits)}
-            rightIcon={
-              <Octicons
-                name='chevron-right'
-                size={24}
-                color={theme.screen.icon}
-              />
-            }
-            handleFunction={() => router.navigate('/eating-habits')}
-          />
-          <SettingList
+          <SettingsList iconBgColor={foods_area_color}
             leftIcon={
               <MaterialIcons name='euro' size={24} color={theme.screen.icon} />
             }
@@ -451,8 +476,9 @@ const Settings = () => {
               />
             }
             handleFunction={() => router.navigate('/price-group')}
+            groupPosition='middle'
           />
-          <SettingList
+          <SettingsList iconBgColor={foods_area_color}
             leftIcon={
               <Ionicons name='card' size={24} color={theme.screen.icon} />
             }
@@ -470,8 +496,28 @@ const Settings = () => {
               />
             }
             handleFunction={() => router.navigate('/account-balance')}
+            groupPosition='middle'
           />
-          <SettingList
+          <SettingsList iconBgColor={foods_area_color}
+            leftIcon={
+              <Ionicons
+                name='bag-add-sharp'
+                size={24}
+                color={theme.screen.icon}
+              />
+            }
+            label={translate(TranslationKeys.eating_habits)}
+            rightIcon={
+              <Octicons
+                name='chevron-right'
+                size={24}
+                color={theme.screen.icon}
+              />
+            }
+            handleFunction={() => router.navigate('/eating-habits')}
+            groupPosition='middle'
+          />
+          <SettingsList iconBgColor={primaryColor}
             leftIcon={
               <Ionicons
                 name='notifications'
@@ -488,134 +534,31 @@ const Settings = () => {
               />
             }
             handleFunction={() => router.navigate('/notification')}
+            groupPosition='bottom'
           />
+          </View>
+          <SettingsGroupTitle>
+            {translate(TranslationKeys.group_app_settings)}
+          </SettingsGroupTitle>
           {/* color Scheme */}
-          <SettingList
-            leftIcon={
-              <MaterialCommunityIcons
-                name='theme-light-dark'
-                size={24}
-                color={theme.screen.icon}
-              />
-            }
-            label={translate(TranslationKeys.color_scheme)}
-            value={
-              selectedTheme === 'systematic'
-                ? translate(TranslationKeys.color_scheme_system)
-                : selectedTheme === 'dark'
-                ? translate(TranslationKeys.color_scheme_dark)
-                : translate(TranslationKeys.color_scheme_light)
-            }
-            rightIcon={
-              <Octicons
-                name='chevron-right'
-                size={24}
-                color={theme.screen.icon}
-              />
-            }
-            handleFunction={() => openColorSchemeSheet()}
-          />
-
-
-          <SettingList
-            leftIcon={
-              <Entypo name='menu' size={24} color={theme.screen.icon} />
-            }
-            label={translate(TranslationKeys.drawer_config_position)}
-            value={
-              drawerPosition === 'left'
-                ? translate(TranslationKeys.drawer_config_position_left)
-                : drawerPosition === 'right'
-                ? translate(TranslationKeys.drawer_config_position_right)
-                : translate(TranslationKeys.drawer_config_position_system)
-            }
-            rightIcon={
-              <Octicons
-                name='chevron-right'
-                size={24}
-                color={theme.screen.icon}
-              />
-            }
-            handleFunction={() => openDrawerSheet()}
-          />
-
-          <SettingList
-            leftIcon={
-              <FontAwesome5
-                name='columns'
-                size={24}
-                color={theme.screen.icon}
-              />
-            }
-            label={translate(TranslationKeys.amount_columns_for_cards)}
-            value={
-              amountColumnsForcard === 0
-                ? translate(TranslationKeys.automatic)
-                : amountColumnsForcard
-            }
-            rightIcon={
-              <Octicons
-                name='chevron-right'
-                size={24}
-                color={theme.screen.icon}
-              />
-            }
-            handleFunction={() => openAmountColumnModal()}
-          />
-          <SettingList
-            leftIcon={
-              <Feather name='calendar' size={24} color={theme.screen.icon} />
-            }
-            label={translate(TranslationKeys.first_day_of_week)}
-            value={translate(firstDayOfTheWeek?.name)}
-            rightIcon={
-              <Octicons
-                name='chevron-right'
-                size={24}
-                color={theme.screen.icon}
-              />
-            }
-          handleFunction={() => openFirstDayModal()}
-          />
-          <SettingList
-            leftIcon={<Ionicons name='cloud-download-outline' size={24} color={theme.screen.icon} />}
-            label={translate(TranslationKeys.CHECK_FOR_APP_UPDATES)}
-            rightIcon={<Octicons name='chevron-right' size={24} color={theme.screen.icon} />}
-            handleFunction={handleCheckForUpdates}
-          />
-          {user?.id ? (
-            <SettingList
+          <View style={{ gap: 0 }}>
+            <SettingsList
+              iconBgColor={primaryColor}
               leftIcon={
-                <Entypo name='login' size={24} color={theme.screen.icon} />
-              }
-              label={translate(TranslationKeys.logout)}
-              rightIcon={
-                <Entypo name='login' size={24} color={theme.screen.icon} />
-              }
-              handleFunction={handleLogout}
-            />
-          ) : (
-            <SettingList
-              leftIcon={
-                <Entypo name='login' size={24} color={theme.screen.icon} />
-              }
-              label={translate(TranslationKeys.sign_in)}
-              rightIcon={
-                <Entypo name='login' size={24} color={theme.screen.icon} />
-              }
-              handleFunction={handleLogin}
-            />
-          )}
-          {user?.id && (
-            <SettingList
-              leftIcon={
-                <AntDesign
-                  name='deleteuser'
+                <MaterialCommunityIcons
+                  name='theme-light-dark'
                   size={24}
                   color={theme.screen.icon}
                 />
               }
-              label={`${translate(TranslationKeys.account_delete)}`}
+              label={translate(TranslationKeys.color_scheme)}
+              value={
+                selectedTheme === 'systematic'
+                  ? translate(TranslationKeys.color_scheme_system)
+                  : selectedTheme === 'dark'
+                  ? translate(TranslationKeys.color_scheme_dark)
+                  : translate(TranslationKeys.color_scheme_light)
+              }
               rightIcon={
                 <Octicons
                   name='chevron-right'
@@ -623,10 +566,89 @@ const Settings = () => {
                   color={theme.screen.icon}
                 />
               }
-              handleFunction={handleDeleteAccount}
+              handleFunction={() => openColorSchemeSheet()}
+              groupPosition='top'
             />
-          )}
-          <SettingList
+
+            <SettingsList
+              iconBgColor={primaryColor}
+              leftIcon={
+                <Entypo name='menu' size={24} color={theme.screen.icon} />
+              }
+              label={translate(TranslationKeys.drawer_config_position)}
+              value={
+                drawerPosition === 'left'
+                  ? translate(TranslationKeys.drawer_config_position_left)
+                  : drawerPosition === 'right'
+                  ? translate(TranslationKeys.drawer_config_position_right)
+                  : translate(TranslationKeys.drawer_config_position_system)
+              }
+              rightIcon={
+                <Octicons
+                  name='chevron-right'
+                  size={24}
+                  color={theme.screen.icon}
+                />
+              }
+              handleFunction={() => openDrawerSheet()}
+              groupPosition='middle'
+            />
+
+            <SettingsList
+              iconBgColor={primaryColor}
+              leftIcon={
+                <FontAwesome5
+                  name='columns'
+                  size={24}
+                  color={theme.screen.icon}
+                />
+              }
+              label={translate(TranslationKeys.amount_columns_for_cards)}
+              value={
+                amountColumnsForcard === 0
+                  ? translate(TranslationKeys.automatic)
+                  : amountColumnsForcard
+              }
+              rightIcon={
+                <Octicons
+                  name='chevron-right'
+                  size={24}
+                  color={theme.screen.icon}
+                />
+              }
+              handleFunction={() => openAmountColumnModal()}
+              groupPosition='middle'
+            />
+            <SettingsList
+              iconBgColor={primaryColor}
+              leftIcon={
+                <Feather name='calendar' size={24} color={theme.screen.icon} />
+              }
+              label={translate(TranslationKeys.first_day_of_week)}
+              value={translate(firstDayOfTheWeek?.name)}
+              rightIcon={
+                <Octicons
+                  name='chevron-right'
+                  size={24}
+                  color={theme.screen.icon}
+                />
+              }
+              handleFunction={() => openFirstDayModal()}
+              groupPosition='bottom'
+            />
+          </View>
+          <SettingsGroupTitle>
+            {translate(TranslationKeys.group_app_management)}
+          </SettingsGroupTitle>
+          <View style={{ gap: 0 }}>
+            <SettingsList iconBgColor={primaryColor}
+              leftIcon={<Ionicons name='cloud-download-outline' size={24} color={theme.screen.icon} />}
+              label={translate(TranslationKeys.CHECK_FOR_APP_UPDATES)}
+              rightIcon={<Octicons name='chevron-right' size={24} color={theme.screen.icon} />}
+              handleFunction={handleCheckForUpdates}
+              groupPosition='top'
+            />
+            <SettingsList iconBgColor={primaryColor}
             leftIcon={
               <MaterialCommunityIcons
                 name='database-eye'
@@ -642,9 +664,10 @@ const Settings = () => {
                 color={theme.screen.icon}
               />
             }
-          handleFunction={() => router.navigate('/data-access')}
-        />
-        <SettingList
+            handleFunction={() => router.navigate('/data-access')}
+            groupPosition='middle'
+          />
+          <SettingsList iconBgColor={primaryColor}
           leftIcon={
             <MaterialIcons name='event' size={24} color={theme.screen.icon} />
           }
@@ -652,9 +675,10 @@ const Settings = () => {
           rightIcon={
             <Octicons name='chevron-right' size={24} color={theme.screen.icon} />
           }
-          handleFunction={() => router.navigate('/events')}
-        />
-        <SettingList
+            handleFunction={() => router.navigate('/events')}
+            groupPosition='middle'
+          />
+          <SettingsList iconBgColor={primaryColor}
           leftIcon={
             <MaterialIcons
               name='support-agent'
@@ -671,8 +695,9 @@ const Settings = () => {
               />
             }
             handleFunction={() => router.navigate('/support-FAQ')}
+            groupPosition='middle'
           />
-          <SettingList
+            <SettingsList iconBgColor={primaryColor}
             leftIcon={
               <MaterialCommunityIcons
                 name='license'
@@ -689,44 +714,25 @@ const Settings = () => {
               />
             }
             handleFunction={() => router.navigate('/licenseInformation')}
+            groupPosition='middle'
           />
           {/* Terms & Conditions */}
-          <View
-            style={{
-              ...styles.termList,
-              backgroundColor: theme.screen.iconBg,
-              paddingHorizontal: isWeb ? 20 : 10,
-            }}
-          >
-            <View style={styles.termRow}>
+          <SettingsList
+            iconBgColor={primaryColor}
+            leftIcon={
               <MaterialCommunityIcons
-                name='clipboard-account'
+                name='file-document-check'
                 size={24}
                 color={theme.screen.icon}
               />
-              <Text
-                style={{
-                  ...styles.label,
-                  color: theme.screen.text,
-                  fontSize: isWeb ? 16 : 14,
-                }}
-              >
-                {translate(
-                  TranslationKeys.terms_and_conditions_accepted_and_privacy_policy_read_at_date
-                )}
-              </Text>
-            </View>
-            <View style={styles.termRow2}>
-              <Text
-                style={{
-                  ...styles.value,
-                  color: theme.screen.text,
-                  fontSize: isWeb ? 16 : 14,
-                }}
-              >
-                {termsAndPrivacyConsentAcceptedDate}
-              </Text>
-            </View>
+            }
+            label={translate(
+              TranslationKeys.terms_and_conditions_accepted_and_privacy_policy_read_at_date
+            )}
+            value={termsAndPrivacyConsentAcceptedDate}
+            handleFunction={() => {}}
+            groupPosition='bottom'
+          />
           </View>
           <TouchableOpacity
             style={styles.footer}
@@ -758,7 +764,7 @@ const Settings = () => {
             </Text>
           )}
           {isManagement && isDevMode && (
-            <SettingList
+            <SettingsList iconBgColor={primaryColor}
               leftIcon={
                 <MaterialCommunityIcons
                   name='server'

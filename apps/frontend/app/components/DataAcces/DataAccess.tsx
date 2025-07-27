@@ -5,16 +5,17 @@ import {
   Image,
   Dimensions,
   ScrollView,
-  TouchableOpacity,
 } from 'react-native';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
 import { useSelector } from 'react-redux';
-import { Entypo } from '@expo/vector-icons';
+import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
+import SettingsList from '@/components/SettingsList';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
+import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 
 const parseMarkdown = (text: string, theme: any) => {
   return text.split('\n').map((line, index) => {
@@ -52,6 +53,7 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
   const { user, profile } = useSelector(
     (state: RootState) => state.authReducer
   );
+  const { primaryColor } = useSelector((state: RootState) => state.settings);
   const {
     canteens,
     buildings,
@@ -124,7 +126,12 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
     <View
       style={{ ...styles.container, backgroundColor: theme.screen.background }}
     >
-      <ScrollView>
+      <ScrollView
+        contentContainerStyle={{
+          ...styles.contentContainer,
+          backgroundColor: theme.screen.background,
+        }}
+      >
         <View style={{ alignItems: 'center' }}>
           <View style={styles.imageContainer}>
             <Image
@@ -132,119 +139,92 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
               style={styles.image}
             />
           </View>
-
-          <View
-            style={[
-              styles.infoContainer,
-              { width: windowWidth > 600 ? '85%' : '90%' },
-            ]}
-          >
             <View>{parseMarkdown(dataAccessText, theme)}</View>
           </View>
-
-          <View
-            style={[
-              styles.infoContainer,
-              { width: windowWidth > 600 ? '90%' : '100%' },
-            ]}
-          >
-            <View>
-              <Text
-                style={{ ...styles.labelParagraph, color: theme.header.text }}
-              >
-                {translate(
-                  TranslationKeys.your_data_which_we_know_if_you_have_a_profile
-                )}
-              </Text>
-            </View>
+          <SettingsGroupTitle>
+            {translate(
+              TranslationKeys.your_data_which_we_know_if_you_have_a_profile
+            )}
+          </SettingsGroupTitle>
             {/* Info Items List */}
-            <View style={styles.infoContainer}>
-              {infoItems.map((item, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={[
-                    styles.infoRow,
-                    {
-                      backgroundColor: theme.screen.iconBg,
-                      paddingHorizontal: isWeb ? 20 : 10,
-                      paddingVertical: isWeb ? 20 : 10,
-                    },
-                  ]}
-                  onPress={() => onOpenBottomSheet(item)}
-                >
-                  <View style={styles.iconLabelContainer}>
-                    <Text
-                      style={{
-                        ...styles.label,
-                        color: theme.header.text,
-                        fontSize: windowWidth < 500 ? 16 : 18,
-                      }}
-                    >
-                      {translate(item.label)}
-                    </Text>
-                  </View>
-                  <Entypo
-                    name='chevron-small-right'
-                    size={25}
-                    color={theme.screen.icon}
-                  />
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            {/* Device Data List */}
-            <View style={styles.infoContainer}>
-              <View>
-                <Text
-                  style={{
-                    marginBottom: 10,
-                    fontSize: 16,
-                    color: theme.header.text,
-                  }}
-                >
-                  {translate(
-                    TranslationKeys.translation_all_on_device_saved_data
-                  )}
-                </Text>
-              </View>
-              {dataDevice.map((data, index) => {
-                if (data?.value) {
-                  return (
-                    <TouchableOpacity
-                      key={index}
-                      style={[
-                        styles.infoRow,
-                        {
-                          backgroundColor: theme.screen.iconBg,
-                          paddingHorizontal: isWeb ? 20 : 10,
-                          paddingVertical: isWeb ? 20 : 10,
-                        },
-                      ]}
-                      onPress={() => onOpenBottomSheet(data)}
-                    >
-                      <View style={styles.iconLabelContainer}>
-                        <Text
-                          style={{
-                            ...styles.label,
-                            color: theme.header.text,
-                            fontSize: windowWidth < 500 ? 16 : 18,
-                          }}
-                        >
-                          {data.label}
-                        </Text>
-                      </View>
-                      <Entypo
-                        name='chevron-small-right'
-                        size={25}
+          {infoItems.map((item, index) => {
+              const last = index === infoItems.length - 1;
+              const first = index === 0;
+              const groupPosition =
+                infoItems.length === 1
+                  ? 'single'
+                    : first
+                    ? 'top'
+                    : last
+                    ? 'bottom'
+                    : 'middle';
+                return (
+                  <SettingsList
+                    key={index}
+                    iconBgColor={primaryColor}
+                    leftIcon={
+                      <MaterialCommunityIcons
+                        name='database-eye'
+                        size={24}
                         color={theme.screen.icon}
                       />
-                    </TouchableOpacity>
-                  );
-                }
+                    }
+                    label={item.label}
+                    rightIcon={
+                      <Entypo
+                        name='chevron-small-right'
+                        size={24}
+                        color={theme.screen.icon}
+                      />
+                    }
+                    handleFunction={() => onOpenBottomSheet(item)}
+                    groupPosition={groupPosition as any}
+                  />
+                );
               })}
-            </View>
-          </View>
-        </View>
+
+            {/* Device Data List */}
+            <SettingsGroupTitle>
+              {translate(
+                TranslationKeys.translation_all_on_device_saved_data
+              )}
+            </SettingsGroupTitle>
+              {dataDevice.map((data, index) => {
+                if (!data?.value) return null;
+                const last = index === dataDevice.length - 1;
+                const first = index === 0;
+                const groupPosition =
+                  dataDevice.length === 1
+                    ? 'single'
+                    : first
+                    ? 'top'
+                    : last
+                    ? 'bottom'
+                    : 'middle';
+                return (
+                  <SettingsList
+                    key={index}
+                    iconBgColor={primaryColor}
+                    leftIcon={
+                      <MaterialCommunityIcons
+                        name='database-eye'
+                        size={24}
+                        color={theme.screen.icon}
+                      />
+                    }
+                    label={data.label}
+                    rightIcon={
+                      <Entypo
+                        name='chevron-small-right'
+                        size={24}
+                        color={theme.screen.icon}
+                      />
+                    }
+                    handleFunction={() => onOpenBottomSheet(data)}
+                    groupPosition={groupPosition as any}
+                  />
+                );
+              })}
       </ScrollView>
     </View>
   );

@@ -3,23 +3,28 @@ import {
   Dimensions,
   ScrollView,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import React, { useCallback, useEffect, useState } from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { AppFeedback } from '@/redux/actions/AppFeedback/AppFeedback';
-import { Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
+import SettingsList from '@/components/SettingsList';
+import { Octicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import { router, useFocusEffect } from 'expo-router';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { DatabaseTypes } from 'repo-depkit-common';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/reducer';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const index = () => {
   useSetPageTitle(TranslationKeys.my_support_tickets);
   const { theme } = useTheme();
+  const { translate } = useLanguage();
+  const { primaryColor } = useSelector((state: RootState) => state.settings);
   const appFeedback = new AppFeedback();
   const [loading, setLoading] = useState(false);
   const [allTickets, setAllTickets] = useState<DatabaseTypes.AppFeedbacks[] | null>(null);
@@ -70,59 +75,54 @@ const index = () => {
           <ActivityIndicator size='large' color={theme.screen.text} />
         </View>
       ) : (
-        <View
-          style={[styles.section, { width: windowWidth > 600 ? '85%' : '95%' }]}
-        >
+        <>
+          <Text style={{ ...styles.groupHeading, color: theme.screen.text }}>
+            {translate(TranslationKeys.my_support_tickets)}
+          </Text>
+          <View
+            style={[styles.section, { width: windowWidth > 600 ? '85%' : '95%' }]}
+          >
           {allTickets &&
             allTickets?.map((item, index: number) => (
-              <TouchableOpacity
-                style={{ ...styles.row, backgroundColor: theme.screen.iconBg }}
-                onPress={() => {
-                  router.push(`/feedback-support?app_feedbacks_id=${item.id}`);
-                }}
+              <SettingsList
                 key={index}
-              >
-                <View style={styles.leftView}>
+                iconBgColor={primaryColor}
+                leftIcon={
                   <MaterialCommunityIcons
-                    name={'bell'}
-                    size={25}
+                    name='bell'
+                    size={24}
                     color={theme.screen.icon}
                   />
-                  <Text
-                    style={[
-                      styles.linkText,
-                      {
-                        color: theme.screen.text,
-                        fontSize: windowWidth < 500 ? 14 : 18,
-                      },
-                    ]}
-                  >
-                    {item?.title}
-                  </Text>
-                </View>
-                <View style={styles.textIcon}>
-                  <Text
-                    style={[
-                      styles.iconText,
-                      {
-                        color: theme.screen.text,
-                        fontSize: windowWidth < 500 ? 14 : 18,
-                      },
-                    ]}
-                  >
-                    {item?.date_created
-                      ? format(new Date(item.date_created), 'dd.MM.yyyy HH:mm')
-                      : 'N/A'}
-                  </Text>
-                  <Entypo
-                    name={'chevron-small-right'}
-                    size={25}
+                }
+                label={item?.title}
+                value={
+                  item?.date_created
+                    ? format(new Date(item.date_created), 'dd.MM.yyyy HH:mm')
+                    : 'N/A'
+                }
+                rightIcon={
+                  <Octicons
+                    name='chevron-right'
+                    size={24}
                     color={theme.screen.icon}
                   />
-                </View>
-              </TouchableOpacity>
+                }
+                handleFunction={() =>
+                  router.push(`/feedback-support?app_feedbacks_id=${item.id}`)
+                }
+                groupPosition={
+                  allTickets.length === 1
+                    ? 'single'
+                    : index === 0
+                    ? 'top'
+                    : index === allTickets.length - 1
+                    ? 'bottom'
+                    : 'middle'
+                }
+              />
             ))}
-        </View>
+          </View>
+        </>
       )}
     </ScrollView>
   );

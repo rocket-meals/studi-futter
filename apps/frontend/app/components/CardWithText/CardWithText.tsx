@@ -9,23 +9,32 @@ const CardWithText: React.FC<CardWithTextProps> = ({
   imageContainerStyle,
   imageStyle,
   contentStyle,
+  topRadius = 18,
   borderColor,
   imageChildren,
   children,
+  bottomContent,
   ...rest
 }) => {
   const contentBorder = borderColor
     ? { borderTopColor: borderColor, borderTopWidth: 3 }
     : null;
 
+  const topRadiusStyle = {
+    borderTopLeftRadius: topRadius,
+    borderTopRightRadius: topRadius,
+  };
+
   return (
-    <TouchableOpacity style={[styles.card, containerStyle]} {...rest}>
-      <View style={[styles.imageContainer, imageContainerStyle]}>
-        <Image style={[styles.image, imageStyle]} source={imageSource} />
+    <TouchableOpacity style={[styles.card, topRadiusStyle, containerStyle]} {...rest}>
+      <View style={[styles.imageContainer, topRadiusStyle, imageContainerStyle]}>
+        {imageSource ? (
+          <Image style={[styles.image, topRadiusStyle, imageStyle]} source={imageSource} />
+        ) : null}
         {imageChildren}
       </View>
       <View style={[styles.cardContent, contentBorder, contentStyle]}>
-        {children}
+        {bottomContent ?? children}
       </View>
     </TouchableOpacity>
   );

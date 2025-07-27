@@ -15,6 +15,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import CardWithText from '../CardWithText/CardWithText';
+import CardDimensionHelper from '@/helper/CardDimensionHelper';
 
 const BuildingItem: React.FC<BuildingItemProps> = ({
   campus,
@@ -58,39 +59,17 @@ const BuildingItem: React.FC<BuildingItemProps> = ({
     return () => subscription?.remove();
   }, []);
 
-  const getCardDimension = () => {
-    if (screenWidth < 1110 && screenWidth > 960) return 300;
-    else if (screenWidth < 840 && screenWidth > 750) return 350;
-    else if (screenWidth < 750 && screenWidth > 710) return 330;
-    else if (screenWidth < 709 && screenWidth > 650) return 300;
-    else if (screenWidth > 570) return 260;
-    else if (screenWidth > 530) return 240;
-    else if (screenWidth > 500) return 220;
-    else if (screenWidth > 450) return 210;
-    else if (screenWidth > 380) return 180;
-    else if (screenWidth > 360) return 170;
-    else if (screenWidth > 340) return 160;
-    else if (screenWidth > 320) return 150;
-    else if (screenWidth > 300) return 140;
-    else if (screenWidth > 280) return 130;
-    else return 120;
-  };
+  const getCardDimension = () =>
+    CardDimensionHelper.getCardDimension(screenWidth);
 
-  const getCardWidth = () => {
-    if (screenWidth < 500) {
-      const width = screenWidth / amountColumnsForcard - 10;
-      return width;
-    } else if (screenWidth < 900) {
-      const width = screenWidth / amountColumnsForcard - 25;
-      return width;
-    } else {
-      const width = screenWidth / amountColumnsForcard - 35;
-      return width;
-    }
-  };
+  const getCardWidth = () =>
+    CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard);
 
   useEffect(() => {
-    const cardWidth = getCardWidth();
+    const cardWidth = CardDimensionHelper.getCardWidth(
+      screenWidth,
+      amountColumnsForcard
+    );
     console.log(cardWidth, 'cardWidth');
   }, [amountColumnsForcard, screenWidth]);
 
@@ -110,14 +89,22 @@ const BuildingItem: React.FC<BuildingItemProps> = ({
           }
           containerStyle={{
             width:
-              amountColumnsForcard === 0 ? getCardDimension() : getCardWidth(),
+              amountColumnsForcard === 0
+                ? CardDimensionHelper.getCardDimension(screenWidth)
+                : CardDimensionHelper.getCardWidth(
+                    screenWidth,
+                    amountColumnsForcard
+                  ),
             backgroundColor: theme.card.background,
           }}
           imageContainerStyle={{
             height:
               amountColumnsForcard === 0
-                ? getCardDimension()
-                : getCardWidth(),
+                ? CardDimensionHelper.getCardDimension(screenWidth)
+                : CardDimensionHelper.getCardWidth(
+                    screenWidth,
+                    amountColumnsForcard
+                  ),
           }}
           contentStyle={{
             paddingHorizontal: 5,

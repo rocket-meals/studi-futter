@@ -442,7 +442,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                     color: theme.screen.text,
                   }}
                 >
-                  No Campus Found
+                  {translate(TranslationKeys.no_campus_found)}
                 </Text>
               </View>
             )}

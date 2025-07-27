@@ -749,6 +749,16 @@
     "tr": "Boş Odalar",
     "zh": "空房间"
   },
+  "free_from": {
+    "de": "Frei ab",
+    "en": "Free from",
+    "ar": "متاح من",
+    "es": "Libre desde",
+    "fr": "Libre à partir de",
+    "ru": "Свободно с",
+    "tr": "Şu tarihten itibaren boş",
+    "zh": "从...开始空闲"
+  },
   "foodweekplan": {
     "de": "Speiseplan: Woche",
     "en": "Food Plan: Week",
@@ -2373,6 +2383,16 @@
     "tr": "Leaflet Haritası",
     "zh": "Leaflet 地图"
   },
+  "leaflet_test": {
+    "de": "Leaflet Test",
+    "en": "Leaflet Test",
+    "ar": "اختبار ليفليت",
+    "es": "Prueba Leaflet",
+    "fr": "Test Leaflet",
+    "ru": "Тест Leaflet",
+    "tr": "Leaflet Testi",
+    "zh": "Leaflet 测试"
+  },
   "news": {
     "de": "News",
     "en": "News",
@@ -2452,6 +2472,36 @@
     "ru": "Debug Logout",
     "tr": "Debug Logout",
     "zh": "Debug Logout"
+  },
+  "rate_app": {
+    "de": "App bewerten",
+    "en": "Rate App",
+    "ar": "Rate App",
+    "es": "Rate App",
+    "fr": "Rate App",
+    "ru": "Rate App",
+    "tr": "Rate App",
+    "zh": "Rate App"
+  },
+  "app_download": {
+    "de": "App-Download",
+    "en": "App Download",
+    "ar": "App Download",
+    "es": "App Download",
+    "fr": "App Download",
+    "ru": "App Download",
+    "tr": "App Download",
+    "zh": "App Download"
+  },
+  "react_native_qrcode_svg": {
+    "de": "React Native QRCode SVG",
+    "en": "React Native QRCode SVG",
+    "ar": "React Native QRCode SVG",
+    "es": "React Native QRCode SVG",
+    "fr": "React Native QRCode SVG",
+    "ru": "React Native QRCode SVG",
+    "tr": "React Native QRCode SVG",
+    "zh": "React Native QRCode SVG"
   },
   "vertical_image_scroll": {
     "de": "Vertikaler Bildlauf",
@@ -2832,6 +2882,16 @@
     "ru": "Кампус",
     "tr": "Yerleşke",
     "zh": "校园"
+  },
+  "no_campus_found": {
+    "de": "Kein Campus gefunden.",
+    "en": "No campus found.",
+    "ar": "لم يتم العثور على حرم جامعي.",
+    "es": "No se encontró campus.",
+    "fr": "Aucun campus trouvé.",
+    "ru": "Кампус не найден.",
+    "tr": "Yerleşke bulunamadı.",
+    "zh": "未找到校园。"
   },
   "housing": {
     "de": "Wohnen",
@@ -3752,5 +3812,45 @@
     "ru": "Обновления",
     "tr": "Güncellemeler",
     "zh": "更新"
+  },
+  "group_account_personalization": {
+    "de": "Konto & Personalisierung",
+    "en": "Account & Personalization",
+    "ar": "الحساب والتخصيص",
+    "es": "Cuenta y personalización",
+    "fr": "Compte et personnalisation",
+    "ru": "Аккаунт и персонализация",
+    "tr": "Hesap ve kişiselleştirme",
+    "zh": "账户和个性化"
+  },
+  "group_canteen_usage": {
+    "de": "Mensa & Nutzung",
+    "en": "Canteen & Usage",
+    "ar": "المقصف والاستخدام",
+    "es": "Comedor y uso",
+    "fr": "Cantine et utilisation",
+    "ru": "Столовая и использование",
+    "tr": "Yemekhane ve kullanım",
+    "zh": "食堂和使用"
+  },
+  "group_app_settings": {
+    "de": "App-Einstellungen",
+    "en": "App Settings",
+    "ar": "إعدادات التطبيق",
+    "es": "Configuración de la aplicación",
+    "fr": "Paramètres de l'application",
+    "ru": "Настройки приложения",
+    "tr": "Uygulama ayarları",
+    "zh": "应用设置"
+  },
+  "group_app_management": {
+    "de": "App-Verwaltung",
+    "en": "App Management",
+    "ar": "إدارة التطبيق",
+    "es": "Gestión de la aplicación",
+    "fr": "Gestion de l'application",
+    "ru": "Управление приложением",
+    "tr": "Uygulama yönetimi",
+    "zh": "应用管理"
   }
 }

@@ -37,4 +37,10 @@ export default StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  groupHeading: {
+    fontSize: 16,
+    fontFamily: 'Poppins_400Regular',
+    marginTop: 20,
+    marginBottom: 10,
+  },
 });
