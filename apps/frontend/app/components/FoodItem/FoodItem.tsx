@@ -1,5 +1,4 @@
 import {
-  Dimensions,
   Image,
   Linking,
   Text,
@@ -42,8 +41,8 @@ import { TranslationKeys } from '@/locales/keys';
 import useToast from '@/hooks/useToast';
 import { handleFoodRating } from '@/helper/feedback';
 import { RootState } from '@/redux/reducer';
-import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import CardWithText from '../CardWithText/CardWithText';
+import useFoodCard from '@/hooks/useFoodCard';
 
 const selectFoodState = (state: RootState) => state.food;
 
@@ -67,9 +66,6 @@ const FoodItem: React.FC<FoodItemProps> = memo(
     handleEatingHabitsSheet,
   }) => {
     const toast = useToast();
-    const [screenWidth, setScreenWidth] = useState(
-      Dimensions.get('window').width
-    );
     const [warning, setWarning] = useState(false);
     const dispatch = useDispatch();
     const { theme } = useTheme();
@@ -83,13 +79,9 @@ const FoodItem: React.FC<FoodItemProps> = memo(
     const previousFeedback = useSelector((state) =>
       selectPreviousFeedback(state, foodItem.id)
     );
-    const {
-      amountColumnsForcard,
-      language,
-      serverInfo,
-      appSettings,
-      primaryColor,
-    } = useSelector((state: RootState) => state.settings);
+    const { language, serverInfo, appSettings, primaryColor } = useSelector(
+      (state: RootState) => state.settings
+    );
     const foods_area_color = appSettings?.foods_area_color
       ? appSettings?.foods_area_color
       : primaryColor;
@@ -142,6 +134,13 @@ const FoodItem: React.FC<FoodItemProps> = memo(
       [item?.markings, profile?.markings]
     );
 
+    const {
+      screenWidth,
+      containerStyle: cardContainerStyle,
+      imageContainerStyle: cardImageContainerStyle,
+      contentStyle: cardContentStyle,
+    } = useFoodCard(dislikedMarkings.length > 0 ? 3 : 0);
+
     const handleOpenSheet = useCallback(() => {
       dispatch({ type: SET_SELECTED_FOOD_MARKINGS, payload: dislikedMarkings });
       handleEatingHabitsSheet('eatingHabits');
@@ -173,11 +172,6 @@ const FoodItem: React.FC<FoodItemProps> = memo(
       [markings, item?.markings]
     );
 
-    useEffect(() => {
-      const handleResize = () => setScreenWidth(Dimensions.get('window').width);
-      const subscription = Dimensions.addEventListener('change', handleResize);
-      return () => subscription?.remove();
-    }, []);
 
     const openMarkingLabel = (marking: DatabaseTypes.Markings) => {
       dispatch({
@@ -191,9 +185,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
       router.navigate('/price-group');
     };
 
-    useEffect(() => {
-      CardDimensionHelper.getCardWidth(screenWidth, amountColumnsForcard);
-    }, [amountColumnsForcard, screenWidth]);
+
 
     return (
       <>
@@ -222,37 +214,9 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                     }
                   : { uri: defaultImage }
               }
-              containerStyle={{
-                width:
-                  amountColumnsForcard === 0
-                    ? CardDimensionHelper.getCardDimension(screenWidth)
-                    : CardDimensionHelper.getCardWidth(
-                        screenWidth,
-                        amountColumnsForcard
-                      ),
-                backgroundColor: theme.card.background,
-                borderWidth: dislikedMarkings.length > 0 ? 3 : 0,
-                borderColor: '#FF000095',
-              }}
-              imageContainerStyle={{
-                height:
-                  amountColumnsForcard === 0
-                    ? CardDimensionHelper.getCardDimension(screenWidth)
-                    : CardDimensionHelper.getCardWidth(
-                        screenWidth,
-                        amountColumnsForcard
-                      ),
-              }}
-              contentStyle={{
-                gap: isWeb ? 15 : 5,
-                paddingHorizontal: isWeb
-                  ? screenWidth > 550
-                    ? 5
-                    : screenWidth > 360
-                    ? 5
-                    : 5
-                  : 5,
-              }}
+              containerStyle={cardContainerStyle}
+              imageContainerStyle={cardImageContainerStyle}
+              contentStyle={cardContentStyle}
               borderColor={foods_area_color}
               imageChildren={
                 <>

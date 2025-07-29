@@ -5,8 +5,10 @@
   "meta": {
     "collection": "foods",
     "conditions": null,
-    "display": null,
-    "display_options": null,
+    "display": "rating",
+    "display_options": {
+      "simple": true
+    },
     "field": "rating_average_legacy",
     "group": "rating_legacy_settings",
     "hidden": false,

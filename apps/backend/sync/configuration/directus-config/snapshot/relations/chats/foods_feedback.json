@@ -1,0 +1,25 @@
+{
+  "collection": "chats",
+  "field": "foods_feedback",
+  "related_collection": "foods_feedbacks",
+  "meta": {
+    "junction_field": null,
+    "many_collection": "chats",
+    "many_field": "foods_feedback",
+    "one_allowed_collections": null,
+    "one_collection": "foods_feedbacks",
+    "one_collection_field": null,
+    "one_deselect_action": "nullify",
+    "one_field": null,
+    "sort_field": null
+  },
+  "schema": {
+    "table": "chats",
+    "column": "foods_feedback",
+    "foreign_key_table": "foods_feedbacks",
+    "foreign_key_column": "id",
+    "constraint_name": "chats_foods_feedback_foreign",
+    "on_update": "NO ACTION",
+    "on_delete": "SET NULL"
+  }
+}

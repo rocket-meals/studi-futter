@@ -6,7 +6,6 @@ export default StyleSheet.create({
   },
   list: {
     padding: 20,
-    gap: 10,
   },
   chatItem: {
     padding: 15,

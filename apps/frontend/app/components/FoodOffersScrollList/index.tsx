@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   FlatList,
   View,
@@ -28,6 +28,10 @@ import {
 } from '@/helper/sortingHelper';
 import { FoodSortOption } from '@/constants/SortingEnums';
 import styles from './styles';
+import BaseBottomSheet from '@/components/BaseBottomSheet';
+import type BottomSheet from '@gorhom/bottom-sheet';
+import MarkingBottomSheet from '@/components/MarkingBottomSheet';
+import { SHEET_COMPONENTS } from '@/app/(app)/foodoffers';
 
 interface FoodOffersScrollListProps {
   canteenId: string;
@@ -64,6 +68,53 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({
   const [days, setDays] = useState<DayData[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedSheet, setSelectedSheet] = useState<
+    'menu' | keyof typeof SHEET_COMPONENTS | null
+  >(null);
+  const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
+  const [selectedFoodId, setSelectedFoodId] = useState('');
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
+  const openSheet = useCallback(
+    (sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
+      setSelectedSheet(sheet);
+      setSheetProps(props);
+    },
+    [],
+  );
+
+  const closeSheet = useCallback(() => {
+    bottomSheetRef.current?.snapToIndex(-1);
+    bottomSheetRef.current?.close();
+    setTimeout(() => {
+      setSelectedSheet(null);
+      setSheetProps({});
+    }, 150);
+  }, []);
+
+  const openManagementSheet = (id: string) => {
+    if (id) {
+      openSheet('imageManagement', {
+        selectedFoodId: id,
+        fileName: 'foods',
+        closeSheet,
+        handleFetch: init,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (selectedSheet) {
+      setTimeout(() => {
+        bottomSheetRef.current?.expand();
+      }, 150);
+    }
+  }, [selectedSheet]);
+
+  const SheetComponent =
+    selectedSheet && selectedSheet !== 'menu'
+      ? SHEET_COMPONENTS[selectedSheet]
+      : null;
 
   const sortOffers = useCallback(
     (foodOffers: DatabaseTypes.Foodoffers[]) => {
@@ -187,10 +238,10 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({
               key={offer.id}
               item={offer}
               canteen={selectedCanteen as DatabaseTypes.Canteens}
-              handleMenuSheet={() => {}}
-              handleImageSheet={() => {}}
-              handleEatingHabitsSheet={() => {}}
-              setSelectedFoodId={() => {}}
+              handleMenuSheet={openSheet}
+              handleImageSheet={openManagementSheet}
+              handleEatingHabitsSheet={openSheet}
+              setSelectedFoodId={setSelectedFoodId}
             />
           ))}
           {item.offers.length === 0 && (
@@ -215,17 +266,38 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({
   }
 
   return (
-    <FlatList
-      data={days}
-      keyExtractor={(item) => item.date}
-      renderItem={renderDay}
-      onEndReached={onEndReached}
-      onEndReachedThreshold={0.5}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-      scrollEventThrottle={16}
-      style={{ flex: 1 }}
-      contentContainerStyle={{ backgroundColor: theme.screen.background }}
-    />
+    <>
+      <FlatList
+        data={days}
+        keyExtractor={(item) => item.date}
+        renderItem={renderDay}
+        onEndReached={onEndReached}
+        onEndReachedThreshold={0.5}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        scrollEventThrottle={16}
+        style={{ flex: 1 }}
+        contentContainerStyle={{ backgroundColor: theme.screen.background }}
+      />
+      {selectedSheet && (
+        selectedSheet === 'menu' ? (
+          <MarkingBottomSheet ref={bottomSheetRef} onClose={closeSheet} />
+        ) : (
+          <BaseBottomSheet
+            key={selectedSheet}
+            ref={bottomSheetRef}
+            backgroundStyle={{ backgroundColor: theme.sheet.sheetBg }}
+            handleComponent={null}
+            onClose={closeSheet}
+          >
+            {SheetComponent && (
+              <SheetComponent closeSheet={closeSheet} {...sheetProps} />
+            )}
+          </BaseBottomSheet>
+        )
+      )}
+    </>
   );
 };
 

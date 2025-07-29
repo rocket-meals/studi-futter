@@ -1,0 +1,25 @@
+{
+  "collection": "chat_messages",
+  "field": "profile",
+  "related_collection": "profiles",
+  "meta": {
+    "junction_field": null,
+    "many_collection": "chat_messages",
+    "many_field": "profile",
+    "one_allowed_collections": null,
+    "one_collection": "profiles",
+    "one_collection_field": null,
+    "one_deselect_action": "nullify",
+    "one_field": null,
+    "sort_field": null
+  },
+  "schema": {
+    "table": "chat_messages",
+    "column": "profile",
+    "foreign_key_table": "profiles",
+    "foreign_key_column": "id",
+    "constraint_name": "chat_messages_profile_foreign",
+    "on_update": "NO ACTION",
+    "on_delete": "SET NULL"
+  }
+}

@@ -303,6 +303,16 @@ export class DateHelper {
         return diff/(1000*60*60*24);
     }
 
+    static isDateOlderThan(date: Date, days: number) {
+        if (!date) {
+            return false;
+        }
+        const now = new Date();
+        const daysInMilliseconds = days * 24 * 60 * 60 * 1000; // convert days to milliseconds
+        const dateToCompare = new Date(now.getTime() - daysInMilliseconds);
+        return date < dateToCompare;
+    }
+
     /**
      * Returns the amount of days from the first day of the month to the given date.
      * @param startDate

@@ -8,6 +8,7 @@ import {
   CLEAR_FOODS,
   CLEAR_MANAGEMENT,
   CLEAR_NEWS,
+  CLEAR_CHATS,
   CLEAR_SETTINGS,
   CLEAR_POPUP_EVENTS_HASH,
   CLEAR_COLLECTION_DATES_LAST_UPDATED,
@@ -51,6 +52,10 @@ const DebugLogout = () => {
     {
       label: 'CLEAR_NEWS',
       action: () => dispatch({ type: CLEAR_NEWS }),
+    },
+    {
+      label: 'CLEAR_CHATS',
+      action: () => dispatch({ type: CLEAR_CHATS }),
     },
     {
       label: 'CLEAR_SETTINGS',

@@ -1,25 +1,24 @@
-import { Dimensions, Text, TouchableOpacity, View } from "react-native";
+import { Dimensions, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import styles from "./styles";
 import { useTheme } from "@/hooks/useTheme";
-import { CanteenProps, CanteenSelectionSheetProps } from "./types";
-import { isWeb, canteensData } from "@/constants/Constants";
+import { CanteenSelectionSheetProps } from "./types";
+import { isWeb } from "@/constants/Constants";
 import {
   SET_BUILDINGS,
   SET_CANTEENS,
   SET_SELECTED_CANTEEN,
 } from "@/redux/Types/types";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { excerpt, getImageUrl } from "@/constants/HelperFunctions";
+import { getImageUrl } from "@/constants/HelperFunctions";
 import { useLanguage } from "@/hooks/useLanguage";
 import { DatabaseTypes } from "repo-depkit-common";
 import { CanteenHelper } from "@/redux/actions";
 import { BuildingsHelper } from "@/redux/actions/Buildings/Buildings";
 import { TranslationKeys } from "@/locales/keys";
 import { RootState } from "@/redux/reducer";
-import CardWithText from "../CardWithText/CardWithText";
+import CanteenSelection from "../CanteenSelection/CanteenSelection";
 
 const CanteenSelectionSheet: React.FC<CanteenSelectionSheetProps> = ({
   closeSheet,
@@ -31,9 +30,6 @@ const CanteenSelectionSheet: React.FC<CanteenSelectionSheetProps> = ({
   const buildingsHelper = new BuildingsHelper();
   const { serverInfo, appSettings, primaryColor } = useSelector(
     (state: RootState) => state.settings,
-  );
-  const { canteens, selectedCanteen } = useSelector(
-    (state: RootState) => state.canteenReducer,
   );
   const { isManagement } = useSelector((state: RootState) => state.authReducer);
   const [screenWidth, setScreenWidth] = useState(
@@ -149,62 +145,7 @@ const CanteenSelectionSheet: React.FC<CanteenSelectionSheetProps> = ({
       >
         {translate(TranslationKeys.canteen)}
       </Text>
-      <View
-        style={{
-          ...styles.canteensContainer,
-          width: isWeb ? "100%" : "100%",
-          gap: isWeb ? (screenWidth < 500 ? 10 : 20) : 5,
-          marginTop: isWeb ? 40 : 20,
-        }}
-      >
-        {canteens.map((canteen, index: number) => {
-          const isSelected =
-            selectedCanteen &&
-            String(selectedCanteen.id) === String(canteen.id);
-          return (
-            <CardWithText
-              key={canteen.id + canteen.alias}
-              onPress={() => {
-                handleSelectCanteen(canteen);
-              }}
-              imageSource={
-                canteen?.image_url || canteensData[index]?.image
-                  ? {
-                      uri: canteen?.image_url || canteensData[index]?.image,
-                    }
-                  : { uri: defaultImage }
-              }
-              containerStyle={{
-                width: screenWidth > 800 ? 210 : 160,
-                backgroundColor: theme.card.background,
-                marginBottom: 10,
-                borderColor: isSelected ? foods_area_color : "transparent",
-                borderWidth: isSelected ? 3 : 0,
-              }}
-              imageContainerStyle={{
-                height: screenWidth > 800 ? 210 : 160,
-              }}
-            >
-              {canteen.status === "archived" && (
-                <View style={styles.archiveContainer}>
-                  <MaterialCommunityIcons
-                    name="archive"
-                    size={18}
-                    color={theme.screen.text}
-                  />
-                </View>
-              )}
-              <Text
-                style={{ ...styles.foodName, color: theme.screen.text }}
-                numberOfLines={3}
-                ellipsizeMode="tail"
-              >
-                {excerpt(String(canteen.alias), 20)}
-              </Text>
-            </CardWithText>
-          );
-        })}
-      </View>
+      <CanteenSelection onSelectCanteen={handleSelectCanteen} />
     </BottomSheetScrollView>
   );
 };

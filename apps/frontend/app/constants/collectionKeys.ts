@@ -96,6 +96,7 @@ export const CollectionKeys = {
   FOODS_MARKINGS: 'foods_markings',
   FOODS: 'foods',
   FOODOFFERS: 'foodoffers',
+  FOODOFFERS_INFO_ITEMS: 'foodoffers_info_items',
   PROFILES_MARKINGS: 'profiles_markings',
   APP_ELEMENTS_TRANSLATIONS: 'app_elements_translations',
   FORM_ANSWERS: 'form_answers',

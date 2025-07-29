@@ -18,6 +18,7 @@ export default StyleSheet.create({
     paddingBottom: 0,
   },
   contentContainer: {
+    width: '100%',
     alignItems: 'center',
     paddingHorizontal: 10,
     paddingVertical: 40,

@@ -5,6 +5,7 @@ import {
   SET_FOOD_CATEGORIES,
   SET_FOOD_COLLECTION,
   SET_FOOD_OFFERS_CATEGORIES,
+  SET_FOODOFFERS_INFO_ITEMS,
   SET_MARKING_DETAILS,
   SET_MOST_DISLIKED_FOODS,
   SET_MOST_LIKED_FOODS,
@@ -27,6 +28,7 @@ const initialState = {
   selectedFoodMarkings: [],
   foodCategories: [],
   foodOfferCategories: [],
+  foodOffersInfoItems: [],
   markingDetails: {},
   mostLikedFoods: [],
   mostDislikedFoods: [],
@@ -71,6 +73,12 @@ const foodReducer = (state = initialState, actions: any) => {
       return {
         ...state,
         foodOfferCategories: actions.payload,
+      };
+    }
+    case SET_FOODOFFERS_INFO_ITEMS: {
+      return {
+        ...state,
+        foodOffersInfoItems: actions.payload,
       };
     }
     case UPDATE_OWN_FOOD_FEEDBACK: {

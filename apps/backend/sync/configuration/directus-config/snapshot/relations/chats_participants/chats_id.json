@@ -1,0 +1,25 @@
+{
+  "collection": "chats_participants",
+  "field": "chats_id",
+  "related_collection": "chats",
+  "meta": {
+    "junction_field": "profiles_id",
+    "many_collection": "chats_participants",
+    "many_field": "chats_id",
+    "one_allowed_collections": null,
+    "one_collection": "chats",
+    "one_collection_field": null,
+    "one_deselect_action": "nullify",
+    "one_field": "participants",
+    "sort_field": null
+  },
+  "schema": {
+    "table": "chats_participants",
+    "column": "chats_id",
+    "foreign_key_table": "chats",
+    "foreign_key_column": "id",
+    "constraint_name": "chats_participants_chats_id_foreign",
+    "on_update": "NO ACTION",
+    "on_delete": "SET NULL"
+  }
+}

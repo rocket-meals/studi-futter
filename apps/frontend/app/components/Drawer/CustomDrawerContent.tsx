@@ -27,6 +27,7 @@ import {
   CLEAR_FOODS,
   CLEAR_MANAGEMENT,
   CLEAR_NEWS,
+  CLEAR_CHATS,
   CLEAR_SETTINGS,
   CLEAR_POPUP_EVENTS_HASH,
   ON_LOGOUT,
@@ -93,6 +94,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
   const { user, isManagement, isDevMode } = useSelector(
     (state: RootState) => state.authReducer
   );
+  const { chats } = useSelector((state: RootState) => state.chats);
   const {
     serverInfo,
     primaryColor: projectColor,
@@ -305,6 +307,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
     }
 
 
+
     if (isManagement) {
       menuItems.push({
         label: translate(TranslationKeys.role_management),
@@ -359,6 +362,17 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({
         });
 
       menuItems = [...menuItems, ...wikiMenuItems];
+    }
+
+    if (chats && chats.length > 0) {
+      menuItems.push({
+        label: translate(TranslationKeys.chats),
+        iconName: 'chat',
+        iconLibName: MaterialCommunityIcons,
+        activeKey: 'chats',
+        route: 'chats',
+        position: 9999,
+      });
     }
 
     // Sort menu items by position (smallest first)

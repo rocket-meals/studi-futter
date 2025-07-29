@@ -329,6 +329,7 @@ export enum TranslationKeys {
   cookies = 'cookies',
   feedback = 'feedback',
   feedback_support_faq = 'feedback_support_faq',
+  chat_last_message_unanswered = 'chat_last_message_unanswered',
   events = 'events',
   reset_seen_popup_events = 'reset_seen_popup_events',
   optional = 'optional',

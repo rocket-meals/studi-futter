@@ -12,7 +12,10 @@
     "hidden": false,
     "interface": "select-dropdown-m2o",
     "note": null,
-    "options": null,
+    "options": {
+      "enableLink": true,
+      "template": "{{alias}}"
+    },
     "readonly": false,
     "required": false,
     "sort": 11,

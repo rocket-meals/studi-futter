@@ -8,6 +8,7 @@ import {
   CLEAR_FOODS,
   CLEAR_MANAGEMENT,
   CLEAR_NEWS,
+  CLEAR_CHATS,
   CLEAR_SETTINGS,
   CLEAR_POPUP_EVENTS_HASH,
 } from '@/redux/Types/types';
@@ -25,6 +26,7 @@ export const performLogout = async (
     dispatch({ type: CLEAR_FOODS });
     dispatch({ type: CLEAR_MANAGEMENT });
     dispatch({ type: CLEAR_NEWS });
+    dispatch({ type: CLEAR_CHATS });
     dispatch({ type: CLEAR_SETTINGS });
     dispatch({ type: CLEAR_POPUP_EVENTS_HASH });
     dispatch({ type: CLEAR_COLLECTION_DATES_LAST_UPDATED });

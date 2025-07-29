@@ -77,19 +77,21 @@ const SettingsList: React.FC<SettingsListProps> = ({
         <View style={styles.textWrapper}>
           <View style={styles.titleContainer}>
             <Text
-              style={[styles.title, { color: theme.screen.text } as TextStyle]}
+                style={[styles.title, { color: theme.screen.text } as TextStyle]}
+                numberOfLines={0}
             >
               {title || label}
             </Text>
           </View>
           {value ? (
-            <View style={styles.valueContainer}>
-              <Text
-                style={[styles.value, { color: theme.screen.text } as TextStyle]}
-              >
-                {value}
-              </Text>
-            </View>
+              <View style={styles.valueContainer}>
+                <Text
+                    style={[styles.value, { color: theme.screen.text } as TextStyle]}
+                    numberOfLines={0}
+                >
+                  {value}
+                </Text>
+              </View>
           ) : null}
         </View>
         {rightElement || rightIcon ? (
@@ -113,6 +115,7 @@ export default SettingsList;
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
+    width: '100%',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: basePaddingVertical,
@@ -126,27 +129,26 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   textWrapper: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center", // statt flex-start, damit beide Container mittig sind
+    columnGap: 3,
     flex: 1,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    justifyContent: 'space-between',
   },
   titleContainer: {
     flexShrink: 1,
-    minWidth: 0,
+    flexGrow: 1,
+    minWidth: 0
   },
   valueContainer: {
-    marginLeft: 8,
-    flexShrink: 0,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '500',
+    flexShrink: 1,
+    flexGrow: 1,
+    justifyContent: "center",   // sorgt für vertikale Zentrierung
+    alignItems: "flex-end",     // sorgt für horizontale Ausrichtung nach rechts
   },
   value: {
     fontSize: 13,
-    textAlign: 'right',
+    textAlign: "right",       // Text rechtsbündig
   },
   rightWrapper: {
     width: 34,

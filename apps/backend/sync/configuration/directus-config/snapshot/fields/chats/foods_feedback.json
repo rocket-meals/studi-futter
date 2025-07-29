@@ -1,0 +1,47 @@
+{
+  "collection": "chats",
+  "field": "foods_feedback",
+  "type": "uuid",
+  "meta": {
+    "collection": "chats",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "foods_feedback",
+    "group": "linked_entities",
+    "hidden": false,
+    "interface": "select-dropdown-m2o",
+    "note": null,
+    "options": {
+      "enableLink": true
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 1,
+    "special": [
+      "m2o"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  },
+  "schema": {
+    "name": "foods_feedback",
+    "table": "chats",
+    "data_type": "uuid",
+    "default_value": null,
+    "max_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "is_nullable": true,
+    "is_unique": false,
+    "is_indexed": false,
+    "is_primary_key": false,
+    "is_generated": false,
+    "generation_expression": null,
+    "has_auto_increment": false,
+    "foreign_key_table": "foods_feedbacks",
+    "foreign_key_column": "id"
+  }
+}

@@ -1,7 +1,5 @@
 import {
   ActivityIndicator,
-  Dimensions,
-  Image,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -21,13 +19,14 @@ import {
 } from '@/redux/Types/types';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useNavigation } from 'expo-router';
-import { excerpt, getImageUrl } from '@/constants/HelperFunctions';
+import { getImageUrl } from '@/constants/HelperFunctions';
 import { DatabaseTypes, AppScreens } from 'repo-depkit-common';
-import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { RootState } from '@/redux/reducer';
 import { TranslationKeys } from '@/locales/keys';
 import { useLanguage } from '@/hooks/useLanguage';
+import CanteenSelection from '@/components/CanteenSelection/CanteenSelection';
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -45,10 +44,6 @@ const Home = () => {
     (state: RootState) => state.canteenReducer
   );
   const selectedCanteen = useSelectedCanteen();
-  const defaultImage = getImageUrl(serverInfo?.info?.project?.project_logo);
-  const [screenWidth, setScreenWidth] = useState(
-    Dimensions.get('window').width
-  );
 
   const checkCanteenSelection = () => {
     if (selectedCanteen) {
@@ -135,18 +130,6 @@ const Home = () => {
     }, [])
   );
 
-  useEffect(() => {
-    const handleResize = () => {
-      setScreenWidth(Dimensions.get('window').width);
-    };
-
-    const subscription = Dimensions.addEventListener('change', handleResize);
-
-    return () => subscription?.remove();
-  }, []);
-
-  const iscenter =
-    screenWidth > 768 ? 'flex-start' : screenWidth > 480 ? 'center' : 'center';
 
   if (!loading && (!canteens || canteens.length === 0)) {
     return (
@@ -195,64 +178,7 @@ const Home = () => {
             <ActivityIndicator size={30} color={theme.screen.text} />
           </View>
         ) : (
-          <View
-            style={{
-              ...styles.canteensContainer,
-              flexDirection: 'row',
-              flexWrap: 'wrap',
-              justifyContent: iscenter,
-              gap: 10,
-              paddingHorizontal: screenWidth > 800 ? 20 : 0,
-            }}
-          >
-            {canteens &&
-              canteens.map((canteen, index: number) => (
-                <TouchableOpacity
-                  style={{
-                    ...styles.card,
-                    width: screenWidth > 800 ? 210 : 170,
-                    backgroundColor: theme.card.background,
-                    marginBottom: 10,
-                  }}
-                  key={canteen.alias}
-                  onPress={() => {
-                    handleSelectCanteen(canteen);
-                  }}
-                >
-                  <View
-                    style={{
-                      ...styles.imageContainer,
-                      height: screenWidth > 800 ? 210 : 170,
-                    }}
-                  >
-                    <Image
-                      style={styles.image}
-                      source={
-                        canteen?.image_url
-                          ? {
-                              uri: canteen?.image_url,
-                            }
-                          : { uri: defaultImage }
-                      }
-                    />
-                    {canteen.status === 'archived' && (
-                      <View style={styles.archiveContainer}>
-                        <MaterialCommunityIcons
-                          name='archive'
-                          size={18}
-                          color={theme.screen.text}
-                        />
-                      </View>
-                    )}
-                  </View>
-                  <Text
-                    style={{ ...styles.canteenName, color: theme.screen.text }}
-                  >
-                    {excerpt(String(canteen.alias), 20)}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-          </View>
+          <CanteenSelection onSelectCanteen={handleSelectCanteen} />
         )}
       </ScrollView>
     </View>

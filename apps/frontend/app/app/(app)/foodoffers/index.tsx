@@ -25,6 +25,7 @@ import {
 } from '@react-navigation/drawer';
 import { isWeb } from '@/constants/Constants';
 import FoodItem from '@/components/FoodItem/FoodItem';
+import FoodOfferInfoItem from '@/components/FoodOfferInfoItem/FoodOfferInfoItem';
 import { useFocusEffect, useNavigation, useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
@@ -71,6 +72,7 @@ import {
   sortByPublicFavorite,
   sortByFoodCategory,
   sortByFoodOfferCategory,
+  sortBySortField,
 } from '@/helper/sortingHelper';
 import { format, addDays } from 'date-fns';
 import { BusinessHoursHelper } from '@/redux/actions/BusinessHours/BusinessHours';
@@ -97,6 +99,11 @@ export const SHEET_COMPONENTS = {
   imageManagement: ImageManagementSheet,
   eatingHabits: EatingHabitsSheet,
 };
+
+interface DayItem {
+  foodoffer: DatabaseTypes.Foodoffers | null;
+  foodofferInfoItem: DatabaseTypes.FoodoffersInfoItems | null;
+}
 
 
 const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
@@ -143,6 +150,7 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     selectedDate,
     foodCategories,
     foodOfferCategories,
+    foodOffersInfoItems,
   } = useSelector((state: RootState) => state.food);
   const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
   const animationRef = useRef<LottieView>(null);
@@ -163,6 +171,36 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     ? appSettings?.foods_area_color
     : primaryColor;
   const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
+
+  const dayItems = useMemo(() => {
+    const offers = selectedCanteenFoodOffers || [];
+
+    const hasOffers = offers.length > 0;
+
+    const infoItemsFiltered = (foodOffersInfoItems || []).filter((info) => {
+      if (info.canteen && selectedCanteen && info.canteen !== selectedCanteen.id){
+        return false;
+      }
+      if (info.show_only_when_no_foodoffers_found) {
+        return !hasOffers;
+      }
+      return hasOffers;
+    });
+
+
+    const startInfos = sortBySortField(
+      infoItemsFiltered.filter((i) => i.placement === 'start')
+    );
+    const endInfos = sortBySortField(
+      infoItemsFiltered.filter((i) => i.placement === 'end')
+    );
+
+    const start = startInfos.map((i) => ({ foodoffer: null, foodofferInfoItem: i }));
+    const main = offers.map((o) => ({ foodoffer: o, foodofferInfoItem: null }));
+    const end = endInfos.map((i) => ({ foodoffer: null, foodofferInfoItem: i }));
+
+    return [...start, ...main, ...end] as DayItem[];
+  }, [selectedCanteenFoodOffers, foodOffersInfoItems, selectedCanteen]);
 
   // Set Page Title
   useSetPageTitle(selectedCanteen?.alias || TranslationKeys.food_offers);
@@ -247,6 +285,17 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
     setBeforeElement(before);
     setAfterElement(after);
   }, [appElements, appSettings]);
+
+  const getInfoItemContent = useCallback(
+    (item: DatabaseTypes.FoodoffersInfoItems) => {
+      const elementId =
+        typeof item.name === 'string' ? item.name : item.name?.id;
+      const element = appElements?.find((el: any) => el.id === elementId);
+      if (!element || !element.translations) return { content: '' };
+      return getAppElementTranslation(element.translations, languageCode);
+    },
+    [appElements, languageCode],
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -996,19 +1045,28 @@ const index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 >
                   <ActivityIndicator size={'large'} color={theme.screen.icon} />
                 </View>
-              ) : selectedCanteenFoodOffers &&
-                selectedCanteenFoodOffers?.length > 0 ? (
-                selectedCanteenFoodOffers?.map((item: DatabaseTypes.Foodoffers) => (
-                  <FoodItem
-                    canteen={selectedCanteen}
-                    item={item}
-                    key={item?.id || `food-item-${index}`}
-                    handleMenuSheet={openSheet}
-                    handleImageSheet={openManagementSheet}
-                    handleEatingHabitsSheet={openSheet}
-                    setSelectedFoodId={setSelectedFoodId}
-                  />
-                ))
+              ) : dayItems && dayItems.length > 0 ? (
+                dayItems.map((dayItem: DayItem, index: number) =>
+                  dayItem.foodoffer ? (
+                    <FoodItem
+                      canteen={selectedCanteen}
+                      item={dayItem.foodoffer}
+                      key={dayItem.foodoffer.id || `food-item-${index}`}
+                      handleMenuSheet={openSheet}
+                      handleImageSheet={openManagementSheet}
+                      handleEatingHabitsSheet={openSheet}
+                      setSelectedFoodId={setSelectedFoodId}
+                    />
+                  ) : dayItem.foodofferInfoItem ? (
+                    <FoodOfferInfoItem
+                      key={dayItem.foodofferInfoItem.id || `info-item-${index}`}
+                      item={dayItem.foodofferInfoItem}
+                      content={
+                        getInfoItemContent(dayItem.foodofferInfoItem).content || ''
+                      }
+                    />
+                  ) : null,
+                )
               ) : (
                 <View style={styles.noFoodContainer}>
                   <Text

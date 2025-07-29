@@ -1,5 +1,7 @@
-import React from 'react';
-import { View, Text, FlatList } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, FlatList, TextInput, TouchableOpacity } from 'react-native';
+import { router } from 'expo-router';
+import SupportFAQ from '../../../../components/SupportFAQ/SupportFAQ';
 import { useTheme } from '@/hooks/useTheme';
 import { useLocalSearchParams } from 'expo-router';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
@@ -8,61 +10,12 @@ import MyMarkdown from '@/components/MyMarkdown/MyMarkdown';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/reducer';
 import { myContrastColor } from '@/helper/colorHelper';
-import { CHATS } from '../index';
+import { ChatMessagesHelper } from '@/redux/actions/Chats/ChatMessages';
+import { useLanguage } from '@/hooks/useLanguage';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { DatabaseTypes, DateHelper } from 'repo-depkit-common';
 import styles from './styles';
 
-interface ChatMessage {
-  id: string;
-  chat_id: string;
-  profile_id: string;
-  text: string;
-  timestamp: string;
-}
-
-const MESSAGES: ChatMessage[] = [
-  {
-    id: 'm1',
-    chat_id: '1',
-    profile_id: '1',
-    text: 'Hallo **Welt**! Dies ist eine längere Testnachricht, um das neue Layout zu überprüfen.',
-    timestamp: new Date().toISOString(),
-  },
-  {
-    id: 'm2',
-    chat_id: '1',
-    profile_id: '2',
-    text: 'Klingt gut! So können wir sehen, wie längere Texte in den Bubbles wirken.',
-    timestamp: new Date(Date.now() - 1000000).toISOString(),
-  },
-  {
-    id: 'm3',
-    chat_id: '1',
-    profile_id: '1',
-    text: 'Super, ich freue mich auf dein Feedback.',
-    timestamp: new Date(Date.now() - 2000000).toISOString(),
-  },
-  {
-    id: 'm4',
-    chat_id: '2',
-    profile_id: '2',
-    text: 'Willkommen im Projekt X Chat. Hast du die neuesten Änderungen gesehen?',
-    timestamp: new Date(Date.now() - 3000000).toISOString(),
-  },
-  {
-    id: 'm5',
-    chat_id: '2',
-    profile_id: '1',
-    text: 'Ja, die Updates sehen vielversprechend aus. Wir sollten sie bald testen.',
-    timestamp: new Date(Date.now() - 3500000).toISOString(),
-  },
-  {
-    id: 'm6',
-    chat_id: '2',
-    profile_id: '2',
-    text: 'Absolut. Ich plane, morgen einen kurzen Build zu erstellen.',
-    timestamp: new Date(Date.now() - 4000000).toISOString(),
-  },
-];
 
 const ChatDetailsScreen = () => {
   useSetPageTitle(TranslationKeys.chat);
@@ -72,17 +25,76 @@ const ChatDetailsScreen = () => {
     (state: RootState) => state.settings
   );
 
-  const chatMessages = MESSAGES.filter((m) => m.chat_id === chat_id);
-  chatMessages.sort(
-    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-  );
+  const { chats } = useSelector((state: RootState) => state.chats);
+  const { profile } = useSelector((state: RootState) => state.authReducer);
+  const [messages, setMessages] = useState<DatabaseTypes.ChatMessages[]>([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [sending, setSending] = useState(false);
+  const { translate } = useLanguage();
 
-  const chatTitle = CHATS.find((c) => c.id === chat_id)?.title || 'Chat';
+  useEffect(() => {
+    const fetchMsgs = async () => {
+      if (chat_id) {
+        try {
+          const helper = new ChatMessagesHelper();
+          const result = (await helper.fetchMessagesByChat(chat_id)) as DatabaseTypes.ChatMessages[];
+          if (result) {
+            setMessages(result);
+          }
+        } catch (e) {
+          console.error('Error fetching chat messages:', e);
+        }
+      }
+    };
+    fetchMsgs();
+  }, [chat_id]);
 
-  const renderItem = ({ item }: { item: ChatMessage }) => {
-    const isMe = item.profile_id === '1';
+  const chatTitle = chats.find((c) => c.id === chat_id)?.alias || 'Chat';
+
+  const sortedMessages = [...messages].sort((a, b) => {
+    const da = a.date_created || a.date_updated || '';
+    const db = b.date_created || b.date_updated || '';
+    return da < db ? 1 : -1;
+  });
+
+  const lastMessageDate = sortedMessages[0]?.date_created || sortedMessages[0]?.date_updated;
+  let amountDaysForOldMessages = 7; // Default to 7 days
+
+  const showOldMessageNotice = lastMessageDate ? DateHelper.isDateOlderThan(new Date(lastMessageDate), amountDaysForOldMessages) : false;
+
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() || !chat_id || !profile?.id) {
+      return;
+    }
+    setSending(true);
+    try {
+      const helper = new ChatMessagesHelper();
+      const created = (await helper.createChatMessage({
+        chat: chat_id,
+        profile: profile.id,
+        message: newMessage.trim(),
+      })) as DatabaseTypes.ChatMessages;
+      if (created) {
+        setMessages((prev) => [created, ...prev]);
+        setNewMessage('');
+      }
+    } catch (e) {
+      console.error('Error creating chat message:', e);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const renderItem = ({ item }: { item: DatabaseTypes.ChatMessages }) => {
+    const profileId = typeof item.profile === 'object' ? item.profile?.id : item.profile;
+    const isMe = profileId === profile?.id;
     const bgColor = isMe ? projectColor : theme.card.background;
     const textColor = myContrastColor(bgColor, theme, mode === 'dark');
+
+    if (!item.message) {
+      return null; // Skip rendering if message is empty
+    }
+
     return (
       <View
         style={[
@@ -91,7 +103,7 @@ const ChatDetailsScreen = () => {
         ]}
       >
         <View style={[styles.bubble, { backgroundColor: bgColor }]}>
-          <MyMarkdown content={item.text} textColor={textColor} />
+          <MyMarkdown content={item.message} textColor={textColor} />
         </View>
         <Text
           style={{
@@ -100,7 +112,7 @@ const ChatDetailsScreen = () => {
             textAlign: isMe ? 'right' : 'left',
           }}
         >
-          {new Date(item.timestamp).toLocaleString()}
+          {new Date(item.date_created+"").toLocaleString()}
         </Text>
       </View>
     );
@@ -109,11 +121,53 @@ const ChatDetailsScreen = () => {
   return (
     <View style={[styles.container, { backgroundColor: theme.screen.background }]}>
       <FlatList
-        data={chatMessages}
+        data={sortedMessages}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={styles.list}
+        inverted
       />
+      {showOldMessageNotice && (
+        <View style={styles.oldMessageContainer}>
+          <Text style={[styles.oldMessageText, { color: theme.screen.text }]}> 
+            {translate(TranslationKeys.chat_last_message_unanswered)}
+          </Text>
+          <SupportFAQ
+            label={translate(TranslationKeys.feedback_support_faq)}
+            onPress={() => router.navigate('/support-FAQ')}
+          />
+        </View>
+      )}
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={[
+            styles.textInput,
+            { color: theme.screen.text, borderColor: theme.screen.placeholder },
+          ]}
+          placeholder={translate(TranslationKeys.type_here)}
+          placeholderTextColor={theme.screen.placeholder}
+          multiline
+          value={newMessage}
+          onChangeText={setNewMessage}
+        />
+        <TouchableOpacity
+          onPress={handleSendMessage}
+          disabled={!newMessage.trim() || sending}
+          style={[
+            styles.sendButton,
+            {
+              backgroundColor: projectColor,
+              opacity: newMessage.trim() ? 1 : 0.5,
+            },
+          ]}
+        >
+          <MaterialCommunityIcons
+            name='send'
+            size={24}
+            color={myContrastColor(projectColor, theme, mode === 'dark')}
+          />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

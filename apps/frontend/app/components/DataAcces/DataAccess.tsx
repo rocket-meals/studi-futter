@@ -147,84 +147,89 @@ const DataAccess = ({ onOpenBottomSheet }: any) => {
             )}
           </SettingsGroupTitle>
             {/* Info Items List */}
+        <View style={{
+          width: windowWidth < 500 ? '100%' : isWeb ? '80%' : '100%',
+        }}>
           {infoItems.map((item, index) => {
-              const last = index === infoItems.length - 1;
-              const first = index === 0;
-              const groupPosition =
+            const last = index === infoItems.length - 1;
+            const first = index === 0;
+            const groupPosition =
                 infoItems.length === 1
-                  ? 'single'
+                    ? 'single'
                     : first
-                    ? 'top'
-                    : last
-                    ? 'bottom'
-                    : 'middle';
-                return (
-                  <SettingsList
+                        ? 'top'
+                        : last
+                            ? 'bottom'
+                            : 'middle';
+            return (
+                <SettingsList
                     key={index}
                     iconBgColor={primaryColor}
                     leftIcon={
                       <MaterialCommunityIcons
-                        name='database-eye'
-                        size={24}
-                        color={theme.screen.icon}
+                          name='database-eye'
+                          size={24}
+                          color={theme.screen.icon}
                       />
                     }
                     label={item.label}
                     rightIcon={
                       <Entypo
-                        name='chevron-small-right'
-                        size={24}
-                        color={theme.screen.icon}
+                          name='chevron-small-right'
+                          size={24}
+                          color={theme.screen.icon}
                       />
                     }
                     handleFunction={() => onOpenBottomSheet(item)}
                     groupPosition={groupPosition as any}
-                  />
-                );
-              })}
+                />
+            );
+          })}
 
-            {/* Device Data List */}
-            <SettingsGroupTitle>
-              {translate(
+          {/* Device Data List */}
+          <SettingsGroupTitle>
+            {translate(
                 TranslationKeys.translation_all_on_device_saved_data
-              )}
-            </SettingsGroupTitle>
-              {dataDevice.map((data, index) => {
-                if (!data?.value) return null;
-                const last = index === dataDevice.length - 1;
-                const first = index === 0;
-                const groupPosition =
-                  dataDevice.length === 1
+            )}
+          </SettingsGroupTitle>
+          {dataDevice.map((data, index) => {
+            if (!data?.value) return null;
+            const last = index === dataDevice.length - 1;
+            const first = index === 0;
+            const groupPosition =
+                dataDevice.length === 1
                     ? 'single'
                     : first
-                    ? 'top'
-                    : last
-                    ? 'bottom'
-                    : 'middle';
-                return (
-                  <SettingsList
+                        ? 'top'
+                        : last
+                            ? 'bottom'
+                            : 'middle';
+            return (
+                <SettingsList
                     key={index}
                     iconBgColor={primaryColor}
                     leftIcon={
                       <MaterialCommunityIcons
-                        name='database-eye'
-                        size={24}
-                        color={theme.screen.icon}
+                          name='database-eye'
+                          size={24}
+                          color={theme.screen.icon}
                       />
                     }
                     label={data.label}
                     rightIcon={
                       <Entypo
-                        name='chevron-small-right'
-                        size={24}
-                        color={theme.screen.icon}
+                          name='chevron-small-right'
+                          size={24}
+                          color={theme.screen.icon}
                       />
                     }
                     handleFunction={() => onOpenBottomSheet(data)}
                     groupPosition={groupPosition as any}
-                  />
-                );
-              })}
+                />
+            );
+          })}
+        </View>
+
       </ScrollView>
     </View>
   );

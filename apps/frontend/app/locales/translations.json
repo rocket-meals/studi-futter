@@ -3273,6 +3273,16 @@
     "tr": "Destek ve SSS",
     "zh": "支持和常见问题解答"
   },
+  "chat_last_message_unanswered": {
+    "de": "Es scheint, als wenn wir nicht auf deine letzte Nachricht geantwortet haben. Das tut uns leid. Schreibe uns doch am besten einfach eine E-Mail.",
+    "en": "It seems we did not respond to your last message. We're sorry. Please send us an email.",
+    "ar": "It seems we did not respond to your last message. Please send us an email.",
+    "es": "Parece que no respondimos a tu último mensaje. Por favor, envíanos un correo electrónico.",
+    "fr": "Il semble que nous n'ayons pas répondu à ton dernier message. Veuillez nous envoyer un e-mail.",
+    "ru": "Похоже, мы не ответили на ваше последнее сообщение. Пожалуйста, напишите нам электронное письмо.",
+    "tr": "Görünüyor ki son mesajınıza cevap vermedik. Lütfen bize bir e-posta gönderin.",
+    "zh": "看起来我们没有回复你的最后一条消息。请给我们发送电子邮件。"
+  },
   "events": {
     "de": "Events",
     "en": "Events",

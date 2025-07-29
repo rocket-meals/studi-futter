@@ -12,7 +12,21 @@
     "hidden": false,
     "interface": "list-o2m",
     "note": null,
-    "options": null,
+    "options": {
+      "enableLink": true,
+      "enableSearchFilter": true,
+      "fields": [
+        "date_start",
+        "date_end",
+        "value_forecast_current",
+        "value_real"
+      ],
+      "layout": "table",
+      "limit": 100,
+      "sort": "date_start",
+      "sortDirection": "-",
+      "tableSpacing": "compact"
+    },
     "readonly": false,
     "required": false,
     "sort": 9,
