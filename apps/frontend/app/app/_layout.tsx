@@ -1,3 +1,5 @@
+// Polyfill for environments where `setImmediate` is not available (e.g. web)
+import 'setimmediate';
 import React, { useEffect } from 'react';
 import { Slot } from 'expo-router';
 import { RootSiblingParent } from 'react-native-root-siblings';

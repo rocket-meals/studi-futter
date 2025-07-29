@@ -97,6 +97,10 @@
     "name": "Anonymous",
     "roles": [
       {
+        "role": "abe3a726-f85c-4d70-a86c-15e7092e5da2",
+        "sort": 2
+      },
+      {
         "role": null,
         "sort": null
       }

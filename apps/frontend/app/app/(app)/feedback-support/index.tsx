@@ -182,13 +182,18 @@ const FeedbackScreen = () => {
         })
       );
       try {
+        console.log("Creating app feedback with input:",)
         await appFeedback.createAppFeedback(sanitizedInput);
+        console.log("App feedback created successfully");
         setLoading(false);
-        fetchDeviceInfo();
+        console.log("Set loading to false finished");
+        await fetchDeviceInfo();
+        console.log("Fetched device info after creating feedback");
         toast(
           'Feedback submitted successfully! Thank you for your input.',
           'success'
         );
+        console.log("Navigating to support ticket or FAQ");
         if (profile?.id) {
           router.navigate('/support-ticket');
         } else {
