@@ -11,7 +11,25 @@ const LabelHeader: React.FC<{ Label: any; isConnected?: Boolean }> = ({
 }) => {
   const { theme } = useTheme();
   const [currentTime, setCurrentTime] = useState('');
+  const [logoStyle, setLogoStyle] = useState(styles.logo);
+  const { width } = Dimensions.get('window');
   const { appSettings } = useSelector((state: RootState) => state.settings);
+  const updateLogoStyle = useCallback(() => {
+    setLogoStyle({
+      width: width < 600 ? 150 : width > 600 ? 300 : 300,
+      height: width < 600 ? 75 : width > 600 ? 75 : 75,
+      marginRight: width > 600 ? 20 : 10,
+    });
+  }, [width]);
+
+  useEffect(() => {
+    updateLogoStyle();
+    const subscription = Dimensions.addEventListener('change', updateLogoStyle);
+
+    return () => {
+      subscription.remove();
+    };
+  }, [updateLogoStyle]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -34,7 +52,7 @@ const LabelHeader: React.FC<{ Label: any; isConnected?: Boolean }> = ({
       }}
     >
       <View style={styles.logoContainer}>
-        <CompanyImage appSettings={appSettings} style={styles.logo} />
+        <CompanyImage appSettings={appSettings} style={logoStyle} />
       </View>
       <View style={{ ...styles.row }}>
         <View style={styles.labelText}>
@@ -72,17 +90,16 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ddd',
   },
   logoContainer: {
-    justifyContent: 'center',
+    flexDirection: 'row',
     alignItems: 'center',
-  },
-  logo: {
-    maxHeight: 75,
-    maxWidth: 300,
-    resizeMode: 'contain',
   },
   labelText: {
     marginLeft: 10,
-    flex: 1,
+  },
+  logo: {
+    width: 300,
+    height: 80,
+    marginRight: 10,
   },
   label: {
     fontSize: 18,
