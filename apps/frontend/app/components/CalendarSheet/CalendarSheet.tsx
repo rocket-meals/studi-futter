@@ -23,6 +23,7 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet }) => {
     primaryColor,
     appSettings,
     selectedTheme: mode,
+    firstDayOfTheWeek,
   } = useSelector((state: RootState) => state.settings);
   const { selectedDate } = useSelector((state: RootState) => state.food);
   const foods_area_color = appSettings?.foods_area_color
@@ -33,6 +34,17 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet }) => {
     theme,
     mode === 'dark'
   );
+
+  const weekStartMap: Record<string, number> = {
+    monday: 1,
+    tuesday: 2,
+    wednesday: 3,
+    thursday: 4,
+    friday: 5,
+    saturday: 6,
+    sunday: 0,
+  };
+  const firstDay = weekStartMap[firstDayOfTheWeek?.id] ?? 1;
 
   const navigateMonth = (direction: 'next' | 'prev') => {
     const newMonth = new Date(currentMonth);
@@ -128,6 +140,7 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet }) => {
         <Calendar
           key={currentMonth.toISOString()}
           style={styles.calendar}
+          firstDay={firstDay}
           current={currentMonth.toISOString().split('T')[0]}
           onDayPress={(day: any) => {
             dispatch({
@@ -147,7 +160,7 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet }) => {
             <TouchableOpacity
               style={{
                 ...styles.calendarAction,
-                backgroundColor: theme.screen.iconBg,
+                backgroundColor: foods_area_color,
               }}
               onPress={() =>
                 navigateMonth(direction === 'left' ? 'prev' : 'next')
@@ -156,7 +169,7 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet }) => {
               <AntDesign
                 name={direction === 'left' ? 'arrowleft' : 'arrowright'}
                 size={20}
-                color={foods_area_color}
+                color={contrastColor}
               />
             </TouchableOpacity>
           )}
@@ -174,7 +187,7 @@ const CalendarSheet: React.FC<CalendarSheetProps> = ({ closeSheet }) => {
             monthTextColor: theme.screen.text,
             dayTextColor: theme.screen.text,
             textDisabledColor: 'gray',
-            arrowColor: foods_area_color,
+            arrowColor: contrastColor,
             disabledArrowColor: 'gray',
             textDayFontFamily: 'Poppins_400Regular',
             textMonthFontFamily: 'Poppins_400Regular',

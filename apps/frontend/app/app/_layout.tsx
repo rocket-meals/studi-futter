@@ -35,6 +35,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '@/hooks/useTheme';
 import ServerStatusLoader from '@/components/ServerStatusLoader/ServerStatusLoader';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { usePathname } from 'expo-router';
 import { GluestackUIProvider } from '@gluestack-ui/themed';
 import { config } from '@gluestack-ui/config';
 import ExpoUpdateLoader from '@/components/ExpoUpdateLoader/ExpoUpdateLoader';
@@ -56,6 +57,7 @@ ServerAPI.createAuthentificationStorage(
 
 export default function Layout() {
   const { theme } = useTheme();
+  const pathname = usePathname();
   const [fontsLoaded] = useFonts({
     Poppins_100Thin,
     Poppins_100Thin_Italic,
@@ -118,12 +120,12 @@ export default function Layout() {
                       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                       style={{ flex: 1, backgroundColor: theme.screen.iconBg }}
                     >
-                      <SafeAreaView
-                        style={{ flex: 1, backgroundColor: theme.screen.iconBg }}
-                        edges={['top', 'bottom']}
-                      >
-                        <Slot />
-                      </SafeAreaView>
+                        <SafeAreaView
+                          style={{ flex: 1, backgroundColor: theme.screen.iconBg }}
+                          edges={pathname?.includes('image-full-screen') ? ['bottom'] : ['top', 'bottom']}
+                        >
+                          <Slot />
+                        </SafeAreaView>
                     </KeyboardAvoidingView>
                   </ExpoUpdateChecker>
                 </ServerStatusLoader>

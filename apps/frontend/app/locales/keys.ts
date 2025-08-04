@@ -386,6 +386,7 @@ export enum TranslationKeys {
   group_account_personalization = 'group_account_personalization',
   group_canteen_usage = 'group_canteen_usage',
   group_app_settings = 'group_app_settings',
+  pull_down_to_close = 'pull_down_to_close',
   group_app_management = 'group_app_management',
   // NOT IN TRANSLATION
   feedback_and_support = 'Feedback & Support',

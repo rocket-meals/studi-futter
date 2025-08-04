@@ -119,25 +119,32 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({
   const sortOffers = useCallback(
     (foodOffers: DatabaseTypes.Foodoffers[]) => {
       let copiedFoodOffers = [...foodOffers];
+      console.log('sortOffers - initial', JSON.parse(JSON.stringify(copiedFoodOffers)));
 
       switch (sortBy as FoodSortOption) {
         case FoodSortOption.ALPHABETICAL:
           copiedFoodOffers = sortByFoodName(copiedFoodOffers, language);
+          console.log('sortOffers - after sortByFoodName', JSON.parse(JSON.stringify(copiedFoodOffers)));
           break;
         case FoodSortOption.FAVORITE:
           copiedFoodOffers = sortByOwnFavorite(copiedFoodOffers, ownFoodFeedbacks);
+          console.log('sortOffers - after sortByOwnFavorite', JSON.parse(JSON.stringify(copiedFoodOffers)));
           break;
         case FoodSortOption.EATING:
           copiedFoodOffers = sortByEatingHabits(copiedFoodOffers, profile.markings);
+          console.log('sortOffers - after sortByEatingHabits', JSON.parse(JSON.stringify(copiedFoodOffers)));
           break;
         case FoodSortOption.FOOD_CATEGORY:
           copiedFoodOffers = sortByFoodCategory(copiedFoodOffers, foodCategories, language);
+          console.log('sortOffers - after sortByFoodCategory', JSON.parse(JSON.stringify(copiedFoodOffers)));
           break;
         case FoodSortOption.FOODOFFER_CATEGORY:
           copiedFoodOffers = sortByFoodOfferCategory(copiedFoodOffers, foodOfferCategories);
+          console.log('sortOffers - after sortByFoodOfferCategory', JSON.parse(JSON.stringify(copiedFoodOffers)));
           break;
         case FoodSortOption.RATING:
           copiedFoodOffers = sortByPublicFavorite(copiedFoodOffers);
+          console.log('sortOffers - after sortByPublicFavorite', JSON.parse(JSON.stringify(copiedFoodOffers)));
           break;
         case FoodSortOption.INTELLIGENT:
           copiedFoodOffers = intelligentSort(
@@ -148,6 +155,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({
             foodCategories,
             foodOfferCategories,
           );
+          console.log('sortOffers - after intelligentSort', JSON.parse(JSON.stringify(copiedFoodOffers)));
           break;
         default:
           break;

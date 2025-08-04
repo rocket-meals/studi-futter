@@ -7,6 +7,7 @@ export const normalizeSort = (value: any): number => {
 export const sortBySortField = <T extends { sort?: number | null }>(
     items: T[]
 ): T[] => {
+  console.log('sortBySortField - before', JSON.parse(JSON.stringify(items)));
   const withSort: T[] = [];
   const withoutSort: T[] = [];
 
@@ -20,12 +21,15 @@ export const sortBySortField = <T extends { sort?: number | null }>(
 
   withSort.sort((a, b) => (a.sort! as number) - (b.sort! as number));
 
-  return [...withSort, ...withoutSort];
+  const result = [...withSort, ...withoutSort];
+  console.log('sortBySortField - after', JSON.parse(JSON.stringify(result)));
+  return result;
 };
 
 import { getFoodName, isRatingNegative, isRatingPositive } from "./resourceHelper";
 
 export function sortByFoodName(foodOffers: DatabaseTypes.Foodoffers[], languageCode: string) {
+  console.log('sortByFoodName - before', JSON.parse(JSON.stringify(foodOffers)));
     foodOffers.sort((a, b) => {
       let nameA = getFoodName(a.food, languageCode);
       let nameB = getFoodName(b.food, languageCode);
@@ -37,6 +41,7 @@ export function sortByFoodName(foodOffers: DatabaseTypes.Foodoffers[], languageC
         return 1;
       }
     });
+  console.log('sortByFoodName - after', JSON.parse(JSON.stringify(foodOffers)));
   return foodOffers;
 }
 
@@ -45,11 +50,13 @@ export function sortByFoodCategory(
   categories: DatabaseTypes.FoodsCategories[],
     languageCode: string
 ) {
+  console.log('sortByFoodCategory - before', JSON.parse(JSON.stringify(foodOffers)));
   // 1) Alphabetisch (am wenigsten wichtig)
     sortByFoodName(foodOffers, languageCode);
 
     // 2) Food Categories
     sortByFoodCategoryOnly(foodOffers, categories);
+  console.log('sortByFoodCategory - after', JSON.parse(JSON.stringify(foodOffers)));
 
     return foodOffers;
 }
@@ -58,6 +65,7 @@ export function sortByFoodCategoryOnly(
     foodOffers: DatabaseTypes.Foodoffers[],
     categories: DatabaseTypes.FoodsCategories[]
 ) {
+  console.log('sortByFoodCategoryOnly - before', JSON.parse(JSON.stringify(foodOffers)));
   const sortMap = new Map<string, number>();
   categories.forEach((cat) => {
     if (cat.id) {
@@ -83,6 +91,7 @@ export function sortByFoodCategoryOnly(
         : Infinity;
     return aSort - bSort;
   });
+  console.log('sortByFoodCategoryOnly - after', JSON.parse(JSON.stringify(foodOffers)));
 }
 
 export function sortByFoodOfferCategory(
@@ -90,11 +99,13 @@ export function sortByFoodOfferCategory(
   categories: DatabaseTypes.FoodoffersCategories[],
     languageCode: string
 ) {
+    console.log('sortByFoodOfferCategory - before', JSON.parse(JSON.stringify(foodOffers)));
     // 1) Alphabetisch (am wenigsten wichtig)
     sortByFoodName(foodOffers, languageCode);
 
     // 2) Food Offer Categories
     sortByFoodOfferCategoryOnly(foodOffers, categories);
+    console.log('sortByFoodOfferCategory - after', JSON.parse(JSON.stringify(foodOffers)));
 
     return foodOffers;
 }
@@ -103,6 +114,7 @@ export function sortByFoodOfferCategoryOnly(
     foodOffers: DatabaseTypes.Foodoffers[],
     categories: DatabaseTypes.FoodoffersCategories[]
 ) {
+  console.log('sortByFoodOfferCategoryOnly - before', JSON.parse(JSON.stringify(foodOffers)));
   const sortMap = new Map<string, number>();
   categories.forEach((cat) => {
     if (cat.id) {
@@ -128,10 +140,12 @@ export function sortByFoodOfferCategoryOnly(
         : Infinity;
     return aSort - bSort;
   });
+  console.log('sortByFoodOfferCategoryOnly - after', JSON.parse(JSON.stringify(foodOffers)));
 }
 
   // Working Own Favorite Sorting
 export function sortByOwnFavorite(foodOffers: DatabaseTypes.Foodoffers[], ownFeedBacks: any) {
+    console.log('sortByOwnFavorite - before', JSON.parse(JSON.stringify(foodOffers)));
     const feedbackMap = new Map(
       ownFeedBacks.map((feedback: any) => [feedback.food, feedback.rating])
     );
@@ -151,10 +165,13 @@ export function sortByOwnFavorite(foodOffers: DatabaseTypes.Foodoffers[], ownFee
 
       return aCategory - bCategory;
     });
+    
+  console.log('sortByOwnFavorite - after', JSON.parse(JSON.stringify(foodOffers)));
   }
 
   // Working Public Favorite Sorting
 export function sortByPublicFavorite(foodOffers: DatabaseTypes.Foodoffers[]) {
+    console.log('sortByPublicFavorite - before', JSON.parse(JSON.stringify(foodOffers)));
     foodOffers.sort((a, b) => {
       const aFood: DatabaseTypes.Foods = a.food || {};
       const bFood: DatabaseTypes.Foods = b.food || {};
@@ -176,11 +193,14 @@ export function sortByPublicFavorite(foodOffers: DatabaseTypes.Foodoffers[]) {
       return aPriority - bPriority;
     });
 
+    console.log('sortByPublicFavorite - after', JSON.parse(JSON.stringify(foodOffers)));
+
     return foodOffers;
   }
 
 
 export function sortByEatingHabits(foodOffers: DatabaseTypes.Foodoffers[], profileMarkingsData: any) {
+    console.log('sortByEatingHabits - before', JSON.parse(JSON.stringify(foodOffers)));
     const profileMarkingsMap = new Map(
       profileMarkingsData?.map((marking: any) => [marking.markings_id, marking])
     );
@@ -213,6 +233,8 @@ export function sortByEatingHabits(foodOffers: DatabaseTypes.Foodoffers[], profi
       // Sort in descending order of sort value (higher preference first)
       return bSortValue - aSortValue;
     });
+
+    console.log('sortByEatingHabits - after', JSON.parse(JSON.stringify(foodOffers)));
 
     return foodOffers;
   }
@@ -279,23 +301,30 @@ export function intelligentSort(
     foodCategories: DatabaseTypes.FoodsCategories[] = [],
     foodOfferCategories: DatabaseTypes.FoodoffersCategories[] = []
 ) {
+  console.log('intelligentSort - initial', JSON.parse(JSON.stringify(foodOffers)));
   // 1) Alphabetisch (am wenigsten wichtig)
   sortByFoodName(foodOffers, languageCode);
+  console.log('intelligentSort - after sortByFoodName', JSON.parse(JSON.stringify(foodOffers)));
 
   // 2) Public Rating + Amount
   sortByPublicFavorite(foodOffers);
+  console.log('intelligentSort - after sortByPublicFavorite', JSON.parse(JSON.stringify(foodOffers)));
 
   // 3) Food Offer Categories
   sortByFoodOfferCategoryOnly(foodOffers, foodOfferCategories);
+  console.log('intelligentSort - after sortByFoodOfferCategoryOnly', JSON.parse(JSON.stringify(foodOffers)));
 
   // 4) Food Categories
   sortByFoodCategoryOnly(foodOffers, foodCategories);
+  console.log('intelligentSort - after sortByFoodCategoryOnly', JSON.parse(JSON.stringify(foodOffers)));
 
   // 5) Own Feedbacks
   sortByOwnFavorite(foodOffers, ownFeedbacks);
+  console.log('intelligentSort - after sortByOwnFavorite', JSON.parse(JSON.stringify(foodOffers)));
 
   // 6) Eating Habits (am wichtigsten)
   sortByEatingHabits(foodOffers, profileMarkings);
+  console.log('intelligentSort - after sortByEatingHabits', JSON.parse(JSON.stringify(foodOffers)));
 
   return foodOffers;
 }

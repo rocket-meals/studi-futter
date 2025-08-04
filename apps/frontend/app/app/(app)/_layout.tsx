@@ -940,6 +940,12 @@ export default function Layout() {
             headerShown: false,
           }}
         />
+        <Drawer.Screen
+          name='image-full-screen'
+          options={{
+            headerShown: false,
+          }}
+        />
       </Drawer>
     </>
   );

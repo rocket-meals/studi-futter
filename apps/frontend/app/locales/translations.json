@@ -3863,6 +3863,16 @@
     "tr": "Uygulama ayarları",
     "zh": "应用设置"
   },
+  "pull_down_to_close": {
+    "de": "Zum schließen runter ziehen",
+    "en": "Pull down to close",
+    "ar": "اسحب للأسفل للإغلاق",
+    "es": "Desliza hacia abajo para cerrar",
+    "fr": "Glissez vers le bas pour fermer",
+    "ru": "Потяните вниз, чтобы закрыть",
+    "tr": "Kapatmak için aşağı çekin",
+    "zh": "下拉以关闭"
+  },
   "group_app_management": {
     "de": "App-Verwaltung",
     "en": "App Management",

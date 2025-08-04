@@ -66,11 +66,15 @@ export const numToOneDecimal = (num: number) => {
   return Math.round(num * 10) / 10;
 };
 
-export const getImageUrl = (imageId: string) => {
+export const getImageUrl = (imageId: string, size: number = 512) => {
   if (!imageId) {
     return null;
   }
-  return `${Server.ServerUrl}/assets/${imageId}?fit=cover&width=512&height=512&quality=100`;
+  return `${Server.ServerUrl}/assets/${imageId}?fit=cover&width=${size}&height=${size}&quality=100`;
+};
+
+export const getHighResImageUrl = (imageId: string, size: number = 2048) => {
+  return getImageUrl(imageId, size);
 };
 
 export const getFormValueImageUrl = (imageId: string) => {

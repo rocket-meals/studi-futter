@@ -23,8 +23,8 @@ export default StyleSheet.create({
   },
   headerCell: {
     color: '#fff',
-    fontSize: 10,
-    fontFamily: 'Poppins_400Regular',
+    fontSize: 14,
+    fontFamily: 'Poppins_700Bold',
     textAlign: 'left',
     paddingHorizontal: 7,
   },
