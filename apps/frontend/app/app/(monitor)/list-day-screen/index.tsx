@@ -667,7 +667,7 @@ const index = () => {
       <View
         ref={headerRef}
         onLayout={handleHeaderLayout}
-        style={{ width: '100%', height: 100, position: 'relative' }}
+        style={{ width: '100%', position: 'relative' }}
       >
         <LabelHeader
           Label={selectedCanteen?.alias ? selectedCanteen?.alias : ''}

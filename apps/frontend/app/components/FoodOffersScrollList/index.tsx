@@ -22,7 +22,7 @@ import {
   sortByEatingHabits,
   sortByFoodCategory,
   sortByFoodName,
-  sortByFoodOfferCategory,
+  sortByFoodOfferCategory, sortByFoodOfferCategoryOnly,
   sortByOwnFavorite,
   sortByPublicFavorite,
 } from '@/helper/sortingHelper';
@@ -139,7 +139,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({
           console.log('sortOffers - after sortByFoodCategory', JSON.parse(JSON.stringify(copiedFoodOffers)));
           break;
         case FoodSortOption.FOODOFFER_CATEGORY:
-          copiedFoodOffers = sortByFoodOfferCategory(copiedFoodOffers, foodOfferCategories);
+          copiedFoodOffers = sortByFoodOfferCategoryOnly(copiedFoodOffers, foodOfferCategories);
           console.log('sortOffers - after sortByFoodOfferCategory', JSON.parse(JSON.stringify(copiedFoodOffers)));
           break;
         case FoodSortOption.RATING:
