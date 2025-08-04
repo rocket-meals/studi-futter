@@ -92,6 +92,7 @@ export function sortByFoodCategoryOnly(
     return aSort - bSort;
   });
   console.log('sortByFoodCategoryOnly - after', JSON.parse(JSON.stringify(foodOffers)));
+    return foodOffers;
 }
 
 export function sortByFoodOfferCategory(
@@ -141,6 +142,7 @@ export function sortByFoodOfferCategoryOnly(
     return aSort - bSort;
   });
   console.log('sortByFoodOfferCategoryOnly - after', JSON.parse(JSON.stringify(foodOffers)));
+  return foodOffers;
 }
 
   // Working Own Favorite Sorting
