@@ -74,7 +74,6 @@ const styles = StyleSheet.create({
   logoContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'red',
   },
   logo: {
     maxHeight: 75,
@@ -96,7 +95,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins_400Regular',
   },
   row: {
-    backgroundColor: "green",
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
