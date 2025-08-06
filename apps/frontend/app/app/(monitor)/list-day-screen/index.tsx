@@ -1208,6 +1208,7 @@ const index = () => {
                           } as any}
                           size={24}
                           color={MarkingColor}
+                          compact
                         />
                         <Text
                           style={{ ...styles.title, color: theme.screen.text }}
