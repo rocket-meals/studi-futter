@@ -70,7 +70,7 @@ import { SET_CANTEENS, SET_SELECTED_CANTEEN, UPDATE_PRIVACY_POLICY_DATE } from '
 import { HashHelper } from '@/helper/hashHelper';
 import { CollectionKeys } from '@/constants/collectionKeys';
 import { RootState } from '@/redux/reducer';
-import { sortMarkingsByGroup, sortBySortField } from '@/helper/sortingHelper';
+import { sortMarkingsByGroup, sortBySortField } from 'repo-depkit-common';
 import { SET_NEWS } from '@/redux/Types/types';
 import { SET_CHATS } from '@/redux/Types/types';
 

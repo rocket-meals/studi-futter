@@ -6,3 +6,4 @@ export * from "./src/databaseTypes/CollectionNames";
 export * from "./src/AppLinks";
 export * from "./src/GlobalParams";
 export * from "./src/DistanceHelper";
+export * from "./src/SortingHelper";

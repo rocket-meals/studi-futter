@@ -12,7 +12,7 @@ import { createSelector } from 'reselect';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
-import { sortMarkingsByGroup } from '@/helper/sortingHelper';
+import { sortMarkingsByGroup } from 'repo-depkit-common';
 import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
 
 interface LabelsProps {

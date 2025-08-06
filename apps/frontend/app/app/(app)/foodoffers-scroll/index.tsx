@@ -65,7 +65,7 @@ import {
   sortByPublicFavorite,
   sortByFoodCategory,
   sortByFoodOfferCategory,
-} from '@/helper/sortingHelper';
+} from 'repo-depkit-common';
 import { format, addDays } from 'date-fns';
 import { BusinessHoursHelper } from '@/redux/actions/BusinessHours/BusinessHours';
 import PopupEventSheet from '@/components/PopupEventSheet/PopupEventSheet';

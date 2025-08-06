@@ -25,7 +25,7 @@ import {
   sortByFoodOfferCategory, sortByFoodOfferCategoryOnly,
   sortByOwnFavorite,
   sortByPublicFavorite,
-} from '@/helper/sortingHelper';
+} from 'repo-depkit-common';
 import { FoodSortOption } from '@/constants/SortingEnums';
 import styles from './styles';
 import BaseBottomSheet from '@/components/BaseBottomSheet';

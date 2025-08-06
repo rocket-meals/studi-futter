@@ -1,11 +1,121 @@
-import { DatabaseTypes } from 'repo-depkit-common';
+import * as DatabaseTypes from './databaseTypes/types';
+import { StringHelper } from './StringHelper';
+
+export type TranslationEntry = {
+  languages_code: string;
+  [key: string]: any;
+};
+
+const DEFAULT_LANGUAGE_CODE_GERMAN = 'de';
+const FALLBACK_LANGUAGE_CODE_ENGLISH = 'en';
+const MISSING_TRANSLATION = 'Missing translation';
+
+export function getDirectusTranslation(
+  params: any,
+  translations: TranslationEntry[],
+  field: string,
+  ignoreFallbackLanguage?: boolean,
+  fallback_text?: string | null
+): string {
+  const languageCode = params?.languageCode || FALLBACK_LANGUAGE_CODE_ENGLISH;
+
+  const translationDict = translations.reduce((acc, translation) => {
+    acc[translation.languages_code] = translation;
+    return acc;
+  }, {} as { [key: string]: TranslationEntry });
+
+  const getTranslation = (
+    dict: { [key: string]: TranslationEntry },
+    langCode: string,
+    params?: any
+  ) => {
+    const translationEntry = dict[langCode];
+    if (!translationEntry) return null;
+
+    let translation = translationEntry[field];
+    if (params) {
+      Object.keys(params).forEach((key) => {
+        translation = StringHelper.replaceAll(
+          translation,
+          `%${key}`,
+          params[key]
+        );
+      });
+    }
+    return translation;
+  };
+
+  let translation = getTranslation(translationDict, languageCode, params);
+  if (translation) return translation;
+
+  translation = getTranslation(
+    translationDict,
+    FALLBACK_LANGUAGE_CODE_ENGLISH,
+    params
+  );
+  if (translation) return translation;
+
+  if (!ignoreFallbackLanguage) {
+    translation = getTranslation(
+      translationDict,
+      DEFAULT_LANGUAGE_CODE_GERMAN,
+      params
+    );
+    if (translation) return translation;
+  }
+
+  return fallback_text || `${MISSING_TRANSLATION}(${field})`;
+}
+
+const MAX_RATING = 5;
+const MIN_RATING = 1;
+const MINIMUM_RATING_AS_FAVORITE = (MAX_RATING + MIN_RATING) / 2;
+
+export function isRatingPositive(rating: number | null | undefined): boolean {
+  return (
+    rating !== null &&
+    rating !== undefined &&
+    rating >= MINIMUM_RATING_AS_FAVORITE
+  );
+}
+
+export function isRatingNegative(rating: number | null | undefined): boolean {
+  return (
+    rating !== null &&
+    rating !== undefined &&
+    rating < MINIMUM_RATING_AS_FAVORITE
+  );
+}
+
+export function getFoodName(
+  food: string | DatabaseTypes.Foods | null | undefined,
+  languageCode: string
+) {
+  if (typeof food === 'object' && food !== null) {
+    const translations = food.translations as TranslationEntry[];
+    const translation = getDirectusTranslation(
+      { languageCode },
+      translations,
+      'name',
+      false,
+      (food as any).alias
+    );
+    if (translation) {
+      return translation.charAt(0).toUpperCase() + translation.slice(1);
+    }
+    if ((food as any)?.alias) {
+      return (food as any).alias.charAt(0).toUpperCase() + (food as any).alias.slice(1);
+    }
+  }
+  return null;
+}
 
 export const normalizeSort = (value: any): number => {
-  return value === undefined || value === null || value === "" ? Infinity : value;
+  return value === undefined || value === null || value === '' ? Infinity : value;
 };
 
 export const sortBySortField = <T extends { sort?: number | null }>(
-    items: T[]
+  items: T[]
 ): T[] => {
   console.log('sortBySortField - before', JSON.parse(JSON.stringify(items)));
   const withSort: T[] = [];
@@ -25,8 +135,6 @@ export const sortBySortField = <T extends { sort?: number | null }>(
   console.log('sortBySortField - after', JSON.parse(JSON.stringify(result)));
   return result;
 };
-
-import { getFoodName, isRatingNegative, isRatingPositive } from "./resourceHelper";
 
 export function sortByFoodName(foodOffers: DatabaseTypes.Foodoffers[], languageCode: string) {
   console.log('sortByFoodName - before', JSON.parse(JSON.stringify(foodOffers)));

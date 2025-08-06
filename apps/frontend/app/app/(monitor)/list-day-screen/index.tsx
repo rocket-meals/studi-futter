@@ -43,7 +43,7 @@ import {
   sortByFoodName,
   sortByFoodOfferCategoryOnly,
   sortByFoodCategoryOnly,
-} from '@/helper/sortingHelper';
+} from 'repo-depkit-common';
 import { MarkingGroupsHelper } from '@/redux/actions/MarkingGroups/MarkingGroups';
 const index = () => {
   useSetPageTitle('list-day-screen');
@@ -200,44 +200,68 @@ const index = () => {
             ? JSON.parse(foodAttributesData)
             : foodAttributesData;
 
-        const attributeIds: string[] = Array.isArray(parsedData)
-          ? parsedData
-          : [];
+        let attributeEntries: Array<{ id: string; manualSort?: number }> = [];
+
+        if (Array.isArray(parsedData)) {
+          // Legacy support: array of ids
+          if (parsedData.every((item) => typeof item === 'string')) {
+            attributeEntries = parsedData.map((id: string) => ({ id }));
+          } else {
+            // Array of objects with id/manualSort
+            attributeEntries = parsedData as Array<{ id: string; manualSort?: number }>;
+          }
+        } else if (parsedData && typeof parsedData === 'object') {
+          attributeEntries = Object.values(parsedData);
+        }
 
         let attributeDataCopy: any[] = [];
         if (
           foodAttributesDict &&
           Object?.keys(foodAttributesDict)?.length > 0
         ) {
-          attributeDataCopy = attributeIds.map((id: string) => {
-            const attr = foodAttributesDict[id];
+          attributeDataCopy = attributeEntries.map((item) => {
+            const attr = foodAttributesDict[item.id];
             const title = attr?.translations
               ? getFoodAttributesTranslation(attr.translations, language)
               : '';
             return {
-              id: id,
+              id: item.id,
               alias: title || attr?.alias || '-',
+              sort: attr?.sort ?? 0,
+              manualSort: item.manualSort,
             };
           });
         } else {
           attributeDataCopy = await Promise.all(
-            attributeIds.map(async (id: string) => {
+            attributeEntries.map(async (item) => {
               const attr = (await foodAttributesHelper.fetchFoodAttributeById(
-                id
+                item.id
               )) as DatabaseTypes.FoodsAttributes;
               const title = attr?.translations
                 ? getFoodAttributesTranslation(attr.translations, language)
                 : '';
               return {
-                id: id,
+                id: item.id,
                 alias: title || attr?.alias || '-',
+                sort: attr?.sort ?? 0,
+                manualSort: item.manualSort,
               };
             })
           );
         }
 
-        setFoodAttributesDataFull(attributeDataCopy);
-        const aliases = attributeDataCopy.map((attr) => attr.alias);
+        const manualSorted = attributeDataCopy
+          .filter((attr) => attr.manualSort !== undefined)
+          .sort((a, b) => (a.manualSort ?? 0) - (b.manualSort ?? 0));
+
+        const autoSorted = attributeDataCopy
+          .filter((attr) => attr.manualSort === undefined)
+          .sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0));
+
+        const finalAttributes = [...manualSorted, ...autoSorted];
+
+        setFoodAttributesDataFull(finalAttributes);
+        const aliases = finalAttributes.map((attr) => attr.alias);
         setFoodAttributesColumn(aliases);
       } catch (error) {
         console.error('Error processing food attributes:', error);

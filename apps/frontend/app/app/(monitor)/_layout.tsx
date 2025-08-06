@@ -12,7 +12,7 @@ import { SET_APP_SETTINGS, UPDATE_MARKINGS } from '@/redux/Types/types';
 import { RootState } from '@/redux/reducer';
 import { ActivityIndicator, View } from 'react-native';
 import { AppSettingsHelper } from '@/redux/actions/AppSettings/AppSettings';
-import { sortMarkingsByGroup } from '@/helper/sortingHelper';
+import { sortMarkingsByGroup } from 'repo-depkit-common';
 
 export default function MonitorLayout() {
   const { theme } = useTheme();

@@ -24,7 +24,7 @@ import {
   sortByPublicFavorite,
   sortByFoodCategory,
   sortByFoodOfferCategory,
-} from '@/helper/sortingHelper';
+} from 'repo-depkit-common';
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/colorHelper';
 import { TranslationKeys } from '@/locales/keys';

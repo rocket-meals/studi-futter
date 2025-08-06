@@ -33,7 +33,7 @@ import { UPDATE_MARKINGS } from '@/redux/Types/types';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RootState } from '@/redux/reducer';
-import { sortMarkingsByGroup } from '@/helper/sortingHelper';
+import { sortMarkingsByGroup } from 'repo-depkit-common';
 
 const fontSize = 10;
 
