@@ -38,3 +38,5 @@ apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/t
 
 # Prettier cache
 .prettier-cache/
+
+.prettier-cache
