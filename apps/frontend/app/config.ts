@@ -17,7 +17,7 @@ export type CustomerConfig = {
 // and will fail if the function is not present or does not return a number.
 // The build number is used to determine if a new build is required.
 export function getBuildNumber() {
-	return 161;
+	return 162;
 }
 
 export function getVersionPatch() {
