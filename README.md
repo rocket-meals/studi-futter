@@ -1,9 +1,13 @@
-[![🤖 Build & Submit Android](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_native_android.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_native_android.yml)
-[![🧪 Android Preview Build](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_native_android_preview.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_native_android_preview.yml)
-[![🍏 Build & Submit iOS](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_native_ios.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_native_ios.yml)
-[![🤖 Expo Update](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_expo_update.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_expo_update.yml)
-[![GH-Pages Publish](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_web_ghpages_production.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_web_ghpages_production.yml)
-[![Screenshots CI Action](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_screenshot.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_screenshot.yml)
+<div align="center">
+  <img src="assets/Background.jpeg" alt="Rocket Meals background" width="100%" />
+</div>
+
+<div align="center">
+  <img src="assets/icon.png" alt="Rocket Meals icon" width="120" />
+</div>
+
+[![CI](https://github.com/rocket-meals/rocket-meals/actions/workflows/combined-ci.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/combined-ci.yml)
+[![Screenshots CI](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_screenshot.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_screenshot.yml)
 
 # 🚀 Rocket Meals
 
