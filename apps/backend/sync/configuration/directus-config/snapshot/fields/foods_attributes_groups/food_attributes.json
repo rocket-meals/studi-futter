@@ -15,21 +15,14 @@
     "options": {
       "enableLink": true,
       "enableSearchFilter": true,
-      "fields": [
-        "sort",
-        "alias",
-        "prefix",
-        "suffix"
-      ],
+      "fields": ["sort", "alias", "prefix", "suffix"],
       "layout": "table",
       "sort": "sort"
     },
     "readonly": false,
     "required": false,
     "sort": 16,
-    "special": [
-      "o2m"
-    ],
+    "special": ["o2m"],
     "translations": null,
     "validation": null,
     "validation_message": null,

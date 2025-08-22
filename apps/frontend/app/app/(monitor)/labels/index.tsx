@@ -16,94 +16,87 @@ import { SET_MARKING_DETAILS } from '@/redux/Types/types';
 import { RootState } from '@/redux/reducer';
 
 const index = () => {
-  const { theme } = useTheme();
-  const { translate } = useLanguage();
-  const dispatch = useDispatch();
-  const menuSheetRef = useRef<BottomSheet>(null);
+	const { theme } = useTheme();
+	const { translate } = useLanguage();
+	const dispatch = useDispatch();
+	const menuSheetRef = useRef<BottomSheet>(null);
 
-  useSetPageTitle(TranslationKeys.markings);
+	useSetPageTitle(TranslationKeys.markings);
 
-  const openMenuSheet = () => {
-    menuSheetRef.current?.expand();
-  };
+	const openMenuSheet = () => {
+		menuSheetRef.current?.expand();
+	};
 
-  const closeMenuSheet = () => {
-    menuSheetRef.current?.close();
-  };
+	const closeMenuSheet = () => {
+		menuSheetRef.current?.close();
+	};
 
-  const { markings } = useSelector((state: RootState) => state.food);
-  const { language, selectedTheme: mode } = useSelector(
-    (state: RootState) => state.settings
-  );
+	const { markings } = useSelector((state: RootState) => state.food);
+	const { language, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
 
-  const chunkedMarkings = [];
-  for (let i = 0; i < markings?.length; i += 7) {
-    chunkedMarkings.push(markings?.slice(i, i + 7));
-  }
+	const chunkedMarkings = [];
+	for (let i = 0; i < markings?.length; i += 7) {
+		chunkedMarkings.push(markings?.slice(i, i + 7));
+	}
 
-  return (
-    <ScrollView
-      contentContainerStyle={{
-        ...styles.container,
-        backgroundColor: theme.screen.background,
-      }}
-    >
-      <LabelHeader Label={translate(TranslationKeys.markings)} />
+	return (
+		<ScrollView
+			contentContainerStyle={{
+				...styles.container,
+				backgroundColor: theme.screen.background,
+			}}
+		>
+			<LabelHeader Label={translate(TranslationKeys.markings)} />
 
-      <View style={styles.gridContainer}>
-        {chunkedMarkings &&
-          chunkedMarkings?.map((chunk, chunkIndex) => (
-            <View key={chunkIndex} style={styles.mainContainer}>
-              {chunk.map((marking, index) => {
-                const markingText = getTextFromTranslation(
-                  marking?.translations,
-                  language
-                );
-                const MarkingBackgroundColor = marking?.background_color;
-                const MarkingColor = useMyContrastColor(
-                  marking?.background_color,
-                  theme,
-                  mode === 'dark'
-                );
-                return (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.iconText}
-                    onPress={() => {
-                      dispatch({ type: SET_MARKING_DETAILS, payload: marking });
-                      openMenuSheet();
-                    }}
-                  >
-                    <MarkingIcon
-                      marking={{
-                        icon: marking?.icon,
-                        short_code: marking?.short_code,
-                        image: marking?.image,
-                        image_remote_url: marking?.image_remote_url,
-                        background_color: marking?.background_color,
-                        hide_border: marking?.hide_border,
-                      } as any}
-                      size={30}
-                      color={MarkingColor}
-                    />
-                    <Text
-                      style={{
-                        ...styles.title,
-                        color: theme.screen.text,
-                        fontSize: 14,
-                      }}
-                    >
-                      {markingText}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          ))}
-      </View>
-      <MarkingBottomSheet ref={menuSheetRef} onClose={closeMenuSheet} />
-    </ScrollView>
-  );
+			<View style={styles.gridContainer}>
+				{chunkedMarkings &&
+					chunkedMarkings?.map((chunk, chunkIndex) => (
+						<View key={chunkIndex} style={styles.mainContainer}>
+							{chunk.map((marking, index) => {
+								const markingText = getTextFromTranslation(marking?.translations, language);
+								const MarkingBackgroundColor = marking?.background_color;
+								const MarkingColor = useMyContrastColor(marking?.background_color, theme, mode === 'dark');
+								return (
+									<TouchableOpacity
+										key={index}
+										style={styles.iconText}
+										onPress={() => {
+											dispatch({ type: SET_MARKING_DETAILS, payload: marking });
+											openMenuSheet();
+										}}
+									>
+										<MarkingIcon
+											marking={
+												{
+													icon: marking?.icon,
+													short_code: marking?.short_code,
+													image: marking?.image,
+													image_remote_url: marking?.image_remote_url,
+													background_color: marking?.background_color,
+													hide_border: marking?.hide_border,
+												} as any
+											}
+											size={30}
+											color={MarkingColor}
+										/>
+										<Text
+											style={{
+												...styles.title,
+												color: theme.screen.text,
+												fontSize: 14,
+											}}
+										>
+											{markingText}
+										</Text>
+									</TouchableOpacity>
+								);
+							})}
+						</View>
+					))}
+			</View>
+			<MarkingBottomSheet ref={menuSheetRef} onClose={closeMenuSheet} />
+		</ScrollView>
+	);
 };
 
 export default index;

@@ -1,68 +1,65 @@
-import {DatabaseTypes} from "repo-depkit-common"
-import {MyDatabaseHelper} from "../helpers/MyDatabaseHelper";
-import {WORKFLOW_RUN_STATE} from "../helpers/itemServiceHelpers/WorkflowsRunEnum";
+import { DatabaseTypes } from 'repo-depkit-common';
+import { MyDatabaseHelper } from '../helpers/MyDatabaseHelper';
+import { WORKFLOW_RUN_STATE } from '../helpers/itemServiceHelpers/WorkflowsRunEnum';
 
 export type ResultHandleWorkflowRunsWantToRun = {
-    errorMessage: string | undefined
-}
+  errorMessage: string | undefined;
+};
 
 export enum WorkflowEnum {
-    fileCleanup = "file-cleanup",
+  fileCleanup = 'file-cleanup',
 }
 
 export class WorkflowRunLogger {
+  private workflowRun: DatabaseTypes.WorkflowsRuns;
+  private myDatabaseHelper: MyDatabaseHelper;
+  private currentLog: string = '';
 
-    private workflowRun: DatabaseTypes.WorkflowsRuns;
-    private myDatabaseHelper: MyDatabaseHelper;
-    private currentLog: string = "";
+  constructor(workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper) {
+    this.workflowRun = workflowRun;
+    this.myDatabaseHelper = myDatabaseHelper;
+    this.currentLog = workflowRun.log || '';
+  }
 
-    constructor(workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper) {
-        this.workflowRun = workflowRun;
-        this.myDatabaseHelper = myDatabaseHelper;
-        this.currentLog = workflowRun.log || "";
-    }
+  async setLog(workflowRunId: string, log: string) {
+    this.myDatabaseHelper.getWorkflowsRunsHelper().updateOneWithoutHookTrigger(workflowRunId, {
+      log: log,
+    });
+  }
 
-    async setLog(workflowRunId: string, log: string) {
-        this.myDatabaseHelper.getWorkflowsRunsHelper().updateOneWithoutHookTrigger(workflowRunId, {
-            log: log,
-        });
-    }
+  getCurrentLog() {
+    return this.currentLog;
+  }
 
-    getCurrentLog() {
-        return this.currentLog;
-    }
+  static createLogRow(log: string) {
+    return new Date().toISOString() + ': ' + log + '\n';
+  }
 
-    static createLogRow(log: string) {
-        return new Date().toISOString() + ": " + log + "\n";
-    }
+  async appendLog(log: string) {
+    this.currentLog += WorkflowRunLogger.createLogRow(log);
+    await this.setLog(this.workflowRun.id, this.currentLog);
+  }
 
-    async appendLog(log: string) {
-        this.currentLog += WorkflowRunLogger.createLogRow(log);
-        await this.setLog(this.workflowRun.id, this.currentLog);
-    }
-
-    getFinalLogWithStateAndParams(workflowrun: Partial<DatabaseTypes.WorkflowsRuns>): Partial<DatabaseTypes.WorkflowsRuns> {
-        let result: Partial<DatabaseTypes.WorkflowsRuns> = {
-            ...workflowrun,
-            ...{
-                log: this.currentLog
-            },
-        }
-        return result;
-    }
+  getFinalLogWithStateAndParams(workflowrun: Partial<DatabaseTypes.WorkflowsRuns>): Partial<DatabaseTypes.WorkflowsRuns> {
+    let result: Partial<DatabaseTypes.WorkflowsRuns> = {
+      ...workflowrun,
+      ...{
+        log: this.currentLog,
+      },
+    };
+    return result;
+  }
 }
 
 export interface WorkflowRunJobInterface {
+  getWorkflowId(): string;
 
-    getWorkflowId(): string;
+  getDeleteFinishedWorkflowRunsAfterDays(): number | undefined;
+  getDeleteFailedWorkflowRunsAfterDays(): number | undefined;
 
-    getDeleteFinishedWorkflowRunsAfterDays(): number | undefined;
-    getDeleteFailedWorkflowRunsAfterDays(): number | undefined;
+  handleWorkflowRunsWantToRun(modifiableInput: Partial<DatabaseTypes.WorkflowsRuns>, workflowruns: Partial<DatabaseTypes.WorkflowsRuns>[], alreadyRunningWorkflowruns: DatabaseTypes.WorkflowsRuns[]): ResultHandleWorkflowRunsWantToRun;
 
-    handleWorkflowRunsWantToRun(modifiableInput: Partial<DatabaseTypes.WorkflowsRuns>, workflowruns: Partial<DatabaseTypes.WorkflowsRuns>[], alreadyRunningWorkflowruns: DatabaseTypes.WorkflowsRuns[]): ResultHandleWorkflowRunsWantToRun;
-
-    runJob(workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<DatabaseTypes.WorkflowsRuns>>;
-
+  runJob(workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<DatabaseTypes.WorkflowsRuns>>;
 }
 
 /**
@@ -77,50 +74,43 @@ export interface WorkflowRunJobInterface {
  * Subclasses must implement the missing methods from WorkflowRunJobInterface.
  */
 export abstract class SingleWorkflowRun implements WorkflowRunJobInterface {
+  /**
+   * Ensures that only one workflow run is running at a time.
+   */
+  handleWorkflowRunsWantToRun(modifiableInput: Partial<DatabaseTypes.WorkflowsRuns>, workflowruns: Partial<DatabaseTypes.WorkflowsRuns>[], alreadyRunningWorkflowruns: DatabaseTypes.WorkflowsRuns[]): ResultHandleWorkflowRunsWantToRun {
+    let answer: ResultHandleWorkflowRunsWantToRun = {
+      errorMessage: undefined,
+    };
 
-    /**
-     * Ensures that only one workflow run is running at a time.
-     */
-    handleWorkflowRunsWantToRun(
-        modifiableInput: Partial<DatabaseTypes.WorkflowsRuns>,
-        workflowruns: Partial<DatabaseTypes.WorkflowsRuns>[],
-        alreadyRunningWorkflowruns: DatabaseTypes.WorkflowsRuns[]
-    ): ResultHandleWorkflowRunsWantToRun {
-
-        let answer: ResultHandleWorkflowRunsWantToRun = {
-            errorMessage: undefined,
-        };
-
-        // Ensure only one workflow run starts at a time
-        if (workflowruns.length > 1) {
-            answer.errorMessage = "Cannot start more than one workflow run at a time";
-            return answer;
-        }
-
-        if (alreadyRunningWorkflowruns.length > 0) {
-            answer.errorMessage = "A workflow run is already running";
-            return answer;
-        }
-
-        // Update the state of the workflow run if no error occurred
-        modifiableInput.state = WORKFLOW_RUN_STATE.RUNNING;
-
-        return answer;
+    // Ensure only one workflow run starts at a time
+    if (workflowruns.length > 1) {
+      answer.errorMessage = 'Cannot start more than one workflow run at a time';
+      return answer;
     }
 
-    /**
-     * These methods are required by WorkflowRunJobInterface,
-     * but they are left abstract so subclasses must implement them.
-     */
-    abstract getWorkflowId(): string;
-    abstract runJob(workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<DatabaseTypes.WorkflowsRuns>>;
-
-    getDeleteFailedWorkflowRunsAfterDays(): number | undefined {
-        return undefined;
+    if (alreadyRunningWorkflowruns.length > 0) {
+      answer.errorMessage = 'A workflow run is already running';
+      return answer;
     }
 
-    getDeleteFinishedWorkflowRunsAfterDays(): number | undefined {
-        return undefined;
-    }
+    // Update the state of the workflow run if no error occurred
+    modifiableInput.state = WORKFLOW_RUN_STATE.RUNNING;
+
+    return answer;
+  }
+
+  /**
+   * These methods are required by WorkflowRunJobInterface,
+   * but they are left abstract so subclasses must implement them.
+   */
+  abstract getWorkflowId(): string;
+  abstract runJob(workflowRun: DatabaseTypes.WorkflowsRuns, myDatabaseHelper: MyDatabaseHelper, logger: WorkflowRunLogger): Promise<Partial<DatabaseTypes.WorkflowsRuns>>;
+
+  getDeleteFailedWorkflowRunsAfterDays(): number | undefined {
+    return undefined;
+  }
+
+  getDeleteFinishedWorkflowRunsAfterDays(): number | undefined {
+    return undefined;
+  }
 }
-

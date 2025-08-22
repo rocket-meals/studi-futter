@@ -9,10 +9,7 @@ export type LocationType = {
  * @param targetLocation Array in the order [longitude, latitude]
  * @returns distance in meters rounded to the nearest integer
  */
-export function calculateDistanceInMeter(
-  selectedLocation: [number, number],
-  targetLocation: [number, number]
-): number {
+export function calculateDistanceInMeter(selectedLocation: [number, number], targetLocation: [number, number]): number {
   if (selectedLocation && targetLocation) {
     const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
 
@@ -25,9 +22,7 @@ export function calculateDistanceInMeter(
     const deltaLat = lat2 - lat1;
     const deltaLon = lon2 - lon1;
 
-    const a =
-      Math.sin(deltaLat / 2) ** 2 +
-      Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLon / 2) ** 2;
+    const a = Math.sin(deltaLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLon / 2) ** 2;
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 

@@ -709,6 +709,26 @@
     "tr": "Yemek Teklifi Kategorisi",
     "zh": "餐品类别"
   },
+  "sort_option_price_ascending": {
+    "de": "Preis aufsteigend",
+    "en": "Price ascending",
+    "ar": "السعر تصاعدي",
+    "es": "Precio ascendente",
+    "fr": "Prix croissant",
+    "ru": "Цена по возрастанию",
+    "tr": "Artan fiyata göre",
+    "zh": "价格升序"
+  },
+  "sort_option_price_descending": {
+    "de": "Preis absteigend",
+    "en": "Price descending",
+    "ar": "السعر تنازلي",
+    "es": "Precio descendente",
+    "fr": "Prix décroissant",
+    "ru": "Цена по убыванию",
+    "tr": "Azalan fiyata göre",
+    "zh": "价格降序"
+  },
   "general": {
     "de": "Allgemeines",
     "en": "General",
@@ -3882,5 +3902,55 @@
     "ru": "Управление приложением",
     "tr": "Uygulama yönetimi",
     "zh": "应用管理"
+  },
+  "game_ideas": {
+    "de": "Spielideen",
+    "en": "Game Ideas",
+    "ar": "Game Ideas",
+    "es": "Game Ideas",
+    "fr": "Game Ideas",
+    "ru": "Game Ideas",
+    "tr": "Game Ideas",
+    "zh": "Game Ideas"
+  },
+  "guess_better_rated_dish": {
+    "de": "Rate, welches Gericht besser bewertet ist",
+    "en": "Guess which dish is better rated",
+    "ar": "Guess which dish is better rated",
+    "es": "Adivina qué plato está mejor valorado",
+    "fr": "Devine quel plat est mieux noté",
+    "ru": "Угадай, какое блюдо оценено выше",
+    "tr": "Hangi yemeğin daha iyi değerlendirildiğini tahmin et",
+    "zh": "猜哪个菜评价更好"
+  },
+  "guess_most_disliked_marking": {
+    "de": "Rate, welches Kennzeichen am häufigsten abgelehnt wird",
+    "en": "Guess which marking is most disliked",
+    "ar": "Guess which marking is most disliked",
+    "es": "Adivina qué marcado es más rechazado",
+    "fr": "Devine quel marquage est le plus détesté",
+    "ru": "Угадай, какая маркировка не нравится чаще всего",
+    "tr": "Hangi işaretlemenin en çok beğenilmediğini tahmin et",
+    "zh": "猜哪种标记最不受喜欢"
+  },
+  "food_memory_game": {
+    "de": "Memory-Spiel mit Speisen (5x5)",
+    "en": "Food memory game (5x5)",
+    "ar": "Food memory game (5x5)",
+    "es": "Juego de memoria de comida (5x5)",
+    "fr": "Jeu de mémoire alimentaire (5x5)",
+    "ru": "Игра на память о еде (5x5)",
+    "tr": "Yemek hafıza oyunu (5x5)",
+    "zh": "食物记忆游戏 (5x5)"
+  },
+  "guess_more_expensive_dish": {
+    "de": "Rate, welches Gericht teurer ist",
+    "en": "Guess which dish is more expensive",
+    "ar": "Guess which dish is more expensive",
+    "es": "Adivina qué plato es más caro",
+    "fr": "Devine quel plat est plus cher",
+    "ru": "Угадай, какое блюдо дороже",
+    "tr": "Hangi yemeğin daha pahalı olduğunu tahmin et",
+    "zh": "猜哪个菜更贵"
   }
 }

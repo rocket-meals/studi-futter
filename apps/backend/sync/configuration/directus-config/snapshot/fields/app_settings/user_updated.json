@@ -18,9 +18,7 @@
     "readonly": true,
     "required": false,
     "sort": 5,
-    "special": [
-      "user-updated"
-    ],
+    "special": ["user-updated"],
     "translations": null,
     "validation": null,
     "validation_message": null,

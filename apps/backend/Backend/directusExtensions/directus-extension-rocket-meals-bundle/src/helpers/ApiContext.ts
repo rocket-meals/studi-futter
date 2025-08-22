@@ -1,6 +1,6 @@
-import {ApiExtensionContext} from "@directus/extensions";
-import {ItemsService} from "./ItemsServiceCreator";
-import {AssetsService, SharesService} from "./MyServiceClassHelpers";
+import { ApiExtensionContext } from '@directus/extensions';
+import { ItemsService } from './ItemsServiceCreator';
+import { AssetsService, SharesService } from './MyServiceClassHelpers';
 
 // https://github.com/directus/directus/blob/main/api/src/services/index.ts
 /**
@@ -30,22 +30,20 @@ import {AssetsService, SharesService} from "./MyServiceClassHelpers";
  */
 
 type Services = {
-    SharesService: SharesService,
-    AssetsService: AssetsService,
-    ActivityService: any,
-    CollectionsService: any,
-    FilesService: any,
-    ItemsService: any,
-    PermissionsService: ItemsService<any>, // https://github.com/directus/directus/blob/main/api/src/services/permissions.ts
-    RelationsService: any,
-    RolesService: any,
-    ServerService: any,
-    UsersService: any,
-    WebhooksService: any
-}
-
-
+  SharesService: SharesService;
+  AssetsService: AssetsService;
+  ActivityService: any;
+  CollectionsService: any;
+  FilesService: any;
+  ItemsService: any;
+  PermissionsService: ItemsService<any>; // https://github.com/directus/directus/blob/main/api/src/services/permissions.ts
+  RelationsService: any;
+  RolesService: any;
+  ServerService: any;
+  UsersService: any;
+  WebhooksService: any;
+};
 
 export type ApiContext = {
-    services: Services, // https://docs.directus.io/extensions/hooks.html
-} & Omit<ApiExtensionContext, "services">
+  services: Services; // https://docs.directus.io/extensions/hooks.html
+} & Omit<ApiExtensionContext, 'services'>;

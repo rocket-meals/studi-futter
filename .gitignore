@@ -34,3 +34,7 @@ apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/d
 
 # Virtual environment folder
 **/venv/
+apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/test-artifacts
+
+# Prettier cache
+.prettier-cache/

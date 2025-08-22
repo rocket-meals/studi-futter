@@ -16,10 +16,7 @@
     "readonly": false,
     "required": false,
     "sort": 12,
-    "special": [
-      "m2o",
-      "user-updated"
-    ],
+    "special": ["m2o", "user-updated"],
     "translations": null,
     "validation": null,
     "validation_message": null,

@@ -1,16 +1,15 @@
-import deepl, {SourceLanguageCode, TargetLanguageCode, Translator} from 'deepl-node';
-import {MyTranslatorInterface} from "./MyTranslatorInterface";
-
+import deepl, { SourceLanguageCode, TargetLanguageCode, Translator } from 'deepl-node';
+import { MyTranslatorInterface } from './MyTranslatorInterface';
 
 export class DeepLTranslator implements MyTranslatorInterface {
-    private translator: Translator;
+  private translator: Translator;
 
-    constructor(auth_key: string) {
-        this.translator = new deepl.Translator(auth_key);
-    }
+  constructor(auth_key: string) {
+    this.translator = new deepl.Translator(auth_key);
+  }
 
-    async init(){
-        /**
+  async init() {
+    /**
         console.log("Initializing DeepL Translator");
         const sourceLanguages = await this.translator.getSourceLanguages();
         console.log("Source Languages: ");
@@ -27,120 +26,119 @@ export class DeepLTranslator implements MyTranslatorInterface {
             console.log(`${lang.name} (${lang.code}) supports formality`);
         }
          */
+  }
+
+  async translate(text: string, source_language: string, destination_language: string) {
+    let translationResponse = null;
+    let sourceLanguageCode = this.getDeepLLanguageCodeSource(source_language);
+    let destinationLanguageCode = this.getDeepLLanguageCodeTarget(destination_language);
+
+    try {
+      translationResponse = await this.translateRaw(text, sourceLanguageCode, destinationLanguageCode);
+    } catch (error: any) {
+      let errorMessage = error.toString();
+      if (errorMessage.includes('targetLang') && errorMessage.includes('deprecated')) {
+        //console.log("Target language is deprecated");
+        try {
+          let backupDestinationLanguageCode = destination_language as TargetLanguageCode;
+          translationResponse = await this.translateRaw(text, sourceLanguageCode, backupDestinationLanguageCode);
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        console.log(error);
+      }
     }
 
-    async translate(text: string, source_language: string, destination_language: string) {
-        let translationResponse = null;
-        let sourceLanguageCode = this.getDeepLLanguageCodeSource(source_language);
-        let destinationLanguageCode = this.getDeepLLanguageCodeTarget(destination_language);
+    return translationResponse;
+  }
 
-        try{
-            translationResponse = await this.translateRaw(text, sourceLanguageCode, destinationLanguageCode);
-        } catch(error: any){
-            let errorMessage = error.toString();
-            if(errorMessage.includes("targetLang") && errorMessage.includes("deprecated")){
-                //console.log("Target language is deprecated");
-                try{
-                    let backupDestinationLanguageCode = destination_language as TargetLanguageCode;
-                    translationResponse = await this.translateRaw(text, sourceLanguageCode, backupDestinationLanguageCode);
-                } catch(error){
-                    console.log(error);
-                }
-            } else {
-                console.log(error);
-            }
-        }
+  private replaceAll(str: string, find: string, replace: string) {
+    // use regex where find is replaced with replace globally and multiple times
+    // find could be a special character like * which needs to be escaped
+    return str.replace(new RegExp(find.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'), replace);
+  }
 
-        return translationResponse;
+  async translateRaw(text: string, source_language_code: SourceLanguageCode, destination_language_code: TargetLanguageCode) {
+    //copy text string to another variable
+    let textToTranslate: string = text;
+
+    const dictWithReplacement = {
+      // "original": "replacement"
+      // replace * with <*>
+      '*': '<*>',
+    };
+
+    //replace all keys in dictWithReplacement with their values
+    for (const [key, value] of Object.entries(dictWithReplacement)) {
+      textToTranslate = this.replaceAll(textToTranslate, key, value);
     }
 
-    private replaceAll(str: string, find: string, replace: string) {
-        // use regex where find is replaced with replace globally and multiple times
-        // find could be a special character like * which needs to be escaped
-        return str.replace(new RegExp(find.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'), replace);
+    //console.log("translate:")
+    //console.log("text: "+text);
+    //console.log("source_language_code: "+source_language_code)
+    //console.log("destination_language_code: "+destination_language_code)
+
+    let translationResponse = await this.translator.translateText(textToTranslate, source_language_code, destination_language_code);
+    let translation = translationResponse?.text;
+
+    //replace all values in dictWithReplacement with their keys
+    for (const [key, value] of Object.entries(dictWithReplacement)) {
+      translation = this.replaceAll(translation, value, key);
     }
 
-    async translateRaw(text: string, source_language_code: SourceLanguageCode, destination_language_code: TargetLanguageCode) {
-        //copy text string to another variable
-        let textToTranslate: string = text;
+    //replace all <*>'s with *'s
 
-        const dictWithReplacement = {
-            // "original": "replacement"
-            // replace * with <*>
-            "*": "<*>",
-        }
+    return translation;
+  }
 
-        //replace all keys in dictWithReplacement with their values
-        for (const [key, value] of Object.entries(dictWithReplacement)) {
-            textToTranslate = this.replaceAll(textToTranslate, key, value)
-        }
+  async getExtra() {
+    const sourceLanguages = await this.translator.getSourceLanguages();
+    const targetLanguages = await this.translator.getTargetLanguages();
 
-        //console.log("translate:")
-        //console.log("text: "+text);
-        //console.log("source_language_code: "+source_language_code)
-        //console.log("destination_language_code: "+destination_language_code)
+    let extraObj = {
+      sourceLanguages: sourceLanguages,
+      targetLanguages: targetLanguages,
+    };
+    const extra = JSON.stringify(extraObj, null, 2);
 
-        let translationResponse = await this.translator.translateText(textToTranslate, source_language_code, destination_language_code);
-        let translation = translationResponse?.text;
+    return {
+      extra: extra || '',
+    };
+  }
 
-        //replace all values in dictWithReplacement with their keys
-        for (const [key, value] of Object.entries(dictWithReplacement)) {
-            translation = this.replaceAll(translation, value, key)
-        }
-
-        //replace all <*>'s with *'s
-
-        return translation;
+  async getUsage() {
+    //console.log("DeepL Translator get Usage");
+    const usage = await this.translator.getUsage();
+    if (usage.anyLimitReached()) {
+      //console.log('Translation limit exceeded.');
     }
+    const characterUsage = usage?.character; // {"character":{"count":0,"limit":500000}}
 
-    async getExtra(){
+    return {
+      used: characterUsage?.count || 0,
+      limit: characterUsage?.limit || 0,
+    };
+  }
 
-        const sourceLanguages = await this.translator.getSourceLanguages()
-        const targetLanguages = await this.translator.getTargetLanguages()
+  /**
+   * Private Methods
+   */
 
-        let extraObj = {
-            sourceLanguages: sourceLanguages,
-            targetLanguages: targetLanguages
-        };
-        const extra = JSON.stringify(extraObj, null, 2);
+  getDeepLLanguageCodeSource(directus_language_code: string) {
+    return this.getDeepLLanguageCode(directus_language_code) as SourceLanguageCode;
+  }
 
-        return {
-            extra: extra || "",
-        }
-    }
+  getDeepLLanguageCodeTarget(directus_language_code: string) {
+    return this.getDeepLLanguageCode(directus_language_code) as TargetLanguageCode;
+  }
 
-    async getUsage(){
-        //console.log("DeepL Translator get Usage");
-        const usage = await this.translator.getUsage();
-        if (usage.anyLimitReached()) {
-            //console.log('Translation limit exceeded.');
-        }
-        const characterUsage = usage?.character; // {"character":{"count":0,"limit":500000}}
-
-        return {
-            used: characterUsage?.count || 0,
-            limit: characterUsage?.limit || 0,
-        }
-    }
-
-    /**
-     * Private Methods
+  getDeepLLanguageCode(directus_language_code: string) {
+    /** directus_language_code
+     * e.g. "en-US" -> "en"
      */
 
-    getDeepLLanguageCodeSource(directus_language_code: string){
-        return this.getDeepLLanguageCode(directus_language_code) as SourceLanguageCode;
-    }
-
-    getDeepLLanguageCodeTarget(directus_language_code: string){
-        return this.getDeepLLanguageCode(directus_language_code) as TargetLanguageCode;
-    }
-
-    getDeepLLanguageCode(directus_language_code: string){
-        /** directus_language_code
-         * e.g. "en-US" -> "en"
-         */
-
-        /** Source languages
+    /** Source languages
         Bulgarian (bg)
         Czech (cs)
         Danish (da)
@@ -169,7 +167,7 @@ export class DeepLTranslator implements MyTranslatorInterface {
         Chinese (zh)
          */
 
-        /** Target languages
+    /** Target languages
          Bulgarian (bg) supports formality
          Czech (cs) supports formality
          Danish (da) supports formality
@@ -200,11 +198,11 @@ export class DeepLTranslator implements MyTranslatorInterface {
          Chinese (simplified) (zh) supports formality
          */
 
-        if(!!directus_language_code){
-            let splits = directus_language_code.split("-");
-            return splits[0];
-        }
-
-        return directus_language_code;
+    if (!!directus_language_code) {
+      let splits = directus_language_code.split('-');
+      return splits[0];
     }
+
+    return directus_language_code;
+  }
 }

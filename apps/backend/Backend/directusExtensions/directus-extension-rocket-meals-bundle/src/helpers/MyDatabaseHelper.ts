@@ -1,302 +1,299 @@
-import {ApiContext} from "./ApiContext";
+import { ApiContext } from './ApiContext';
 
-import {CashregisterHelper} from "./itemServiceHelpers/CashregisterHelper";
-import {ItemsServiceHelper} from "./ItemsServiceHelper";
-import {CollectionNames} from "repo-depkit-common";
-import {DatabaseTypes} from "repo-depkit-common"
+import { CashregisterHelper } from './itemServiceHelpers/CashregisterHelper';
+import { ItemsServiceHelper } from './ItemsServiceHelper';
+import { CollectionNames } from 'repo-depkit-common';
+import { DatabaseTypes } from 'repo-depkit-common';
 
-import {ServerServiceCreator} from "./ItemsServiceCreator";
-import {AppSettingsHelper} from "./itemServiceHelpers/AppSettingsHelper";
-import {AutoTranslationSettingsHelper} from "./itemServiceHelpers/AutoTranslationSettingsHelper";
-import {WorkflowsRunHelper} from "./itemServiceHelpers/WorkflowsRunHelper";
-import {FilesServiceHelper} from "./FilesServiceHelper";
-import {EventContext, SchemaOverview} from "@directus/types";
-import {ShareServiceHelper} from "./ShareServiceHelper";
-import {MyDatabaseHelperInterface} from "./MyDatabaseHelperInterface";
-import {EnvVariableHelper} from "./EnvVariableHelper";
-import ms from "ms";
+import { ServerServiceCreator } from './ItemsServiceCreator';
+import { AppSettingsHelper } from './itemServiceHelpers/AppSettingsHelper';
+import { AutoTranslationSettingsHelper } from './itemServiceHelpers/AutoTranslationSettingsHelper';
+import { WorkflowsRunHelper } from './itemServiceHelpers/WorkflowsRunHelper';
+import { FilesServiceHelper } from './FilesServiceHelper';
+import { EventContext, SchemaOverview } from '@directus/types';
+import { ShareServiceHelper } from './ShareServiceHelper';
+import { MyDatabaseHelperInterface } from './MyDatabaseHelperInterface';
+import { EnvVariableHelper } from './EnvVariableHelper';
+import ms from 'ms';
 import jwt from 'jsonwebtoken';
-import {NanoidHelper} from "./NanoidHelper";
+import { NanoidHelper } from './NanoidHelper';
 
 export type MyEventContext = EventContext;
 
 export class MyDatabaseHelper implements MyDatabaseHelperInterface {
+  public apiContext: ApiContext;
+  public eventContext: MyEventContext | undefined;
+  public useLocalServerMode: boolean = false;
 
-    public apiContext: ApiContext;
-    public eventContext: MyEventContext | undefined;
-    public useLocalServerMode: boolean = false;
+  constructor(apiContext: ApiContext, eventContext?: MyEventContext) {
+    this.apiContext = apiContext;
+    // if available we should use eventContext - https://github.com/directus/directus/discussions/11051
+    this.eventContext = eventContext; // stupid typescript error, because of the import
+    // its better to use the eventContext, because of reusing the database connection instead of creating a new one
+  }
 
-    constructor(apiContext: ApiContext, eventContext?: MyEventContext) {
-        this.apiContext = apiContext;
-        // if available we should use eventContext - https://github.com/directus/directus/discussions/11051
-        this.eventContext = eventContext; // stupid typescript error, because of the import
-        // its better to use the eventContext, because of reusing the database connection instead of creating a new one
+  /**
+   * Should be used for downloading files, as traefik does not support the public external url
+   */
+  public cloneWithInternalServerMode(): MyDatabaseHelper {
+    let newInstance = new MyDatabaseHelper(this.apiContext, this.eventContext);
+    newInstance.useLocalServerMode = true;
+    return newInstance;
+  }
+
+  async getSchema(): Promise<SchemaOverview> {
+    if (this?.eventContext?.schema) {
+      return this.eventContext.schema;
+    } else {
+      return await this.apiContext.getSchema();
+    }
+  }
+
+  async getAdminBearerToken(): Promise<string | undefined> {
+    let usersHelper = await this.getUsersHelper();
+    let adminEmail = EnvVariableHelper.getAdminEmail();
+    let adminUser = await usersHelper.findFirstItem({
+      email: adminEmail,
+      provider: 'default',
+    });
+    const secret = EnvVariableHelper.getSecret();
+    if (!adminUser) {
+      console.error('Admin user not found');
+      return undefined;
     }
 
-    /**
-     * Should be used for downloading files, as traefik does not support the public external url
-     */
-    public cloneWithInternalServerMode(): MyDatabaseHelper {
-        let newInstance = new MyDatabaseHelper(this.apiContext, this.eventContext);
-        newInstance.useLocalServerMode = true;
-        return newInstance;
+    const refreshToken = await NanoidHelper.getNanoid(64);
+    const msRefreshTokenTTL: number = ms(String(EnvVariableHelper.getRefreshTTL())) || 0;
+    const refreshTokenExpiration = new Date(Date.now() + msRefreshTokenTTL);
+
+    let knex = this.apiContext.database;
+
+    // Insert session into Directus
+    await knex('directus_sessions').insert({
+      token: refreshToken,
+      user: adminUser.id, // Required, cannot be NULL
+      expires: refreshTokenExpiration,
+      ip: null,
+      user_agent: null,
+      origin: null,
+    });
+
+    // JWT payload
+    const tokenPayload = {
+      id: adminUser.id,
+      role: adminUser.role,
+      app_access: true,
+      admin_access: true,
+      session: refreshToken, // Attach the session
+    };
+
+    // Sign JWT with Directus secret
+    // @ts-ignore - this is a workaround for the typescript error
+    const accessToken = jwt.sign(tokenPayload, secret, {
+      expiresIn: EnvVariableHelper.getAccessTokenTTL(),
+      issuer: 'directus',
+    });
+
+    return `${accessToken}`;
+  }
+
+  async getServerInfo() {
+    const serverServiceCreator = new ServerServiceCreator(this.apiContext);
+    return await serverServiceCreator.getServerInfo();
+  }
+
+  getServerUrl(): string {
+    let defaultServerUrl = 'http://127.0.0.1'; // https://github.com/directus/directus/blob/9bd3b2615bb6bc5089ffcf14d141406e7776dd0e/docs/self-hosted/quickstart.md?plain=1#L97
+    // could be also: http://rocket-meals-directus:8055/server/info but we stick to the default localhost
+    // TODO: Fix traefik and use the public url support
+
+    let defaultServerPort = this.getServerPort();
+    if (defaultServerPort) {
+      defaultServerUrl += `:${defaultServerPort}`;
     }
 
-    async getSchema(): Promise<SchemaOverview> {
-        if(this?.eventContext?.schema){
-            return this.eventContext.schema;
-        } else {
-            return await this.apiContext.getSchema();
-        }
+    if (this.useLocalServerMode) {
+      return defaultServerUrl;
     }
 
-    async getAdminBearerToken(): Promise<string | undefined> {
-        let usersHelper = await this.getUsersHelper();
-        let adminEmail = EnvVariableHelper.getAdminEmail();
-        let adminUser = await usersHelper.findFirstItem({
-            email: adminEmail,
-            provider: "default",
-        })
-        const secret = EnvVariableHelper.getSecret();
-        if(!adminUser){
-            console.error("Admin user not found")
-            return undefined;
-        }
+    return EnvVariableHelper.getEnvVariable('PUBLIC_URL') || defaultServerUrl;
+  }
 
-        const refreshToken = await NanoidHelper.getNanoid(64);
-        const msRefreshTokenTTL: number = ms(String(EnvVariableHelper.getRefreshTTL())) || 0;
-        const refreshTokenExpiration = new Date(Date.now() + msRefreshTokenTTL);
+  getServerPort(): string {
+    let defaultServerPort = '8055';
+    return EnvVariableHelper.getEnvVariable('PORT') || defaultServerPort;
+  }
 
-        let knex = this.apiContext.database;
+  getAppSettingsHelper() {
+    return new AppSettingsHelper(this.apiContext);
+  }
 
-        // Insert session into Directus
-        await knex('directus_sessions').insert({
-            token: refreshToken,
-            user: adminUser.id, // Required, cannot be NULL
-            expires: refreshTokenExpiration,
-            ip: null,
-            user_agent: null,
-            origin: null,
-        });
+  getAutoTranslationSettingsHelper() {
+    return new AutoTranslationSettingsHelper(this.apiContext);
+  }
 
-        // JWT payload
-        const tokenPayload = {
-            id: adminUser.id,
-            role: adminUser.role,
-            app_access: true,
-            admin_access: true,
-            session: refreshToken, // Attach the session
-        };
+  getAppFeedbacksHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.AppFeedbacks>(this, CollectionNames.APP_FEEDBACKS);
+  }
 
-        // Sign JWT with Directus secret
-        // @ts-ignore - this is a workaround for the typescript error
-        const accessToken = jwt.sign(tokenPayload, secret, {
-            expiresIn: EnvVariableHelper.getAccessTokenTTL(),
-            issuer: 'directus',
-        });
+  getCashregisterHelper() {
+    return new CashregisterHelper(this);
+  }
 
-        return `${accessToken}`;
+  getCollectionDatesLastUpdateHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.CollectionsDatesLastUpdate>(this, CollectionNames.COLLECTIONS_DATES_LAST_UPDATE);
+  }
 
-    }
+  getFoodFeedbacksHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.FoodsFeedbacks>(this, CollectionNames.FOODS_FEEDBACKS);
+  }
 
-    async getServerInfo() {
-        const serverServiceCreator = new ServerServiceCreator(this.apiContext);
-        return await serverServiceCreator.getServerInfo();
-    }
+  getFoodsHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.Foods>(this, CollectionNames.FOODS);
+  }
 
-    getServerUrl(): string {
-        let defaultServerUrl = 'http://127.0.0.1'; // https://github.com/directus/directus/blob/9bd3b2615bb6bc5089ffcf14d141406e7776dd0e/docs/self-hosted/quickstart.md?plain=1#L97
-        // could be also: http://rocket-meals-directus:8055/server/info but we stick to the default localhost
-        // TODO: Fix traefik and use the public url support
+  getFoodFeedbackLabelsHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.FoodsFeedbacksLabels>(this, CollectionNames.FOODS_FEEDBACK_LABELS);
+  }
 
-        let defaultServerPort = this.getServerPort();
-        if (defaultServerPort) {
-            defaultServerUrl += `:${defaultServerPort}`;
-        }
+  getFoodsCategoriesHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.FoodsCategories>(this, CollectionNames.FOODS_CATEGORIES);
+  }
 
-        if(this.useLocalServerMode){
-            return defaultServerUrl;
-        }
+  getFoodsAttributesHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.FoodsAttributes>(this, CollectionNames.FOODS_ATTRIBUTES);
+  }
 
-        return EnvVariableHelper.getEnvVariable("PUBLIC_URL") || defaultServerUrl;
-    }
+  getFoodFeedbackLabelEntriesHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.FoodsFeedbacksLabelsEntries>(this, CollectionNames.FOODS_FEEDBACKS_LABELS_ENTRIES);
+  }
 
-    getServerPort(): string {
-        let defaultServerPort = "8055";
-        return EnvVariableHelper.getEnvVariable("PORT") || defaultServerPort;
-    }
+  getCanteenFeedbackLabelsHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.CanteensFeedbacksLabels>(this, CollectionNames.CANTEENS_FEEDBACK_LABELS);
+  }
 
-    getAppSettingsHelper() {
-        return new AppSettingsHelper(this.apiContext);
-    }
+  getCanteenFeedbackLabelsEntriesHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.CanteensFeedbacksLabelsEntries>(this, CollectionNames.CANTEENS_FEEDBACKS_LABELS_ENTRIES);
+  }
 
-    getAutoTranslationSettingsHelper() {
-        return new AutoTranslationSettingsHelper(this.apiContext);
-    }
+  getFormsHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.Forms>(this, CollectionNames.FORMS);
+  }
 
-    getAppFeedbacksHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.AppFeedbacks>(this, CollectionNames.APP_FEEDBACKS);
-    }
+  getFormExtractsHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.FormExtracts>(this, CollectionNames.FORM_EXTRACTS);
+  }
 
-    getCashregisterHelper() {
-        return new CashregisterHelper(this);
-    }
+  getFormExtractFormFieldsHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.FormExtractsFormFields>(this, CollectionNames.FORM_EXTRACTS_FORM_FIELDS);
+  }
 
-    getCollectionDatesLastUpdateHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.CollectionsDatesLastUpdate>(this, CollectionNames.COLLECTIONS_DATES_LAST_UPDATE);
-    }
+  getFormsFieldsHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.FormFields>(this, CollectionNames.FORM_FIELDS);
+  }
 
-    getFoodFeedbacksHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.FoodsFeedbacks>(this, CollectionNames.FOODS_FEEDBACKS);
-    }
+  getFormsSubmissionsHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.FormSubmissions>(this, CollectionNames.FORM_SUBMISSIONS);
+  }
 
-    getFoodsHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.Foods>(this, CollectionNames.FOODS);
-    }
+  getFormsAnswersHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.FormAnswers>(this, CollectionNames.FORM_ANSWERS);
+  }
 
-    getFoodFeedbackLabelsHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.FoodsFeedbacksLabels>(this, CollectionNames.FOODS_FEEDBACK_LABELS);
-    }
+  getFoodoffersHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.Foodoffers>(this, CollectionNames.FOODOFFERS);
+  }
 
-    getFoodsCategoriesHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.FoodsCategories>(this, CollectionNames.FOODS_CATEGORIES);
-    }
+  getFoodofferCategoriesHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.FoodoffersCategories>(this, CollectionNames.FOODOFFER_CATEGORIES);
+  }
 
-    getFoodsAttributesHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.FoodsAttributes>(this, CollectionNames.FOODS_ATTRIBUTES);
-    }
+  getDevicesHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.Devices>(this, CollectionNames.DEVICES);
+  }
 
-    getFoodFeedbackLabelEntriesHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.FoodsFeedbacksLabelsEntries>(this, CollectionNames.FOODS_FEEDBACKS_LABELS_ENTRIES);
-    }
+  getPushNotificationsHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.PushNotifications>(this, CollectionNames.PUSH_NOTIFICATIONS);
+  }
 
-    getCanteenFeedbackLabelsHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.CanteensFeedbacksLabels>(this, CollectionNames.CANTEENS_FEEDBACK_LABELS);
-    }
+  getProfilesHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.Profiles>(this, CollectionNames.PROFILES);
+  }
 
-    getCanteenFeedbackLabelsEntriesHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.CanteensFeedbacksLabelsEntries>(this, CollectionNames.CANTEENS_FEEDBACKS_LABELS_ENTRIES);
-    }
+  getMarkingsHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.Markings>(this, CollectionNames.MARKINGS);
+  }
 
-    getFormsHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.Forms>(this, CollectionNames.FORMS);
-    }
+  getMarkingsExclusionsHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.MarkingsExclusions>(this, CollectionNames.MARKINGS_EXCLUSIONS);
+  }
 
-    getFormExtractsHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.FormExtracts>(this, CollectionNames.FORM_EXTRACTS);
-    }
+  getCanteensHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.Canteens>(this, CollectionNames.CANTEENS);
+  }
 
-    getFormExtractFormFieldsHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.FormExtractsFormFields>(this, CollectionNames.FORM_EXTRACTS_FORM_FIELDS);
-    }
+  getApartmentsHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.Apartments>(this, CollectionNames.APARTMENTS);
+  }
 
-    getFormsFieldsHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.FormFields>(this, CollectionNames.FORM_FIELDS);
-    }
+  getBuildingsHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.Buildings>(this, CollectionNames.BUILDINGS);
+  }
 
-    getFormsSubmissionsHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.FormSubmissions>(this, CollectionNames.FORM_SUBMISSIONS);
-    }
+  getNewsHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.News>(this, CollectionNames.NEWS);
+  }
 
-    getFormsAnswersHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.FormAnswers>(this, CollectionNames.FORM_ANSWERS);
-    }
+  getUsersHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.DirectusUsers>(this, CollectionNames.USERS);
+  }
 
-    getFoodoffersHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.Foodoffers>(this, CollectionNames.FOODOFFERS);
-    }
+  getShareServiceHelper() {
+    return new ShareServiceHelper(this);
+  }
 
-    getFoodofferCategoriesHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.FoodoffersCategories>(this, CollectionNames.FOODOFFER_CATEGORIES);
-    }
+  getUtilizationEntriesHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.UtilizationsEntries>(this, CollectionNames.UTILIZATION_ENTRIES);
+  }
 
-    getDevicesHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.Devices>(this, CollectionNames.DEVICES);
-    }
+  getUtilizationGroupsHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.UtilizationsGroups>(this, CollectionNames.UTILIZATION_GROUPS);
+  }
 
-    getPushNotificationsHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.PushNotifications>(this, CollectionNames.PUSH_NOTIFICATIONS);
-    }
+  getWashingmachinesHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.Washingmachines>(this, CollectionNames.WASHINGMACHINES);
+  }
 
-    getProfilesHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.Profiles>(this, CollectionNames.PROFILES);
-    }
+  getWashingmachinesJobsHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.WashingmachinesJobs>(this, CollectionNames.WASHINGMACHINES_JOBS);
+  }
 
-    getMarkingsHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.Markings>(this, CollectionNames.MARKINGS);
-    }
+  getWorkflowsHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.Workflows>(this, CollectionNames.WORKFLOWS);
+  }
 
-    getMarkingsExclusionsHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.MarkingsExclusions>(this, CollectionNames.MARKINGS_EXCLUSIONS);
-    }
+  getWorkflowsRunsHelper() {
+    return new WorkflowsRunHelper(this, CollectionNames.WORKFLOWS_RUNS);
+  }
 
-    getCanteensHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.Canteens>(this, CollectionNames.CANTEENS);
-    }
+  getItemsServiceHelper<T>(collectionName: CollectionNames) {
+    return new ItemsServiceHelper<T>(this, collectionName);
+  }
 
-    getApartmentsHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.Apartments>(this, CollectionNames.APARTMENTS);
-    }
+  async sendMail(mail: Partial<DatabaseTypes.Mails>) {
+    let mailsHelper = this.getMailsHelper();
+    return await mailsHelper.createOne(mail);
+  }
 
-    getBuildingsHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.Buildings>(this, CollectionNames.BUILDINGS);
-    }
+  getMailsHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.Mails>(this, CollectionNames.MAILS);
+  }
 
-    getNewsHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.News>(this, CollectionNames.NEWS);
-    }
+  getMailsFilesHelper() {
+    return new ItemsServiceHelper<DatabaseTypes.MailsFiles>(this, CollectionNames.MAILS_FILES);
+  }
 
-    getUsersHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.DirectusUsers>(this, CollectionNames.USERS);
-    }
-
-    getShareServiceHelper() {
-        return new ShareServiceHelper(this);
-    }
-
-    getUtilizationEntriesHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.UtilizationsEntries>(this, CollectionNames.UTILIZATION_ENTRIES);
-    }
-
-    getUtilizationGroupsHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.UtilizationsGroups>(this, CollectionNames.UTILIZATION_GROUPS);
-    }
-
-    getWashingmachinesHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.Washingmachines>(this, CollectionNames.WASHINGMACHINES);
-    }
-
-    getWashingmachinesJobsHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.WashingmachinesJobs>(this, CollectionNames.WASHINGMACHINES_JOBS);
-    }
-
-    getWorkflowsHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.Workflows>(this, CollectionNames.WORKFLOWS);
-    }
-
-    getWorkflowsRunsHelper() {
-        return new WorkflowsRunHelper(this, CollectionNames.WORKFLOWS_RUNS);
-    }
-
-    getItemsServiceHelper<T>(collectionName: CollectionNames) {
-        return new ItemsServiceHelper<T>(this, collectionName);
-    }
-
-    async sendMail(mail: Partial<DatabaseTypes.Mails>) {
-        let mailsHelper = this.getMailsHelper();
-        return await mailsHelper.createOne(mail);
-    }
-
-    getMailsHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.Mails>(this, CollectionNames.MAILS);
-    }
-
-    getMailsFilesHelper() {
-        return new ItemsServiceHelper<DatabaseTypes.MailsFiles>(this, CollectionNames.MAILS_FILES);
-    }
-
-    getFilesHelper(){
-        return new FilesServiceHelper(this);
-    }
-
+  getFilesHelper() {
+    return new FilesServiceHelper(this);
+  }
 }

@@ -2,7 +2,7 @@ import { calculateDistanceInMeter } from 'repo-depkit-common';
 
 describe('calculateDistanceInMeter', () => {
   it('returns a precise distance for long ranges', () => {
-    const berlin: [number, number] = [13.4050, 52.5200];
+    const berlin: [number, number] = [13.405, 52.52];
     const losAngeles: [number, number] = [-118.2437, 34.0522];
 
     const distance = calculateDistanceInMeter(berlin, losAngeles);

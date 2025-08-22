@@ -1,10 +1,9 @@
-
 ### Apple Sign In
 
 Since it is a bit ugly with apple, here is a small tutorial:
 
-! You will need an Apple Developer Account !
-Followed partially tutorial from: Found from: https://sarunw.com/posts/sign-in-with-apple-4/
+! You will need an Apple Developer Account ! Followed partially tutorial from: Found from:
+https://sarunw.com/posts/sign-in-with-apple-4/
 
 - 1. Find your Apple Team ID --> Variable TEAM_ID
   - https://developer.apple.com/account/resources/identifiers/list
@@ -57,11 +56,14 @@ Followed partially tutorial from: Found from: https://sarunw.com/posts/sign-in-w
   - Click Download and save file as: "key.txt"
 - Secret Generation
   - Have the following values ready: "TEAM_ID", "AUTH_APPLE_CLIENT_ID", "KEY_ID", "KEY_FILE_CONTENT"
-  - run `./genSSO_Apple.sh --team_id <TEAM_ID> --client_id <AUTH_APPLE_CLIENT_ID> --key_id <KEY_ID> --key_file_content "<>"`
-    - Alternatively you can use the file path instead of the content with `--key_file_path <PATH_TO_FILE>`
+  - run
+    `./genSSO_Apple.sh --team_id <TEAM_ID> --client_id <AUTH_APPLE_CLIENT_ID> --key_id <KEY_ID> --key_file_content "<>"`
+    - Alternatively you can use the file path instead of the content with
+      `--key_file_path <PATH_TO_FILE>`
   - Copy the output --> This will be our AUTH_APPLE_CLIENT_SECRET
 - Adapt docker-compose.yaml
-  - Add `apple` to auth providers in the following `AUTH_PROVIDERS: "apple,google,facebook"` or only apple (line 89) ! Apple needs to be first due to terms & conditions
+  - Add `apple` to auth providers in the following `AUTH_PROVIDERS: "apple,google,facebook"` or only
+    apple (line 89) ! Apple needs to be first due to terms & conditions
 
 ## Troubleshooting
 
@@ -89,10 +91,12 @@ Followed partially tutorial from: Found from: https://sarunw.com/posts/sign-in-w
       "status": 503
     }
     ```
-  - This means apple allows the redirect to rocket-meals but rocket-meals may have a problem with the secret.
+  - This means apple allows the redirect to rocket-meals but rocket-meals may have a problem with
+    the secret.
   - Check if the secret is correct
   - The server log throws an error about "Open ID", which means the secret provided is not correct
 - URL: apple.com
   - Message "redirect_uri_mismatch"
   - Apple does not allow the redirect to the URL
-      - Check if the redirect URL is correct. Check if it contains "/rocket-meals/api" and not only "/api"
+    - Check if the redirect URL is correct. Check if it contains "/rocket-meals/api" and not only
+      "/api"

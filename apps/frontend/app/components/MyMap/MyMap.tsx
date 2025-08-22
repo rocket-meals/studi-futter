@@ -1,190 +1,126 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
-import { WebView, WebViewMessageEvent } from 'react-native-webview';
-import styles from './styles';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
-import DEFAULT_TILE_LAYER from './defaultTileLayer';
-import type { MapMarker, LeafletWebViewEvent } from './model';
+import type { LeafletWebViewEvent, MapMarker } from './model';
+import { LatLng, LeafletView, MapMarker as LeafletViewMapMarkers, WebviewLeafletMessage } from 'react-native-leaflet-view';
+import useSetPageTitle from '@/hooks/useSetPageTitle';
+import { TranslationKeys } from '@/locales/keys';
+import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system';
+import { MyMapProps } from '@/components/MyMap/MyMapHelper';
 import BaseModal from '@/components/BaseModal';
 
-// JavaScript to inject for ensuring proper image loading
-const INJECTED_JAVASCRIPT = `
-(function() {
-  // Helper function to ensure images load properly
-  function ensureImagesLoad() {
-    // Find all images in the document
-    const images = document.querySelectorAll('img');
-    
-    // For each image, add error handling and force reload if needed
-    images.forEach(img => {
-      // Skip already processed images
-      if (img.dataset.processed) return;
-      
-      // Mark as processed
-      img.dataset.processed = 'true';
-      
-      // Add error handler
-      img.onerror = function() {
-        // If image failed to load, try with crossorigin attribute
-        if (!this.crossOrigin) {
-          this.crossOrigin = 'anonymous';
-          // Force reload by updating the src
-          const currentSrc = this.src;
-          this.src = '';
-          setTimeout(() => { this.src = currentSrc; }, 0);
-        }
-      };
-      
-      // For images that are already loaded but not visible, force a reload
-      if (img.complete && (img.naturalWidth === 0 || img.naturalHeight === 0)) {
-        img.onerror();
-      }
-    });
-  }
-  
-  // Run immediately
-  ensureImagesLoad();
-  
-  // Also run when DOM changes (for dynamically added images)
-  const observer = new MutationObserver(mutations => {
-    ensureImagesLoad();
-  });
-  
-  // Start observing the document
-  observer.observe(document.body, { 
-    childList: true, 
-    subtree: true 
-  });
-})();
-`;
+const MyMap: React.FC<MyMapProps> = ({ mapCenterPosition, zoom, mapMarkers, onMarkerClick, onMapEvent, renderMarkerModal, onMarkerSelectionChange }) => {
+	const { theme } = useTheme();
 
-export interface Position {
-  lat: number;
-  lng: number;
-}
+	const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
 
-export interface MyMapProps {
-  mapCenterPosition: Position;
-  zoom?: number;
-  mapMarkers?: MapMarker[];
-  onMarkerClick?: (id: string) => void;
-  onMapEvent?: (event: LeafletWebViewEvent) => void;
-  renderMarkerModal?: (
-    markerId: string,
-    onClose: () => void
-  ) => React.ReactNode;
-  onMarkerSelectionChange?: (markerId: string | null) => void;
-}
+	useSetPageTitle(TranslationKeys.leaflet_map);
+	const [html, setHtml] = useState<string | null>(null);
+	const [icon, setIcon] = useState<string | null>(null);
 
-const MyMap: React.FC<MyMapProps> = ({
-  mapCenterPosition,
-  zoom,
-  mapMarkers,
-  onMarkerClick,
-  onMapEvent,
-  renderMarkerModal,
-  onMarkerSelectionChange,
-}) => {
-  const { theme } = useTheme();
-  const webViewRef = useRef<WebView>(null);
-  const html = require('@/assets/leaflet/index.html');
+	useEffect(() => {
+		let isMounted = true;
+		const loadAssets = async () => {
+			const htmlAsset = Asset.fromModule(require('@/assets/leaflet.html'));
+			const iconAsset = Asset.fromModule(require('@/assets/map/marker-icon-2x.png'));
+			await Promise.all([htmlAsset.downloadAsync(), iconAsset.downloadAsync()]);
+			const [htmlContent, iconContent] = await Promise.all([
+				FileSystem.readAsStringAsync(htmlAsset.localUri!),
+				FileSystem.readAsStringAsync(iconAsset.localUri!, {
+					encoding: FileSystem.EncodingType.Base64,
+				}),
+			]);
+			if (isMounted) {
+				setHtml(htmlContent);
+				setIcon(iconContent);
+			}
+		};
+		loadAssets();
+		return () => {
+			isMounted = false;
+		};
+	}, []);
 
-  const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
+	if (!html || !icon) {
+		return <ActivityIndicator />;
+	}
 
-  useEffect(() => {
-    onMarkerSelectionChange?.(selectedMarker);
-  }, [selectedMarker, onMarkerSelectionChange]);
+	let finalMapMarkers: LeafletViewMapMarkers[] = [];
+	if (mapMarkers) {
+		finalMapMarkers = mapMarkers.map((marker: MapMarker) => ({
+			id: marker.id,
+			position: marker.position as LatLng,
+			icon: marker.icon,
+			size: marker.size || [32, 32],
+		}));
+	}
+	finalMapMarkers.push({
+		id: 'berlin-icon',
+		position: mapCenterPosition,
+		icon: `<img src='data:image/png;base64,${icon}' style='width:32px;height:32px;' />`,
+		size: [32, 32],
+	});
 
+	const handler = (webviewLeafletMessage: WebviewLeafletMessage) => {
+		try {
+			let event: MessageEvent = webviewLeafletMessage?.event;
+			const data: LeafletWebViewEvent = JSON.parse(event.data);
+			if (data.tag === 'onMapMarkerClicked') {
+				onMarkerClick?.(data.mapMarkerId);
+				onMarkerSelectionChange?.(data.mapMarkerId);
+				if (renderMarkerModal) {
+					setSelectedMarker(data.mapMarkerId);
+				}
+			}
+			onMapEvent?.(data);
+		} catch {
+			// ignore malformed messages
+		}
+	};
 
-
-  const sendCoordinates = useCallback(() => {
-    if (webViewRef.current) {
-      // Process markers to ensure proper image URL handling
-      const processedMarkers = (mapMarkers ?? []).map(marker => {
-        // Create a new marker object to avoid mutating the original
-        const processedMarker = { ...marker };
-        
-        // Handle Base64 image URLs - ensure they have the correct prefix if needed
-        if (processedMarker.iconUrl && processedMarker.iconUrl.startsWith('data:')) {
-          // Ensure Base64 images have proper formatting
-          if (!processedMarker.iconUrl.includes(';base64,')) {
-            processedMarker.iconUrl = processedMarker.iconUrl.replace('data:', 'data:image/png;base64,');
-          }
-        }
-        
-        return processedMarker;
-      });
-      
-      const message = {
-        mapCenterPosition,
-        zoom: zoom ?? 13,
-        mapLayers: [DEFAULT_TILE_LAYER],
-        mapMarkers: processedMarkers,
-      };
-      
-      const js = `window.postMessage(${JSON.stringify(message)}, '*');`;
-      webViewRef.current.injectJavaScript(js);
-    }
-  }, [mapCenterPosition, zoom, mapMarkers]);
-
-  const handleMessage = useCallback(
-    (event: WebViewMessageEvent) => {
-      try {
-        const data: LeafletWebViewEvent = JSON.parse(event.nativeEvent.data);
-        if (data.tag === 'MapComponentMounted') {
-          sendCoordinates();
-          return;
-        }
-
-        if (data.tag === 'onMapMarkerClicked') {
-          onMarkerClick?.(data.mapMarkerId);
-          onMarkerSelectionChange?.(data.mapMarkerId);
-          if (renderMarkerModal) {
-            setSelectedMarker(data.mapMarkerId);
-          }
-        }
-
-        onMapEvent?.(data);
-      } catch {
-        // ignore malformed messages
-      }
-    },
-    [sendCoordinates, onMarkerClick, onMapEvent, renderMarkerModal, onMarkerSelectionChange]
-  );
-
-
-  useEffect(() => {
-    sendCoordinates();
-  }, [sendCoordinates]);
-
-  return (
-    <View style={[styles.container, { backgroundColor: theme.screen.background }]}>
-      <WebView
-        ref={webViewRef}
-        originWhitelist={['*']}
-        source={html}
-        style={styles.webview}
-        onMessage={handleMessage}
-        allowFileAccess
-        allowFileAccessFromFileURLs
-        allowUniversalAccessFromFileURLs
-        domStorageEnabled
-        javaScriptEnabled
-        cacheEnabled={false}
-        incognito={true}
-        mixedContentMode="always"
-        userAgent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-        containerStyle={{ height: '100%', width: '100%' }}
-        injectedJavaScript={INJECTED_JAVASCRIPT}
-        onLoadEnd={sendCoordinates}
-      />
-      {renderMarkerModal && selectedMarker && (
-        <BaseModal isVisible={true} onClose={() => setSelectedMarker(null)}>
-          {renderMarkerModal(selectedMarker, () => setSelectedMarker(null))}
-        </BaseModal>
-      )}
-    </View>
-  );
+	return (
+		<View style={styles.container}>
+			<LeafletView
+				mapCenterPosition={mapCenterPosition}
+				onMessageReceived={handler}
+				onMarkerClick={(markerId: any) => {
+					if (onMarkerClick) {
+						onMarkerClick(markerId);
+					}
+					if (renderMarkerModal) {
+						setSelectedMarker(markerId);
+					}
+					if (onMarkerSelectionChange) {
+						onMarkerSelectionChange(markerId);
+					}
+				}}
+				zoom={13}
+				source={{ html }}
+				mapMarkers={finalMapMarkers}
+				webviewStyle={styles.map}
+			/>
+			{renderMarkerModal && selectedMarker && (
+				<BaseModal isVisible={true} onClose={() => setSelectedMarker(null)}>
+					{renderMarkerModal(selectedMarker, () => setSelectedMarker(null))}
+				</BaseModal>
+			)}
+		</View>
+	);
 };
 
 export default MyMap;
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		width: '100%',
+		height: '100%',
+		backgroundColor: 'red',
+	},
+	map: {
+		flex: 1,
+		width: '100%',
+		height: '100%',
+	},
+});

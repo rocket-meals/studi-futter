@@ -1,15 +1,14 @@
 import { DatabaseTypes } from 'repo-depkit-common';
 
 export class MarkingHelper {
-
 	static getDislikedMarkingIds(foodOffer: DatabaseTypes.Foodoffers, profileMarkingsDict: Record<string, DatabaseTypes.ProfilesMarkings>) {
 		const aMarkingsIds = MarkingHelper.getFoodOfferMarkingIds(foodOffer);
 		let dislikedMarkingIds: string[] = [];
-		for(const marking_id of aMarkingsIds){
+		for (const marking_id of aMarkingsIds) {
 			const profilesMarking: DatabaseTypes.ProfilesMarkings = profileMarkingsDict[marking_id];
-			if(profilesMarking){
+			if (profilesMarking) {
 				const like = profilesMarking.like;
-				if(like !== null && like !== undefined && like===false){
+				if (like !== null && like !== undefined && like === false) {
 					dislikedMarkingIds.push(marking_id);
 				}
 			}
@@ -20,11 +19,11 @@ export class MarkingHelper {
 	static getLikedMarkingIds(foodOffer: DatabaseTypes.Foodoffers, profileMarkingsDict: Record<string, DatabaseTypes.ProfilesMarkings>) {
 		const aMarkingsIds = MarkingHelper.getFoodOfferMarkingIds(foodOffer);
 		let likedMarkingIds: string[] = [];
-		for(const marking_id of aMarkingsIds){
+		for (const marking_id of aMarkingsIds) {
 			const profilesMarking: DatabaseTypes.ProfilesMarkings = profileMarkingsDict[marking_id];
-			if(profilesMarking){
+			if (profilesMarking) {
 				const like = profilesMarking.like;
-				if(like !== null && like !== undefined && like===true){
+				if (like !== null && like !== undefined && like === true) {
 					likedMarkingIds.push(marking_id);
 				}
 			}
@@ -42,20 +41,20 @@ export class MarkingHelper {
 		return dislikedMarkingIds.length > 0;
 	}
 
-
 	static getFoodOfferMarkingIds(foodOffer: DatabaseTypes.Foodoffers | null | undefined) {
-		const aMarkingsRelation = foodOffer?.markings as DatabaseTypes.FoodoffersMarkings[]
+		const aMarkingsRelation = foodOffer?.markings as DatabaseTypes.FoodoffersMarkings[];
 		let aMarkingsIds: string[] = [];
-		if(aMarkingsRelation){
-			for(const marking of aMarkingsRelation){
+		if (aMarkingsRelation) {
+			for (const marking of aMarkingsRelation) {
 				const markingIsOrMarking = marking.markings_id;
-				if(typeof markingIsOrMarking === 'string'){
+				if (typeof markingIsOrMarking === 'string') {
 					aMarkingsIds.push(markingIsOrMarking);
 				}
-				if(typeof markingIsOrMarking === 'object' && markingIsOrMarking !== null){
+				if (typeof markingIsOrMarking === 'object' && markingIsOrMarking !== null) {
 					aMarkingsIds.push(markingIsOrMarking.id);
 				}
 			}
 		}
 		return aMarkingsIds;
-	}}
+	}
+}

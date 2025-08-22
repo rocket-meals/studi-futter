@@ -1,25 +1,25 @@
 export class LanguageCodes {
-    public static readonly _codes = {
-        de: "de-DE" as const,
-        en: "en-US" as const,
-    };
+  public static readonly _codes = {
+    de: 'de-DE' as const,
+    en: 'en-US' as const,
+  };
 
-    static readonly DE = LanguageCodes._codes.de;
-    static readonly EN = LanguageCodes._codes.en;
+  static readonly DE = LanguageCodes._codes.de;
+  static readonly EN = LanguageCodes._codes.en;
 }
 
 export class TranslationsBackend {
-    public static getTranslation(key: TranslationBackendKeys, language?: string): string {
-        switch (key) {
-            case TranslationBackendKeys.FORM_VALUE_BOOLEAN_TRUE:
-                return "Ja"
-            case TranslationBackendKeys.FORM_VALUE_BOOLEAN_FALSE:
-                return "Nein"
-        }
+  public static getTranslation(key: TranslationBackendKeys, language?: string): string {
+    switch (key) {
+      case TranslationBackendKeys.FORM_VALUE_BOOLEAN_TRUE:
+        return 'Ja';
+      case TranslationBackendKeys.FORM_VALUE_BOOLEAN_FALSE:
+        return 'Nein';
     }
+  }
 }
 
 export enum TranslationBackendKeys {
-    FORM_VALUE_BOOLEAN_TRUE = "form_value_boolean_true",
-    FORM_VALUE_BOOLEAN_FALSE = "form_value_boolean_false",
+  FORM_VALUE_BOOLEAN_TRUE = 'form_value_boolean_true',
+  FORM_VALUE_BOOLEAN_FALSE = 'form_value_boolean_false',
 }

@@ -37,9 +37,7 @@
     "readonly": false,
     "required": false,
     "sort": 1,
-    "special": [
-      "cast-json"
-    ],
+    "special": ["cast-json"],
     "translations": [
       {
         "language": "de-DE",
@@ -54,12 +52,7 @@
     "name": "redirect_whitelist",
     "table": "app_settings",
     "data_type": "json",
-    "default_value": [
-      "127.0.0.1",
-      "exp://",
-      "https://rocket-meals.github.io",
-      "localhost"
-    ],
+    "default_value": ["127.0.0.1", "exp://", "https://rocket-meals.github.io", "localhost"],
     "max_length": null,
     "numeric_precision": null,
     "numeric_scale": null,

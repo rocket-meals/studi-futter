@@ -12,53 +12,46 @@ import { isWeb } from '@/constants/Constants';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 
-const DrawerPositionSheet: React.FC<DrawerPositionSheetProps> = ({
-  closeSheet,
-  selectedPosition,
-  onSelect,
-}) => {
-  const { theme } = useTheme();
-  const { translate } = useLanguage();
-  const { primaryColor } = useSelector((state: RootState) => state.settings);
+const DrawerPositionSheet: React.FC<DrawerPositionSheetProps> = ({ closeSheet, selectedPosition, onSelect }) => {
+	const { theme } = useTheme();
+	const { translate } = useLanguage();
+	const { primaryColor } = useSelector((state: RootState) => state.settings);
 
-  return (
-    <BottomSheetScrollView
-      style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }}
-      contentContainerStyle={styles.contentContainer}
-    >
-      <View
-        style={{
-          ...styles.sheetHeader,
-          paddingRight: isWeb ? 10 : 0,
-          paddingTop: isWeb ? 10 : 0,
-        }}
-      >
-        <View />
-        <Text
-          style={{
-            ...styles.sheetHeading,
-            fontSize: isWeb ? 40 : 28,
-            color: theme.sheet.text,
-          }}
-        >
-          {translate(TranslationKeys.drawer_config_position)}
-        </Text>
-      </View>
-      <View style={styles.optionsContainer}>
-        {drawers.map((drawer) => (
-          <DrawerPosition
-            key={drawer.id}
-            position={drawer}
-            isSelected={selectedPosition === drawer.id}
-            onPress={() => {
-              onSelect(drawer.id);
-              closeSheet();
-            }}
-          />
-        ))}
-      </View>
-    </BottomSheetScrollView>
-  );
+	return (
+		<BottomSheetScrollView style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }} contentContainerStyle={styles.contentContainer}>
+			<View
+				style={{
+					...styles.sheetHeader,
+					paddingRight: isWeb ? 10 : 0,
+					paddingTop: isWeb ? 10 : 0,
+				}}
+			>
+				<View />
+				<Text
+					style={{
+						...styles.sheetHeading,
+						fontSize: isWeb ? 40 : 28,
+						color: theme.sheet.text,
+					}}
+				>
+					{translate(TranslationKeys.drawer_config_position)}
+				</Text>
+			</View>
+			<View style={styles.optionsContainer}>
+				{drawers.map(drawer => (
+					<DrawerPosition
+						key={drawer.id}
+						position={drawer}
+						isSelected={selectedPosition === drawer.id}
+						onPress={() => {
+							onSelect(drawer.id);
+							closeSheet();
+						}}
+					/>
+				))}
+			</View>
+		</BottomSheetScrollView>
+	);
 };
 
 export default DrawerPositionSheet;

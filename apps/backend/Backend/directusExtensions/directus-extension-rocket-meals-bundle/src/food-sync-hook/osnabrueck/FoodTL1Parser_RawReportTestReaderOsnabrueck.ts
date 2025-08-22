@@ -1,38 +1,36 @@
-import {FoodTL1Parser_GetRawReportInterface} from "../FoodTL1Parser_GetRawReportInterface";
+import { FoodTL1Parser_GetRawReportInterface } from '../FoodTL1Parser_GetRawReportInterface';
 
 export class FoodTL1Parser_RawReportTestReaderOsnabrueck implements FoodTL1Parser_GetRawReportInterface {
+  private reportToReturn: string | undefined;
 
-    private reportToReturn: string | undefined;
+  constructor(reportToReturn?: string | undefined) {
+    this.reportToReturn = reportToReturn;
+  }
 
-    constructor(reportToReturn?: string | undefined){
-        this.reportToReturn = reportToReturn;
+  async getRawReport(): Promise<string | undefined> {
+    if (this.reportToReturn) {
+      return this.reportToReturn;
     }
+    return this.getSavedRawReport();
+  }
 
-    async getRawReport(): Promise<string | undefined> {
-        if(this.reportToReturn){
-            return this.reportToReturn;
-        }
-        return this.getSavedRawReport();
-    }
+  public static getSavedRawReportWithCO2RatingValuesMainCourse() {
+    return `MENSA\tDATUM\tVK-ArtikelNr\tVK-GebindeNR\tSPEISE\tSPEISE_BEZEICHNUNG\tREZEPTUR_ID\tTEXT1\tTEXT2\tTEXT3\tTEXT4\tTEXT5\tTEXT6\tTEXT1_1\tTEXT2_1\tTEXT3_1\tTEXT4_1\tTEXT5_1\tTEXT6_1\tSTD_PREIS\tBED_PREIS\tGÄSTE_PREIS\tFREI1\tFREI2\tFREI3\tZSNUMMERN\tZSNAMEN\tNAEHRWERTEJE100G\tNAEHRWERTEJEPORT\tEXTINFO_CO2_WERT\tEXTINFO_CO2_BEWERTUNG\tEXTINFO_CO2_EINSPARUNG\tEXTINFO_WASSER_WERT\tEXTINFO_WASSER_BEWERTUNG\tEXTINFO_TIERWOHL\tEXTINFO_REGENWALD\tEXTINFOPROG_WERT\tEXTINFOPROG_M_P\tEXTINFOPROG_SICHER
+Mensa Lingen\t19.02.2025\t2130\t4388\tKM 1 + 2,20 €\tHauptgericht\t2351\tFalafel mit Persischem Reis, Pinienkernen und Pfirsich-Tomatenchutney (3,16,21,a,k,m,a1)\t\t\t\t\t\tFalafel with persian rice, pine nuts and peach tomato chutney (3,16,21,a,k,m,a1)\t\t\t\t\t\t3,40\t5,60\t6,60\tg\t\t\t3, 16, 21, a, k, m, a1, 0, 947, 948, 949, 952, 954\tmit Antioxidationsmittel, KlimaTeller, vegan, Glutenhaltiges Getreide (a), Schwefeldioxid u. Sulfite (k), Sesam (m), Weizen, zusatzstoff- und allergenfrei, ist frisch, ist tiefgekühlt, ist getrocknet, in der Dose, ist Bio\t-\tBrennwert=3269 kJ (781 kcal), Fett=34,1g, davon gesättigte Fettsäuren=5,9g, Kohlenhydrate=97,2g, davon Zucker=16,9g, Ballaststoffe=10,2g, Eiweiß=16,9g, Salz=3,1g,\t454,00\tA\t61,00\t53,54\tA\tA\tA`;
+  }
 
-    public static getSavedRawReportWithCO2RatingValuesMainCourse(){
-        return `MENSA\tDATUM\tVK-ArtikelNr\tVK-GebindeNR\tSPEISE\tSPEISE_BEZEICHNUNG\tREZEPTUR_ID\tTEXT1\tTEXT2\tTEXT3\tTEXT4\tTEXT5\tTEXT6\tTEXT1_1\tTEXT2_1\tTEXT3_1\tTEXT4_1\tTEXT5_1\tTEXT6_1\tSTD_PREIS\tBED_PREIS\tGÄSTE_PREIS\tFREI1\tFREI2\tFREI3\tZSNUMMERN\tZSNAMEN\tNAEHRWERTEJE100G\tNAEHRWERTEJEPORT\tEXTINFO_CO2_WERT\tEXTINFO_CO2_BEWERTUNG\tEXTINFO_CO2_EINSPARUNG\tEXTINFO_WASSER_WERT\tEXTINFO_WASSER_BEWERTUNG\tEXTINFO_TIERWOHL\tEXTINFO_REGENWALD\tEXTINFOPROG_WERT\tEXTINFOPROG_M_P\tEXTINFOPROG_SICHER
-Mensa Lingen\t19.02.2025\t2130\t4388\tKM 1 + 2,20 €\tHauptgericht\t2351\tFalafel mit Persischem Reis, Pinienkernen und Pfirsich-Tomatenchutney (3,16,21,a,k,m,a1)\t\t\t\t\t\tFalafel with persian rice, pine nuts and peach tomato chutney (3,16,21,a,k,m,a1)\t\t\t\t\t\t3,40\t5,60\t6,60\tg\t\t\t3, 16, 21, a, k, m, a1, 0, 947, 948, 949, 952, 954\tmit Antioxidationsmittel, KlimaTeller, vegan, Glutenhaltiges Getreide (a), Schwefeldioxid u. Sulfite (k), Sesam (m), Weizen, zusatzstoff- und allergenfrei, ist frisch, ist tiefgekühlt, ist getrocknet, in der Dose, ist Bio\t-\tBrennwert=3269 kJ (781 kcal), Fett=34,1g, davon gesättigte Fettsäuren=5,9g, Kohlenhydrate=97,2g, davon Zucker=16,9g, Ballaststoffe=10,2g, Eiweiß=16,9g, Salz=3,1g,\t454,00\tA\t61,00\t53,54\tA\tA\tA`
-    }
+  public static getSavedRawReportWithCO2RatingValuesButSideCourse() {
+    return `MENSA\tDATUM\tVK-ArtikelNr\tVK-GebindeNR\tSPEISE\tSPEISE_BEZEICHNUNG\tREZEPTUR_ID\tTEXT1\tTEXT2\tTEXT3\tTEXT4\tTEXT5\tTEXT6\tTEXT1_1\tTEXT2_1\tTEXT3_1\tTEXT4_1\tTEXT5_1\tTEXT6_1\tSTD_PREIS\tBED_PREIS\tGÄSTE_PREIS\tFREI1\tFREI2\tFREI3\tZSNUMMERN\tZSNAMEN\tNAEHRWERTEJE100G\tNAEHRWERTEJEPORT\tEXTINFO_CO2_WERT\tEXTINFO_CO2_BEWERTUNG\tEXTINFO_CO2_EINSPARUNG\tEXTINFO_WASSER_WERT\tEXTINFO_WASSER_BEWERTUNG\tEXTINFO_TIERWOHL\tEXTINFO_REGENWALD\tEXTINFOPROG_WERT\tEXTINFOPROG_M_P\tEXTINFOPROG_SICHER
+Mensa Lingen\t19.02.2025\t2130\t4388\tKM 1 + 2,20 €\tBeilagen\t2351\tBohnen mit Sesam (3,16,21,a,k,m,a1)\t\t\t\t\t\tFalafel with persian rice, pine nuts and peach tomato chutney (3,16,21,a,k,m,a1)\t\t\t\t\t\t3,40\t5,60\t6,60\tg\t\t\t3, 16, 21, a, k, m, a1, 0, 947, 948, 949, 952, 954\tmit Antioxidationsmittel, KlimaTeller, vegan, Glutenhaltiges Getreide (a), Schwefeldioxid u. Sulfite (k), Sesam (m), Weizen, zusatzstoff- und allergenfrei, ist frisch, ist tiefgekühlt, ist getrocknet, in der Dose, ist Bio\t-\tBrennwert=3269 kJ (781 kcal), Fett=34,1g, davon gesättigte Fettsäuren=5,9g, Kohlenhydrate=97,2g, davon Zucker=16,9g, Ballaststoffe=10,2g, Eiweiß=16,9g, Salz=3,1g,\t454,00\tA\t61,00\t53,54\tA\tA\tA`;
+  }
 
-    public static getSavedRawReportWithCO2RatingValuesButSideCourse(){
-        return `MENSA\tDATUM\tVK-ArtikelNr\tVK-GebindeNR\tSPEISE\tSPEISE_BEZEICHNUNG\tREZEPTUR_ID\tTEXT1\tTEXT2\tTEXT3\tTEXT4\tTEXT5\tTEXT6\tTEXT1_1\tTEXT2_1\tTEXT3_1\tTEXT4_1\tTEXT5_1\tTEXT6_1\tSTD_PREIS\tBED_PREIS\tGÄSTE_PREIS\tFREI1\tFREI2\tFREI3\tZSNUMMERN\tZSNAMEN\tNAEHRWERTEJE100G\tNAEHRWERTEJEPORT\tEXTINFO_CO2_WERT\tEXTINFO_CO2_BEWERTUNG\tEXTINFO_CO2_EINSPARUNG\tEXTINFO_WASSER_WERT\tEXTINFO_WASSER_BEWERTUNG\tEXTINFO_TIERWOHL\tEXTINFO_REGENWALD\tEXTINFOPROG_WERT\tEXTINFOPROG_M_P\tEXTINFOPROG_SICHER
-Mensa Lingen\t19.02.2025\t2130\t4388\tKM 1 + 2,20 €\tBeilagen\t2351\tBohnen mit Sesam (3,16,21,a,k,m,a1)\t\t\t\t\t\tFalafel with persian rice, pine nuts and peach tomato chutney (3,16,21,a,k,m,a1)\t\t\t\t\t\t3,40\t5,60\t6,60\tg\t\t\t3, 16, 21, a, k, m, a1, 0, 947, 948, 949, 952, 954\tmit Antioxidationsmittel, KlimaTeller, vegan, Glutenhaltiges Getreide (a), Schwefeldioxid u. Sulfite (k), Sesam (m), Weizen, zusatzstoff- und allergenfrei, ist frisch, ist tiefgekühlt, ist getrocknet, in der Dose, ist Bio\t-\tBrennwert=3269 kJ (781 kcal), Fett=34,1g, davon gesättigte Fettsäuren=5,9g, Kohlenhydrate=97,2g, davon Zucker=16,9g, Ballaststoffe=10,2g, Eiweiß=16,9g, Salz=3,1g,\t454,00\tA\t61,00\t53,54\tA\tA\tA`
-    }
+  public static getSavedRawReportWithVegetarianValues() {
+    return `MENSA\tDATUM\tVK-ArtikelNr\tVK-GebindeNR\tSPEISE\tSPEISE_BEZEICHNUNG\tREZEPTUR_ID\tTEXT1\tTEXT2\tTEXT3\tTEXT4\tTEXT5\tTEXT6\tTEXT1_1\tTEXT2_1\tTEXT3_1\tTEXT4_1\tTEXT5_1\tTEXT6_1\tSTD_PREIS\tBED_PREIS\tGÄSTE_PREIS\tFREI1\tFREI2\tFREI3\tZSNUMMERN\tZSNAMEN\tNAEHRWERTEJE100G\tNAEHRWERTEJEPORT\tEXTINFO_CO2_WERT\tEXTINFO_CO2_BEWERTUNG\tEXTINFO_CO2_EINSPARUNG\tEXTINFO_WASSER_WERT\tEXTINFO_WASSER_BEWERTUNG\tEXTINFO_TIERWOHL\tEXTINFO_REGENWALD\tEXTINFOPROG_WERT\tEXTINFOPROG_M_P\tEXTINFOPROG_SICHER
+Mensa Schlossgarten\t17.04.2025\t2097\t3665\tDessert 1\tDessert\t2113\tErdbeer-Eistörtchen (1,20,g,f)\t\t\t\t\t\tStrawberry ice cream tartlet (1,20,g,f)\t\t\t\t\t\t1,50\t2,20\t2,45\tc\t\t\t1, 20, g, f\tmit Farbstoff, vegetarisch, Milch und Laktose (g), Soja (f)\t-\tBrennwert=718 kJ (171 kcal), Fett=10,1g, davon gesättigte Fettsäuren=9,1g, Kohlenhydrate=18,8g, davon Zucker=17,5g, Eiweiß=1,4g, Salz=0,1g,\t182,00\tB\t47,00\t3,97\tA\tE\tA\t\t\t`;
+  }
 
-    public static getSavedRawReportWithVegetarianValues(){
-        return `MENSA\tDATUM\tVK-ArtikelNr\tVK-GebindeNR\tSPEISE\tSPEISE_BEZEICHNUNG\tREZEPTUR_ID\tTEXT1\tTEXT2\tTEXT3\tTEXT4\tTEXT5\tTEXT6\tTEXT1_1\tTEXT2_1\tTEXT3_1\tTEXT4_1\tTEXT5_1\tTEXT6_1\tSTD_PREIS\tBED_PREIS\tGÄSTE_PREIS\tFREI1\tFREI2\tFREI3\tZSNUMMERN\tZSNAMEN\tNAEHRWERTEJE100G\tNAEHRWERTEJEPORT\tEXTINFO_CO2_WERT\tEXTINFO_CO2_BEWERTUNG\tEXTINFO_CO2_EINSPARUNG\tEXTINFO_WASSER_WERT\tEXTINFO_WASSER_BEWERTUNG\tEXTINFO_TIERWOHL\tEXTINFO_REGENWALD\tEXTINFOPROG_WERT\tEXTINFOPROG_M_P\tEXTINFOPROG_SICHER
-Mensa Schlossgarten\t17.04.2025\t2097\t3665\tDessert 1\tDessert\t2113\tErdbeer-Eistörtchen (1,20,g,f)\t\t\t\t\t\tStrawberry ice cream tartlet (1,20,g,f)\t\t\t\t\t\t1,50\t2,20\t2,45\tc\t\t\t1, 20, g, f\tmit Farbstoff, vegetarisch, Milch und Laktose (g), Soja (f)\t-\tBrennwert=718 kJ (171 kcal), Fett=10,1g, davon gesättigte Fettsäuren=9,1g, Kohlenhydrate=18,8g, davon Zucker=17,5g, Eiweiß=1,4g, Salz=0,1g,\t182,00\tB\t47,00\t3,97\tA\tE\tA\t\t\t`
-    }
-
-
-    private async getSavedRawReport(): Promise<string | undefined> {
-        return `MENSA\tDATUM\tVK-ArtikelNr\tVK-GebindeNR\tSPEISE\tSPEISE_BEZEICHNUNG\tREZEPTUR_ID\tTEXT1\tTEXT2\tTEXT3\tTEXT4\tTEXT5\tTEXT6\tTEXT1_1\tTEXT2_1\tTEXT3_1\tTEXT4_1\tTEXT5_1\tTEXT6_1\tSTD_PREIS\tBED_PREIS\tGÄSTE_PREIS\tFREI1\tFREI2\tFREI3\tZSNUMMERN\tZSNAMEN\tNAEHRWERTEJE100G\tNAEHRWERTEJEPORT\tEXTINFO_CO2_WERT\tEXTINFO_CO2_BEWERTUNG\tEXTINFO_CO2_EINSPARUNG\tEXTINFO_WASSER_WERT\tEXTINFO_WASSER_BEWERTUNG\tEXTINFO_TIERWOHL\tEXTINFO_REGENWALD\tEXTINFOPROG_WERT\tEXTINFOPROG_M_P\tEXTINFOPROG_SICHER
+  private async getSavedRawReport(): Promise<string | undefined> {
+    return `MENSA\tDATUM\tVK-ArtikelNr\tVK-GebindeNR\tSPEISE\tSPEISE_BEZEICHNUNG\tREZEPTUR_ID\tTEXT1\tTEXT2\tTEXT3\tTEXT4\tTEXT5\tTEXT6\tTEXT1_1\tTEXT2_1\tTEXT3_1\tTEXT4_1\tTEXT5_1\tTEXT6_1\tSTD_PREIS\tBED_PREIS\tGÄSTE_PREIS\tFREI1\tFREI2\tFREI3\tZSNUMMERN\tZSNAMEN\tNAEHRWERTEJE100G\tNAEHRWERTEJEPORT\tEXTINFO_CO2_WERT\tEXTINFO_CO2_BEWERTUNG\tEXTINFO_CO2_EINSPARUNG\tEXTINFO_WASSER_WERT\tEXTINFO_WASSER_BEWERTUNG\tEXTINFO_TIERWOHL\tEXTINFO_REGENWALD\tEXTINFOPROG_WERT\tEXTINFOPROG_M_P\tEXTINFOPROG_SICHER
 Mensa Haste\t10.09.2024\t2130\t4388\tKM 1 + 2,20 €\tHauptgericht\t1716\tTortellini mit Gemüsefüllung (17,21,i,a1)\tTomatensauce (21)\t\t\t\t\tTtortellini with vegetable stuffing (17,21,i,a1)\tTomato sauce (21)\t\t\t\t\t2,40\t4,60\t5,60\tg\t\t\t17, 19, 21, a, i, a1, 0, 948, 949, 952\tKnoblauch, Bio-Erzeugnis DE-ÖKO-039, vegan, Glutenhaltiges Getreide (a), Sellerie (i), Weizen, zusatzstoff- und allergenfrei, ist tiefgekühlt, ist getrocknet, in der Dose\t-\tBrennwert=1126 kJ (269 kcal), Fett=6,2g, davon gesättigte Fettsäuren=1,7g, Kohlenhydrate=43,2g, davon Zucker=3,6g, Ballaststoffe=4,6g, Eiweiß=7,5g, Salz=1,4g,\t\t\t\t\t\t\t\t\t\t
 Mensa Haste\t10.09.2024\t1701\t3646\tGemüsebeilage 3/Tagessala\tTagessalat\t481\tLauch-Maissalat mit Ananas (20,c,g,j)\t\t\t\t\t\tLeek and sweetcorn with pineapple (20,c,g,j)\t\t\t\t\t\t1,00\t1,70\t1,95\ta\t\t\t20, c, g, j, 0, 948, 952\tvegetarisch, Hühnerei (c), Milch und Laktose (g), Senf (j), zusatzstoff- und allergenfrei, ist tiefgekühlt, in der Dose\tBrennwert=766 kJ (183 kcal), Fett=12,6g, davon gesättigte Fettsäuren=1,9g, Kohlenhydrate=14,4g, davon Zucker=8,6g, Ballaststoffe=1,8g, Eiweiß=2,5g, Salz=1,0g,\tBrennwert=849 kJ (203 kcal), Fett=14,0g, davon gesättigte Fettsäuren=2,1g, Kohlenhydrate=15,9g, davon Zucker=9,5g, Ballaststoffe=1,9g, Eiweiß=2,8g, Salz=1,1g,\t\t\t\t\t\t\t\t\t\t
 Mensa Haste\t10.09.2024\t2130\t4389\tKM 2 + 2,20 €\tHauptgericht\t2412\tRindergeschnetzeltes Szechuan (14,17,18,f)\tBratnudeln (21,f,a1)\t\t\t\t\tSzechuan-style beef julienne (14,17,18,f)\tFried noodles (21,f,a1)\t\t\t\t\t4,10\t6,30\t7,30\tc\t\t\t14, 17, 18, 21, a, f, a1, 0, 947, 948, 949\tRindfleisch, Knoblauch, Fleisch aus artgerechter Tierhaltung, vegan, Glutenhaltiges Getreide (a), Soja (f), Weizen, zusatzstoff- und allergenfrei, ist frisch, ist tiefgekühlt, ist getrocknet\t-\tBrennwert=7211 kJ (1722 kcal), Fett=73,6g, davon gesättigte Fettsäuren=21,1g, Kohlenhydrate=145,7g, davon Zucker=24,9g, Ballaststoffe=23,4g, Eiweiß=97,2g, Salz=9,5g,\t\t\t\t\t\t\t\t\t\t
@@ -564,6 +562,6 @@ Mensa Westerberg\t24.09.2024\t1701\t3646\tGemüsebeilage 3/Tagessala\tTagessalat
 Mensa Westerberg\t24.09.2024\t1701\t3648\tStärkebeilage 3\tBeilagen\t525\tFrittiertes von der Kartoffel - kleine Portion (21,45)\t\t\t\t\t\tFried potatoes - small portion (21,45)\t\t\t\t\t\t0,80\t1,50\t1,75\tc\t\t\t21, 45, 0, 947\tvegan, mit Sauce, zusatzstoff- und allergenfrei, ist frisch\t-\t-\t\t\t\t\t\t\t\t\t\t
 Mensa Westerberg\t24.09.2024\t2097\t3665\tDessert 1\tDessert\t3472\tPflaumen Crumble (1,21,a,h,a5,h2)\t\t\t\t\t\tPlump crumble (1,21,a,h,a5,h2)\t\t\t\t\t\t1,10\t1,80\t2,05\tg\t\t\t1, 21, a, h, a5, h2, 0\tmit Farbstoff, vegan, Glutenhaltiges Getreide (a), Schalenfrüchte (Nüsse) (h), Dinkel, Haselnüsse, zusatzstoff- und allergenfrei\t-\tBrennwert=2298 kJ (549 kcal), Fett=26,8g, davon gesättigte Fettsäuren=6,6g, Kohlenhydrate=67,9g, davon Zucker=32,2g, Ballaststoffe=2,5g, Eiweiß=7,4g, Salz=0,3g,\t\t\t\t\t\t\t\t\t\t
 Mensa Westerberg\t24.09.2024\t2130\t4389\tKM 2 + 2,20 €\tHauptgericht\t1370\tChicken Wings (40)\tSalsa-Dip (2,21)\tCrazy Chips (21,a,45,a1)\t\t\t\tChicken wings (40)\tSalsa dip (2,21)\tCrazy chips (21,a,45,a1)\t\t\t\t3,90\t6,10\t7,10\tc\t\t\t2, 21, a, 40, 45, a1, 0, 948, 952\tmit Konservierungsstoff, vegan, Glutenhaltiges Getreide (a), Geflügel, mit Sauce, Weizen, zusatzstoff- und allergenfrei, ist tiefgekühlt, in der Dose\t-\tBrennwert=3534 kJ (844 kcal), Fett=51,8g, davon gesättigte Fettsäuren=14,8g, Kohlenhydrate=41,3g, davon Zucker=12,5g, Ballaststoffe=3,7g, Eiweiß=52,3g, Salz=6,1g,\t\t\t\t\t\t\t\t\t\t
-`
-    }
+`;
+  }
 }

@@ -1,5 +1,5 @@
 import Color from 'tinycolor2';
-import {useMemo} from 'react';
+import { useMemo } from 'react';
 import { Theme } from '@/context/ThemeContext';
 
 // TODO: memorize this function to reduce computation load and improve performance
@@ -16,7 +16,7 @@ import { Theme } from '@/context/ThemeContext';
 export function getContrastRatio(foreground: string | undefined | null, background: string): number {
 	const start = performance.now();
 
-	let usedForeground = !!foreground ? foreground : undefined
+	let usedForeground = !!foreground ? foreground : undefined;
 
 	const lumA = Color(usedForeground).getLuminance();
 	const lumB = Color(background).getLuminance();
@@ -24,8 +24,8 @@ export function getContrastRatio(foreground: string | undefined | null, backgrou
 
 	const end = performance.now();
 	let duration = end - start;
-	if(duration>5) {
-		console.log("WARNING - getContrastRatio: foreground: ", usedForeground, "duration: ", duration, "ms")
+	if (duration > 5) {
+		console.log('WARNING - getContrastRatio: foreground: ', usedForeground, 'duration: ', duration, 'ms');
 	}
 
 	return contrastRation;
@@ -51,7 +51,7 @@ export function useColorForSelectionWithOption(color: string | undefined, lighte
 function getLighterOrDarkerColorByContrastWithOptions(color: string | undefined, contrastRatio: number, lightenUpColor: boolean): string {
 	const start = performance.now();
 
-	const dependencyKey = ""+color + contrastRatio;
+	const dependencyKey = '' + color + contrastRatio;
 	let steps = 0;
 
 	let result = useMemo(() => {
@@ -67,8 +67,8 @@ function getLighterOrDarkerColorByContrastWithOptions(color: string | undefined,
 
 		// Loop until the contrast ratio is met or improved
 		while (currentContrastRatio < contrastRatio) {
-			if(steps>100) {
-				console.warn("getLighterOrDarkerColorByContrast: color: ", color, "contrastRatio: ", contrastRatio, "steps: ", steps)
+			if (steps > 100) {
+				console.warn('getLighterOrDarkerColorByContrast: color: ', color, 'contrastRatio: ', contrastRatio, 'steps: ', steps);
 				break;
 			}
 			if (lightenUpColor) {
@@ -85,22 +85,21 @@ function getLighterOrDarkerColorByContrastWithOptions(color: string | undefined,
 
 	const end = performance.now();
 	let duration = end - start;
-	if(duration>5) {
-		console.log("WARNING - getLighterOrDarkerColorByContrast: color: ", color, "duration: ", duration, "ms", "contrastRatio: ", contrastRatio, "result: ", result, "steps: ", steps)
+	if (duration > 5) {
+		console.log('WARNING - getLighterOrDarkerColorByContrast: color: ', color, 'duration: ', duration, 'ms', 'contrastRatio: ', contrastRatio, 'result: ', result, 'steps: ', steps);
 	}
 
 	return result;
-
 }
 
 export enum ContrastThresholdSelectedItems {
-    MaternaLandNiedersachsen = 1.9,
+	MaternaLandNiedersachsen = 1.9,
 }
 
 enum ContrastThreshold {
-    MaternaLandNiedersachsen = 4.5,
-    WCAG_AA = 3.0,
-    WCAG_AAA = 7.0,
+	MaternaLandNiedersachsen = 4.5,
+	WCAG_AA = 3.0,
+	WCAG_AAA = 7.0,
 }
 
 /**
@@ -117,7 +116,6 @@ enum ContrastThreshold {
  * @returns {string} - The hex color code of the most readable contrast color (either dark or light text).
  */
 const useMyContrastColorByColorMode = (trueBg: string | undefined | null, isDarkMode: boolean, contrastThreshold: ContrastThreshold) => {
-
 	const start = performance.now();
 
 	let result = useMemo(() => {
@@ -142,17 +140,17 @@ const useMyContrastColorByColorMode = (trueBg: string | undefined | null, isDark
 	const end = performance.now();
 	let duration = end - start;
 
-	if(duration>5) {
-		console.warn("useMyContrastColorByColorMode: trueBg: ", trueBg, "duration: ", duration, "ms")
+	if (duration > 5) {
+		console.warn('useMyContrastColorByColorMode: trueBg: ', trueBg, 'duration: ', duration, 'ms');
 	}
 
-	return result
+	return result;
 };
 
 export function useViewBackgroundColor(theme: Theme) {
 	const backgroundColor = theme?.background;
 	const asHex = getColorAsHex(backgroundColor);
-	return asHex
+	return asHex;
 }
 
 /**
@@ -165,14 +163,12 @@ export function useViewBackgroundColor(theme: Theme) {
  * @returns {string} - The hex color code of the most readable contrast color, suitable for the current theme mode.
  */
 export function useMyContrastColor(trueBg: string | undefined | null, theme: Theme, isDarkMode: boolean) {
-	const viewBackgroundColor = useViewBackgroundColor(theme)
-	if (trueBg==='transparent') {
+	const viewBackgroundColor = useViewBackgroundColor(theme);
+	if (trueBg === 'transparent') {
 		trueBg = viewBackgroundColor;
 	}
 	return useMyContrastColorByColorMode(trueBg, isDarkMode, ContrastThreshold.MaternaLandNiedersachsen);
 }
-
-
 
 /**
  * Determines the most readable contrast color (black or white) based on WCAG contrast ratio.
@@ -181,22 +177,17 @@ export function useMyContrastColor(trueBg: string | undefined | null, theme: The
  * @param {number} contrastThreshold - The contrast ratio threshold.
  * @returns {string} The most readable contrast color (black or white).
  */
-function getContrastColorByMode(
-  trueBg: string | undefined | null,
-  isDarkMode: boolean,
-  contrastThreshold: number
-) {
-  const trueDarkText = '#000000';
-  const trueLightText = '#FFFFFF';
+function getContrastColorByMode(trueBg: string | undefined | null, isDarkMode: boolean, contrastThreshold: number) {
+	const trueDarkText = '#000000';
+	const trueLightText = '#FFFFFF';
 
-  const darkTextContrast = getContrastRatio(trueBg, trueDarkText);
-  const lightTextContrast = getContrastRatio(trueBg, trueLightText);
+	const darkTextContrast = getContrastRatio(trueBg, trueDarkText);
+	const lightTextContrast = getContrastRatio(trueBg, trueLightText);
 
-  if (isDarkMode && lightTextContrast >= contrastThreshold)
-    return trueLightText;
-  if (!isDarkMode && darkTextContrast >= contrastThreshold) return trueDarkText;
+	if (isDarkMode && lightTextContrast >= contrastThreshold) return trueLightText;
+	if (!isDarkMode && darkTextContrast >= contrastThreshold) return trueDarkText;
 
-  return darkTextContrast > lightTextContrast ? trueDarkText : trueLightText;
+	return darkTextContrast > lightTextContrast ? trueDarkText : trueLightText;
 }
 
 /**
@@ -206,32 +197,23 @@ function getContrastColorByMode(
  * @param {boolean} lightenUpColor - Whether to lighten or darken the color.
  * @returns {string} The adjusted color in HEX format.
  */
-function adjustColorForContrast(
-  color: string | undefined,
-  contrastRatio: number,
-  lightenUpColor: boolean
-): string {
-  if (!color) return 'transparent';
+function adjustColorForContrast(color: string | undefined, contrastRatio: number, lightenUpColor: boolean): string {
+	if (!color) return 'transparent';
 
-  let modifiedColor = Color(color).clone();
-  let steps = 0;
-  let step = 1; // Fine-tuning adjustment step.
-  let currentContrastRatio = getContrastRatio(
-    modifiedColor.toHexString(),
-    color
-  );
+	let modifiedColor = Color(color).clone();
+	let steps = 0;
+	let step = 1; // Fine-tuning adjustment step.
+	let currentContrastRatio = getContrastRatio(modifiedColor.toHexString(), color);
 
-  while (currentContrastRatio < contrastRatio) {
-    if (steps > 100) break; // Prevent infinite loops.
+	while (currentContrastRatio < contrastRatio) {
+		if (steps > 100) break; // Prevent infinite loops.
 
-    modifiedColor = lightenUpColor
-      ? modifiedColor.lighten(step)
-      : modifiedColor.darken(step);
-    currentContrastRatio = getContrastRatio(modifiedColor.toHexString(), color);
-    steps++;
-  }
+		modifiedColor = lightenUpColor ? modifiedColor.lighten(step) : modifiedColor.darken(step);
+		currentContrastRatio = getContrastRatio(modifiedColor.toHexString(), color);
+		steps++;
+	}
 
-  return modifiedColor.toHexString();
+	return modifiedColor.toHexString();
 }
 
 /**
@@ -240,7 +222,7 @@ function adjustColorForContrast(
  * @returns {string | undefined} Background color in HEX format.
  */
 function getViewBackgroundColor(theme: Theme): string | undefined {
-  return getColorAsHex(theme?.background);
+	return getColorAsHex(theme?.background);
 }
 
 /**
@@ -250,20 +232,12 @@ function getViewBackgroundColor(theme: Theme): string | undefined {
  * @param {boolean} isDarkMode - Whether dark mode is enabled.
  * @returns {string} The most readable contrast color.
  */
-export function myContrastColor(
-  trueBg: string | undefined | null,
-  theme: Theme,
-  isDarkMode: boolean
-) {
-  const viewBackgroundColor = getViewBackgroundColor(theme);
+export function myContrastColor(trueBg: string | undefined | null, theme: Theme, isDarkMode: boolean) {
+	const viewBackgroundColor = getViewBackgroundColor(theme);
 
-  if (trueBg === 'transparent') {
-    trueBg = viewBackgroundColor;
-  }
+	if (trueBg === 'transparent') {
+		trueBg = viewBackgroundColor;
+	}
 
-  return getContrastColorByMode(
-    trueBg,
-    isDarkMode,
-    ContrastThreshold.MaternaLandNiedersachsen
-  );
+	return getContrastColorByMode(trueBg, isDarkMode, ContrastThreshold.MaternaLandNiedersachsen);
 }

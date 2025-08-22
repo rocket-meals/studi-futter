@@ -15,12 +15,7 @@
     "options": {
       "enableLink": true,
       "enableSearchFilter": true,
-      "fields": [
-        "date_start",
-        "date_end",
-        "value_forecast_current",
-        "value_real"
-      ],
+      "fields": ["date_start", "date_end", "value_forecast_current", "value_real"],
       "layout": "table",
       "limit": 100,
       "sort": "date_start",
@@ -30,9 +25,7 @@
     "readonly": false,
     "required": false,
     "sort": 9,
-    "special": [
-      "o2m"
-    ],
+    "special": ["o2m"],
     "translations": null,
     "validation": null,
     "validation_message": null,

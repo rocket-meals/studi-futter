@@ -18,11 +18,7 @@
     "readonly": false,
     "required": false,
     "sort": 12,
-    "special": [
-      "alias",
-      "no-data",
-      "group"
-    ],
+    "special": ["alias", "no-data", "group"],
     "translations": null,
     "validation": null,
     "validation_message": null,

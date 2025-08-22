@@ -16,9 +16,7 @@
     "readonly": false,
     "required": false,
     "sort": 8,
-    "special": [
-      "file"
-    ],
+    "special": ["file"],
     "translations": [
       {
         "language": "de-DE",

@@ -6,7 +6,6 @@
   - `npm install`
   - `npm run schema-export`
 
-
 # TODO: Future work:
 
 TODO: Maybe we shall use this: https://github.com/bcc-code/directus-schema-sync/
@@ -25,9 +24,12 @@ If sharp fails to install, try to use their option to install optional dependenc
 npm install --include=optional sharp
 ```
 
-If this still fails, try mock the sharp module. Since any sharp module (not working) is installed we will fix this. Directus does not need sharp to export or import schemes.
+If this still fails, try mock the sharp module. Since any sharp module (not working) is installed we
+will fix this. Directus does not need sharp to export or import schemes.
 
-Inset at line 33 in `./node_modules/@directus/api/node_modules/sharp/lib/sharp.js` right after `let sharp = undefined`:
+Inset at line 33 in `./node_modules/@directus/api/node_modules/sharp/lib/sharp.js` right after
+`let sharp = undefined`:
+
 ```bash
 sharp = {
    _isUsingJemalloc: () => {return true},

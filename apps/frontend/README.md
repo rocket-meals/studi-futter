@@ -1,6 +1,5 @@
 # rocket-meals
 
-
 # Setup for new customer
 
 - Fork the repo
@@ -17,21 +16,21 @@
   - You need to have the backend setup
   - in /app/constants/ServerConfiguration.ts
 - Update `eas.json` for production
-    - Source of information:
-      - Submit to apple store: https://github.com/expo/fyi/blob/main/asc-app-id.md 
-      - Configuration: https://docs.expo.dev/submit/eas-json/#ios-specific-options
-    - iOS: at `submit.production.ios`:
-      - Fields to update:
-        - `appleId`
-        - `ascAppId`
-        - `appleTeamId`
-- Make sure the folder ```public``` contains a ```.nojekyll``` file (https://docs.expo.dev/distribution/publishing-websites/#github-pages Step 4)
-  - ```Because Expo uses underscores in generated files, you need to disable jekyll by creating a .nojekyll file in the public directory.```
-  - ```mkdir public && touch public/.nojekyll```
+  - Source of information:
+    - Submit to apple store: https://github.com/expo/fyi/blob/main/asc-app-id.md
+    - Configuration: https://docs.expo.dev/submit/eas-json/#ios-specific-options
+  - iOS: at `submit.production.ios`:
+    - Fields to update:
+      - `appleId`
+      - `ascAppId`
+      - `appleTeamId`
+- Make sure the folder `public` contains a `.nojekyll` file
+  (https://docs.expo.dev/distribution/publishing-websites/#github-pages Step 4)
+  - `Because Expo uses underscores in generated files, you need to disable jekyll by creating a .nojekyll file in the public directory.`
+  - `mkdir public && touch public/.nojekyll`
 - Enable Github Pages
   - Set the homepage in `package.json`: `"homepage"`: `"/rocket-meals"` to specify the sub-path
   - After the first deployment, set the to be hosted by branch gh-pages
-
 
 ## Update/Upgrade
 
@@ -43,16 +42,13 @@ ATTENTION: Please check the README in the top level directory of this repository
 
 https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/
 
-1. Upgrade the Expo SDK
-```npm install expo@latest```
-2. Upgrade dependencies
-```npx expo install --fix```
-
+1. Upgrade the Expo SDK `npm install expo@latest`
+2. Upgrade dependencies `npx expo install --fix`
 
 ## Created:
 
 - Expo 50 // https://blog.expo.dev/expo-router-v3-beta-is-now-available-eab52baf1e3e
-- ``npx create-expo-app --template tabs@beta``
+- `npx create-expo-app --template tabs@beta`
 
 ## TODO
 
@@ -60,18 +56,17 @@ https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/
   - https://docs.expo.dev/more/expo-cli/#hosting-with-sub-paths
   - SDK 50 and above
 
-
 ## Leaflet
 
 ### Web Problem:
-As Expo 50 makes i think Server Side Rendering (SSR) `window` is not defined. But luckily it is not required to function correctly.
-So to fix the error we just need to check if `window` is defined.
+
+As Expo 50 makes i think Server Side Rendering (SSR) `window` is not defined. But luckily it is not
+required to function correctly. So to fix the error we just need to check if `window` is defined.
 
 https://github.com/Leaflet/Leaflet/pull/6332
 
-
-
 In `/node_modules/leaflet/dist/leaflet-src.js` around line 177 we need to add the following code:
+
 ```javascript
   	return ((!existingUrl || existingUrl.indexOf('?') === -1) ? '?' : '&') + params.join('&');
   }

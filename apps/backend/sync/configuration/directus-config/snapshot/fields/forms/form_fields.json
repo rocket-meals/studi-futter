@@ -15,13 +15,7 @@
     "options": {
       "enableLink": true,
       "enableSearchFilter": true,
-      "fields": [
-        "sort",
-        "alias",
-        "field_type",
-        "external_import_id",
-        "external_export_id"
-      ],
+      "fields": ["sort", "alias", "field_type", "external_import_id", "external_export_id"],
       "layout": "table",
       "limit": 30,
       "sort": "sort",
@@ -31,9 +25,7 @@
     "readonly": false,
     "required": false,
     "sort": 13,
-    "special": [
-      "o2m"
-    ],
+    "special": ["o2m"],
     "translations": null,
     "validation": null,
     "validation_message": null,

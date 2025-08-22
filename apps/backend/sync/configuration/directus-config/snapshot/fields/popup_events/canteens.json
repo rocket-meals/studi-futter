@@ -16,9 +16,7 @@
     "readonly": false,
     "required": false,
     "sort": 14,
-    "special": [
-      "m2m"
-    ],
+    "special": ["m2m"],
     "translations": [
       {
         "language": "de-DE",

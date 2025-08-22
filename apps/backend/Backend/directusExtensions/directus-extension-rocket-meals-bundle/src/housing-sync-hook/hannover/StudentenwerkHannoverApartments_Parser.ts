@@ -1,45 +1,41 @@
-import axios from "axios";
-import {CheerioAPI, load as cheerioLoad} from 'cheerio';
+import axios from 'axios';
+import { CheerioAPI, load as cheerioLoad } from 'cheerio';
 import type { Element as CheerioElement } from 'domhandler';
-import {ApartmentParserInterface, ApartmentsForParser} from "../ApartmentParserInterface";
-
+import { ApartmentParserInterface, ApartmentsForParser } from '../ApartmentParserInterface';
 
 export class StudentenwerkHannoverApartments_Parser implements ApartmentParserInterface {
+  static baseUrl = 'https://www.studentenwerk-hannover.de';
+  // https://www.studentenwerk-hannover.de/wohnen/wohnhaeuser
+  static apartmentsUrl = `${StudentenwerkHannoverApartments_Parser.baseUrl}/wohnen/wohnhaeuser`;
 
-    static baseUrl = 'https://www.studentenwerk-hannover.de';
-// https://www.studentenwerk-hannover.de/wohnen/wohnhaeuser
-    static apartmentsUrl = `${StudentenwerkHannoverApartments_Parser.baseUrl}/wohnen/wohnhaeuser`;
+  constructor() {}
 
-    constructor() {
+  async getApartmentList(): Promise<ApartmentsForParser[]> {
+    return await this.getRealItems();
+  }
 
+  async getCoordiantesFromAdress(address: string) {
+    const response = await axios.get(`https://nominatim.openstreetmap.org/search`, {
+      params: {
+        q: address,
+        format: 'json',
+      },
+    });
+    if (response.data && response.data.length > 0) {
+      return {
+        latitude: response.data[0].lat,
+        longitude: response.data[0].lon,
+      };
+    } else {
+      return null;
     }
+  }
 
-    async getApartmentList(): Promise<ApartmentsForParser[]> {
-        return await this.getRealItems();
-    }
-
-    async getCoordiantesFromAdress(address: string) {
-        const response = await axios.get(`https://nominatim.openstreetmap.org/search`, {
-            params: {
-                q: address,
-                format: 'json'
-            }
-        });
-        if (response.data && response.data.length > 0) {
-            return {
-                latitude: response.data[0].lat,
-                longitude: response.data[0].lon
-            };
-        } else {
-            return null;
-        }
-    }
-
-    getImageUrlFromElement(cheerioAPI: CheerioAPI, element: CheerioElement) {
-        try{
-            let mensaImag = cheerioAPI(element).find('div.mensaImag');
-            //console.log("mensaImag", mensaImag)
-            /**
+  getImageUrlFromElement(cheerioAPI: CheerioAPI, element: CheerioElement) {
+    try {
+      let mensaImag = cheerioAPI(element).find('div.mensaImag');
+      //console.log("mensaImag", mensaImag)
+      /**
              mensaImag LoadedCheerio {
                '0': <ref *1> Element {
                  parent: Element {
@@ -130,65 +126,65 @@ export class StudentenwerkHannoverApartments_Parser implements ApartmentParserIn
                }
              }
              */
-            let attribs = mensaImag?.[0]?.attribs;
-            let style = attribs?.style;
-            if(!style) {
-                return undefined;
-            }
-            const split = style.split("url(");
-            if(split.length < 2) {
-                return undefined;
-            }
-            const secondPart = split[1];
-            if(!secondPart) {
-                return undefined;
-            }
-            let imageUrl = secondPart.split(")")[0];
-            if(!imageUrl) {
-                return undefined;
-            }
-            return StudentenwerkHannoverApartments_Parser.baseUrl + imageUrl;
-        } catch (error) {
-            console.log("Error while fetching image url")
-            console.log(error)
-            return undefined
-        }
+      let attribs = mensaImag?.[0]?.attribs;
+      let style = attribs?.style;
+      if (!style) {
+        return undefined;
+      }
+      const split = style.split('url(');
+      if (split.length < 2) {
+        return undefined;
+      }
+      const secondPart = split[1];
+      if (!secondPart) {
+        return undefined;
+      }
+      let imageUrl = secondPart.split(')')[0];
+      if (!imageUrl) {
+        return undefined;
+      }
+      return StudentenwerkHannoverApartments_Parser.baseUrl + imageUrl;
+    } catch (error) {
+      console.log('Error while fetching image url');
+      console.log(error);
+      return undefined;
     }
+  }
 
-    async getRealItems(): Promise<ApartmentsForParser[]> {
-        try {
-            let response = await axios.get(StudentenwerkHannoverApartments_Parser.apartmentsUrl);
-            const cheerioAPI = cheerioLoad(response.data);
+  async getRealItems(): Promise<ApartmentsForParser[]> {
+    try {
+      let response = await axios.get(StudentenwerkHannoverApartments_Parser.apartmentsUrl);
+      const cheerioAPI = cheerioLoad(response.data);
 
-            // Find all apartment divs
-            let data: ApartmentsForParser[] = [];
-            cheerioAPI('div.wohnheimListView').each((index, element) => {
-                let name = cheerioAPI(element).find('h3').text().trim();
-                let imageUrl = this.getImageUrlFromElement(cheerioAPI, element);
-                let apartmentUrl = StudentenwerkHannoverApartments_Parser.baseUrl + cheerioAPI(element).find('a').attr('href');
+      // Find all apartment divs
+      let data: ApartmentsForParser[] = [];
+      cheerioAPI('div.wohnheimListView').each((index, element) => {
+        let name = cheerioAPI(element).find('h3').text().trim();
+        let imageUrl = this.getImageUrlFromElement(cheerioAPI, element);
+        let apartmentUrl = StudentenwerkHannoverApartments_Parser.baseUrl + cheerioAPI(element).find('a').attr('href');
 
-                data.push({
-                    basicData: {
-                        external_identifier: "apartment_" + name.replace(/\W+/g, '_'),
-                        available_from: null,
-                        handicapped_accessible: false,
-                        family_friendly: false,
-                        singleflat: false,
-                    },
-                    buildingData: {
-                        external_identifier: "building_" + name.replace(/\W+/g, '_'),
-                        url: apartmentUrl,
-                        alias: name,
-                        image_remote_url: imageUrl,
-                        year_of_construction: null
-                    }
-                });
-            });
+        data.push({
+          basicData: {
+            external_identifier: 'apartment_' + name.replace(/\W+/g, '_'),
+            available_from: null,
+            handicapped_accessible: false,
+            family_friendly: false,
+            singleflat: false,
+          },
+          buildingData: {
+            external_identifier: 'building_' + name.replace(/\W+/g, '_'),
+            url: apartmentUrl,
+            alias: name,
+            image_remote_url: imageUrl,
+            year_of_construction: null,
+          },
+        });
+      });
 
-            return data;
-        } catch (error) {
-            console.log(error);
-            return [];
-        }
+      return data;
+    } catch (error) {
+      console.log(error);
+      return [];
     }
+  }
 }

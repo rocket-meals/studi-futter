@@ -4,45 +4,44 @@
 // import { chromium } from 'playwright'; // Requires chromium to be installed --> cannot be used therefore
 // html2pdf.js only works in the browser
 
-import {PuppeteerGenerator} from "./PuppeteerGenerator";
+import { PuppeteerGenerator } from './PuppeteerGenerator';
 
 export type PdfGeneratorOptions = {
-    format?: "A3" | "A4" | "A5" | "Legal" | "Letter" | "Tabloid";
-    landscape?: boolean;
-    printBackground?: boolean;
-    margin?: {
-        top?: string;
-        bottom?: string;
-        left?: string;
-        right?: string;
-    };
+  format?: 'A3' | 'A4' | 'A5' | 'Legal' | 'Letter' | 'Tabloid';
+  landscape?: boolean;
+  printBackground?: boolean;
+  margin?: {
+    top?: string;
+    bottom?: string;
+    left?: string;
+    right?: string;
+  };
 };
 
 export type RequestOptions = {
-    bearerToken?: string | null | undefined,
-}
-
+  bearerToken?: string | null | undefined;
+  mockImageResolution?: boolean; // if true, images are mocked with a placeholder image
+};
 
 export class PdfGeneratorHelper {
+  /** Returns the default PDF generation options */
+  public static getDefaultPdfGeneratorOptions(): PdfGeneratorOptions {
+    return {
+      format: 'A4',
+      landscape: false,
+      printBackground: true,
+      margin: {
+        top: '10mm',
+        bottom: '10mm',
+        left: '10mm',
+        right: '10mm',
+      },
+    };
+  }
 
-    /** Returns the default PDF generation options */
-    public static getDefaultPdfGeneratorOptions(): PdfGeneratorOptions {
-        return {
-            format: "A4",
-            landscape: false,
-            printBackground: true,
-            margin: {
-                top: "10mm",
-                bottom: "10mm",
-                left: "10mm",
-                right: "10mm"
-            }
-        };
-    }
-
-    /** Generates a PDF from the provided HTML string */
-    public static async generatePdfFromHtml(html: string, requestOptions: RequestOptions, options?: PdfGeneratorOptions): Promise<Buffer> {
-        options = { ...this.getDefaultPdfGeneratorOptions(), ...options };
-        return await PuppeteerGenerator.generatePdfFromHtmlPuppeteer(html, requestOptions, options);
-    }
+  /** Generates a PDF from the provided HTML string */
+  public static async generatePdfFromHtml(html: string, requestOptions: RequestOptions, options?: PdfGeneratorOptions): Promise<Buffer> {
+    options = { ...this.getDefaultPdfGeneratorOptions(), ...options };
+    return await PuppeteerGenerator.generatePdfFromHtmlPuppeteer(html, requestOptions, options);
+  }
 }

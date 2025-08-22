@@ -11,35 +11,34 @@
  */
 
 type CronObject = {
-    second: string,
-    minute: string,
-    hour: string,
-    dayOfMonth: string,
-    month: string,
-    dayOfWeek: string,
-}
+  second: string;
+  minute: string;
+  hour: string;
+  dayOfMonth: string;
+  month: string;
+  dayOfWeek: string;
+};
 
 export class CronHelper {
+  public static createCronString(cronObject: CronObject): string {
+    return `${cronObject.second} ${cronObject.minute} ${cronObject.hour} ${cronObject.dayOfMonth} ${cronObject.month} ${cronObject.dayOfWeek}`;
+  }
 
-    public static createCronString(cronObject: CronObject): string {
-        return `${cronObject.second} ${cronObject.minute} ${cronObject.hour} ${cronObject.dayOfMonth} ${cronObject.month} ${cronObject.dayOfWeek}`;
-    }
+  public static EVERY_MINUTE: string = CronHelper.createCronString({
+    second: '0',
+    minute: '*',
+    hour: '*',
+    dayOfMonth: '*',
+    month: '*',
+    dayOfWeek: '*',
+  });
 
-    public static EVERY_MINUTE: string = CronHelper.createCronString({
-        second: '0',
-        minute: '*',
-        hour: '*',
-        dayOfMonth: '*',
-        month: '*',
-        dayOfWeek: '*',
-    });
-
-    public static EVERY_TEN_SECONDS: string = CronHelper.createCronString({
-        second: '*/10',
-        minute: '*',
-        hour: '*',
-        dayOfMonth: '*',
-        month: '*',
-        dayOfWeek: '*',
-    });
+  public static EVERY_TEN_SECONDS: string = CronHelper.createCronString({
+    second: '*/10',
+    minute: '*',
+    hour: '*',
+    dayOfMonth: '*',
+    month: '*',
+    dayOfWeek: '*',
+  });
 }

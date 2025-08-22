@@ -16,27 +16,26 @@ import ShortUniqueId from 'short-unique-id'; // is slow
 //}
 
 export class NanoidHelper {
-    /**
-     * Generate a unique identifier similar to NanoID.
-     *
-     * @param size Length of the generated id
-     * @returns Random id consisting of the given number of characters
-     */
-    public static async getNanoid(size: number): Promise<string> {
-        // old short-unique-id is slow
-        const uid = new ShortUniqueId({ length: size });
-        return uid.randomUUID(size);
+  /**
+   * Generate a unique identifier similar to NanoID.
+   *
+   * @param size Length of the generated id
+   * @returns Random id consisting of the given number of characters
+   */
+  public static async getNanoid(size: number): Promise<string> {
+    // old short-unique-id is slow
+    const uid = new ShortUniqueId({ length: size });
+    return uid.randomUUID(size);
 
-
-        //Error: crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported
-        //    swosy-rocket-meals-directus-5         |     at file:///directus/extensions/directus-extension-rocket-meals-bundle/dist/api.js?t=1741708395377:18:50438
-        //    swosy-rocket-meals-directus-5         |     at oh (file:///directus/extensions/directus-extension-rocket-meals-bundle/dist/api.js?t=1741708395377:18:50609)
-        //swosy-rocket-meals-directus-5         |     at file:///directus/extensions/directus-extension-rocket-meals-bundle/dist/api.js?t=1741708395377:18:52917
-        //    swosy-rocket-meals-directus-5         |     at sh.getNanoid (file:///directus/extensions/directus-extension-rocket-meals-bundle/dist/api.js?t=1741708395377:18:52967)
-        //swosy-rocket-meals-directus-5         |     at file:///directus/extensions/directus-extension-rocket-meals-bundle/dist/api.js?t=1741708395377:557:639520
-        //    swosy-rocket-meals-directus-5         |     at file:///directus/extensions/directus-extension-rocket-meals-bundle/dist/api.js?t=1741708395377:557:639828
-        //    swosy-rocket-meals-directus-5         |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
-        //let id = uuidBase62(size);
-        //return id;
-    }
+    //Error: crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported
+    //    swosy-rocket-meals-directus-5         |     at file:///directus/extensions/directus-extension-rocket-meals-bundle/dist/api.js?t=1741708395377:18:50438
+    //    swosy-rocket-meals-directus-5         |     at oh (file:///directus/extensions/directus-extension-rocket-meals-bundle/dist/api.js?t=1741708395377:18:50609)
+    //swosy-rocket-meals-directus-5         |     at file:///directus/extensions/directus-extension-rocket-meals-bundle/dist/api.js?t=1741708395377:18:52917
+    //    swosy-rocket-meals-directus-5         |     at sh.getNanoid (file:///directus/extensions/directus-extension-rocket-meals-bundle/dist/api.js?t=1741708395377:18:52967)
+    //swosy-rocket-meals-directus-5         |     at file:///directus/extensions/directus-extension-rocket-meals-bundle/dist/api.js?t=1741708395377:557:639520
+    //    swosy-rocket-meals-directus-5         |     at file:///directus/extensions/directus-extension-rocket-meals-bundle/dist/api.js?t=1741708395377:557:639828
+    //    swosy-rocket-meals-directus-5         |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    //let id = uuidBase62(size);
+    //return id;
+  }
 }

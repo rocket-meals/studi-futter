@@ -39,22 +39,14 @@
     "interface": "list-o2m",
     "note": null,
     "options": {
-      "fields": [
-        "form_field.alias",
-        "value_string",
-        "value_number",
-        "value_boolean",
-        "value_date"
-      ],
+      "fields": ["form_field.alias", "value_string", "value_number", "value_boolean", "value_date"],
       "filter": null,
       "layout": "table"
     },
     "readonly": false,
     "required": false,
     "sort": 15,
-    "special": [
-      "o2m"
-    ],
+    "special": ["o2m"],
     "translations": null,
     "validation": null,
     "validation_message": null,

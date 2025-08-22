@@ -7,8 +7,10 @@
 
 # 🚀 Rocket Meals
 
-**Rocket Meals** ist eine innovative Lösung zur digitalen Verwaltung und Präsentation von Speiseplänen für Mensen, Kantinen und gastronomische Einrichtungen.  
-Mit einem modernen Technologie-Stack ermöglicht Rocket Meals eine effiziente und benutzerfreundliche Darstellung von Menüs, die sowohl für Betreiber als auch für Gäste von Vorteil ist.
+**Rocket Meals** ist eine innovative Lösung zur digitalen Verwaltung und Präsentation von
+Speiseplänen für Mensen, Kantinen und gastronomische Einrichtungen.  
+Mit einem modernen Technologie-Stack ermöglicht Rocket Meals eine effiziente und benutzerfreundliche
+Darstellung von Menüs, die sowohl für Betreiber als auch für Gäste von Vorteil ist.
 
 ## 🧩 Features
 
@@ -42,3 +44,4 @@ cd rocket-meals
 npm install
 # oder
 yarn install
+```

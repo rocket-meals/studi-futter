@@ -1,10 +1,9 @@
 export interface MyTranslatorInterface {
+  init(): Promise<void>;
 
-    init(): Promise<void>;
+  translate(text: string, source_language: string, destination_language: string): Promise<any>;
 
-    translate(text: string, source_language: string, destination_language: string): Promise<any>;
+  getUsage(): Promise<any>;
 
-    getUsage(): Promise<any>;
-
-    getExtra(): Promise<any>;
+  getExtra(): Promise<any>;
 }

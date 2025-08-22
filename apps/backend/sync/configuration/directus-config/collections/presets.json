@@ -5,13 +5,7 @@
     "layout_options": null,
     "layout_query": {
       "tabular": {
-        "fields": [
-          "building",
-          "available_from",
-          "handicapped_accessible",
-          "family_friendly",
-          "singleflat"
-        ]
+        "fields": ["building", "available_from", "handicapped_accessible", "family_friendly", "singleflat"]
       }
     },
     "color": null,

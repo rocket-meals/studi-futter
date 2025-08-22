@@ -1,22 +1,21 @@
-import MarkdownIt from "markdown-it";
+import MarkdownIt from 'markdown-it';
 
 export class MarkdownHelper {
+  public static getMarkdownNewLine(): string {
+    return `\n\n`;
+  }
 
-    public static getMarkdownNewLine(): string {
-        return `\n\n`;
-    }
+  public static renderMarkdownTextToHtml(markdownText: string): string {
+    const md = new MarkdownIt({ html: true });
+    let html = md.render(markdownText);
 
-    public static renderMarkdownTextToHtml(markdownText: string): string {
-        const md = new MarkdownIt({ html: true });
-        let html = md.render(markdownText);
+    // <img ...> → <img style="max-width:100%;" ...>
+    html = html.replace(/<img(.*?)>/g, '<img$1 style="max-width:100%; height:auto;">');
 
-        // <img ...> → <img style="max-width:100%;" ...>
-        html = html.replace(/<img(.*?)>/g, '<img$1 style="max-width:100%; height:auto;">');
+    return html;
+  }
 
-        return html;
-    }
-
-    public static EXAMPLE_MARKDOWN = `
+  public static EXAMPLE_MARKDOWN = `
 # Title Level 1
 ## Title Level 2
 ### Title Level 3
@@ -61,6 +60,5 @@ This is a blockquote:
 
 This is a horizontal rule:
 ---
-`
-
+`;
 }

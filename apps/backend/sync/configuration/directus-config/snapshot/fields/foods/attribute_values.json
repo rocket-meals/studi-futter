@@ -13,19 +13,13 @@
     "interface": "list-o2m",
     "note": null,
     "options": {
-      "fields": [
-        "food_attribute.alias",
-        "number_value",
-        "string_value"
-      ],
+      "fields": ["food_attribute.alias", "number_value", "string_value"],
       "layout": "table"
     },
     "readonly": false,
     "required": false,
     "sort": 19,
-    "special": [
-      "o2m"
-    ],
+    "special": ["o2m"],
     "translations": null,
     "validation": null,
     "validation_message": null,

@@ -7,4 +7,4 @@
 - Bistro Caprivi: 1905, 1920
 - Mensa Haste: 1902, 1903
 - Mensa Lingen: 1940, 1941, 1942
-- Mensa Vechta: 1907, 1908, 1909, 1933, 
+- Mensa Vechta: 1907, 1908, 1909, 1933,

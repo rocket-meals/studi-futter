@@ -1,4 +1,3 @@
-
 ### Google SSO
 
 - Visit: https://console.cloud.google.com/apis/credentials
@@ -10,16 +9,17 @@
   - Support E-Mail: `<E-Mail Adresse>`
   - Anwendungslogo: Auswählen
   - Startseite der Anwendung: `<URL>` (https://rocket-meals.github.io/<rocket-meals>/)
-  - Link zur Datenschutzerklärung: `<URL>` (https://rocket-meals.github.io/<rocket-meals>/wikis?wikis_custom_id=privacy-policy)
+  - Link zur Datenschutzerklärung: `<URL>`
+    (https://rocket-meals.github.io/<rocket-meals>/wikis?wikis_custom_id=privacy-policy)
   - Authorisierte Domains
-    - ``rocket-meals.github.io``
-    - ``rocket-meals.de``
+    - `rocket-meals.github.io`
+    - `rocket-meals.de`
   - Kontaktdaten des Entwicklers
     - E-Mail: `<E-Mail Adresse>`
   - Weiter
 - Bereiche
   - Bereiche hinzufügen oder entfernen
-    - ".../auth/userinfo.email	Primäre E-Mail-Adresse Ihres Google-Kontos abrufen"
+    - ".../auth/userinfo.email Primäre E-Mail-Adresse Ihres Google-Kontos abrufen"
     - ".../auth/userinfo.profile Personenbezogene Daten aufrufen, einschließlich aller Daten"
     - Aktualisieren
   - Speichern und Fortfahren
@@ -33,8 +33,8 @@
     - Anwendungstyp: Webanwendung
     - Name: `<Name des Projectes>`
     - Authorisierte Weiterleitungs-URIs
-      - ``https://<SUBDOMAIN>.rocket-meals.de/rocket-meals/api/auth/login/google/callback``
-      - ``http://127.0.0.1/rocketmeals/api/auth/login/google/callback``
+      - `https://<SUBDOMAIN>.rocket-meals.de/rocket-meals/api/auth/login/google/callback`
+      - `http://127.0.0.1/rocketmeals/api/auth/login/google/callback`
     - Erstellen
   - Client-ID und Client-Geheimnis kopieren
     - Client-ID: `<AUTH_GOOGLE_CLIENT_ID>`

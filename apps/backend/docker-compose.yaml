@@ -1,7 +1,6 @@
-version: '3.8'
+version: "3.8"
 
 services:
-
   # The Directus backend
   rocket-meals-directus:
     build:
@@ -10,7 +9,7 @@ services:
     restart: ${RESTART}
     deploy:
       mode: replicated
-      replicas: ${DIRECTUS_REPLICAS:-1}  # Default to 1 if DIRECTUS_REPLICAS is not set
+      replicas: ${DIRECTUS_REPLICAS:-1} # Default to 1 if DIRECTUS_REPLICAS is not set
       endpoint_mode: vip # Virtual IP - https://docs.docker.com/compose/compose-file/deploy/#endpoint_mode
     networks:
       - traefik
@@ -68,7 +67,7 @@ services:
       REFRESH_TOKEN_COOKIE_SAME_SITE: "lax" # "lax" means that the cookie is sent with same-site requests, and with cross-site top-level navigations
       # Directus cache configuration
       CACHE_ENABLED: "true"
-      CACHE_AUTO_PURGE: 'true' # Purge when change in tables detected - https://docs.directus.io/self-hosted/config-options.html#cache
+      CACHE_AUTO_PURGE: "true" # Purge when change in tables detected - https://docs.directus.io/self-hosted/config-options.html#cache
       CACHE_TTL: "5m" # Cache time to live - aka. how long the cache is valid
       CACHE_STORE: "redis"
       REDIS: "redis://rocket-meals-cache:6379" # For Cache and Synchronization of Replicas # Required for Replicas to work - Directus communicates which replica is the master
@@ -94,7 +93,6 @@ services:
 
       HOUSING_CONTRACT_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH: "${HOUSING_CONTRACT_SYNC_TL1FILE_EXPORT_CSV_FILE_PATH}" # So in directus we know if the host system has a file to sync, but we will use the directus internal file path: /directus/tl1/housingContracts.csv
 
-
       # Directus Database configuration
       KEY: "${DATABASE_KEY}"
       SECRET: "${DATABASE_SECRET}"
@@ -115,7 +113,6 @@ services:
       ADMIN_EMAIL: "${ADMIN_EMAIL}"
       ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
 
-
       # Directus Email configuration
       EMAIL_VERIFY_SETUP: "${EMAIL_VERIFY_SETUP}"
       EMAIL_FROM: "${EMAIL_FROM}"
@@ -123,7 +120,6 @@ services:
       EMAIL_SES_CREDENTIALS__ACCESS_KEY_ID: "${EMAIL_SES_CREDENTIALS__ACCESS_KEY_ID}"
       EMAIL_SES_CREDENTIALS__SECRET_ACCESS_KEY: "${EMAIL_SES_CREDENTIALS__SECRET_ACCESS_KEY}"
       EMAIL_SES_REGION: "eu-central-1"
-
 
       # Directus Auth configuration
       AUTH_PROVIDERS: "${AUTH_PROVIDERS}"
@@ -156,7 +152,6 @@ services:
       AUTH_GOOGLE_LABEL: "Google"
       AUTH_GOOGLE_ALLOW_PUBLIC_REGISTRATION: "true"
 
-
   # The Directus database - postgres with data volume
   # https://docs.directus.io/self-hosted/docker-guide.html#example-docker-compose
   rocket-meals-database:
@@ -170,13 +165,13 @@ services:
       # the relative path is therefore ./..(apps)/..(rocket-meals)/data/database
       - ./../../data/database:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U directus" ]
+      test: ["CMD-SHELL", "pg_isready -U directus"]
       interval: 10s
       timeout: 5s
       retries: 5
     environment:
       POSTGRES_MAX_CONNECTIONS: "500" # Optional, adjust based on your needs
-      POSTGRES_SHARED_BUFFERS: "16GB"  # Optional, adjust based on your RAM # General: 25% of the total system memory -> Default 16GB
+      POSTGRES_SHARED_BUFFERS: "16GB" # Optional, adjust based on your RAM # General: 25% of the total system memory -> Default 16GB
       POSTGRES_USER: "directus"
       POSTGRES_PASSWORD: "directus"
       POSTGRES_DB: "directus"
@@ -216,7 +211,7 @@ services:
     volumes:
       # We want the uploads to be persistent at rocket-meals/data/database_file_uploads
       # the relative path is therefore ./..(apps)/..(rocket-meals)/data/database_backups
-      - ./../../data/database_backups:/dump   # Ensure this matches the directory name
+      - ./../../data/database_backups:/dump # Ensure this matches the directory name
     environment:
       PGUSER: "directus"
       PGPASSWORD: "directus"
@@ -229,8 +224,7 @@ services:
       rocket-meals-database:
         condition: service_healthy
     profiles:
-      - restore  # Only run this service when the restore profile is set
-
+      - restore # Only run this service when the restore profile is set
 
   # The cache service for Directus
   rocket-meals-cache:

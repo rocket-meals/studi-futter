@@ -9,6 +9,6 @@ export default {
       path: '',
       props: true,
       component: ModuleComponent,
-    }
+    },
   ],
 };

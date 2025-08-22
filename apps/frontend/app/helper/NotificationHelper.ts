@@ -1,17 +1,17 @@
 import * as Notifications from 'expo-notifications';
-import {ExpoPushToken} from 'expo-notifications';
-import {Platform} from 'react-native';
+import { ExpoPushToken } from 'expo-notifications';
+import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 import usePlatformHelper from '@/helper/platformHelper';
-import {IosAuthorizationStatus} from 'expo-notifications/src/NotificationPermissions.types';
+import { IosAuthorizationStatus } from 'expo-notifications/src/NotificationPermissions.types';
 import { getDeviceInformationWithoutPushToken } from './DeviceHelper';
 import { DatabaseTypes } from 'repo-depkit-common';
 // import {useSynchedDevices} from "@/states/SynchedDevices";
 
 export type NotificationObjType = {
-    permission?: Notifications.NotificationPermissionsStatus,
-    pushtokenObj?: ExpoPushToken
-}
+	permission?: Notifications.NotificationPermissionsStatus;
+	pushtokenObj?: ExpoPushToken;
+};
 
 export type MyPushToken = ExpoPushToken;
 
@@ -21,39 +21,38 @@ export class NotificationHelper {
 	}
 
 	static useNotificationPermission(profile: DatabaseTypes.Profiles): [boolean, NotificationObjType, (timestamp?: string) => void, () => void] {
-        const devices = profile?.devices || [];
-        let deviceInformationsWithoutPushToken: Partial<DatabaseTypes.Devices> = getDeviceInformationWithoutPushToken();
-        let deviceInformationsId = getDeviceIdentifier(deviceInformationsWithoutPushToken);
-        let currentDevice = getCurrentDevice(deviceInformationsId);
+		const devices = profile?.devices || [];
+		let deviceInformationsWithoutPushToken: Partial<DatabaseTypes.Devices> = getDeviceInformationWithoutPushToken();
+		let deviceInformationsId = getDeviceIdentifier(deviceInformationsWithoutPushToken);
+		let currentDevice = getCurrentDevice(deviceInformationsId);
 
+		function getDeviceIdentifier(device: Partial<DatabaseTypes.Devices>) {
+			return device.platform + '_' + device.brand + '_' + device.system_version;
+		}
 
-	function getDeviceIdentifier(device: Partial<DatabaseTypes.Devices>) {
-		return device.platform+'_'+device.brand+'_'+device.system_version;
-	}
-    
-        function getCurrentDevice(deviceInformationsId: string | undefined): DatabaseTypes.Devices | undefined {
-            let foundDevice: undefined | DatabaseTypes.Devices = undefined;
-            if (deviceInformationsId) {
-                for (const device of devices) {
-                    if (getDeviceIdentifier(device) === deviceInformationsId) {
-                        foundDevice = device;
-                        break;
-                    }
-                }
-            }
-            return foundDevice;
-        }
-    
-		// const [currentDevice, devices, setDevices, cacheHelperObjDevices] = useSynchedDevices() 
+		function getCurrentDevice(deviceInformationsId: string | undefined): DatabaseTypes.Devices | undefined {
+			let foundDevice: undefined | DatabaseTypes.Devices = undefined;
+			if (deviceInformationsId) {
+				for (const device of devices) {
+					if (getDeviceIdentifier(device) === deviceInformationsId) {
+						foundDevice = device;
+						break;
+					}
+				}
+			}
+			return foundDevice;
+		}
+
+		// const [currentDevice, devices, setDevices, cacheHelperObjDevices] = useSynchedDevices()
 		const pushTokenObj: NotificationObjType | undefined = currentDevice?.pushTokenObj || {
 			permission: undefined,
-			pushtokenObj: undefined
-		}
-		let notificationGranted = NotificationHelper.isDeviceNotificationPermissionGranted(pushTokenObj)
+			pushtokenObj: undefined,
+		};
+		let notificationGranted = NotificationHelper.isDeviceNotificationPermissionGranted(pushTokenObj);
 
 		const requestDeviceNotificationPermission = NotificationHelper.requestDeviceNotificationPermission;
 
-		return [notificationGranted, pushTokenObj,  () => {} , requestDeviceNotificationPermission]
+		return [notificationGranted, pushTokenObj, () => {}, requestDeviceNotificationPermission];
 	}
 
 	static getBadgeCountAsync() {
@@ -65,19 +64,19 @@ export class NotificationHelper {
 	}
 
 	static isDeviceNotificationPermissionDenied(notificationObj: NotificationObjType) {
-		return notificationObj?.permission?.granted === false
+		return notificationObj?.permission?.granted === false;
 	}
 
 	static isDeviceNotificationPermissionGranted(notificationObj: NotificationObjType) {
-		return notificationObj?.permission?.granted === true
+		return notificationObj?.permission?.granted === true;
 	}
 
 	static isDeviceNotificationPermissionUndetermined(notificationObj: NotificationObjType) {
-        const { isIOS, isAndroid } = usePlatformHelper();
+		const { isIOS, isAndroid } = usePlatformHelper();
 		if (isIOS()) {
-			return notificationObj?.permission?.ios?.status === IosAuthorizationStatus.NOT_DETERMINED
+			return notificationObj?.permission?.ios?.status === IosAuthorizationStatus.NOT_DETERMINED;
 		} else if (isAndroid()) {
-			return notificationObj?.permission?.android?.importance === undefined
+			return notificationObj?.permission?.android?.importance === undefined;
 		}
 	}
 
@@ -85,12 +84,12 @@ export class NotificationHelper {
 		const permission = await NotificationHelper.getDeviceNotificationPermission();
 		let pushtokenObj = undefined;
 		if (!!permission && permission.granted) {
-			pushtokenObj = await NotificationHelper.getExpoPushTokenAsync()
+			pushtokenObj = await NotificationHelper.getExpoPushTokenAsync();
 		}
 		return {
 			permission: permission,
-			pushtokenObj: pushtokenObj
-		}
+			pushtokenObj: pushtokenObj,
+		};
 	}
 
 	static async getDeviceNotificationPermission(): Promise<Notifications.NotificationPermissionsStatus | undefined> {
@@ -102,21 +101,18 @@ export class NotificationHelper {
 		}
 	}
 
-
-	static async requestDeviceNotificationPermission():  Promise<Notifications.NotificationPermissionsStatus | undefined> {
+	static async requestDeviceNotificationPermission(): Promise<Notifications.NotificationPermissionsStatus | undefined> {
 		try {
-			const permission = await Notifications.requestPermissionsAsync(
-				{
-					android: {
-						// On Android, all available permissions are granted by default
-					},
-					ios: {
-						allowAlert: true,
-						allowBadge: true,
-						allowSound: true,
-					}
-				}
-			);
+			const permission = await Notifications.requestPermissionsAsync({
+				android: {
+					// On Android, all available permissions are granted by default
+				},
+				ios: {
+					allowAlert: true,
+					allowBadge: true,
+					allowSound: true,
+				},
+			});
 			// @ts-ignore
 			return permission;
 		} catch (err) {
@@ -126,7 +122,7 @@ export class NotificationHelper {
 		}
 	}
 
-	static async getExpoPushTokenAsync():  Promise<ExpoPushToken | undefined> {
+	static async getExpoPushTokenAsync(): Promise<ExpoPushToken | undefined> {
 		try {
 			const projectId = NotificationHelper.getProjectId();
 			return await Notifications.getExpoPushTokenAsync({
@@ -140,7 +136,7 @@ export class NotificationHelper {
 	}
 
 	static async scheduleLocalNotification(title: string, body: string, secondsFromNow: number, customIdentifier?: string) {
-		const notification_id = await Notifications.scheduleNotificationAsync( {
+		const notification_id = await Notifications.scheduleNotificationAsync({
 			content: {
 				title: title,
 				body: body,
@@ -151,14 +147,14 @@ export class NotificationHelper {
 				seconds: secondsFromNow,
 				channelId: 'testChannel',
 			},
-		})
+		});
 		const notification = await NotificationHelper.getScheduledLocalNotification(notification_id);
 		return notification;
 	}
 
 	static async cancelScheduledLocalNotification(notificationId: string) {
-		await Notifications.cancelScheduledNotificationAsync(notificationId)
-		const foundNotification = await NotificationHelper.getScheduledLocalNotification(notificationId)
+		await Notifications.cancelScheduledNotificationAsync(notificationId);
+		const foundNotification = await NotificationHelper.getScheduledLocalNotification(notificationId);
 		return !foundNotification;
 	}
 
@@ -175,22 +171,22 @@ export class NotificationHelper {
 	}
 
 	static async getAllScheduledNotificationsAsync() {
-		const notifications = await Notifications.getAllScheduledNotificationsAsync()
+		const notifications = await Notifications.getAllScheduledNotificationsAsync();
 		return notifications;
 	}
 
 	static async getScheduledLocalNotification(notificationId: string) {
-		const notifications = await NotificationHelper.getAllScheduledNotificationsAsync()
+		const notifications = await NotificationHelper.getAllScheduledNotificationsAsync();
 		if (notifications) {
-			return notifications.find((notification) => notification?.identifier === notificationId)
+			return notifications.find(notification => notification?.identifier === notificationId);
 		}
 		return null;
 	}
 
 	static async getScheduleLocalNotificationByCustomIdentifier(customIdentifier: string) {
-		const notifications = await NotificationHelper.getAllScheduledNotificationsAsync()
+		const notifications = await NotificationHelper.getAllScheduledNotificationsAsync();
 		if (notifications) {
-			return notifications.find((notification) => notification?.content?.data?.customIdentifier === customIdentifier)
+			return notifications.find(notification => notification?.content?.data?.customIdentifier === customIdentifier);
 		}
 		return null;
 	}

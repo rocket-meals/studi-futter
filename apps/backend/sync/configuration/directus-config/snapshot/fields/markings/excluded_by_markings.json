@@ -15,19 +15,13 @@
     "interface": "list-m2m",
     "note": "Diese Kennzeichnung wird nicht angewendet, sollten bei einer Speise eine der folgenden Kennzeichnungen vorhanden sein",
     "options": {
-      "fields": [
-        "restricted_by_markings_id.alias",
-        "restricted_by_markings_id.short_code",
-        "restricted_by_markings_id.external_identifier"
-      ],
+      "fields": ["restricted_by_markings_id.alias", "restricted_by_markings_id.short_code", "restricted_by_markings_id.external_identifier"],
       "layout": "table"
     },
     "readonly": false,
     "required": false,
     "sort": 22,
-    "special": [
-      "m2m"
-    ],
+    "special": ["m2m"],
     "translations": null,
     "validation": null,
     "validation_message": null,

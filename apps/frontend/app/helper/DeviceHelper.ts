@@ -1,8 +1,8 @@
-import {Dimensions, PixelRatio, useWindowDimensions} from 'react-native';
-import {EdgeInsets, useSafeAreaInsets} from 'react-native-safe-area-context';
+import { Dimensions, PixelRatio, useWindowDimensions } from 'react-native';
+import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DatabaseTypes } from 'repo-depkit-common';
 import * as DeviceInfo from 'expo-device';
-import {DeviceType} from 'expo-device';
+import { DeviceType } from 'expo-device';
 import usePlatformHelper from '@/helper/platformHelper';
 
 /**
@@ -15,7 +15,7 @@ export function getDimensionWidthBreakPoints(): BreakPointsDictionary<number> {
 		[BreakPoint.md]: 768,
 		[BreakPoint.lg]: 992,
 		[BreakPoint.xl]: 1200,
-		[BreakPoint.xxl]: 1400
+		[BreakPoint.xxl]: 1400,
 	};
 }
 
@@ -32,11 +32,11 @@ export function useIsLargeDevice(): boolean {
 
 // Enumeration of possible breakpoint names.
 export enum BreakPoint {
-    sm = 'sm',
-    md = 'md',
-    lg = 'lg',
-    xl = 'xl',
-    xxl = 'xxl'
+	sm = 'sm',
+	md = 'md',
+	lg = 'lg',
+	xl = 'xl',
+	xxl = 'xxl',
 }
 
 /**
@@ -44,9 +44,9 @@ export enum BreakPoint {
  * @template T The type of values associated with each breakpoint.
  */
 export type BreakPointsDictionary<T> = {
-    [P in Exclude<BreakPoint, BreakPoint.sm>]?: T;
+	[P in Exclude<BreakPoint, BreakPoint.sm>]?: T;
 } & {
-    [BreakPoint.sm]: T; // Making 'sm' required
+	[BreakPoint.sm]: T; // Making 'sm' required
 };
 
 /**
@@ -55,11 +55,11 @@ export type BreakPointsDictionary<T> = {
  */
 function getSmallestToLargestBreakPointList(): BreakPoint[] {
 	const widthBreakPoints: BreakPointsDictionary<number> = getDimensionWidthBreakPoints();
-	const widthToBreakPoint: { width: number, breakPoint: BreakPoint }[] = [];
+	const widthToBreakPoint: { width: number; breakPoint: BreakPoint }[] = [];
 	for (const breakPoint in widthBreakPoints) {
 		const width: number | undefined = widthBreakPoints[breakPoint as BreakPoint];
 		if (width !== undefined) {
-			widthToBreakPoint.push({width, breakPoint: breakPoint as BreakPoint});
+			widthToBreakPoint.push({ width, breakPoint: breakPoint as BreakPoint });
 		}
 	}
 	widthToBreakPoint.sort((a, b) => a.width - b.width);
@@ -86,7 +86,7 @@ export function useBreakPointValue<T>(breakPoints: BreakPointsDictionary<T>): T 
 		const breakPoint = breakPointOrder[i];
 		const width: number | undefined = widthBreakPoints[breakPoint];
 		if (width && widthUnscaled >= width) {
-			const valueOfBreakPoint = breakPoints[breakPoint]
+			const valueOfBreakPoint = breakPoints[breakPoint];
 			if (valueOfBreakPoint) {
 				return valueOfBreakPoint;
 			}
@@ -112,7 +112,7 @@ export function useInsets(): EdgeInsets {
 }
 
 export function getIsLandScape(): boolean {
-    const { isWeb } = usePlatformHelper();
+	const { isWeb } = usePlatformHelper();
 	const windowWidth = Dimensions.get('screen').width;
 	const windowHeight = Dimensions.get('screen').height;
 	let isLandscape = windowWidth > windowHeight;
@@ -136,15 +136,16 @@ export function getCurrentDevice(deviceInformationsId: string | undefined, devic
 }
 
 export function getDeviceIdentifier(device: Partial<DatabaseTypes.Devices>) {
-	return device.platform+'_'+device.brand+'_'+device.system_version;
+	return device.platform + '_' + device.brand + '_' + device.system_version;
 }
 
-export function getDeviceInformationWithoutPushToken(): Partial<DatabaseTypes.Devices> { // Promise<DeviceInformationType>
+export function getDeviceInformationWithoutPushToken(): Partial<DatabaseTypes.Devices> {
+	// Promise<DeviceInformationType>
 	const { getPlatformDisplayName, isIOS, isAndroid, isWeb } = usePlatformHelper();
-    const windowWidth = Dimensions.get('screen').width;
+	const windowWidth = Dimensions.get('screen').width;
 	const windowHeight = Dimensions.get('screen').height;
 	const windowScale = Dimensions.get('screen').scale;
-	const isSimulator = !DeviceInfo.isDevice
+	const isSimulator = !DeviceInfo.isDevice;
 	const isTablet = DeviceInfo.deviceType === DeviceType.TABLET;
 	const brand = DeviceInfo.brand;
 	const platform = getPlatformDisplayName();
@@ -174,5 +175,5 @@ export function getDeviceInformationWithoutPushToken(): Partial<DatabaseTypes.De
 		is_ios: isIOS(),
 		is_android: isAndroid(),
 		is_web: isWeb(),
-	}
+	};
 }

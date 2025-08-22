@@ -3,32 +3,44 @@
     "preview": {
       "android": {
         "buildType": "apk"
-      }
+      },
+      "node": "22.16.0"
     },
     "previewApk": {
       "android": {
         "buildType": "apk"
       },
-      "channel": "production"
+      "channel": "preview",
+      "node": "22.16.0"
     },
     "preview2": {
       "android": {
         "gradleCommand": ":app:assembleRelease"
-      }
+      },
+      "node": "22.16.0"
     },
     "preview3": {
-      "developmentClient": true
+      "developmentClient": true,
+      "node": "22.16.0"
     },
     "preview4": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "node": "22.16.0"
     },
     "production": {
+      "android": {
+        "buildType": "app-bundle"
+      },
       "autoIncrement": false,
-      "channel": "production"
+      "channel": "production",
+      "node": "22.16.0"
     }
   },
   "submit": {
     "production": {
+      "android": {
+        "track": "production"
+      },
       "ios": {
         "appleId": "nils@baumgartner-software.de",
         "ascAppId": "1548108390",
