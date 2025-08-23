@@ -2,6 +2,11 @@
   <img src="assets/icon.png" alt="Rocket Meals icon" width="120" />
 </div>
 
+
+
+
+
+
 [![CI](https://github.com/rocket-meals/rocket-meals/actions/workflows/combined-ci.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/combined-ci.yml)
 [![Screenshots CI](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_screenshot.yml/badge.svg)](https://github.com/rocket-meals/rocket-meals/actions/workflows/frontend_screenshot.yml)
 

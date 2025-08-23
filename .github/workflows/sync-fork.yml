@@ -35,23 +35,19 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
-      - name: 🔧 Setup GitHub CLI
-        if: steps.check-fork.outputs.is_fork == 'true'
-        run: |
-          gh --version
-          echo "${{ secrets.PERSONAL_ACCESS_TOKEN }}" | gh auth login --with-token
-
       - name: 🔄 Sync Fork with Upstream
         if: steps.check-fork.outputs.is_fork == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
           REPO_FULL_NAME="${{ github.repository }}"
           echo "Syncing fork: $REPO_FULL_NAME"
           echo "Upstream repository: rocket-meals/rocket-meals"
           echo "Target branch: master"
-          
+
           # Sync the fork with the upstream repository using --force to handle conflicts
           gh repo sync "$REPO_FULL_NAME" -b master --force
-          
+
           echo "✅ Fork synchronization completed successfully!"
 
       - name: ⏭️ Skip Fork Sync
