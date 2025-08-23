@@ -33,16 +33,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
       - name: 🔧 Setup GitHub CLI
         if: steps.check-fork.outputs.is_fork == 'true'
         run: |
-          # GitHub CLI is pre-installed on Ubuntu runners
           gh --version
-          
-          # Authenticate with GitHub CLI using the token
-          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+          echo "${{ secrets.PERSONAL_ACCESS_TOKEN }}" | gh auth login --with-token
 
       - name: 🔄 Sync Fork with Upstream
         if: steps.check-fork.outputs.is_fork == 'true'

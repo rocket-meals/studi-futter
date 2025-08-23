@@ -31,62 +31,10 @@ jobs:
         id: check
         uses: ./.github/actions/check-build-number
 
-  lint:
-    name: 🧹 Format and Lint Code
-    runs-on: ubuntu-latest
-    needs: check-build
-    permissions:
-      contents: write
-      pull-requests: write
-    steps:
-      - name: 🔄 Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: 🧰 Setup Node.js, Yarn & Dependencies
-        uses: ./.github/actions/setup-and-install
-        with:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-      - name: 🔍 Format with Prettier
-        uses: ./.github/actions/prettier
-      - name: 🔍 Lint with ESLint (Frontend)
-        run: |
-          echo "Running ESLint on frontend code..."
-          cd apps/frontend/app
-          if [ -f "node_modules/.bin/eslint" ]; then
-            npx eslint . --ext .js,.jsx,.ts,.tsx --fix || true
-          else
-            echo "Local ESLint not available, skipping ESLint step"
-          fi
-          echo "ESLint completed"
-      - name: 🔍 Check for Changes
-        id: verify-changed-files
-        run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-            echo "Files have been formatted/linted"
-            git status --short
-          else
-            echo "changed=false" >> $GITHUB_OUTPUT
-            echo "No formatting changes needed"
-          fi
-      - name: 📝 Commit Changes
-        if: steps.verify-changed-files.outputs.changed == 'true' && github.event_name == 'push'
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "Auto-Linter Action"
-          git add .
-          git commit -m "🔧 Auto-format code with Prettier and ESLint [skip ci]"
-          git push
-      - name: ✅ Success Message
-        if: steps.verify-changed-files.outputs.changed == 'false'
-        run: |
-          echo "✅ Code is properly formatted and linted!"
-
   backend-directus:
     name: 🔨 Directus Backend Build
     runs-on: ubuntu-latest
-    needs: lint
+    needs: check-build
     steps:
       - name: 🏗 Setup repo
         uses: actions/checkout@v3
@@ -100,7 +48,7 @@ jobs:
   expo-update:
     name: 🏗 EAS Update Production
     runs-on: ubuntu-latest
-    needs: lint
+    needs: check-build
     steps:
       - name: 🔄 Checkout Repository
         uses: actions/checkout@v3
@@ -119,7 +67,7 @@ jobs:
   build-android:
     name: 📦 Build & 🚀 Submit Android App
     runs-on: ubuntu-latest
-    needs: [lint, check-build]
+    needs: check-build
     if: needs.check-build.outputs.changed == 'true'
     steps:
       - name: 🔄 Checkout Repository
@@ -139,7 +87,7 @@ jobs:
   build-android-preview:
     name: 🧪 Build Android Preview APK
     runs-on: ubuntu-latest
-    needs: [lint, check-build]
+    needs: check-build
     if: needs.check-build.outputs.changed == 'true'
     steps:
       - name: 🔄 Checkout Repository
@@ -157,7 +105,7 @@ jobs:
   build-ios:
     name: 📦 Build & 🚀 Submit iOS App
     runs-on: ubuntu-latest
-    needs: [lint, check-build]
+    needs: check-build
     if: needs.check-build.outputs.changed == 'true'
     steps:
       - name: 🔄 Checkout Repository
@@ -177,7 +125,7 @@ jobs:
   deploy-gh-pages:
     name: 🌍 Deploy to GitHub Pages
     runs-on: ubuntu-latest
-    needs: lint
+    needs: check-build
     if: github.ref == 'refs/heads/master'
     steps:
       - name: 🔄 Checkout Repository
