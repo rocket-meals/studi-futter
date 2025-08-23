@@ -1,0 +1,63 @@
+name: 🔄 Fork Synchronization
+
+on:
+  # Run hourly
+  schedule:
+    - cron: '0 * * * *'  # Every hour at minute 0
+  
+  # Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  sync-fork:
+    name: 🔄 Sync Fork with Upstream
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🔍 Check if Repository is a Fork
+        id: check-fork
+        run: |
+          REPO_FULL_NAME="${{ github.repository }}"
+          echo "Current repository: $REPO_FULL_NAME"
+          
+          if [ "$REPO_FULL_NAME" = "rocket-meals/rocket-meals" ]; then
+            echo "This is the upstream repository. Skipping sync."
+            echo "is_fork=false" >> $GITHUB_OUTPUT
+          else
+            echo "This is a fork. Proceeding with sync."
+            echo "is_fork=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🔄 Checkout Repository
+        if: steps.check-fork.outputs.is_fork == 'true'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🔧 Setup GitHub CLI
+        if: steps.check-fork.outputs.is_fork == 'true'
+        run: |
+          # GitHub CLI is pre-installed on Ubuntu runners
+          gh --version
+          
+          # Authenticate with GitHub CLI using the token
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
+      - name: 🔄 Sync Fork with Upstream
+        if: steps.check-fork.outputs.is_fork == 'true'
+        run: |
+          REPO_FULL_NAME="${{ github.repository }}"
+          echo "Syncing fork: $REPO_FULL_NAME"
+          echo "Upstream repository: rocket-meals/rocket-meals"
+          echo "Target branch: master"
+          
+          # Sync the fork with the upstream repository using --force to handle conflicts
+          gh repo sync "$REPO_FULL_NAME" -b master --force
+          
+          echo "✅ Fork synchronization completed successfully!"
+
+      - name: ⏭️ Skip Fork Sync
+        if: steps.check-fork.outputs.is_fork == 'false'
+        run: |
+          echo "⏭️ Skipping fork synchronization - this is the upstream repository."

@@ -1,8 +1,4 @@
 <div align="center">
-  <img src="assets/Background.jpeg" alt="Rocket Meals background" width="100%" />
-</div>
-
-<div align="center">
   <img src="assets/icon.png" alt="Rocket Meals icon" width="120" />
 </div>
 
