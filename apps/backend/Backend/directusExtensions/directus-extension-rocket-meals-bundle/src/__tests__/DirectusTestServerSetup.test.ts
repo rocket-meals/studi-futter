@@ -15,7 +15,7 @@ describe('DirectusTestServerSetup', () => {
     serverSetup = new DirectusTestServerSetup();
     
     expect(serverSetup).toBeInstanceOf(DirectusTestServerSetup);
-    expect(serverSetup.getDirectusUrl()).toBe('http://0.0.0.0:8055');
+    expect(serverSetup.getDirectusUrl()).toBe('http://127.0.0.1:8055');
   });
 
   it('should create instance with custom options', () => {

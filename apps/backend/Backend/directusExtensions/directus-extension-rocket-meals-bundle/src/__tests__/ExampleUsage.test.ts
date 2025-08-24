@@ -29,7 +29,7 @@ describe('Example: Using DirectusTestServerSetup in different tests', () => {
     
     // Get server URL
     const serverUrl = testServer.getDirectusUrl();
-    expect(serverUrl).toBe('http://0.0.0.0:8056');
+    expect(serverUrl).toBe('http://127.0.0.1:8056');
   });
 
   it('should allow admin login and user operations', async () => {

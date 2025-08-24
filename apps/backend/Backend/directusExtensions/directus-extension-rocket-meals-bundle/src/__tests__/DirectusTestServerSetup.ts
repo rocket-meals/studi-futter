@@ -65,7 +65,8 @@ export class DirectusTestServerSetup {
       debug: options.debug ?? false,
     };
 
-    this.directusUrl = `http://${this.options.host}:${this.options.port}`;
+    const clientHost = this.options.host === '0.0.0.0' ? '127.0.0.1' : this.options.host;
+    this.directusUrl = `http://${clientHost}:${this.options.port}`;
   }
 
   /**
@@ -182,6 +183,8 @@ export class DirectusTestServerSetup {
       DB_CLIENT: this.options.dbClient,
       DB_FILENAME: this.options.dbFilename,
       SECRET: this.options.secret,
+      PORT: String(this.options.port),
+      HOST: this.options.host,
       ADMIN_EMAIL: this.options.adminEmail,
       ADMIN_PASSWORD: this.options.adminPassword,
     };
