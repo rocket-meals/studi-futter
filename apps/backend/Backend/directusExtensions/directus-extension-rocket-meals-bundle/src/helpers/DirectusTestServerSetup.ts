@@ -1,8 +1,13 @@
-import { exec, spawn, ChildProcess } from 'child_process';
-import { FetchHelper } from '../helpers/FetchHelper';
+import {ChildProcess, exec, spawn} from 'child_process';
+import {FetchHelper} from './FetchHelper';
 import * as os from 'node:os';
 import path from 'path';
 import fse from 'fs-extra';
+
+// Server configuration
+const ADMIN_EMAIL = 'test@example.com';
+const ADMIN_PASSWORD = 'testpassword';
+const EXTENSIONS_PATH = path.join(__dirname, '..', '..', '..');
 
 /**
  * Configuration options for DirectusTestServerSetup
@@ -25,7 +30,7 @@ export interface DirectusTestServerOptions {
   /** Extensions path (optional) */
   extensionsPath?: string;
   /** Enable extensions path in environment (default: false) */
-  enableExtensionsPath?: boolean;
+  enableExtensions?: boolean;
   /** Maximum attempts to check server readiness (default: 60) */
   maxStartupAttempts?: number;
   /** Delay between startup attempts in milliseconds (default: 1000) */
@@ -44,25 +49,31 @@ export class DirectusTestServerSetup {
   private readonly options: Required<DirectusTestServerOptions>;
   private readonly directusUrl: string;
 
+  static ADMIN_EMAIL = ADMIN_EMAIL;
+  static ADMIN_PASSWORD = ADMIN_PASSWORD;
+
   /**
    * Creates a new DirectusTestServerSetup instance
    * @param options Configuration options for the server setup
    */
   constructor(options: DirectusTestServerOptions = {}) {
+    let uniqueDbFileNameNanoSeconds = Date.now();
+    let uniqueDbFilename = `directus-memory-test-${process.pid}${uniqueDbFileNameNanoSeconds}.sqlite`
+
     // Set default values for all options
     this.options = {
       port: options.port ?? 8055,
       host: options.host ?? '0.0.0.0',
       dbClient: options.dbClient ?? 'sqlite3',
-      dbFilename: options.dbFilename ?? path.join(os.tmpdir(), `directus-memory-test-${process.pid}.sqlite`),
+      dbFilename: options.dbFilename ?? path.join(os.tmpdir(), uniqueDbFilename),
       secret: options.secret ?? 'Ihr-langer-zufälliger-geheimer-Schlüssel-für-Tests',
-      adminEmail: options.adminEmail ?? 'test@example.com',
-      adminPassword: options.adminPassword ?? 'testpassword',
-      extensionsPath: options.extensionsPath ?? path.join(__dirname, '..', '..', '..'),
-      enableExtensionsPath: options.enableExtensionsPath ?? false,
+      adminEmail: options.adminEmail ?? ADMIN_EMAIL,
+      adminPassword: options.adminPassword ?? ADMIN_PASSWORD,
+      extensionsPath: options.extensionsPath ?? EXTENSIONS_PATH,
+      enableExtensions: options.enableExtensions ?? true,
       maxStartupAttempts: options.maxStartupAttempts ?? 60,
       startupCheckDelay: options.startupCheckDelay ?? 1000,
-      debug: options.debug ?? false,
+      debug: options.debug ?? true,
     };
 
     const clientHost = this.options.host === '0.0.0.0' ? '127.0.0.1' : this.options.host;
@@ -189,7 +200,7 @@ export class DirectusTestServerSetup {
       ADMIN_PASSWORD: this.options.adminPassword,
     };
 
-    if (this.options.enableExtensionsPath) {
+    if (this.options.enableExtensions) {
       env.EXTENSIONS_PATH = this.options.extensionsPath;
     }
 
@@ -288,7 +299,14 @@ export class DirectusTestServerSetup {
    * @returns True if it's a known non-critical error
    */
   private isKnownError(message: string): boolean {
-    return message.includes('Update available');
+    if(message.includes("Update available")) {
+      return true;
+    }
+    if(message.includes("SQLite is an experimental feature and might change at any time")){
+        return true;
+    }
+
+    return false;
   }
 
   /**

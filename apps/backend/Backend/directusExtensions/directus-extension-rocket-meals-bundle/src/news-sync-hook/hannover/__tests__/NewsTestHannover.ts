@@ -29,8 +29,10 @@ describe('NewsTestHannover', () => {
     //console.log(response);
     expect(response).toBeDefined();
 
-    let expectedDate = '2025-02-14T12:00:00.000Z';
-    expect(response).toBe(expectedDate);
+    let expectedDateObj = new Date(2025, 1, 14);
+    expectedDateObj.setHours(12, 0, 0);
+
+    expect(response).toBe(expectedDateObj.toISOString());
   });
 
   it('real news', async () => {

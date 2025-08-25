@@ -1,24 +1,17 @@
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
 import { authentication, createDirectus, readMe, readUsers, rest } from '@directus/sdk';
-import { DirectusTestServerSetup } from './DirectusTestServerSetup';
+import { DirectusTestServerSetup } from '../helpers/DirectusTestServerSetup';
 import path from 'path';
 
 // Test server setup instance
 let testServerSetup: DirectusTestServerSetup;
 
-// Server configuration
-const ADMIN_EMAIL = 'test@example.com';
-const ADMIN_PASSWORD = 'testpassword';
-const EXTENSIONS_PATH = path.join(__dirname, '..', '..', '..');
+
 
 beforeAll(async () => {
   // Initialize the test server setup with configuration
   testServerSetup = new DirectusTestServerSetup({
-    adminEmail: ADMIN_EMAIL,
-    adminPassword: ADMIN_PASSWORD,
-    extensionsPath: EXTENSIONS_PATH,
-    enableExtensionsPath: false, // Set to true if extensions are needed
-    debug: false, // Set to true for debug logging
+    enableExtensions: false,
   });
 
   // Start the Directus server
@@ -41,7 +34,7 @@ describe('in-memory database with ItemService', () => {
     let directus = createDirectus(directusUrl).with(rest()).with(authentication());
 
     // Login as Admin using the configured credentials
-    let authResponse = await directus.login(ADMIN_EMAIL, ADMIN_PASSWORD);
+    let authResponse = await directus.login(DirectusTestServerSetup.ADMIN_EMAIL, DirectusTestServerSetup.ADMIN_PASSWORD);
 
     const me = await directus.request(readMe());
     //const news = await directus.request(readItems('news'));
