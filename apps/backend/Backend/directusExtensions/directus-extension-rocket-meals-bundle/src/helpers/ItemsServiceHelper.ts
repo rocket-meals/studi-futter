@@ -240,6 +240,14 @@ export class ItemsServiceHelper<T> implements ItemsService<T> {
     return await this.readOne(primary_key, queryWithTranslations, opts);
   }
 
+  async readByQueryWithTranslations(query?: Query, opts?: QueryOptions): Promise<T[]> {
+    let queryWithTranslations = {
+      ...query,
+      ...TranslationHelper.QUERY_FIELDS_FOR_ALL_FIELDS_AND_FOR_TRANSLATION_FETCHING,
+    };
+    return await this.readByQuery(queryWithTranslations, opts);
+  }
+
   async readOne(primary_key: PrimaryKey, query?: Query, opts?: QueryOptions): Promise<T> {
     let itemsService = await this.getItemsService();
     return await itemsService.readOne(primary_key, query, opts);

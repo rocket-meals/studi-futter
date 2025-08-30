@@ -4,10 +4,10 @@ export default StyleSheet.create({
 	container: {
 		flex: 1,
 	},
-	list: {
-		padding: 20,
-		gap: 10,
-	},
+        list: {
+                padding: 20,
+                gap: 2,
+        },
 	messageItem: {
 		maxWidth: '80%',
 		gap: 4,

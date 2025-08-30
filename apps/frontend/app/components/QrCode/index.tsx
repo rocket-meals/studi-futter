@@ -20,14 +20,15 @@ const QrCode: React.FC<QrCodeProps> = ({ value, size = 200, image, imageUrl, inn
 	const qrEcl = ecl ?? calculatedEcl;
 
 	return (
-		<View
-			style={{
-				width: size,
-				height: size,
-				alignItems: 'center',
-				justifyContent: 'center',
-			}}
-		>
+                <View
+                        style={{
+                                width: size,
+                                height: size,
+                                margin: 5,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                        }}
+                >
 			<QRCode value={value} size={size} ecl={qrEcl} quietZone={quietZone} />
 			{imageSource && (
 				<View

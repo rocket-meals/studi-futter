@@ -1,0 +1,46 @@
+name: "🛠️ Sync dev to master"
+
+on:
+  push:
+    branches:
+      - dev
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "🔄 Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: "🤖 Configure Git"
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: "🚀 Merge dev into master"
+        id: merge
+        run: |
+          git fetch origin dev master
+          git checkout master
+          if git merge --ff-only origin/dev; then
+            git push origin master
+            echo "merged=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "merged=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: "📨 Create pull request"
+        if: steps.merge.outputs.merged == 'false'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: master
+          head: dev
+          title: "Merge dev into master"
+          body: "Automatischer Pull Request, weil der direkte Merge fehlgeschlagen ist."

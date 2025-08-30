@@ -22,6 +22,7 @@ export const performLogout = async (
 		dispatch({ type: CLEAR_POPUP_EVENTS_HASH });
 		dispatch({ type: CLEAR_COLLECTION_DATES_LAST_UPDATED });
 		await AsyncStorage.multiRemove(['auth_data', 'persist:root']);
+
 		// legacy parameter kept for compatibility, currently not used
 		persistor.purge();
 		router.replace({ pathname: '/(auth)/login', params: { logout: 'true' } });

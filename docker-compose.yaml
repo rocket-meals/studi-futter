@@ -1,10 +1,10 @@
 services:
   prepare-data:
-    image: alpine:3.18
+    image: debian:bookworm-slim
     volumes:
       - ./data:/data
     working_dir: /data
-    entrypoint: ["/bin/sh", "-c", "./permissionDatabase.sh"]
+    entrypoint: ["/bin/sh", "-c", "chmod +x ./permissionDatabase.sh && ./permissionDatabase.sh"]
 
   traefik:
     env_file:

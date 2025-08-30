@@ -2,7 +2,7 @@ name: 🚀 Unified CI
 
 on:
   push:
-    branches: [main,master]
+    branches: [main,master,dev]
 
 jobs:
   setup:
