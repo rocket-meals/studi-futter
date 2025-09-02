@@ -6,7 +6,7 @@ import {CookieJar} from 'cookiejar';
 import FormData from 'form-data';
 
 import {createRequire} from 'module';
-import {FetchIngoreSelfSignedCertHelper} from "./FetchIngoreSelfSignedCertHelper";
+import {FetchIgnoreSelfSignedCertHelper} from "./FetchIgnoreSelfSignedCertHelper";
 
 const require = createRequire(import.meta.url);
 
@@ -131,7 +131,7 @@ export class DirectusDatabaseSync {
         //console.log("admin_email: "+admin_email);
         //console.log("admin_password: "+admin_password)
 
-        const response = await FetchIngoreSelfSignedCertHelper.fetch(`${this.config.directusInstanceUrl}/auth/login`, {
+        const response = await FetchIgnoreSelfSignedCertHelper.fetch(`${this.config.directusInstanceUrl}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -181,7 +181,7 @@ export class DirectusDatabaseSync {
             headersObject = { Cookie: headers.get('cookie') };
         }
 
-        return await FetchIngoreSelfSignedCertHelper.fetch(url, this.fetchGetOptions(headersObject, 'GET'));
+        return await FetchIgnoreSelfSignedCertHelper.fetch(url, this.fetchGetOptions(headersObject, 'GET'));
     };
 
     private async fetchGetResponseJson(url: string, headers: any){
@@ -195,7 +195,7 @@ export class DirectusDatabaseSync {
 
         // Patch settings with an empty object
         console.log(' -  Patching with empty');
-        await FetchIngoreSelfSignedCertHelper.fetch(`${this.getUrlSettings()}`, {
+        await FetchIgnoreSelfSignedCertHelper.fetch(`${this.getUrlSettings()}`, {
             method: 'PATCH',
             headers: {
                 Cookie: headers.get('cookie'),
@@ -227,7 +227,7 @@ export class DirectusDatabaseSync {
         }
 
         // Patch updated settings
-        const response = await FetchIngoreSelfSignedCertHelper.fetch(`${this.getUrlSettings()}`, {
+        const response = await FetchIgnoreSelfSignedCertHelper.fetch(`${this.getUrlSettings()}`, {
             method: 'PATCH',
             headers: {
                 Cookie: headers.get('cookie'),
@@ -364,7 +364,7 @@ export class DirectusDatabaseSync {
 
         // Import collection into Directus
         console.log(` -  Importing ${displayName}`);
-        const response = await FetchIngoreSelfSignedCertHelper.fetch(`${this.config.directusInstanceUrl}/utils/import/${displayName}`, {
+        const response = await FetchIgnoreSelfSignedCertHelper.fetch(`${this.config.directusInstanceUrl}/utils/import/${displayName}`, {
             method: 'POST',
             headers: { Cookie: headers.get('cookie'), ...formData.getHeaders() },
             body: formData as any,

@@ -1,5 +1,5 @@
 import {DockerDirectusHelper} from "./DockerDirectusHelper";
-import {FetchIngoreSelfSignedCertHelper} from "./FetchIngoreSelfSignedCertHelper";
+import {FetchIgnoreSelfSignedCertHelper} from "./FetchIgnoreSelfSignedCertHelper";
 
 export class DockerDirectusPingHelper {
 
@@ -17,7 +17,7 @@ export class DockerDirectusPingHelper {
         console.log(`⏳ Prüfe Directus Ping Status...`);
 
         // Versuche zuerst den standard Ping endpoint
-        let response = await FetchIngoreSelfSignedCertHelper.fetch(pingCheckUrl, {
+        let response = await FetchIgnoreSelfSignedCertHelper.fetch(pingCheckUrl, {
           method: 'GET',
           headers: {
             'Accept': 'application/json'
