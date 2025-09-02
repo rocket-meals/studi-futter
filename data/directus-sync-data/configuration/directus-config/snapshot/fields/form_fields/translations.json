@@ -1,0 +1,30 @@
+{
+  "collection": "form_fields",
+  "field": "translations",
+  "type": "alias",
+  "meta": {
+    "collection": "form_fields",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "translations",
+    "group": "form_settings",
+    "hidden": false,
+    "interface": "translations",
+    "note": null,
+    "options": {
+      "defaultOpenSplitView": true,
+      "userLanguage": true
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 1,
+    "special": [
+      "translations"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

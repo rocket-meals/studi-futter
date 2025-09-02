@@ -1,0 +1,49 @@
+{
+  "collection": "buildings",
+  "field": "businesshours",
+  "type": "alias",
+  "meta": {
+    "collection": "buildings",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "businesshours",
+    "group": null,
+    "hidden": false,
+    "interface": "list-m2m",
+    "note": null,
+    "options": {
+      "fields": [
+        "businesshours_id.group.alias",
+        "businesshours_id.time_end",
+        "businesshours_id.time_start",
+        "businesshours_id.date_valid_from",
+        "businesshours_id.date_valid_till",
+        "businesshours_id.monday",
+        "businesshours_id.tuesday",
+        "businesshours_id.wednesday",
+        "businesshours_id.thursday",
+        "businesshours_id.friday",
+        "businesshours_id.saturday",
+        "businesshours_id.sunday"
+      ],
+      "layout": "table",
+      "tableSpacing": "compact"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 18,
+    "special": [
+      "m2m"
+    ],
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Gebäude Öffnungzeiten"
+      }
+    ],
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

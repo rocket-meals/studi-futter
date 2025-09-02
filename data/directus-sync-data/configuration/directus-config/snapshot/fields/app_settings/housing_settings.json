@@ -1,0 +1,37 @@
+{
+  "collection": "app_settings",
+  "field": "housing_settings",
+  "type": "alias",
+  "meta": {
+    "collection": "app_settings",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "housing_settings",
+    "group": null,
+    "hidden": false,
+    "interface": "group-detail",
+    "note": null,
+    "options": {
+      "headerIcon": "house",
+      "start": "closed"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 14,
+    "special": [
+      "alias",
+      "group",
+      "no-data"
+    ],
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Wohnen Einstellungen"
+      }
+    ],
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

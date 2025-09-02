@@ -1,0 +1,27 @@
+{
+  "collection": "collectible_events",
+  "field": "participants",
+  "type": "alias",
+  "meta": {
+    "collection": "collectible_events",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "participants",
+    "group": null,
+    "hidden": false,
+    "interface": "list-o2m",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 16,
+    "special": [
+      "o2m"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

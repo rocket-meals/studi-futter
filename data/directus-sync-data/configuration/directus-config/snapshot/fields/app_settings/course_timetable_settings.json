@@ -1,0 +1,37 @@
+{
+  "collection": "app_settings",
+  "field": "course_timetable_settings",
+  "type": "alias",
+  "meta": {
+    "collection": "app_settings",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "course_timetable_settings",
+    "group": null,
+    "hidden": false,
+    "interface": "group-detail",
+    "note": null,
+    "options": {
+      "headerIcon": "schedule",
+      "start": "closed"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 10,
+    "special": [
+      "alias",
+      "group",
+      "no-data"
+    ],
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Stundenplan Einstellungen"
+      }
+    ],
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

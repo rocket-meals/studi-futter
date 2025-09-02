@@ -1,0 +1,35 @@
+{
+  "collection": "app_settings",
+  "field": "balance_translations",
+  "type": "alias",
+  "meta": {
+    "collection": "app_settings",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "balance_translations",
+    "group": "balance_settings",
+    "hidden": false,
+    "interface": "translations",
+    "note": "Dieser Text ist in der App sichtbar",
+    "options": {
+      "defaultOpenSplitView": true,
+      "userLanguage": true
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 3,
+    "special": [
+      "translations"
+    ],
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Guthaben Beschreibungstext"
+      }
+    ],
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

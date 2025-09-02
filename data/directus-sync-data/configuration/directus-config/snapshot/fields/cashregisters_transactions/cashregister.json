@@ -1,0 +1,49 @@
+{
+  "collection": "cashregisters_transactions",
+  "field": "cashregister",
+  "type": "uuid",
+  "meta": {
+    "collection": "cashregisters_transactions",
+    "conditions": null,
+    "display": "related-values",
+    "display_options": {
+      "template": "{{alias}} ({{external_identifier}})({{canteen.alias}})"
+    },
+    "field": "cashregister",
+    "group": null,
+    "hidden": false,
+    "interface": "select-dropdown-m2o",
+    "note": null,
+    "options": {
+      "template": "{{alias}} ({{external_identifier}}) ({{canteen.alias}})"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 8,
+    "special": [
+      "m2o"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  },
+  "schema": {
+    "name": "cashregister",
+    "table": "cashregisters_transactions",
+    "data_type": "uuid",
+    "default_value": null,
+    "max_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "is_nullable": true,
+    "is_unique": false,
+    "is_indexed": false,
+    "is_primary_key": false,
+    "is_generated": false,
+    "generation_expression": null,
+    "has_auto_increment": false,
+    "foreign_key_table": "cashregisters",
+    "foreign_key_column": "id"
+  }
+}

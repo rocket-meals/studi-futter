@@ -1,0 +1,38 @@
+{
+  "collection": "foods_attributes_groups",
+  "field": "food_attributes",
+  "type": "alias",
+  "meta": {
+    "collection": "foods_attributes_groups",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "food_attributes",
+    "group": null,
+    "hidden": false,
+    "interface": "list-o2m",
+    "note": null,
+    "options": {
+      "enableLink": true,
+      "enableSearchFilter": true,
+      "fields": [
+        "sort",
+        "alias",
+        "prefix",
+        "suffix"
+      ],
+      "layout": "table",
+      "sort": "sort"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 16,
+    "special": [
+      "o2m"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

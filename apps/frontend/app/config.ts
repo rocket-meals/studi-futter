@@ -1,4 +1,5 @@
 // This file can not have any imports. See app.config.ts as it will transpile this file to  JavaScript
+import {ServerHelper} from "repo-depkit-common";
 
 export type CustomerConfig = {
 	projectName: string;
@@ -41,7 +42,7 @@ export const devConfig: CustomerConfig = {
 	bundleIdIos: 'de.baumgartner-software.rocket-meals-demo',
 	bundleIdAndroid: 'com.baumgartnersoftware.rocketmealsdev',
 	baseUrl: '/rocket-meals',
-	server_url: 'https://test.rocket-meals.de/rocket-meals/api',
+	server_url: ServerHelper.TEST_SERVER_CONFIG.server_url,
 };
 
 export const swosyConfig: CustomerConfig = {
@@ -53,7 +54,7 @@ export const swosyConfig: CustomerConfig = {
 	bundleIdIos: 'de.baumgartner-software.swosy',
 	bundleIdAndroid: 'de.baumgartnersoftware.swosy',
 	baseUrl: '/swosy',
-	server_url: 'https://swosy.rocket-meals.de/rocket-meals/api',
+	server_url: ServerHelper.SWOSY_SERVER_CONFIG.server_url,
 };
 
 export const studiFutterConfig: CustomerConfig = {
@@ -65,7 +66,7 @@ export const studiFutterConfig: CustomerConfig = {
 	bundleIdIos: 'de.stwh.app',
 	bundleIdAndroid: 'de.baumgartnersoftware.studifutter',
 	baseUrl: '/studi-futter',
-	server_url: 'https://studi-futter.rocket-meals.de/rocket-meals/api',
+	server_url: ServerHelper.STUDI_FUTTER_SERVER_CONFIG.server_url,
 };
 
 export function getCustomerConfig(): CustomerConfig {

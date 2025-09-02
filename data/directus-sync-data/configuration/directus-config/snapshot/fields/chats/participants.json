@@ -1,0 +1,27 @@
+{
+  "collection": "chats",
+  "field": "participants",
+  "type": "alias",
+  "meta": {
+    "collection": "chats",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "participants",
+    "group": null,
+    "hidden": false,
+    "interface": "list-m2m",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 8,
+    "special": [
+      "m2m"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

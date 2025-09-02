@@ -1,0 +1,34 @@
+{
+  "collection": "foodoffers",
+  "field": "attribute_values",
+  "type": "alias",
+  "meta": {
+    "collection": "foodoffers",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "attribute_values",
+    "group": null,
+    "hidden": false,
+    "interface": "list-o2m",
+    "note": null,
+    "options": {
+      "fields": [
+        "food_attribute.alias",
+        "number_value",
+        "string_value"
+      ],
+      "layout": "table"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 18,
+    "special": [
+      "o2m"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

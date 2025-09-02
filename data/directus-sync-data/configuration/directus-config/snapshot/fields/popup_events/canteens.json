@@ -1,0 +1,32 @@
+{
+  "collection": "popup_events",
+  "field": "canteens",
+  "type": "alias",
+  "meta": {
+    "collection": "popup_events",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "canteens",
+    "group": null,
+    "hidden": false,
+    "interface": "list-m2m",
+    "note": "Falls keine Mensa ausgewählt ist, wird es für alle angezeigt.",
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 14,
+    "special": [
+      "m2m"
+    ],
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Relevant für Mensen"
+      }
+    ],
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

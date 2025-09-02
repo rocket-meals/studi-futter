@@ -1,0 +1,36 @@
+{
+  "collection": "foodoffers",
+  "field": "markings",
+  "type": "alias",
+  "meta": {
+    "collection": "foodoffers",
+    "conditions": null,
+    "display": "related-values",
+    "display_options": {
+      "template": "{{markings_id.alias}} ({{markings_id.external_identifier}})"
+    },
+    "field": "markings",
+    "group": null,
+    "hidden": false,
+    "interface": "list-m2m",
+    "note": null,
+    "options": {
+      "template": "{{markings_id.alias}} ({{markings_id.external_identifier}})"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 14,
+    "special": [
+      "m2m"
+    ],
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Kennzeichnungen"
+      }
+    ],
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "collection": "businesshours",
+  "field": "valid_days",
+  "type": "alias",
+  "meta": {
+    "collection": "businesshours",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "valid_days",
+    "group": null,
+    "hidden": false,
+    "interface": "group-raw",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 10,
+    "special": [
+      "alias",
+      "group",
+      "no-data"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

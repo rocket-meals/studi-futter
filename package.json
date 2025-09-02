@@ -16,5 +16,6 @@
     "apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle",
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "packageManager": "yarn@4.9.4"
 }

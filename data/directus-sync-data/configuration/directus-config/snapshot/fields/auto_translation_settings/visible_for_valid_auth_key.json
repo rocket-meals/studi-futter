@@ -1,0 +1,44 @@
+{
+  "collection": "auto_translation_settings",
+  "field": "visible_for_valid_auth_key",
+  "type": "alias",
+  "meta": {
+    "collection": "auto_translation_settings",
+    "conditions": [
+      {
+        "hidden": true,
+        "options": {},
+        "readonly": true,
+        "rule": {
+          "_and": [
+            {
+              "valid_auth_key": {
+                "_eq": false
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "display": null,
+    "display_options": null,
+    "field": "visible_for_valid_auth_key",
+    "group": null,
+    "hidden": false,
+    "interface": "group-raw",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 5,
+    "special": [
+      "alias",
+      "group",
+      "no-data"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

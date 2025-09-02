@@ -1,0 +1,27 @@
+{
+  "collection": "wikis",
+  "field": "children",
+  "type": "alias",
+  "meta": {
+    "collection": "wikis",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "children",
+    "group": null,
+    "hidden": false,
+    "interface": "list-o2m",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 11,
+    "special": [
+      "o2m"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "half"
+  }
+}

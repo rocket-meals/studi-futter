@@ -1,0 +1,29 @@
+{
+  "collection": "wikis",
+  "field": "visibility_settings",
+  "type": "alias",
+  "meta": {
+    "collection": "wikis",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "visibility_settings",
+    "group": null,
+    "hidden": false,
+    "interface": "group-raw",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 12,
+    "special": [
+      "alias",
+      "group",
+      "no-data"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

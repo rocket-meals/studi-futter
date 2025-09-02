@@ -1,0 +1,63 @@
+{
+  "collection": "form_extracts",
+  "field": "fields",
+  "type": "alias",
+  "meta": {
+    "collection": "form_extracts",
+    "conditions": [
+      {
+        "hidden": true,
+        "name": "Visibility",
+        "options": {
+          "allowDuplicates": false,
+          "enableCreate": true,
+          "enableLink": false,
+          "enableSearchFilter": false,
+          "enableSelect": true,
+          "junctionFieldLocation": "bottom",
+          "layout": "list",
+          "limit": 15
+        },
+        "rule": {
+          "_and": [
+            {
+              "all_fields": {
+                "_eq": true
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "display": null,
+    "display_options": null,
+    "field": "fields",
+    "group": "field_settings",
+    "hidden": false,
+    "interface": "list-m2m",
+    "note": null,
+    "options": {
+      "filter": {
+        "_and": [
+          {
+            "form": {
+              "id": {
+                "_eq": "{{form}}"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 2,
+    "special": [
+      "m2m"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

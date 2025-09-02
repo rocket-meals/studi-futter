@@ -1,0 +1,29 @@
+{
+  "collection": "app_settings_login_screen_translations",
+  "field": "translation_settings",
+  "type": "alias",
+  "meta": {
+    "collection": "app_settings_login_screen_translations",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "translation_settings",
+    "group": null,
+    "hidden": false,
+    "interface": "group-raw",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 6,
+    "special": [
+      "alias",
+      "no-data",
+      "group"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

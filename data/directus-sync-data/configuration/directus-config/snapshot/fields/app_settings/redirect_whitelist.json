@@ -1,0 +1,76 @@
+{
+  "collection": "app_settings",
+  "field": "redirect_whitelist",
+  "type": "json",
+  "meta": {
+    "collection": "app_settings",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "redirect_whitelist",
+    "group": "redirect_settings",
+    "hidden": false,
+    "interface": "select-multiple-dropdown",
+    "note": "Liste erlaubter Seiten die sich bei der App Anmelden dürfen",
+    "options": {
+      "allowNone": true,
+      "allowOther": true,
+      "choices": [
+        {
+          "text": "127.0.0.1",
+          "value": "127.0.0.1"
+        },
+        {
+          "text": "localhost",
+          "value": "localhost"
+        },
+        {
+          "text": "exp://",
+          "value": "exp://"
+        },
+        {
+          "text": "https://rocket-meals.github.io",
+          "value": "https://rocket-meals.github.io"
+        }
+      ]
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 1,
+    "special": [
+      "cast-json"
+    ],
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Erlaubte Quellen der Weiterleitungen"
+      }
+    ],
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  },
+  "schema": {
+    "name": "redirect_whitelist",
+    "table": "app_settings",
+    "data_type": "json",
+    "default_value": [
+      "127.0.0.1",
+      "exp://",
+      "https://rocket-meals.github.io",
+      "localhost"
+    ],
+    "max_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "is_nullable": true,
+    "is_unique": false,
+    "is_indexed": false,
+    "is_primary_key": false,
+    "is_generated": false,
+    "generation_expression": null,
+    "has_auto_increment": false,
+    "foreign_key_table": null,
+    "foreign_key_column": null
+  }
+}

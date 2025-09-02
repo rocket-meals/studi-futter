@@ -1,0 +1,31 @@
+{
+  "collection": "profiles",
+  "field": "devices",
+  "type": "alias",
+  "meta": {
+    "collection": "profiles",
+    "conditions": null,
+    "display": "related-values",
+    "display_options": {
+      "template": "{{alias}}({{platform}},{{system_version}}) - {{id}}"
+    },
+    "field": "devices",
+    "group": null,
+    "hidden": false,
+    "interface": "list-o2m",
+    "note": null,
+    "options": {
+      "template": "{{alias}}({{platform}},{{system_version}}) - {{id}}"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 19,
+    "special": [
+      "o2m"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

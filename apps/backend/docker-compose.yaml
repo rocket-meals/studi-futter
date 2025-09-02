@@ -178,6 +178,21 @@ services:
     networks:
       - directus_network
 
+  rocket-meals-database-sync:
+    build:
+      context: ./../../  # Build from project root for monorepo access
+      dockerfile: apps/backend-sync/Dockerfile
+    environment:
+      # Directus Admin user
+      ADMIN_EMAIL: "${ADMIN_EMAIL}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
+      DIRECTUS_PORT: "${DIRECTUS_PORT}"
+    networks:
+      - directus_network
+    volumes:
+      # Docker Socket für Container-Management
+      - /var/run/docker.sock:/var/run/docker.sock
+
   rocket-meals-database-backup:
     build:
       context: ./dockerDatabaseBackup

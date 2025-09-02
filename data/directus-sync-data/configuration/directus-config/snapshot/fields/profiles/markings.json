@@ -1,0 +1,31 @@
+{
+  "collection": "profiles",
+  "field": "markings",
+  "type": "alias",
+  "meta": {
+    "collection": "profiles",
+    "conditions": null,
+    "display": "related-values",
+    "display_options": {
+      "template": "{{markings_id.alias}}({{markings_id.external_identifier}}) - dislike:{{dislike}}"
+    },
+    "field": "markings",
+    "group": null,
+    "hidden": false,
+    "interface": "list-m2m",
+    "note": null,
+    "options": {
+      "template": "{{markings_id.alias}}({{markings_id.external_identifier}}) - dislike:{{dislike}}"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 18,
+    "special": [
+      "m2m"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

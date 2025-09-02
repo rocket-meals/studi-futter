@@ -1,0 +1,29 @@
+{
+  "collection": "devices",
+  "field": "system_group",
+  "type": "alias",
+  "meta": {
+    "collection": "devices",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "system_group",
+    "group": null,
+    "hidden": false,
+    "interface": "group-raw",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 11,
+    "special": [
+      "alias",
+      "group",
+      "no-data"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

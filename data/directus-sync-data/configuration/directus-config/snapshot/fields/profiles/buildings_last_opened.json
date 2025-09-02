@@ -1,0 +1,27 @@
+{
+  "collection": "profiles",
+  "field": "buildings_last_opened",
+  "type": "alias",
+  "meta": {
+    "collection": "profiles",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "buildings_last_opened",
+    "group": null,
+    "hidden": false,
+    "interface": "list-m2m",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 17,
+    "special": [
+      "m2m"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

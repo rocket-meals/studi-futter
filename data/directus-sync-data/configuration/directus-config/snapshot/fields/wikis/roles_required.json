@@ -1,0 +1,27 @@
+{
+  "collection": "wikis",
+  "field": "roles_required",
+  "type": "alias",
+  "meta": {
+    "collection": "wikis",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "roles_required",
+    "group": "visibility_settings",
+    "hidden": false,
+    "interface": "list-m2m",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 2,
+    "special": [
+      "m2m"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "half"
+  }
+}

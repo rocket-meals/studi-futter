@@ -1,0 +1,29 @@
+{
+  "collection": "form_fields",
+  "field": "form_settings",
+  "type": "alias",
+  "meta": {
+    "collection": "form_fields",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "form_settings",
+    "group": null,
+    "hidden": false,
+    "interface": "group-detail",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 14,
+    "special": [
+      "alias",
+      "no-data",
+      "group"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

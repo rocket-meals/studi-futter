@@ -40,3 +40,15 @@ apps/backend/Backend/directusExtensions/directus-extension-rocket-meals-bundle/t
 .prettier-cache/
 
 .prettier-cache
+
+# Yarn Berry
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/patches
+!.yarnrc.yml
+
+# Cache & State
+.yarn/install-state.gz
+.pnp.*

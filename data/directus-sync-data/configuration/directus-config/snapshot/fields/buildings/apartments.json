@@ -1,0 +1,36 @@
+{
+  "collection": "buildings",
+  "field": "apartments",
+  "type": "alias",
+  "meta": {
+    "collection": "buildings",
+    "conditions": null,
+    "display": "related-values",
+    "display_options": {
+      "template": "{{building.alias}}"
+    },
+    "field": "apartments",
+    "group": null,
+    "hidden": false,
+    "interface": "list-o2m",
+    "note": null,
+    "options": {
+      "template": "{{building.alias}}"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 15,
+    "special": [
+      "o2m"
+    ],
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Wohnanlagen"
+      }
+    ],
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

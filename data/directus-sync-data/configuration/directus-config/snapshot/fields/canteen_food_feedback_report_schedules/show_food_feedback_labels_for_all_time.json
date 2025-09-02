@@ -1,0 +1,50 @@
+{
+  "collection": "canteen_food_feedback_report_schedules",
+  "field": "show_food_feedback_labels_for_all_time",
+  "type": "boolean",
+  "meta": {
+    "collection": "canteen_food_feedback_report_schedules",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "show_food_feedback_labels_for_all_time",
+    "group": "report_content_settings",
+    "hidden": false,
+    "interface": "boolean",
+    "note": "Zeige Speise Label Rückmeldungen insgesammt",
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 9,
+    "special": [
+      "cast-boolean"
+    ],
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Zeige Speise Label Rückmeldungen insgesammt"
+      }
+    ],
+    "validation": null,
+    "validation_message": null,
+    "width": "half"
+  },
+  "schema": {
+    "name": "show_food_feedback_labels_for_all_time",
+    "table": "canteen_food_feedback_report_schedules",
+    "data_type": "boolean",
+    "default_value": true,
+    "max_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "is_nullable": true,
+    "is_unique": false,
+    "is_indexed": false,
+    "is_primary_key": false,
+    "is_generated": false,
+    "generation_expression": null,
+    "has_auto_increment": false,
+    "foreign_key_table": null,
+    "foreign_key_column": null
+  }
+}

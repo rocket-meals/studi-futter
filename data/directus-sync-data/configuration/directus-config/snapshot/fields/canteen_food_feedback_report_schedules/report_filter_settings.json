@@ -1,0 +1,37 @@
+{
+  "collection": "canteen_food_feedback_report_schedules",
+  "field": "report_filter_settings",
+  "type": "alias",
+  "meta": {
+    "collection": "canteen_food_feedback_report_schedules",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "report_filter_settings",
+    "group": null,
+    "hidden": false,
+    "interface": "group-detail",
+    "note": null,
+    "options": {
+      "headerIcon": "filter_alt",
+      "start": "closed"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 12,
+    "special": [
+      "alias",
+      "group",
+      "no-data"
+    ],
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Berichts Filter und Datumsbereiche"
+      }
+    ],
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

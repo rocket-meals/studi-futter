@@ -1,0 +1,29 @@
+{
+  "collection": "mails",
+  "field": "attachments",
+  "type": "alias",
+  "meta": {
+    "collection": "mails",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "attachments",
+    "group": null,
+    "hidden": false,
+    "interface": "files",
+    "note": null,
+    "options": {
+      "folder": "2533f43e-231a-438d-8906-373c8cf2c048"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 17,
+    "special": [
+      "files"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

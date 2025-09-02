@@ -1,0 +1,42 @@
+{
+  "collection": "forms",
+  "field": "form_fields",
+  "type": "alias",
+  "meta": {
+    "collection": "forms",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "form_fields",
+    "group": null,
+    "hidden": false,
+    "interface": "list-o2m",
+    "note": null,
+    "options": {
+      "enableLink": true,
+      "enableSearchFilter": true,
+      "fields": [
+        "sort",
+        "alias",
+        "field_type",
+        "external_import_id",
+        "external_export_id"
+      ],
+      "layout": "table",
+      "limit": 30,
+      "sort": "sort",
+      "tableSpacing": "compact",
+      "template": "{{alias}}"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 13,
+    "special": [
+      "o2m"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

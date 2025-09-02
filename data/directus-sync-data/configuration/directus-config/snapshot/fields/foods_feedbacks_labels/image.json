@@ -1,0 +1,52 @@
+{
+  "collection": "foods_feedbacks_labels",
+  "field": "image",
+  "type": "uuid",
+  "meta": {
+    "collection": "foods_feedbacks_labels",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "image",
+    "group": null,
+    "hidden": false,
+    "interface": "file-image",
+    "note": null,
+    "options": {
+      "folder": "d5371cdc-a9e6-46a6-a42d-9d71450042aa"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 12,
+    "special": [
+      "file"
+    ],
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Bild"
+      }
+    ],
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  },
+  "schema": {
+    "name": "image",
+    "table": "foods_feedbacks_labels",
+    "data_type": "uuid",
+    "default_value": null,
+    "max_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "is_nullable": true,
+    "is_unique": false,
+    "is_indexed": false,
+    "is_primary_key": false,
+    "is_generated": false,
+    "generation_expression": null,
+    "has_auto_increment": false,
+    "foreign_key_table": "directus_files",
+    "foreign_key_column": "id"
+  }
+}

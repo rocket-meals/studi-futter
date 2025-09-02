@@ -1,0 +1,35 @@
+{
+  "collection": "form_submissions",
+  "field": "mails",
+  "type": "alias",
+  "meta": {
+    "collection": "form_submissions",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "mails",
+    "group": null,
+    "hidden": false,
+    "interface": "list-o2m",
+    "note": null,
+    "options": {
+      "fields": [
+        "date_created",
+        "recipient",
+        "subject",
+        "log"
+      ],
+      "layout": "table"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 18,
+    "special": [
+      "o2m"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "collection": "form_submissions",
+  "field": "form_answers",
+  "type": "alias",
+  "meta": {
+    "collection": "form_submissions",
+    "conditions": [
+      {
+        "hidden": true,
+        "name": "Hide Form_Answers At Creation",
+        "options": {
+          "enableCreate": true,
+          "enableLink": false,
+          "enableSearchFilter": false,
+          "enableSelect": true,
+          "layout": "list",
+          "limit": 15,
+          "sortDirection": "+"
+        },
+        "readonly": true,
+        "rule": {
+          "_and": [
+            {
+              "id": {
+                "_null": true
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "display": "related-values",
+    "display_options": {
+      "template": "{{form_field.alias}}"
+    },
+    "field": "form_answers",
+    "group": null,
+    "hidden": false,
+    "interface": "list-o2m",
+    "note": null,
+    "options": {
+      "fields": [
+        "form_field.alias",
+        "value_string",
+        "value_number",
+        "value_boolean",
+        "value_date"
+      ],
+      "filter": null,
+      "layout": "table"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 15,
+    "special": [
+      "o2m"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

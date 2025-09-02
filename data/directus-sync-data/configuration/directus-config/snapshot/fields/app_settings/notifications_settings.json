@@ -1,0 +1,37 @@
+{
+  "collection": "app_settings",
+  "field": "notifications_settings",
+  "type": "alias",
+  "meta": {
+    "collection": "app_settings",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "notifications_settings",
+    "group": null,
+    "hidden": false,
+    "interface": "group-detail",
+    "note": "Push-Nachrichten Einstellungen",
+    "options": {
+      "headerIcon": "notifications_active",
+      "start": "closed"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 13,
+    "special": [
+      "alias",
+      "group",
+      "no-data"
+    ],
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Benachrichtigung Einstellungen"
+      }
+    ],
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

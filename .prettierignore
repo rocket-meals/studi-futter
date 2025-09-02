@@ -2,6 +2,9 @@
 node_modules/
 **/node_modules/
 
+# Data files
+data/
+
 # Build outputs
 dist/
 build/

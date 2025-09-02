@@ -1,0 +1,37 @@
+{
+  "collection": "canteen_food_feedback_report_schedules",
+  "field": "report_time_settings",
+  "type": "alias",
+  "meta": {
+    "collection": "canteen_food_feedback_report_schedules",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "report_time_settings",
+    "group": null,
+    "hidden": false,
+    "interface": "group-detail",
+    "note": null,
+    "options": {
+      "headerIcon": "nest_clock_farsight_analog",
+      "start": "closed"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 11,
+    "special": [
+      "alias",
+      "group",
+      "no-data"
+    ],
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Berichtszeitpunkte"
+      }
+    ],
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

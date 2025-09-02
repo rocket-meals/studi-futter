@@ -1,0 +1,30 @@
+{
+  "collection": "app_settings",
+  "field": "login_screen_translations",
+  "type": "alias",
+  "meta": {
+    "collection": "app_settings",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "login_screen_translations",
+    "group": null,
+    "hidden": false,
+    "interface": "translations",
+    "note": null,
+    "options": {
+      "defaultOpenSplitView": true,
+      "userLanguage": true
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 22,
+    "special": [
+      "translations"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

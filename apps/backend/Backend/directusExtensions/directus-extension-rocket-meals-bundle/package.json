@@ -217,6 +217,8 @@
     "p-queue": "^8.0.1",
     "puppeteer": "^24.3.0",
     "puppeteer-core": "^24.3.0",
+    "repo-depkit-common": "workspace:*",
+    "repo-depkit-common-backend": "workspace:*",
     "short-unique-id": "^5.2.2",
     "spark-md5": "^3.0.2",
     "sqlite3": "^5.1.7",

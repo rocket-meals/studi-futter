@@ -1,0 +1,38 @@
+{
+  "collection": "apartments",
+  "field": "washingmachines",
+  "type": "alias",
+  "meta": {
+    "collection": "apartments",
+    "conditions": null,
+    "display": "related-values",
+    "display_options": {
+      "template": "{{alias}}({{external_identifier}})"
+    },
+    "field": "washingmachines",
+    "group": null,
+    "hidden": false,
+    "interface": "list-o2m",
+    "note": null,
+    "options": {
+      "fields": [
+        "alias",
+        "external_identifier",
+        "date_stated",
+        "date_finished"
+      ],
+      "layout": "table",
+      "template": "{{alias}}({{external_identifier}})-finish:{{date_finished}}"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 14,
+    "special": [
+      "o2m"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

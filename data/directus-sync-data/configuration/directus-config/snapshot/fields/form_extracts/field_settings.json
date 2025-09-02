@@ -1,0 +1,29 @@
+{
+  "collection": "form_extracts",
+  "field": "field_settings",
+  "type": "alias",
+  "meta": {
+    "collection": "form_extracts",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "field_settings",
+    "group": null,
+    "hidden": false,
+    "interface": "group-raw",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 16,
+    "special": [
+      "alias",
+      "no-data",
+      "group"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

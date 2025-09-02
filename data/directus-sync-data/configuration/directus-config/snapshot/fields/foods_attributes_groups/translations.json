@@ -1,0 +1,30 @@
+{
+  "collection": "foods_attributes_groups",
+  "field": "translations",
+  "type": "alias",
+  "meta": {
+    "collection": "foods_attributes_groups",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "translations",
+    "group": null,
+    "hidden": false,
+    "interface": "translations",
+    "note": null,
+    "options": {
+      "defaultOpenSplitView": true,
+      "userLanguage": true
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 9,
+    "special": [
+      "translations"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

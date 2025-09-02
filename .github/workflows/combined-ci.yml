@@ -26,7 +26,7 @@ jobs:
       changed: ${{ steps.check.outputs.changed }}
     steps:
       - name: 🔄 Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: 🔍 Compare Build Number
         id: check
         uses: ./.github/actions/check-build-number
@@ -37,7 +37,7 @@ jobs:
     needs: check-build
     steps:
       - name: 🏗 Setup repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: 🚀 Build backend
@@ -51,7 +51,7 @@ jobs:
     needs: check-build
     steps:
       - name: 🔄 Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: master
       - name: 🧰 Setup Node.js, Yarn & Dependencies
@@ -71,7 +71,7 @@ jobs:
     if: needs.check-build.outputs.changed == 'true'
     steps:
       - name: 🔄 Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: master
       - name: 🧰 Setup Node.js, Yarn & Dependencies
@@ -91,7 +91,7 @@ jobs:
     if: needs.check-build.outputs.changed == 'true'
     steps:
       - name: 🔄 Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: 🧰 Setup Node.js, Yarn & Dependencies
         uses: ./.github/actions/setup-and-install
         with:
@@ -109,7 +109,7 @@ jobs:
     if: needs.check-build.outputs.changed == 'true'
     steps:
       - name: 🔄 Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: master
       - name: 🧰 Setup Node.js, Yarn & Dependencies
@@ -129,7 +129,7 @@ jobs:
     if: github.ref == 'refs/heads/master'
     steps:
       - name: 🔄 Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: 🧰 Setup Node.js, Yarn & Dependencies
         uses: ./.github/actions/setup-and-install
         with:

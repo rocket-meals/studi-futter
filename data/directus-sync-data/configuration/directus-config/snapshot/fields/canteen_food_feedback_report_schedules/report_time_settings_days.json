@@ -1,0 +1,29 @@
+{
+  "collection": "canteen_food_feedback_report_schedules",
+  "field": "report_time_settings_days",
+  "type": "alias",
+  "meta": {
+    "collection": "canteen_food_feedback_report_schedules",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "report_time_settings_days",
+    "group": "report_time_settings",
+    "hidden": false,
+    "interface": "group-detail",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 2,
+    "special": [
+      "alias",
+      "group",
+      "no-data"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

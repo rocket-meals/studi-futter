@@ -1,0 +1,29 @@
+{
+  "collection": "auto_translation_settings",
+  "field": "usage",
+  "type": "alias",
+  "meta": {
+    "collection": "auto_translation_settings",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "usage",
+    "group": "visible_for_valid_auth_key",
+    "hidden": false,
+    "interface": "group-raw",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 3,
+    "special": [
+      "alias",
+      "group",
+      "no-data"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

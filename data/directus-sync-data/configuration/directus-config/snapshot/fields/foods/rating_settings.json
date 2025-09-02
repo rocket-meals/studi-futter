@@ -1,0 +1,29 @@
+{
+  "collection": "foods",
+  "field": "rating_settings",
+  "type": "alias",
+  "meta": {
+    "collection": "foods",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "rating_settings",
+    "group": null,
+    "hidden": false,
+    "interface": "group-raw",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 16,
+    "special": [
+      "alias",
+      "group",
+      "no-data"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

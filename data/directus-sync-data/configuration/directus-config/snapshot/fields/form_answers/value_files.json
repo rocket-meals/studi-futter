@@ -1,0 +1,29 @@
+{
+  "collection": "form_answers",
+  "field": "value_files",
+  "type": "alias",
+  "meta": {
+    "collection": "form_answers",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "value_files",
+    "group": "values",
+    "hidden": false,
+    "interface": "files",
+    "note": null,
+    "options": {
+      "folder": "c6db8977-a2aa-4f7a-8001-b681b2fa143a"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 4,
+    "special": [
+      "files"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

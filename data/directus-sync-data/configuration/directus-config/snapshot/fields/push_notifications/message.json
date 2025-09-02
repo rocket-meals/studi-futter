@@ -1,0 +1,29 @@
+{
+  "collection": "push_notifications",
+  "field": "message",
+  "type": "alias",
+  "meta": {
+    "collection": "push_notifications",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "message",
+    "group": null,
+    "hidden": false,
+    "interface": "group-raw",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 10,
+    "special": [
+      "alias",
+      "group",
+      "no-data"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

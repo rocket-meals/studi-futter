@@ -1,0 +1,57 @@
+{
+  "collection": "form_extracts",
+  "field": "recipient_email_field",
+  "type": "uuid",
+  "meta": {
+    "collection": "form_extracts",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "recipient_email_field",
+    "group": null,
+    "hidden": false,
+    "interface": "select-dropdown-m2o",
+    "note": null,
+    "options": {
+      "filter": {
+        "_and": [
+          {
+            "form": {
+              "id": {
+                "_eq": "{{form}}"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 13,
+    "special": [
+      "m2o"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  },
+  "schema": {
+    "name": "recipient_email_field",
+    "table": "form_extracts",
+    "data_type": "uuid",
+    "default_value": null,
+    "max_length": null,
+    "numeric_precision": null,
+    "numeric_scale": null,
+    "is_nullable": true,
+    "is_unique": false,
+    "is_indexed": false,
+    "is_primary_key": false,
+    "is_generated": false,
+    "generation_expression": null,
+    "has_auto_increment": false,
+    "foreign_key_table": "form_fields",
+    "foreign_key_column": "id"
+  }
+}

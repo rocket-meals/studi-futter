@@ -1,0 +1,29 @@
+{
+  "collection": "chats",
+  "field": "linked_entities",
+  "type": "alias",
+  "meta": {
+    "collection": "chats",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "linked_entities",
+    "group": null,
+    "hidden": false,
+    "interface": "group-raw",
+    "note": null,
+    "options": null,
+    "readonly": false,
+    "required": false,
+    "sort": 11,
+    "special": [
+      "alias",
+      "no-data",
+      "group"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

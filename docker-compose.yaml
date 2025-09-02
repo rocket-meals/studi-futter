@@ -42,6 +42,16 @@ services:
       service: rocket-meals-database
       file: apps/backend/docker-compose.yaml
 
+  rocket-meals-database-sync:
+    env_file:
+      - .env
+    depends_on:
+      prepare-data:
+        condition: service_completed_successfully
+    extends:
+      service: rocket-meals-database-sync
+      file: apps/backend/docker-compose.yaml
+
   rocket-meals-database-backup:
     env_file:
       - .env

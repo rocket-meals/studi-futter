@@ -1,0 +1,35 @@
+{
+  "collection": "app_settings",
+  "field": "housing_translations",
+  "type": "alias",
+  "meta": {
+    "collection": "app_settings",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "housing_translations",
+    "group": "housing_settings",
+    "hidden": false,
+    "interface": "translations",
+    "note": "Zeigt in der App eine Beschreibung an, vor den Wohnungen, bei der Auflistung aller Wohnungen.",
+    "options": {
+      "defaultOpenSplitView": true,
+      "userLanguage": true
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 3,
+    "special": [
+      "translations"
+    ],
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Wohnung Beschreibungstext"
+      }
+    ],
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

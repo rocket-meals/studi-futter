@@ -1,0 +1,30 @@
+{
+  "collection": "auto_translation_settings",
+  "field": "notice",
+  "type": "alias",
+  "meta": {
+    "collection": "auto_translation_settings",
+    "conditions": null,
+    "display": null,
+    "display_options": null,
+    "field": "notice",
+    "group": "visible_for_valid_auth_key",
+    "hidden": false,
+    "interface": "presentation-notice",
+    "note": null,
+    "options": {
+      "text": "If you want a collection (e. G. wikis) to be translated do the following. Add a field type \"translations\" which will create a new collection (e. G. wikis_translations). In this collection add the following boolean (default: true) fields: \"be_source_for_translations\", \"let_be_translated\" and \"create_translations_for_all_languages\". Ensure that Directus automatically created a collection \"languages\"."
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 1,
+    "special": [
+      "alias",
+      "no-data"
+    ],
+    "translations": null,
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}

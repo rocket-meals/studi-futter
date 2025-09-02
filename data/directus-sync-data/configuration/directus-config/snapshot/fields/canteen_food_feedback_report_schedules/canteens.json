@@ -1,0 +1,36 @@
+{
+  "collection": "canteen_food_feedback_report_schedules",
+  "field": "canteens",
+  "type": "alias",
+  "meta": {
+    "collection": "canteen_food_feedback_report_schedules",
+    "conditions": null,
+    "display": "related-values",
+    "display_options": {
+      "template": "{{canteens_id.alias}} ({{canteens_id.id}})"
+    },
+    "field": "canteens",
+    "group": "report_filter_settings",
+    "hidden": false,
+    "interface": "list-m2m",
+    "note": "Keine Auswahl: Alle Mensen betrachten | Auswahl: Nur Rückmeldungen und Angebote der ausgewählten Mensen werden betrachtet.",
+    "options": {
+      "template": "{{canteens_id.alias}} ({{canteens_id.id}})"
+    },
+    "readonly": false,
+    "required": false,
+    "sort": 5,
+    "special": [
+      "m2m"
+    ],
+    "translations": [
+      {
+        "language": "de-DE",
+        "translation": "Mensen"
+      }
+    ],
+    "validation": null,
+    "validation_message": null,
+    "width": "full"
+  }
+}
