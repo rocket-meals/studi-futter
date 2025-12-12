@@ -149,7 +149,7 @@ export function getCustomerConfigurations(): CustomerConfig[] {
 }
 
 export function getCustomerConfig(): CustomerConfig {
-	return devConfig;
+	return studiFutterConfig;
 }
 
 export function getFinalConfig(config?: any) {
