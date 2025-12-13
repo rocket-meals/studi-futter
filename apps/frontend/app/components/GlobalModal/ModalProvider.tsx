@@ -3,8 +3,9 @@ import { StyleSheet, View } from 'react-native';
 import BaseBottomSheet from '@/components/BaseBottomSheet/BaseBottomSheet';
 
 type ModalOptions = {
-        backgroundStyle?: any;
+        backgroundStyle?: any; // styling passed to the BottomSheet background
         headerBackgroundColor?: string;
+        overlayStyle?: any; // styling for the fullscreen overlay behind the sheet (e.g. rgba dim)
 };
 
 type ModalContextType = {
@@ -25,6 +26,8 @@ const ModalContext = createContext<ModalContextType | null>(null);
 export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         const [content, setContent] = useState<ReactNode | null>(null);
         const [backgroundStyle, setBackgroundStyle] = useState<any>(null);
+        // overlay shown over the app (should usually be semi-transparent) - separate from sheet background
+        const [overlayStyle, setOverlayStyle] = useState<any>(null);
         const [headerBackgroundColor, setHeaderBackgroundColor] = useState<string | undefined>(undefined);
         const sheetRef = useRef<any>(null);
         const [isVisible, setIsVisible] = useState(false);
@@ -51,6 +54,7 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
                 setContent(c);
                 setBackgroundStyle(options?.backgroundStyle ?? null);
+                setOverlayStyle(options?.overlayStyle ?? { backgroundColor: 'rgba(0,0,0,0.5)' });
                 setHeaderBackgroundColor(options?.headerBackgroundColor ?? undefined);
                 setIsVisible(true);
                 setDebug(prev => ({
@@ -68,6 +72,7 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
                 sheetRef.current?.close?.();
                 setBackgroundStyle(null);
+                setOverlayStyle(null);
                 setHeaderBackgroundColor(undefined);
                 clearCloseTimeout();
                 closeTimeoutRef.current = setTimeout(() => {
@@ -85,62 +90,66 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         };
 
         // When content is set, ensure the sheet expands once the sheet ref is available
+        // helper: keep trying to expand until ref is ready (use rAF for web-friendly timing)
+        const ensureExpand = () => {
+                let tries = 0;
+                let cancelled = false;
+                const attempt = () => {
+                        if (cancelled) return;
+                        try {
+                                if (sheetRef.current?.expand) {
+                                        sheetRef.current.expand();
+                                        setDebug((prev) => ({
+                                                ...prev,
+                                                sheetRefReady: Boolean(sheetRef.current),
+                                        }));
+                                        return;
+                                }
+                        } catch (e) {
+                                // ignore occasional errors from exotic refs
+                        }
+                        tries += 1;
+                        if (tries < 60) {
+                                if (typeof requestAnimationFrame !== 'undefined') {
+                                        requestAnimationFrame(attempt);
+                                } else {
+                                        setTimeout(attempt, 16);
+                                }
+                        }
+                };
+                attempt();
+                return () => {
+                        cancelled = true;
+                };
+        };
+
         useEffect(() => {
                 if (!content) return;
-                // small timeout to allow ref attachment/render
-                const t = setTimeout(() => {
-                        sheetRef.current?.expand?.();
-                        setDebug((prev) => ({
-                                ...prev,
-                                sheetRefReady: Boolean(sheetRef.current),
-                        }));
-                }, 20);
-                return () => clearTimeout(t);
+                const cancel = ensureExpand();
+                return () => cancel();
         }, [content]);
-
-        // Also react to visibility changes in case the content does not change (e.g., re-open same modal)
-        useEffect(() => {
-                if (isVisible) {
-                        sheetRef.current?.expand?.();
-                        setDebug((prev) => ({
-                                ...prev,
-                                sheetRefReady: Boolean(sheetRef.current),
-                        }));
-                } else {
-                        sheetRef.current?.close?.();
-                }
-        }, [isVisible]);
-
-        useEffect(() => () => clearCloseTimeout(), []);
 
         return (
                 <ModalContext.Provider value={{ open, close, debug }}>
                         {children}
-                        <View pointerEvents="box-none" style={styles.modalContainer}>
-                                <BaseBottomSheet
-                                        ref={sheetRef}
-                                        index={isVisible ? 0 : -1}
-                                        backgroundStyle={backgroundStyle}
-                                        headerBackgroundColor={headerBackgroundColor}
-                                        enablePanDownToClose
-                                        onClose={() => {
-                                                clearCloseTimeout();
-                                                setContent(null);
-                                                setBackgroundStyle(null);
-                                                setHeaderBackgroundColor(undefined);
-                                                setIsVisible(false);
-                                                setDebug(prev => ({
-                                                        ...prev,
-                                                        lastAction: 'close',
-                                                        contentSet: false,
-                                                        sheetRefReady: Boolean(sheetRef.current),
-                                                        closeInvocations: prev.closeInvocations + 1,
-                                                }));
-                                        }}
-                                >
-                                        {content}
-                                </BaseBottomSheet>
-                        </View>
+                        {content && (
+                                <View style={styles.modalContainer} pointerEvents="box-none">
+                                       {/* Visual overlay (uses provided overlayStyle or falls back to semi-transparent dim) */}
+                                       <View
+                                               style={[StyleSheet.absoluteFillObject, overlayStyle ?? { backgroundColor: 'rgba(0,0,0,0.5)' }]}
+                                               pointerEvents="none"
+                                       />
+                                         <BaseBottomSheet
+                                                 ref={sheetRef}
+                                                 enablePanDownToClose
+                                                 onClose={close}
+                                                 headerBackgroundColor={headerBackgroundColor}
+                                                 backgroundStyle={backgroundStyle}
+                                         >
+                                                 {content}
+                                         </BaseBottomSheet>
+                                 </View>
+                        )}
                 </ModalContext.Provider>
         );
 };

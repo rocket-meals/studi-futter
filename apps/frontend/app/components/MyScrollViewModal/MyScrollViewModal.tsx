@@ -52,10 +52,10 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
     </>
   );
 
-  const footerComponent = ListFooterComponent || <View style={{ height: Math.max(40, insets.bottom + 80) }} />;
+  const footerComponent = ListFooterComponent || <View style={{ height: Math.max(24, insets.bottom + 16) }} />;
 
-  const contentStyle = { paddingBottom: 24 + insets.bottom + 80, paddingHorizontal: 20 };
-  const scrollInsets = { bottom: insets.bottom + 80 };
+  const contentStyle = { paddingBottom: 24 + insets.bottom, paddingHorizontal: 20 };
+  const scrollInsets = { bottom: insets.bottom };
 
   const containerStyle = { backgroundColor: theme.screen.background };
 
