@@ -1,9 +1,7 @@
 import { Text, TouchableOpacity, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
-import { isWeb } from '@/constants/Constants';
 import { AntDesign, FontAwesome5, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { SortSheetProps } from './types';
@@ -19,8 +17,8 @@ import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 
 const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
-	const { theme } = useTheme();
-	const { translate } = useLanguage();
+        const { theme } = useTheme();
+        const { translate } = useLanguage();
 
 	const dispatch = useDispatch();
 	const { canteenFoodOffers } = useSelector((state: RootState) => state.canteenReducer);
@@ -137,76 +135,58 @@ const SortSheet: React.FC<SortSheetProps> = ({ closeSheet }) => {
 		setSelectedOption(sortBy as FoodSortOption);
 	}, []);
 
-	return (
-		<BottomSheetScrollView style={{ ...styles.sheetView, backgroundColor: theme.sheet.sheetBg }} contentContainerStyle={styles.contentContainer}>
-                                <View
-                                        style={{
-                                                ...styles.sheetHeader,
-                                                paddingRight: isWeb ? 10 : 0,
-                                                paddingTop: isWeb ? 10 : 0,
-				}}
-			>
-				<View />
-				<Text
-					style={{
-						...styles.sheetHeading,
-						fontSize: isWeb ? 40 : 28,
-						color: theme.screen.text,
-                                        }}
-                                >
-                                        {translate(TranslationKeys.sort)}
-                                </Text>
-                        </View>
-			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_sort} />
+        return (
+                <View style={{ width: '100%', gap: 12 }}>
+                        <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_sort} />
                         <View style={styles.sortingListContainer}>
                                 {sortingOptions.map((option, index) => (
-					<TouchableOpacity
-						key={option.id + index}
-						style={[
-							styles.actionItem,
-							selectedOption === option.id
-								? {
-										backgroundColor: foods_area_color,
-									}
-								: {
-										backgroundColor: theme.screen.iconBg,
-									},
-						]}
-						onPress={() => updateSort(option)}
-					>
-						<View style={styles.col}>
-							{React.cloneElement(
-								option.icon,
-								selectedOption === option.id
-									? {
-											color: contrastColor,
-										}
-									: { color: theme.screen.icon }
-							)}
-							<Text
-								style={[
-									styles.label,
-									selectedOption === option.id
-										? {
-												color: contrastColor,
-											}
-										: { color: theme.screen.text },
-								]}
-							>
-								{translate(option.label)}
-							</Text>
-						</View>
-						<Checkbox
-							style={styles.checkbox}
-							value={selectedOption === option.id}
-							// onValueChange={() => updateSort(option)} // Toggle option
-							color={selectedOption === option.id ? '#000000' : undefined}
-						/>
-					</TouchableOpacity>
-				))}
-			</View>
-		</BottomSheetScrollView>
-	);
+                                        <TouchableOpacity
+                                                key={option.id + index}
+                                                style={[
+                                                        styles.actionItem,
+                                                        selectedOption === option.id
+                                                                ? {
+                                                                                backgroundColor: foods_area_color,
+                                                                        }
+                                                                : {
+                                                                                backgroundColor: theme.screen.iconBg,
+                                                                        },
+                                                ]}
+                                                onPress={() => updateSort(option)}
+                                        >
+                                                <View style={styles.col}>
+                                                        {React.cloneElement(
+                                                                option.icon,
+                                                                selectedOption === option.id
+                                                                        ? {
+                                                                                        color: contrastColor,
+                                                                                }
+                                                                        : { color: theme.screen.icon }
+                                                        )}
+                                                        <Text
+                                                                style={[
+                                                                        styles.label,
+                                                                        selectedOption === option.id
+                                                                                ? {
+                                                                                                color: contrastColor,
+                                                                                        }
+                                                                                : { color: theme.screen.text },
+                                                                ]}
+                                                        >
+                                                                {translate(option.label)}
+                                                        </Text>
+                                                </View>
+                                                <Checkbox
+                                                        style={styles.checkbox}
+                                                        value={selectedOption === option.id}
+                                                        // onValueChange={() => updateSort(option)} // Toggle option
+                                                        color={selectedOption === option.id ? '#000000' : undefined}
+                                                />
+                                        </TouchableOpacity>
+                                ))}
+                        </View>
+                </View>
+        );
 };
 
 export default SortSheet;

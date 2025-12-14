@@ -42,6 +42,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RootState } from '@/redux/reducer';
 import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import AIGeneratedHintSheet from '@/components/AIGeneratedHintSheet';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 
 export const SHEET_COMPONENTS = {
         canteen: CanteenSelectionSheet,
@@ -79,11 +80,12 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const animationRef = useRef<LottieView>(null);
 	const [animationJson, setAmimationJson] = useState<any>(null);
 	const { profile, user } = useSelector((state: RootState) => state.authReducer);
-	const selectedCanteen = useSelectedCanteen();
-		const kioskMode = useKioskMode();
+        const selectedCanteen = useSelectedCanteen();
+                const kioskMode = useKioskMode();
         const [prefetchedFoodOffers, setPrefetchedFoodOffers] = useState<Record<string, DatabaseTypes.Foodoffers[]>>({});
-	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
-	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
+        const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
+        const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
+        const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 
 	// Set Page Title
 	useSetPageTitle(selectedCanteen?.alias || TranslationKeys.food_offers);
@@ -157,10 +159,25 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		}
 	}, [popupEvents, kioskMode, sessionDismissed]);
 
-	const openSheet = useCallback((sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
-		setSelectedSheet(sheet);
-		setSheetProps(props);
-	}, []);
+        const openSheet = useCallback(
+                (sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
+                        if (sheet === 'sort') {
+                                showScrollViewModal(
+                                        {
+                                                title: translate(TranslationKeys.sort),
+                                                onClose: closeScrollViewModal,
+                                                children: <SortSheet closeSheet={closeScrollViewModal} />,
+                                        },
+                                        { backgroundStyle: { backgroundColor: theme.sheet.sheetBg }, headerBackgroundColor: theme.sheet.sheetBg }
+                                );
+                                return;
+                        }
+
+                        setSelectedSheet(sheet);
+                        setSheetProps(props);
+                },
+                [closeScrollViewModal, showScrollViewModal, theme.sheet.sheetBg, translate]
+        );
 
 	const openManagementSheet = (id: string) => {
 		if (id) {

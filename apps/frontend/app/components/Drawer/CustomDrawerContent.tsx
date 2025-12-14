@@ -261,7 +261,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
                                 iconLibName: MaterialCommunityIcons,
                                 activeKey: 'collectible-event/index',
                                 route: 'collectible-event/index',
-                                position: 7.2,
+                                position: 2.1,
                                 hasUnread: true,
                         });
                 }

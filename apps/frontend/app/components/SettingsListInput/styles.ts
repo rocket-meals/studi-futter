@@ -1,0 +1,56 @@
+import { StyleSheet } from 'react-native';
+
+export default StyleSheet.create({
+        sheetView: {
+                width: '100%',
+                padding: 10,
+                paddingBottom: 20,
+                alignItems: 'stretch',
+        },
+        keyboardAvoidingView: {
+                flex: 1,
+                width: '100%',
+        },
+        keyboardAvoidingContent: {
+                flexGrow: 1,
+                alignItems: 'center',
+        },
+        sheetHeader: {
+                width: '100%',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderTopRightRadius: 28,
+                borderTopLeftRadius: 28,
+        },
+        sheetHeading: {
+                fontFamily: 'Poppins_700Bold',
+                fontSize: 28,
+        },
+        sheetInput: {
+                width: '100%',
+                height: 60,
+                borderRadius: 20,
+                paddingHorizontal: 20,
+                borderWidth: 1,
+                marginTop: 20,
+                fontFamily: 'Poppins_400Regular',
+                fontSize: 18,
+        },
+        buttonContainer: {
+                width: '100%',
+                marginTop: 30,
+                alignItems: 'stretch',
+        },
+        saveButton: {
+                height: 52,
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 50,
+                width: '100%',
+        },
+        buttonText: {
+                fontSize: 16,
+                fontFamily: 'Poppins_700Bold',
+        },
+});

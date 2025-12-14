@@ -16,6 +16,8 @@ import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
 import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import { SHEET_COMPONENTS } from '@/app/(app)/foodoffers';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import AIGeneratedHintSheet from '@/components/AIGeneratedHintSheet';
 
 interface FoodOffersScrollListProps {
 	canteenId: string;
@@ -30,23 +32,39 @@ interface DayData {
 const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, startDate }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
-	const { canteenFeedbackLabels, canteens } = useSelector((state: RootState) => state.canteenReducer);
-	const { sortBy, language } = useSelector((state: RootState) => state.settings);
-	const { ownFoodFeedbacks, foodCategories, foodOfferCategories } = useSelector((state: RootState) => state.food);
-	const { profile } = useSelector((state: RootState) => state.authReducer);
-	const selectedCanteen = canteens?.find(c => c.id === canteenId) as DatabaseTypes.Canteens | undefined;
-	const [days, setDays] = useState<DayData[]>([]);
-	const [loading, setLoading] = useState(false);
-	const [refreshing, setRefreshing] = useState(false);
-	const [selectedSheet, setSelectedSheet] = useState<'menu' | keyof typeof SHEET_COMPONENTS | null>(null);
-	const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
-	const [selectedFoodId, setSelectedFoodId] = useState('');
-	const bottomSheetRef = useRef<BottomSheet>(null);
+        const { canteenFeedbackLabels, canteens } = useSelector((state: RootState) => state.canteenReducer);
+        const { sortBy, language } = useSelector((state: RootState) => state.settings);
+        const { ownFoodFeedbacks, foodCategories, foodOfferCategories } = useSelector((state: RootState) => state.food);
+        const { profile } = useSelector((state: RootState) => state.authReducer);
+        const selectedCanteen = canteens?.find(c => c.id === canteenId) as DatabaseTypes.Canteens | undefined;
+        const [days, setDays] = useState<DayData[]>([]);
+        const [loading, setLoading] = useState(false);
+        const [refreshing, setRefreshing] = useState(false);
+        const [selectedSheet, setSelectedSheet] = useState<'menu' | keyof typeof SHEET_COMPONENTS | null>(null);
+        const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
+        const [selectedFoodId, setSelectedFoodId] = useState('');
+        const bottomSheetRef = useRef<BottomSheet>(null);
+        const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 
-	const openSheet = useCallback((sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
-		setSelectedSheet(sheet);
-		setSheetProps(props);
-	}, []);
+        const openSheet = useCallback(
+                (sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
+                        if (sheet === 'aiGeneratedInfo') {
+                                showScrollViewModal(
+                                        {
+                                                title: translate(TranslationKeys.ai_generated_image),
+                                                onClose: closeScrollViewModal,
+                                                children: <AIGeneratedHintSheet closeSheet={closeScrollViewModal} />,
+                                        },
+                                        { backgroundStyle: { backgroundColor: theme.sheet.sheetBg }, headerBackgroundColor: theme.sheet.sheetBg }
+                                );
+                                return;
+                        }
+
+                        setSelectedSheet(sheet);
+                        setSheetProps(props);
+                },
+                [closeScrollViewModal, showScrollViewModal, theme.sheet.sheetBg, translate]
+        );
 
 	const closeSheet = useCallback(() => {
 		bottomSheetRef.current?.snapToIndex(-1);

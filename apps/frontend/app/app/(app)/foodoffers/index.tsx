@@ -71,6 +71,7 @@ import useChatUnreadStatus from '@/hooks/useChatUnreadStatus';
 
 import IconButton from '@/components/UI/IconButton';
 import Button from '@/components/UI/Button';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 
 export const SHEET_COMPONENTS = {
 	canteen: CanteenSelectionSheet,
@@ -132,12 +133,13 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const { profile, user } = useSelector((state: RootState) => state.authReducer);
 	const { appElements } = useSelector((state: RootState) => state.appElements);
 	const { selectedCanteenFoodOffers, canteenFeedbackLabels } = useSelector((state: RootState) => state.canteenReducer);
-	const selectedCanteen = useSelectedCanteen();
-	useFoodOffersDefaultDate();
-	const kioskMode = useKioskMode();
+        const selectedCanteen = useSelectedCanteen();
+        useFoodOffersDefaultDate();
+        const kioskMode = useKioskMode();
         const [prefetchedFoodOffers, setPrefetchedFoodOffers] = useState<Record<string, DatabaseTypes.Foodoffers[]>>({});
-	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
-	const { hasUnreadChats } = useChatUnreadStatus();
+        const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
+        const { hasUnreadChats } = useChatUnreadStatus();
+        const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
 	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
 
 	const MIN_CARD_WIDTH = 280;
@@ -309,10 +311,37 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		}
 	}, [popupEvents, kioskMode, sessionDismissed]);
 
-	const openSheet = useCallback((sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
-		setSelectedSheet(sheet);
-		setSheetProps(props);
-	}, []);
+        const openSheet = useCallback(
+                (sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
+                        if (sheet === 'sort') {
+                                showScrollViewModal(
+                                        {
+                                                title: translate(TranslationKeys.sort),
+                                                onClose: closeScrollViewModal,
+                                                children: <SortSheet closeSheet={closeScrollViewModal} />,
+                                        },
+                                        { backgroundStyle: { backgroundColor: theme.sheet.sheetBg }, headerBackgroundColor: theme.sheet.sheetBg }
+                                );
+                                return;
+                        }
+
+                        if (sheet === 'aiGeneratedInfo') {
+                                showScrollViewModal(
+                                        {
+                                                title: translate(TranslationKeys.ai_generated_image),
+                                                onClose: closeScrollViewModal,
+                                                children: <AIGeneratedHintSheet closeSheet={closeScrollViewModal} />,
+                                        },
+                                        { backgroundStyle: { backgroundColor: theme.sheet.sheetBg }, headerBackgroundColor: theme.sheet.sheetBg }
+                                );
+                                return;
+                        }
+
+                        setSelectedSheet(sheet);
+                        setSheetProps(props);
+                },
+                [closeScrollViewModal, showScrollViewModal, theme.sheet.sheetBg, translate]
+        );
 
 	const openManagementSheet = useCallback((id: string) => {
 		if (id) {

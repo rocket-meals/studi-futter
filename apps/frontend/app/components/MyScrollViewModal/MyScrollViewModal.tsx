@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export interface MyScrollViewModalProps {
   title?: string;
   closeSheet?: () => void;
+  backgroundColor?: string;
   children?: ReactNode;
   // For FlatList mode
   useFlatList?: boolean;
@@ -25,6 +26,7 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
   title,
   children,
   useFlatList = false,
+  backgroundColor,
   data = [],
   renderItem,
   keyExtractor,
@@ -37,13 +39,15 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
 
+  const resolvedBackgroundColor = backgroundColor ?? theme.screen.background;
+
   React.useEffect(() => () => onClose?.(), [onClose]);
 
   const headerComponent = (
     <>
       {title && (
         <View
-          style={{ backgroundColor: theme.screen.background, paddingHorizontal: 20, paddingTop: 8, paddingBottom: 8 }}
+          style={{ backgroundColor: resolvedBackgroundColor, paddingHorizontal: 20, paddingTop: 8, paddingBottom: 8 }}
         >
           <Text style={{ fontSize: 18, fontWeight: '600', color: theme.sheet.text }}>{title}</Text>
         </View>
@@ -57,7 +61,7 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
   const contentStyle = { paddingBottom: 24 + insets.bottom, paddingHorizontal: 20 };
   const scrollInsets = { bottom: insets.bottom };
 
-  const containerStyle = { backgroundColor: theme.screen.background };
+  const containerStyle = { backgroundColor: resolvedBackgroundColor };
 
   if (useFlatList && renderItem && keyExtractor) {
     return (

@@ -53,9 +53,12 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                 clearCloseTimeout();
 
                 setContent(c);
-                setBackgroundStyle(options?.backgroundStyle ?? null);
+                const resolvedBackgroundStyle = options?.backgroundStyle ?? null;
+                setBackgroundStyle(resolvedBackgroundStyle);
                 setOverlayStyle(options?.overlayStyle ?? { backgroundColor: 'rgba(0,0,0,0.5)' });
-                setHeaderBackgroundColor(options?.headerBackgroundColor ?? undefined);
+                const resolvedHeaderBackgroundColor =
+                        options?.headerBackgroundColor ?? resolvedBackgroundStyle?.backgroundColor ?? undefined;
+                setHeaderBackgroundColor(resolvedHeaderBackgroundColor);
                 setIsVisible(true);
                 setDebug(prev => ({
                         ...prev,
