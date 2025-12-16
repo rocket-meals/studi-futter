@@ -506,7 +506,7 @@ export type CollectibleEvents = {
   collectible_at_markings?: boolean | null;
   collectible_at_markings_details?: boolean | null;
   collectible_at_news?: boolean | null;
-  collectible_at_noticiation?: boolean | null;
+  collectible_at_notification?: boolean | null;
   collectible_at_price_group_selection?: boolean | null;
   collectible_at_settings?: boolean | null;
   collectible_at_settings_amount_column?: boolean | null;

@@ -1,13 +1,13 @@
 {
   "collection": "collectible_events",
-  "field": "collectible_at_noticiation",
+  "field": "collectible_at_notification",
   "type": "boolean",
   "meta": {
     "collection": "collectible_events",
     "conditions": null,
     "display": null,
     "display_options": null,
-    "field": "collectible_at_noticiation",
+    "field": "collectible_at_notification",
     "group": "collectable_at",
     "hidden": false,
     "interface": "boolean",
@@ -25,7 +25,7 @@
     "width": "half"
   },
   "schema": {
-    "name": "collectible_at_noticiation",
+    "name": "collectible_at_notification",
     "table": "collectible_events",
     "data_type": "boolean",
     "default_value": false,

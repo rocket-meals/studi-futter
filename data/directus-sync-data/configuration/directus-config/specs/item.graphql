@@ -2742,13 +2742,13 @@ type chat_messages {
   date_created_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
-  image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   chat(filter: chats_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): chats
   id: ID!
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   profile(filter: profiles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): profiles
   attachment(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
 }
 
 type chat_messages_aggregated {
@@ -2770,13 +2770,13 @@ type chat_messages_aggregated_count {
   status: Int
   date_created: Int
   date_updated: Int
-  image: Int
   chat: Int
   id: Int
   user_created: Int
   user_updated: Int
   profile: Int
   attachment: Int
+  image: Int
 }
 
 type chat_messages_aggregated_fields {
@@ -2951,12 +2951,12 @@ type collectible_events {
   collectible_at_license_information: Boolean
   collectible_at_markings: Boolean
   collectible_at_markings_details: Boolean
-  collectible_at_settings_menuposition: Boolean
-  collectible_at_foodoffers_details: Boolean
-  collectible_at_settings_first_day_of_week: Boolean
-  ask_for_contact_details: Boolean
   collectible_at_settings_theme: Boolean
+  collectible_at_foodoffers_details: Boolean
+  collectible_at_settings_menuposition: Boolean
+  ask_for_contact_details: Boolean
   repeat_every_year: Boolean
+  collectible_at_notification: Boolean
   collectible_at_campus: Boolean
   collectible_at_canteen_selection: Boolean
   collectible_at_card_balance: Boolean
@@ -2965,12 +2965,12 @@ type collectible_events {
   collectible_at_drawer: Boolean
   collectible_at_faq: Boolean
   collectible_at_foodoffers: Boolean
-  collectible_at_noticiation: Boolean
   collectible_at_price_group_selection: Boolean
+  collectible_at_settings: Boolean
   monitor_display_number_of_collected_items: Boolean
   monitor_display_number_of_participants: Boolean
-  collectible_at_settings: Boolean
   collectible_at_settings_amount_column: Boolean
+  collectible_at_settings_first_day_of_week: Boolean
   collectible_at_news: Boolean
   points_minimum: Int
   sort: Int
@@ -2986,8 +2986,8 @@ type collectible_events {
   date_updated_func: datetime_functions
   date_created: Date
   date_created_func: datetime_functions
-  collectible_item_image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   id: ID!
+  collectible_item_image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   monitor_background_image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
@@ -3019,12 +3019,12 @@ type collectible_events_aggregated_count {
   collectible_at_license_information: Int
   collectible_at_markings: Int
   collectible_at_markings_details: Int
-  collectible_at_settings_menuposition: Int
-  collectible_at_foodoffers_details: Int
-  collectible_at_settings_first_day_of_week: Int
-  ask_for_contact_details: Int
   collectible_at_settings_theme: Int
+  collectible_at_foodoffers_details: Int
+  collectible_at_settings_menuposition: Int
+  ask_for_contact_details: Int
   repeat_every_year: Int
+  collectible_at_notification: Int
   collectible_at_campus: Int
   collectible_at_canteen_selection: Int
   collectible_at_card_balance: Int
@@ -3033,12 +3033,12 @@ type collectible_events_aggregated_count {
   collectible_at_drawer: Int
   collectible_at_faq: Int
   collectible_at_foodoffers: Int
-  collectible_at_noticiation: Int
   collectible_at_price_group_selection: Int
+  collectible_at_settings: Int
   monitor_display_number_of_collected_items: Int
   monitor_display_number_of_participants: Int
-  collectible_at_settings: Int
   collectible_at_settings_amount_column: Int
+  collectible_at_settings_first_day_of_week: Int
   collectible_at_news: Int
   points_minimum: Int
   sort: Int
@@ -3050,8 +3050,8 @@ type collectible_events_aggregated_count {
   date_start: Int
   date_updated: Int
   date_created: Int
-  collectible_item_image: Int
   id: Int
+  collectible_item_image: Int
   monitor_background_image: Int
   user_updated: Int
   user_created: Int
@@ -3650,13 +3650,13 @@ type directus_settings {
   project_color: String
   project_url: String
   project_name: String
-  storage_default_folder(filter: directus_folders_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_folders
   public_favicon(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   public_registration_role(filter: directus_roles_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_roles
   project_id: ID
   project_logo(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   public_foreground(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   public_background(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
+  storage_default_folder(filter: directus_folders_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_folders
 }
 
 type directus_settings_mutated {
@@ -4102,9 +4102,9 @@ type foodoffers_info_items {
   name(filter: app_elements_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): app_elements
   image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   canteen(filter: canteens_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): canteens
-  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
-  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   id: ID!
+  user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
 }
 
 type foodoffers_info_items_aggregated {
@@ -4132,9 +4132,9 @@ type foodoffers_info_items_aggregated_count {
   name: Int
   image: Int
   canteen: Int
-  user_created: Int
-  user_updated: Int
   id: Int
+  user_updated: Int
+  user_created: Int
 }
 
 type foodoffers_info_items_aggregated_fields {
@@ -4985,12 +4985,12 @@ type form_answers {
   value_custom_func: count_functions
   value_number: Float
   status: String
-  date_created: Date
-  date_created_func: datetime_functions
   value_date: Date
   value_date_func: datetime_functions
   date_updated: Date
   date_updated_func: datetime_functions
+  date_created: Date
+  date_created_func: datetime_functions
   value_image(filter: directus_files_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_files
   form_field(filter: form_fields_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): form_fields
   form_submission(filter: form_submissions_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): form_submissions
@@ -5021,9 +5021,9 @@ type form_answers_aggregated_count {
   value_custom: Int
   value_number: Int
   status: Int
-  date_created: Int
   value_date: Int
   date_updated: Int
+  date_created: Int
   value_image: Int
   form_field: Int
   form_submission: Int
@@ -5839,8 +5839,8 @@ type markings_aggregated_fields {
 
 type markings_exclusions {
   id: ID!
-  restricted_markings_id(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): markings
   restricted_by_markings_id(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): markings
+  restricted_markings_id(filter: markings_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): markings
 }
 
 type markings_exclusions_aggregated {
@@ -5858,8 +5858,8 @@ type markings_exclusions_aggregated {
 
 type markings_exclusions_aggregated_count {
   id: Int
-  restricted_markings_id: Int
   restricted_by_markings_id: Int
+  restricted_markings_id: Int
 }
 
 type markings_exclusions_aggregated_fields {
@@ -6506,10 +6506,10 @@ type push_notifications {
   message_title: String
   message_body: String
   ios_message_subtitle: String
-  date_updated: Date
-  date_updated_func: datetime_functions
   date_created: Date
   date_created_func: datetime_functions
+  date_updated: Date
+  date_updated_func: datetime_functions
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   id: ID!
@@ -6548,8 +6548,8 @@ type push_notifications_aggregated_count {
   message_title: Int
   message_body: Int
   ios_message_subtitle: Int
-  date_updated: Int
   date_created: Int
+  date_updated: Int
   user_updated: Int
   user_created: Int
   id: Int
@@ -6576,9 +6576,9 @@ type report_recipients {
   date_updated_func: datetime_functions
   date_created: Date
   date_created_func: datetime_functions
-  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
   id: ID!
   user_updated(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
+  user_created(filter: directus_users_filter, sort: [String], limit: Int, offset: Int, page: Int, search: String): directus_users
 }
 
 type report_recipients_aggregated {
@@ -6601,9 +6601,9 @@ type report_recipients_aggregated_count {
   status: Int
   date_updated: Int
   date_created: Int
-  user_created: Int
   id: Int
   user_updated: Int
+  user_created: Int
 }
 
 type report_recipients_aggregated_fields {
@@ -7253,13 +7253,13 @@ type version_chat_messages {
   status: String
   date_created: Date
   date_updated: Date
-  image: JSON
   chat: JSON
   id: ID
   user_created: JSON
   user_updated: JSON
   profile: JSON
   attachment: JSON
+  image: JSON
 }
 
 """"""
@@ -7313,12 +7313,12 @@ type version_collectible_events {
   collectible_at_license_information: Boolean
   collectible_at_markings: Boolean
   collectible_at_markings_details: Boolean
-  collectible_at_settings_menuposition: Boolean
-  collectible_at_foodoffers_details: Boolean
-  collectible_at_settings_first_day_of_week: Boolean
-  ask_for_contact_details: Boolean
   collectible_at_settings_theme: Boolean
+  collectible_at_foodoffers_details: Boolean
+  collectible_at_settings_menuposition: Boolean
+  ask_for_contact_details: Boolean
   repeat_every_year: Boolean
+  collectible_at_notification: Boolean
   collectible_at_campus: Boolean
   collectible_at_canteen_selection: Boolean
   collectible_at_card_balance: Boolean
@@ -7327,12 +7327,12 @@ type version_collectible_events {
   collectible_at_drawer: Boolean
   collectible_at_faq: Boolean
   collectible_at_foodoffers: Boolean
-  collectible_at_noticiation: Boolean
   collectible_at_price_group_selection: Boolean
+  collectible_at_settings: Boolean
   monitor_display_number_of_collected_items: Boolean
   monitor_display_number_of_participants: Boolean
-  collectible_at_settings: Boolean
   collectible_at_settings_amount_column: Boolean
+  collectible_at_settings_first_day_of_week: Boolean
   collectible_at_news: Boolean
   points_minimum: Int
   sort: Int
@@ -7344,8 +7344,8 @@ type version_collectible_events {
   date_start: Date
   date_updated: Date
   date_created: Date
-  collectible_item_image: JSON
   id: ID
+  collectible_item_image: JSON
   monitor_background_image: JSON
   user_updated: JSON
   user_created: JSON
@@ -7493,9 +7493,9 @@ type version_foodoffers_info_items {
   name: JSON
   image: JSON
   canteen: JSON
-  user_created: JSON
-  user_updated: JSON
   id: ID
+  user_updated: JSON
+  user_created: JSON
 }
 
 """"""
@@ -7736,9 +7736,9 @@ type version_form_answers {
   value_custom: JSON
   value_number: Float
   status: String
-  date_created: Date
   value_date: Date
   date_updated: Date
+  date_created: Date
   value_image: JSON
   form_field: JSON
   form_submission: JSON
@@ -7991,8 +7991,8 @@ type version_markings {
 """"""
 type version_markings_exclusions {
   id: ID
-  restricted_markings_id: JSON
   restricted_by_markings_id: JSON
+  restricted_markings_id: JSON
 }
 
 """"""
@@ -8178,8 +8178,8 @@ type version_push_notifications {
   message_title: String
   message_body: String
   ios_message_subtitle: String
-  date_updated: Date
   date_created: Date
+  date_updated: Date
   user_updated: JSON
   user_created: JSON
   id: ID
@@ -8193,9 +8193,9 @@ type version_report_recipients {
   status: String
   date_updated: Date
   date_created: Date
-  user_created: JSON
   id: ID
   user_updated: JSON
+  user_created: JSON
 }
 
 """"""
@@ -9456,13 +9456,13 @@ input chat_messages_filter {
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  image: directus_files_filter
   chat: chats_filter
   id: id_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
   profile: profiles_filter
   attachment: directus_files_filter
+  image: directus_files_filter
   _and: [chat_messages_filter]
   _or: [chat_messages_filter]
 }
@@ -9476,13 +9476,13 @@ input chat_messages_quantifier_filter {
   date_created_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
-  image: directus_files_filter
   chat: chats_filter
   id: id_filter_operators
   user_created: directus_users_filter
   user_updated: directus_users_filter
   profile: profiles_filter
   attachment: directus_files_filter
+  image: directus_files_filter
   _and: [chat_messages_filter]
   _or: [chat_messages_filter]
   _some: chat_messages_filter
@@ -9585,12 +9585,12 @@ input collectible_events_filter {
   collectible_at_license_information: boolean_filter_operators
   collectible_at_markings: boolean_filter_operators
   collectible_at_markings_details: boolean_filter_operators
-  collectible_at_settings_menuposition: boolean_filter_operators
-  collectible_at_foodoffers_details: boolean_filter_operators
-  collectible_at_settings_first_day_of_week: boolean_filter_operators
-  ask_for_contact_details: boolean_filter_operators
   collectible_at_settings_theme: boolean_filter_operators
+  collectible_at_foodoffers_details: boolean_filter_operators
+  collectible_at_settings_menuposition: boolean_filter_operators
+  ask_for_contact_details: boolean_filter_operators
   repeat_every_year: boolean_filter_operators
+  collectible_at_notification: boolean_filter_operators
   collectible_at_campus: boolean_filter_operators
   collectible_at_canteen_selection: boolean_filter_operators
   collectible_at_card_balance: boolean_filter_operators
@@ -9599,12 +9599,12 @@ input collectible_events_filter {
   collectible_at_drawer: boolean_filter_operators
   collectible_at_faq: boolean_filter_operators
   collectible_at_foodoffers: boolean_filter_operators
-  collectible_at_noticiation: boolean_filter_operators
   collectible_at_price_group_selection: boolean_filter_operators
+  collectible_at_settings: boolean_filter_operators
   monitor_display_number_of_collected_items: boolean_filter_operators
   monitor_display_number_of_participants: boolean_filter_operators
-  collectible_at_settings: boolean_filter_operators
   collectible_at_settings_amount_column: boolean_filter_operators
+  collectible_at_settings_first_day_of_week: boolean_filter_operators
   collectible_at_news: boolean_filter_operators
   points_minimum: number_filter_operators
   sort: number_filter_operators
@@ -9620,8 +9620,8 @@ input collectible_events_filter {
   date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  collectible_item_image: directus_files_filter
   id: id_filter_operators
+  collectible_item_image: directus_files_filter
   monitor_background_image: directus_files_filter
   user_updated: directus_users_filter
   user_created: directus_users_filter
@@ -10137,13 +10137,13 @@ input create_chat_messages_input {
   status: String
   date_created: Date
   date_updated: Date
-  image: create_directus_files_input
   chat: create_chats_input
   id: ID
   user_created: create_directus_users_input
   user_updated: create_directus_users_input
   profile: create_profiles_input
   attachment: create_directus_files_input
+  image: create_directus_files_input
 }
 
 input create_chats_input {
@@ -10193,12 +10193,12 @@ input create_collectible_events_input {
   collectible_at_license_information: Boolean
   collectible_at_markings: Boolean
   collectible_at_markings_details: Boolean
-  collectible_at_settings_menuposition: Boolean
-  collectible_at_foodoffers_details: Boolean
-  collectible_at_settings_first_day_of_week: Boolean
-  ask_for_contact_details: Boolean
   collectible_at_settings_theme: Boolean
+  collectible_at_foodoffers_details: Boolean
+  collectible_at_settings_menuposition: Boolean
+  ask_for_contact_details: Boolean
   repeat_every_year: Boolean
+  collectible_at_notification: Boolean
   collectible_at_campus: Boolean
   collectible_at_canteen_selection: Boolean
   collectible_at_card_balance: Boolean
@@ -10207,12 +10207,12 @@ input create_collectible_events_input {
   collectible_at_drawer: Boolean
   collectible_at_faq: Boolean
   collectible_at_foodoffers: Boolean
-  collectible_at_noticiation: Boolean
   collectible_at_price_group_selection: Boolean
+  collectible_at_settings: Boolean
   monitor_display_number_of_collected_items: Boolean
   monitor_display_number_of_participants: Boolean
-  collectible_at_settings: Boolean
   collectible_at_settings_amount_column: Boolean
+  collectible_at_settings_first_day_of_week: Boolean
   collectible_at_news: Boolean
   points_minimum: Int
   sort: Int
@@ -10224,8 +10224,8 @@ input create_collectible_events_input {
   date_start: Date!
   date_updated: Date
   date_created: Date
-  collectible_item_image: create_directus_files_input
   id: ID
+  collectible_item_image: create_directus_files_input
   monitor_background_image: create_directus_files_input
   user_updated: create_directus_users_input
   user_created: create_directus_users_input
@@ -10453,9 +10453,9 @@ input create_foodoffers_info_items_input {
   name: create_app_elements_input
   image: create_directus_files_input
   canteen: create_canteens_input
-  user_created: create_directus_users_input
-  user_updated: create_directus_users_input
   id: ID
+  user_updated: create_directus_users_input
+  user_created: create_directus_users_input
 }
 
 input create_foodoffers_input {
@@ -10708,9 +10708,9 @@ input create_form_answers_input {
   value_custom: JSON
   value_number: Float
   status: String
-  date_created: Date
   value_date: Date
   date_updated: Date
+  date_created: Date
   value_image: create_directus_files_input
   form_field: create_form_fields_input
   form_submission: create_form_submissions_input
@@ -10899,8 +10899,8 @@ input create_mails_input {
 
 input create_markings_exclusions_input {
   id: ID
-  restricted_markings_id: create_markings_input
   restricted_by_markings_id: create_markings_input
+  restricted_markings_id: create_markings_input
 }
 
 input create_markings_groups_input {
@@ -11116,8 +11116,8 @@ input create_push_notifications_input {
   message_title: String
   message_body: String
   ios_message_subtitle: String
-  date_updated: Date
   date_created: Date
+  date_updated: Date
   user_updated: create_directus_users_input
   user_created: create_directus_users_input
   id: ID
@@ -11130,9 +11130,9 @@ input create_report_recipients_input {
   status: String
   date_updated: Date
   date_created: Date
-  user_created: create_directus_users_input
   id: ID
   user_updated: create_directus_users_input
+  user_created: create_directus_users_input
 }
 
 input create_utilizations_entries_input {
@@ -11942,9 +11942,9 @@ input foodoffers_info_items_filter {
   name: app_elements_filter
   image: directus_files_filter
   canteen: canteens_filter
-  user_created: directus_users_filter
-  user_updated: directus_users_filter
   id: id_filter_operators
+  user_updated: directus_users_filter
+  user_created: directus_users_filter
   _and: [foodoffers_info_items_filter]
   _or: [foodoffers_info_items_filter]
 }
@@ -12408,12 +12408,12 @@ input form_answers_filter {
   value_custom_func: count_function_filter_operators
   value_number: number_filter_operators
   status: string_filter_operators
-  date_created: date_filter_operators
-  date_created_func: datetime_function_filter_operators
   value_date: date_filter_operators
   value_date_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
   value_image: directus_files_filter
   form_field: form_fields_filter
   form_submission: form_submissions_filter
@@ -12435,12 +12435,12 @@ input form_answers_quantifier_filter {
   value_custom_func: count_function_filter_operators
   value_number: number_filter_operators
   status: string_filter_operators
-  date_created: date_filter_operators
-  date_created_func: datetime_function_filter_operators
   value_date: date_filter_operators
   value_date_func: datetime_function_filter_operators
   date_updated: date_filter_operators
   date_updated_func: datetime_function_filter_operators
+  date_created: date_filter_operators
+  date_created_func: datetime_function_filter_operators
   value_image: directus_files_filter
   form_field: form_fields_filter
   form_submission: form_submissions_filter
@@ -12904,8 +12904,8 @@ input mails_quantifier_filter {
 
 input markings_exclusions_filter {
   id: number_filter_operators
-  restricted_markings_id: markings_filter
   restricted_by_markings_id: markings_filter
+  restricted_markings_id: markings_filter
   _and: [markings_exclusions_filter]
   _or: [markings_exclusions_filter]
 }
@@ -12913,8 +12913,8 @@ input markings_exclusions_filter {
 """"""
 input markings_exclusions_quantifier_filter {
   id: number_filter_operators
-  restricted_markings_id: markings_filter
   restricted_by_markings_id: markings_filter
+  restricted_markings_id: markings_filter
   _and: [markings_exclusions_filter]
   _or: [markings_exclusions_filter]
   _some: markings_exclusions_filter
@@ -13320,10 +13320,10 @@ input push_notifications_filter {
   message_title: string_filter_operators
   message_body: string_filter_operators
   ios_message_subtitle: string_filter_operators
-  date_updated: date_filter_operators
-  date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
+  date_updated: date_filter_operators
+  date_updated_func: datetime_function_filter_operators
   user_updated: directus_users_filter
   user_created: directus_users_filter
   id: id_filter_operators
@@ -13340,9 +13340,9 @@ input report_recipients_filter {
   date_updated_func: datetime_function_filter_operators
   date_created: date_filter_operators
   date_created_func: datetime_function_filter_operators
-  user_created: directus_users_filter
   id: id_filter_operators
   user_updated: directus_users_filter
+  user_created: directus_users_filter
   _and: [report_recipients_filter]
   _or: [report_recipients_filter]
 }
@@ -13854,13 +13854,13 @@ input update_chat_messages_input {
   status: String
   date_created: Date
   date_updated: Date
-  image: update_directus_files_input
   chat: update_chats_input
   id: ID
   user_created: update_directus_users_input
   user_updated: update_directus_users_input
   profile: update_profiles_input
   attachment: update_directus_files_input
+  image: update_directus_files_input
 }
 
 input update_chats_input {
@@ -13910,12 +13910,12 @@ input update_collectible_events_input {
   collectible_at_license_information: Boolean
   collectible_at_markings: Boolean
   collectible_at_markings_details: Boolean
-  collectible_at_settings_menuposition: Boolean
-  collectible_at_foodoffers_details: Boolean
-  collectible_at_settings_first_day_of_week: Boolean
-  ask_for_contact_details: Boolean
   collectible_at_settings_theme: Boolean
+  collectible_at_foodoffers_details: Boolean
+  collectible_at_settings_menuposition: Boolean
+  ask_for_contact_details: Boolean
   repeat_every_year: Boolean
+  collectible_at_notification: Boolean
   collectible_at_campus: Boolean
   collectible_at_canteen_selection: Boolean
   collectible_at_card_balance: Boolean
@@ -13924,12 +13924,12 @@ input update_collectible_events_input {
   collectible_at_drawer: Boolean
   collectible_at_faq: Boolean
   collectible_at_foodoffers: Boolean
-  collectible_at_noticiation: Boolean
   collectible_at_price_group_selection: Boolean
+  collectible_at_settings: Boolean
   monitor_display_number_of_collected_items: Boolean
   monitor_display_number_of_participants: Boolean
-  collectible_at_settings: Boolean
   collectible_at_settings_amount_column: Boolean
+  collectible_at_settings_first_day_of_week: Boolean
   collectible_at_news: Boolean
   points_minimum: Int
   sort: Int
@@ -13941,8 +13941,8 @@ input update_collectible_events_input {
   date_start: Date
   date_updated: Date
   date_created: Date
-  collectible_item_image: update_directus_files_input
   id: ID
+  collectible_item_image: update_directus_files_input
   monitor_background_image: update_directus_files_input
   user_updated: update_directus_users_input
   user_created: update_directus_users_input
@@ -14170,9 +14170,9 @@ input update_foodoffers_info_items_input {
   name: update_app_elements_input
   image: update_directus_files_input
   canteen: update_canteens_input
-  user_created: update_directus_users_input
-  user_updated: update_directus_users_input
   id: ID
+  user_updated: update_directus_users_input
+  user_created: update_directus_users_input
 }
 
 input update_foodoffers_input {
@@ -14425,9 +14425,9 @@ input update_form_answers_input {
   value_custom: JSON
   value_number: Float
   status: String
-  date_created: Date
   value_date: Date
   date_updated: Date
+  date_created: Date
   value_image: update_directus_files_input
   form_field: update_form_fields_input
   form_submission: update_form_submissions_input
@@ -14616,8 +14616,8 @@ input update_mails_input {
 
 input update_markings_exclusions_input {
   id: ID
-  restricted_markings_id: update_markings_input
   restricted_by_markings_id: update_markings_input
+  restricted_markings_id: update_markings_input
 }
 
 input update_markings_groups_input {
@@ -14833,8 +14833,8 @@ input update_push_notifications_input {
   message_title: String
   message_body: String
   ios_message_subtitle: String
-  date_updated: Date
   date_created: Date
+  date_updated: Date
   user_updated: update_directus_users_input
   user_created: update_directus_users_input
   id: ID
@@ -14847,9 +14847,9 @@ input update_report_recipients_input {
   status: String
   date_updated: Date
   date_created: Date
-  user_created: update_directus_users_input
   id: ID
   user_updated: update_directus_users_input
+  user_created: update_directus_users_input
 }
 
 input update_utilizations_entries_input {

@@ -24,7 +24,7 @@ export const CollectibleAt = {
   collectible_at_markings: 'collectible_at_markings',
   collectible_at_markings_details: 'collectible_at_markings_details',
   collectible_at_news: 'collectible_at_news',
-  collectible_at_noticiation: 'collectible_at_noticiation',
+  collectible_at_notification: 'collectible_at_notification',
   collectible_at_price_group_selection: 'collectible_at_price_group_selection',
   collectible_at_settings: 'collectible_at_settings',
   collectible_at_settings_amount_column: 'collectible_at_settings_amount_column',
