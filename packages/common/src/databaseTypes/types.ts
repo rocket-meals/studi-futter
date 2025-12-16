@@ -476,7 +476,7 @@ export type CollectibleEventParticipants = {
   email?: string | null;
   id: string;
   phone_number?: string | null;
-  points?: string | null;
+  points?: number | null;
   profile?: string | Profiles | null;
   sort?: number | null;
   status: string;
