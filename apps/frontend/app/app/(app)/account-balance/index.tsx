@@ -31,6 +31,8 @@ import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import DebugView from '@/components/DebugView';
+import ProjectButton from '@/components/ProjectButton';
+import { myContrastColor } from '@/helper/ColorHelper';
 
 enum BalanceStateLowerBound {
 	CONFIDENT = 10,
@@ -46,7 +48,7 @@ const AccountBalanceScreen = () => {
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
 	const { profile, isDevMode } = useSelector((state: RootState) => state.authReducer);
-	const { appSettings, language, primaryColor } = useSelector((state: RootState) => state.settings);
+	const { appSettings, language, primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
 	const balance_area_color = appSettings?.balance_area_color ? appSettings?.balance_area_color : primaryColor;
 	const [isNfcSupported, setIsNfcSupported] = useState(false);
 	const [isNfcEnabled, setIsNfcEnabled] = useState(false);
@@ -66,6 +68,7 @@ const AccountBalanceScreen = () => {
                         ),
                 [debugErrors]
         );
+	const contrastColor = useMemo(() => myContrastColor(primaryColor, theme, mode === 'dark'), [mode, primaryColor, theme]);
 
 	// Helper function to add errors to debug list
 	const addDebugError = useCallback((error: any, source: string) => {
@@ -308,8 +311,8 @@ const AccountBalanceScreen = () => {
 			<Text style={{ ...styles.balance, color: theme.header.text }}>{profile?.credit_balance ? showFormatedPrice(formatPrice(profile?.credit_balance)) : '? €'}</Text>
 			{(isWeb || !isNfcSupported) && <Text style={{ ...styles.subText, color: theme.header.text }}>{translate(TranslationKeys.nfcNotSupported)}</Text>}
 			{!isWeb && isNfcEnabled && isNfcSupported && (
-				<TouchableOpacity
-					style={{ ...styles.nfcButton, borderColor: theme.screen.iconBg }}
+				<ProjectButton
+					style={{ width: '80%' }}
 					onPress={async () => {
 						try {
 							await onReadNfcPress();
@@ -319,10 +322,9 @@ const AccountBalanceScreen = () => {
 							addDebugError(e, 'NFC Card Read');
 						}
 					}}
-				>
-					<MaterialCommunityIcons name="credit-card-wireless-outline" size={24} color={theme.screen.icon} />
-					<Text style={{ ...styles.nfcLabel, color: theme.screen.text }}>{translate(TranslationKeys.nfcReadCard)}</Text>
-				</TouchableOpacity>
+					text={translate(TranslationKeys.nfcReadCard)}
+					iconLeft={<MaterialCommunityIcons name="credit-card-wireless-outline" size={24} color={contrastColor} />}
+				/>
 			)}
 			{isNfcSupported && !isNfcEnabled && (
 				<TouchableOpacity

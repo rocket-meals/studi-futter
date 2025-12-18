@@ -524,6 +524,7 @@ export type CollectibleEvents = {
   date_updated?: string | null;
   id: string;
   monitor_background_image?: string | DirectusFiles | null;
+  monitor_background_image_remote_url?: string | null;
   monitor_display_number_of_collected_items?: boolean | null;
   monitor_display_number_of_participants?: boolean | null;
   monitor_settings: string;

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, SafeAreaView, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { COLLECTABLE_AT_FIELDS, CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
+import { COLLECTABLE_AT_FIELDS, CollectibleAt, DatabaseTypes, DateHelper } from 'repo-depkit-common';
 
 import useActiveCollectibleEvent from '@/hooks/useActiveCollectibleEvent';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
@@ -196,6 +196,19 @@ const CollectibleEventScreen = () => {
         const [isPermissionModalVisible, setIsPermissionModalVisible] = useState(false);
         const [participation, setParticipation] = useState<DatabaseTypes.CollectibleEventParticipants | null>(null);
         const [visibleHints, setVisibleHints] = useState<Record<string, boolean>>({});
+
+        const formatEventDate = useCallback((dateString?: string | null) => {
+                if (!dateString || !DateHelper.isValidDateString(dateString)) {
+                        return '-';
+                }
+
+                try {
+                        return DateHelper.formatOfferDateToReadable(new Date(dateString), true, true);
+                } catch (error) {
+                        console.error('Error formatting date:', error);
+                        return '-';
+                }
+        }, []);
 
         const toggleCollectibleHint = useCallback((key: string) => {
                 setVisibleHints(prev => ({ ...prev, [key]: !prev[key] }));
@@ -425,6 +438,8 @@ const CollectibleEventScreen = () => {
                 const title =
                     getTitleFromTranslation(activeCollectibleEvent.translations as any, language) || activeCollectibleEvent.alias || '';
                 const description = getDescriptionFromTranslation(activeCollectibleEvent.translations as any, language);
+                const startDateLabel = formatEventDate(activeCollectibleEvent.date_start);
+                const endDateLabel = formatEventDate(activeCollectibleEvent.date_end);
 
                 return (
                     <View style={styles.section}>
@@ -440,13 +455,28 @@ const CollectibleEventScreen = () => {
                                     </Text>
                             </View>
 
-                            <View style={{ marginTop: 16, gap: 12 }}>
+                            <View style={{ marginTop: 16, gap: 0 }}>
                                     <SettingsList
                                         leftIcon={<MaterialCommunityIcons name="counter" size={22} color={theme.screen.icon} />}
                                         label={translate(TranslationKeys.collectible_event_points)}
-                                        groupPosition="single"
-                                        showSeparator={false}
+                                        groupPosition="top"
                                         value={`${collectedCount}/${maxCollectibleKeys || '∞'}`}
+                                    />
+                                    <SettingsList
+                                        leftIcon={
+                                                <MaterialCommunityIcons name="calendar-start" size={22} color={theme.screen.icon} />
+                                        }
+                                        label={translate(TranslationKeys.collectible_event_start_date)}
+                                        value={startDateLabel}
+                                        groupPosition="middle"
+                                    />
+                                    <SettingsList
+                                        leftIcon={
+                                                <MaterialCommunityIcons name="calendar-end" size={22} color={theme.screen.icon} />
+                                        }
+                                        label={translate(TranslationKeys.collectible_event_end_date)}
+                                        value={endDateLabel}
+                                        groupPosition="bottom"
                                     />
                             </View>
 

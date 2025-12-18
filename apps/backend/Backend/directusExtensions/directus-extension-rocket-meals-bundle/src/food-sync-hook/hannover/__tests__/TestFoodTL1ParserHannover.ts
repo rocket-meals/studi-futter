@@ -129,6 +129,23 @@ describe('FoodTL1ParserHannover Test', () => {
     }
   });
 
+  it('Niedersachsen Menü marking is ignored for food id creation', async () => {
+    let foodOfferJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithNiedersachsenMenueMarking());
+    expect(!!foodOfferJson).toBe(true);
+    expect(foodOfferJson.length).toBeGreaterThan(0);
+
+    const firstFoodOffer = foodOfferJson[0];
+    expect(!!firstFoodOffer).toBe(true);
+    if (!firstFoodOffer) {
+      return;
+    }
+    const expectedMarkingExternalIdentifiers = ['26', '99', FoodTL1ParserHannover.NIEDERSACHSEN_MENUE_EXTERNAL_IDENTIFIER];
+    const expectedFoodId = generateFoodId([801346], ['26', '99']);
+    expect(firstFoodOffer.marking_external_identifiers).toEqual(expect.arrayContaining(expectedMarkingExternalIdentifiers));
+    expect(firstFoodOffer.food_id).toBe(expectedFoodId);
+    expect(firstFoodOffer.food_id).not.toContain(FoodTL1ParserHannover.NIEDERSACHSEN_MENUE_EXTERNAL_IDENTIFIER);
+  });
+
   it('Markings use correctly additional field for vegan (x)', async () => {
     const marking_external_identifiers = ['4', '20', '20A', '20C', '25', '99', 'x'];
     let findFoodId = generateFoodId([800562, 802726, 801834, 801454], marking_external_identifiers);

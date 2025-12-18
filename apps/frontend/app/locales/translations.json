@@ -1889,6 +1889,26 @@
     "tr": "Koleksiyon etkinliği",
     "zh": "收集活动"
   },
+  "collectible_event_start_date": {
+    "de": "Start des Events",
+    "en": "Event start",
+    "ar": "بداية الحدث",
+    "es": "Inicio del evento",
+    "fr": "Début de l'événement",
+    "ru": "Начало события",
+    "tr": "Etkinlik başlangıcı",
+    "zh": "活动开始"
+  },
+  "collectible_event_end_date": {
+    "de": "Ende des Events",
+    "en": "Event end",
+    "ar": "نهاية الحدث",
+    "es": "Fin del evento",
+    "fr": "Fin de l'événement",
+    "ru": "Окончание события",
+    "tr": "Etkinlik bitişi",
+    "zh": "活动结束"
+  },
   "collectible_event_points": {
     "de": "Aktuelle Punkte",
     "en": "Current points",

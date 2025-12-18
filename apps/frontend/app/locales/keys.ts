@@ -187,6 +187,8 @@ export enum TranslationKeys {
 	import = 'import',
         event = 'event',
         collectible_event = 'collectible_event',
+        collectible_event_start_date = 'collectible_event_start_date',
+        collectible_event_end_date = 'collectible_event_end_date',
         collectible_event_points = 'collectible_event_points',
         collectible_event_no_active = 'collectible_event_no_active',
         collectible_event_save_success = 'collectible_event_save_success',

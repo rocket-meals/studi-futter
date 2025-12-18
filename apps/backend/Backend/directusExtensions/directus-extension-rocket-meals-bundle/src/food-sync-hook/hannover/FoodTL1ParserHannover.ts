@@ -92,6 +92,8 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
   }
 
   static KLIMA_TELLER_EXTERNAL_IDENTIFIER = 'kt';
+  static NIEDERSACHSEN_MENUE_EXTERNAL_IDENTIFIER = 'q';
+  static FOOD_ID_EXCLUDED_MARKINGS = [FoodTL1ParserHannover.NIEDERSACHSEN_MENUE_EXTERNAL_IDENTIFIER];
 
   /**
    * Rating like A, B, C, D, E will be transformed to CO2_RATING_A, CO2_RATING_B, CO2_RATING_C, CO2_RATING_D, CO2_RATING_E
@@ -120,7 +122,10 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
    */
   private filterMarkingsNotImportantForFoodID(markingExternalIdentifiers: string[]): string[] {
     return markingExternalIdentifiers.filter(marking => {
-      return !marking.startsWith(FoodTL1ParserHannover.CO2_BEWERTUNG_PREFIX_IDENTIFIER);
+      if (marking.startsWith(FoodTL1ParserHannover.CO2_BEWERTUNG_PREFIX_IDENTIFIER)) {
+        return false;
+      }
+      return !FoodTL1ParserHannover.FOOD_ID_EXCLUDED_MARKINGS.includes(marking);
     });
   }
 
