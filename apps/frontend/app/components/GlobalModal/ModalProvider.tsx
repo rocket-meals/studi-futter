@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode, useRef, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import BaseBottomSheet from '@/components/BaseBottomSheet/BaseBottomSheet';
+import {useTheme} from "@/hooks/useTheme";
 
 type ModalOptions = {
         backgroundStyle?: any; // styling passed to the BottomSheet background
@@ -30,6 +31,10 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         const [overlayStyle, setOverlayStyle] = useState<any>(null);
         const [headerBackgroundColor, setHeaderBackgroundColor] = useState<string | undefined>(undefined);
         const sheetRef = useRef<any>(null);
+
+        const { theme } = useTheme();
+        let screenBackgroundColor = headerBackgroundColor || theme.screen.background;
+
         const [isVisible, setIsVisible] = useState(false);
         const [debug, setDebug] = useState<ModalContextType['debug']>({
                 lastAction: null,
@@ -146,7 +151,7 @@ export const ModalProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                                                  ref={sheetRef}
                                                  enablePanDownToClose
                                                  onClose={close}
-                                                 headerBackgroundColor={headerBackgroundColor}
+                                                 headerBackgroundColor={screenBackgroundColor}
                                                  backgroundStyle={backgroundStyle}
                                          >
                                                  {content}

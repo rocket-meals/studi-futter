@@ -2,6 +2,8 @@ import { ReactNode } from 'react';
 import MyScrollViewModal, { MyScrollViewModalProps } from '@/components/MyScrollViewModal';
 import { useModal } from './useModal';
 import { useTheme } from '@/hooks/useTheme';
+import {View} from "react-native";
+import React from 'react';
 
 export type MyScrollViewModalConfig = Omit<MyScrollViewModalProps, 'closeSheet'> & { children?: ReactNode };
 
@@ -14,6 +16,7 @@ export const useMyScrollViewModal = () => {
 
                 const resolvedBackgroundColor = backgroundColor ?? theme.screen.background;
                 const backgroundStyle = { backgroundColor: resolvedBackgroundColor, ...options?.backgroundStyle };
+
                 const mergedOptions = {
                         ...options,
                         backgroundStyle,

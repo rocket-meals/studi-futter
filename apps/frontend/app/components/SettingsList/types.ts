@@ -1,7 +1,7 @@
 import {PropsWithChildren} from "react";
 
 type SettingsListPropsOwn = {
-	leftIcon: React.ReactNode;
+        leftIcon?: React.ReactNode;
 	/**
 	 * Title text for the row. "label" is kept for backwards
 	 * compatibility with the old `SettingList` component.
@@ -26,8 +26,13 @@ type SettingsListPropsOwn = {
 	 * kept for backwards compatibility with the old `SettingList`
 	 * component.
 	 */
-	iconBackgroundColor?: string;
-	iconBgColor?: string;
+        iconBackgroundColor?: string;
+        iconBgColor?: string;
+        /**
+         * Disable indentation that is normally reserved for the icon column.
+         * Useful when no icon should be displayed.
+         */
+        noIconIndent?: boolean;
 	/**
 	 * Optional separator below the item.
 	 */
