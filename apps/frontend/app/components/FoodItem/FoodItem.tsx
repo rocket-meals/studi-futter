@@ -22,6 +22,8 @@ import { handleFoodRating } from '@/helper/feedback';
 import { RootState } from '@/redux/reducer';
 import CardWithText from '../CardWithText/CardWithText';
 import useFoodCard from '@/hooks/useFoodCard';
+import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import AIGeneratedHintSheet from '../AIGeneratedHintSheet';
 
 
 const selectFoodState = (state: RootState) => state.food;
@@ -36,6 +38,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
     const dispatch = useDispatch();
     const { theme } = useTheme();
     const { translate } = useLanguage();
+    const { show: showScrollViewModal } = useMyScrollViewModal();
 
     const [warning, setWarning] = useState(false);
 
@@ -213,16 +216,27 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                       )}
                     </TouchableOpacity>
 
-                    {foodItem?.image_generated && (
-                      <TouchableOpacity
-                        style={styles.aiBadgeContainer}
-                        onPress={() => handleMenuSheet('aiGeneratedInfo')}
-                      >
-                        <Text style={styles.aiGeneratedBadgeText}>
-                          {translate(TranslationKeys.ai_generated_badge_label)}
-                        </Text>
-                      </TouchableOpacity>
-                    )}
+                  {foodItem?.image_generated && (
+                    <TouchableOpacity
+                      style={styles.aiBadgeContainer}
+                      onPress={() =>
+                        showScrollViewModal(
+                          {
+                            title: translate(TranslationKeys.ai_generated_image),
+                            children: <AIGeneratedHintSheet />,
+                          },
+                          {
+                            backgroundStyle: { backgroundColor: theme.sheet.sheetBg },
+                            headerBackgroundColor: theme.sheet.sheetBg,
+                          }
+                        )
+                      }
+                    >
+                      <Text style={styles.aiGeneratedBadgeText}>
+                        {translate(TranslationKeys.ai_generated_badge_label)}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
 
                     {dislikedMarkings.length > 0 && (
                       <TouchableOpacity style={styles.favContainerWarn} onPress={handleOpenSheet}>

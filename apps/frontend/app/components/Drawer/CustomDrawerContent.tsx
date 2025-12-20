@@ -7,7 +7,6 @@ import { styles } from './styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'expo-router';
 import { SET_WIKIS } from '@/redux/Types/types';
-import { performLogout } from '@/helper/logoutHelper';
 import { getImageUrl } from '@/constants/HelperFunctions';
 import { useLanguage } from '@/hooks/useLanguage';
 import * as Linking from 'expo-linking';
@@ -24,6 +23,8 @@ import useChatUnreadStatus from '@/hooks/useChatUnreadStatus';
 import useActiveCollectibleEvent from '@/hooks/useActiveCollectibleEvent';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
+import useConfirmLogoutModal from '@/hooks/useConfirmLogoutModal';
+import useLogoutButtonTranslation from '@/hooks/useLogoutButtonTranslation';
 
 export const iconLibraries: Record<string, any> = {
 	Ionicons,
@@ -65,6 +66,8 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
         const { serverInfo, primaryColor: projectColor, language, appSettings, wikis, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
         const { hasUnreadChats } = useChatUnreadStatus();
         const { hasActiveCollectibleEvent } = useActiveCollectibleEvent();
+        const { openConfirmLogoutModal } = useConfirmLogoutModal();
+        const { buttonLabel: logoutButtonLabel } = useLogoutButtonTranslation();
 
 	const balance_area_color = appSettings?.balance_area_color ? appSettings?.balance_area_color : projectColor;
 	const course_timetable_area_color = appSettings?.course_timetable_area_color ? appSettings?.course_timetable_area_color : projectColor;
@@ -147,15 +150,11 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 		color: isActive(routeName) ? getContrastColor(routeName) : theme.inactiveText,
 	});
 
-	const handleLogout = async () => {
-		await performLogout(dispatch, router);
-	};
-
-	const openInBrowser = async (url: string) => {
-		try {
-			if (Platform.OS === 'web') {
-				window.open(url, '_blank');
-			} else {
+        const openInBrowser = async (url: string) => {
+                try {
+                        if (Platform.OS === 'web') {
+                                window.open(url, '_blank');
+                        } else {
 				const supported = await Linking.canOpenURL(url);
 
 				if (supported) {
@@ -256,7 +255,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 
                 if (hasActiveCollectibleEvent) {
                         menuItems.push({
-                                label: translate(TranslationKeys.collectible_event),
+                                label: translate(TranslationKeys.collectible_event_active),
                                 iconName: 'trophy-outline',
                                 iconLibName: MaterialCommunityIcons,
                                 activeKey: 'collectible-event/index',
@@ -388,16 +387,10 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 						</TouchableOpacity>
                                                 <TouchableOpacity
                                                         style={getMenuItemStyle('faq-living/index')}
-                                                        onPress={() => {
-                                                                if (user?.id) {
-                                                                        handleLogout();
-								} else {
-									performLogout(dispatch, router, true);
-								}
-							}}
-						>
+                                                        onPress={() => openConfirmLogoutModal(!user?.id)}
+                                                >
                                                         <MaterialCommunityIcons name="logout" size={28} color={theme.inactiveIcon} />
-                                                        <Text style={getMenuLabelStyle('faq-living/index')}>{translate(TranslationKeys.logout)}</Text>
+                                                        <Text style={getMenuLabelStyle('faq-living/index')}>{logoutButtonLabel}</Text>
                                                 </TouchableOpacity>
                                                 <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_drawer} />
                                         </View>

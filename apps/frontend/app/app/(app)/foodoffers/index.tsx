@@ -41,7 +41,6 @@ import HourSheet from '@/components/HoursSheet/HoursSheet';
 import CalendarSheet from '@/components/CalendarSheet/CalendarSheet';
 import {excerpt} from '@/constants/HelperFunctions';
 import {useLanguage} from '@/hooks/useLanguage';
-import ForecastSheet from '@/components/ForecastSheet/ForecastSheet';
 import ImageManagementSheet from '@/components/ImageManagementSheet/ImageManagementSheet';
 import EatingHabitsSheet from '@/components/EatingHabitsSheet/EatingHabitsSheet';
 import {CanteenFeedbackLabelHelper} from '@/redux/actions/CanteenFeedbacksLabel/CanteenFeedbacksLabel';
@@ -70,17 +69,17 @@ import useChatUnreadStatus from '@/hooks/useChatUnreadStatus';
 import IconButton from '@/components/UI/IconButton';
 import Button from '@/components/UI/Button';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import useUtilizationModal from '@/hooks/useUtilizationModal';
 import usePopupEventModal from '@/hooks/usePopupEventModal';
 
 export const SHEET_COMPONENTS = {
-	canteen: CanteenSelectionSheet,
-	sort: SortSheet,
-	hours: HourSheet,
-	calendar: CalendarSheet,
-	forecast: ForecastSheet,
-	imageManagement: ImageManagementSheet,
-	aiGeneratedInfo: AIGeneratedHintSheet,
-	eatingHabits: EatingHabitsSheet,
+        canteen: CanteenSelectionSheet,
+        sort: SortSheet,
+        hours: HourSheet,
+        calendar: CalendarSheet,
+        imageManagement: ImageManagementSheet,
+        aiGeneratedInfo: AIGeneratedHintSheet,
+        eatingHabits: EatingHabitsSheet,
 };
 
 interface DayItem {
@@ -136,8 +135,9 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
         const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
         const { hasUnreadChats } = useChatUnreadStatus();
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
-	const { openActiveModal, activePopupEvent } = usePopupEventModal();
+        const { openUtilizationModal } = useUtilizationModal();
+        const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
+        const { openActiveModal, activePopupEvent } = usePopupEventModal();
 
 	const MIN_CARD_WIDTH = 280;
 	const numColumns = useMemo(() => {
@@ -311,27 +311,15 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                                 return;
                         }
 
-                        if (sheet === 'aiGeneratedInfo') {
-                                showScrollViewModal(
-                                        {
-                                                title: translate(TranslationKeys.ai_generated_image),
-                                                onClose: closeScrollViewModal,
-                                                children: <AIGeneratedHintSheet closeSheet={closeScrollViewModal} />,
-                                        },
-                                        { backgroundStyle: { backgroundColor: theme.sheet.sheetBg }, headerBackgroundColor: theme.sheet.sheetBg }
-                                );
-                                return;
-                        }
-
                         setSelectedSheet(sheet);
                         setSheetProps(props);
                 },
                 [closeScrollViewModal, showScrollViewModal, theme.sheet.sheetBg, translate]
         );
 
-	const openManagementSheet = useCallback((id: string) => {
-		if (id) {
-			openSheet('imageManagement', {
+        const openManagementSheet = useCallback((id: string) => {
+                if (id) {
+                        openSheet('imageManagement', {
 				selectedFoodId: id,
 				fileName: 'foods',
 				closeSheet: closeSheet,
@@ -802,11 +790,15 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 								{appSettings?.utilization_display_enabled && (
 									<Tooltip
 										placement="top"
-										trigger={triggerProps => (
-											<IconButton {...triggerProps} onPress={() => openSheet('forecast', { forDate: selectedDate })} style={{ padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2 }}>
-												<FontAwesome6 name="people-group" size={24} color={theme.header.text} />
-											</IconButton>
-										)}
+                                                                                trigger={triggerProps => (
+                                                                                        <IconButton
+                                                                                                {...triggerProps}
+                                                                                                onPress={() => openUtilizationModal(selectedDate, selectedCanteen)}
+                                                                                                style={{ padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2 }}
+                                                                                        >
+                                                                                                <FontAwesome6 name="people-group" size={24} color={theme.header.text} />
+                                                                                        </IconButton>
+                                                                                )}
 									>
 										<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
 											<TooltipText fontSize="$sm" color={theme.tooltip.text}>
@@ -873,17 +865,17 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 						<MarkingBottomSheet ref={bottomSheetRef} onClose={closeSheet} />
 					) : (
 						<BaseBottomSheet
-							key={selectedSheet || 'sheet'}
-							ref={bottomSheetRef}
-							backgroundStyle={{ ...styles.sheetBackground, backgroundColor: theme.sheet.sheetBg }}
-							enablePanDownToClose={selectedSheet === 'forecast' ? false : true}
-							enableContentPanningGesture={selectedSheet === 'forecast' ? false : true}
-							enableHandlePanningGesture={selectedSheet === 'forecast' ? false : true}
-							enableDynamicSizing={selectedSheet === 'forecast' ? false : true}
-							onChange={index => {
-								if (index === -1) closeSheet();
-							}}
-							onClose={closeSheet}
+                                                        key={selectedSheet || 'sheet'}
+                                                        ref={bottomSheetRef}
+                                                        backgroundStyle={{ ...styles.sheetBackground, backgroundColor: theme.sheet.sheetBg }}
+                                                        enablePanDownToClose
+                                                        enableContentPanningGesture
+                                                        enableHandlePanningGesture
+                                                        enableDynamicSizing
+                                                        onChange={index => {
+                                                                if (index === -1) closeSheet();
+                                                        }}
+                                                        onClose={closeSheet}
 							handleComponent={null}
 						>
 							{SheetComponent && (

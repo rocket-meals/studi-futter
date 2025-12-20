@@ -22,7 +22,6 @@ import HourSheet from '@/components/HoursSheet/HoursSheet';
 import CalendarSheet from '@/components/CalendarSheet/CalendarSheet';
 import { excerpt } from '@/constants/HelperFunctions';
 import { useLanguage } from '@/hooks/useLanguage';
-import ForecastSheet from '@/components/ForecastSheet/ForecastSheet';
 import ImageManagementSheet from '@/components/ImageManagementSheet/ImageManagementSheet';
 import EatingHabitsSheet from '@/components/EatingHabitsSheet/EatingHabitsSheet';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
@@ -42,13 +41,13 @@ import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import AIGeneratedHintSheet from '@/components/AIGeneratedHintSheet';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import usePopupEventModal from '@/hooks/usePopupEventModal';
+import useUtilizationModal from '@/hooks/useUtilizationModal';
 
 export const SHEET_COMPONENTS = {
         canteen: CanteenSelectionSheet,
         sort: SortSheet,
         hours: HourSheet,
         calendar: CalendarSheet,
-        forecast: ForecastSheet,
         imageManagement: ImageManagementSheet,
         aiGeneratedInfo: AIGeneratedHintSheet,
         eatingHabits: EatingHabitsSheet,
@@ -77,12 +76,13 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const [animationJson, setAmimationJson] = useState<any>(null);
 	const { profile, user } = useSelector((state: RootState) => state.authReducer);
         const selectedCanteen = useSelectedCanteen();
-                const kioskMode = useKioskMode();
+        const kioskMode = useKioskMode();
         const [prefetchedFoodOffers, setPrefetchedFoodOffers] = useState<Record<string, DatabaseTypes.Foodoffers[]>>({});
         const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
         const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-	const { openActiveModal, activePopupEvent } = usePopupEventModal();
+        const { openUtilizationModal } = useUtilizationModal();
+        const { openActiveModal, activePopupEvent } = usePopupEventModal();
 
 	// Set Page Title
 	useSetPageTitle(selectedCanteen?.alias || TranslationKeys.food_offers);
@@ -608,7 +608,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 										trigger={triggerProps => (
 											<TouchableOpacity
 												{...triggerProps}
-												onPress={() => openSheet('forecast', { forDate: selectedDate })}
+                                                                                                onPress={() => openUtilizationModal(selectedDate, selectedCanteen)}
 												style={{
 													padding: isWeb ? (screenWidth < 500 ? 2 : 5) : 2,
 												}}
@@ -666,19 +666,19 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 						<BaseBottomSheet
 							key={selectedSheet}
 							ref={bottomSheetRef}
-							backgroundStyle={{
-								...styles.sheetBackground,
-								backgroundColor: theme.sheet.sheetBg,
-							}}
-							enablePanDownToClose={selectedSheet === 'forecast' ? false : true}
-							enableContentPanningGesture={selectedSheet === 'forecast' ? false : true}
-							enableHandlePanningGesture={selectedSheet === 'forecast' ? false : true}
-							enableDynamicSizing={selectedSheet === 'forecast' ? false : true}
-							onChange={index => {
-								if (index === -1) {
-									closeSheet();
-								}
-							}}
+                                                        backgroundStyle={{
+                                                                ...styles.sheetBackground,
+                                                                backgroundColor: theme.sheet.sheetBg,
+                                                        }}
+                                                        enablePanDownToClose
+                                                        enableContentPanningGesture
+                                                        enableHandlePanningGesture
+                                                        enableDynamicSizing
+                                                        onChange={index => {
+                                                                if (index === -1) {
+                                                                        closeSheet();
+                                                                }
+                                                        }}
 							onClose={closeSheet}
 							handleComponent={null}
 						>

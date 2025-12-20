@@ -1879,6 +1879,26 @@
     "tr": "Etkinlik",
     "zh": "事件"
   },
+  "collectible_events": {
+    "de": "Sammel Events",
+    "en": "Collectible Events",
+    "ar": "فعاليات قابلة للتحصيل",
+    "es": "Eventos coleccionables",
+    "fr": "Événements à collectionner",
+    "ru": "Коллекционные события",
+    "tr": "Koleksiyon etkinlikleri",
+    "zh": "收集活动"
+  },
+  "collectible_event_active": {
+    "de": "Aktives Sammel Event",
+    "en": "Collectible Event Active",
+    "ar": "فعالية قابلة للتحصيل نشطة",
+    "es": "Evento coleccionable activo",
+    "fr": "Événement à collectionner actif",
+    "ru": "Активное коллекционное событие",
+    "tr": "Aktif koleksiyon etkinliği",
+    "zh": "正在进行的收集活动"
+  },
   "collectible_event": {
     "de": "Sammel Event",
     "en": "Collectible Event",
@@ -2772,6 +2792,26 @@
     "ru": "Выйти",
     "tr": "Çıkış Yap",
     "zh": "登出"
+  },
+  "are_you_sure_to_logout": {
+    "de": "Möchtest du dich wirklich abmelden?",
+    "en": "Do you really want to log out?",
+    "ar": "هل تريد حقًا تسجيل الخروج؟",
+    "es": "¿Realmente quieres cerrar sesión?",
+    "fr": "Voulez-vous vraiment vous déconnecter ?",
+    "ru": "Вы действительно хотите выйти?",
+    "tr": "Gerçekten çıkış yapmak istiyor musun?",
+    "zh": "您确定要注销吗？"
+  },
+  "logout_flow_modal_description": {
+    "de": "Du wirst zum Anmeldebildschirm geleitet. Wenn du ein Konto hast, wirst du abgemeldet.",
+    "en": "You will be taken to the login screen. If you have an account, you will be logged out.",
+    "ar": "سيتم نقلك إلى شاشة تسجيل الدخول. إذا كان لديك حساب، سيتم تسجيل خروجك.",
+    "es": "Se te llevará a la pantalla de inicio de sesión. Si tienes una cuenta, se cerrará tu sesión.",
+    "fr": "Vous serez redirigé vers l'écran de connexion. Si vous avez un compte, vous serez déconnecté.",
+    "ru": "Вы будете перенаправлены на экран входа. Если у вас есть аккаунт, вы будете разлогинены.",
+    "tr": "Giriş ekranına yönlendirileceksiniz. Bir hesabınız varsa oturumunuz kapatılacak.",
+    "zh": "您将被带到登录界面。如果您有账户，将会退出登录。"
   },
   "register": {
     "de": "Registrieren",
