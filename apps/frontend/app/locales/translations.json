@@ -250,14 +250,14 @@
     "zh": "时间格式无效（例如 HH:MM）"
   },
   "backend_server": {
-    "de": "Backend-Server",
-    "en": "Backend Server",
-    "ar": "خادم الخلفية",
-    "es": "Servidor Backend",
-    "fr": "Serveur Backend",
-    "ru": "Сервер Бэкэнда",
-    "tr": "Arka Uç Sunucusu",
-    "zh": "后端服务器"
+    "de": "Kunden Konfiguration",
+    "en": "Customer Configuration",
+    "ar": "Customer Configuration",
+    "es": "Customer Configuration",
+    "fr": "Customer Configuration",
+    "ru": "Customer Configuration",
+    "tr": "Customer Configuration",
+    "zh": "Customer Configuration"
   },
   "developer_homepage": {
     "de": "Entwickler-Homepage",

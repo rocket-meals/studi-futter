@@ -12,13 +12,13 @@ import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import SettingsListNickname from '@/components/SettingsListNickname';
 import ColorSchemeSheet from '@/components/ColorSchemeSheet/ColorSchemeSheet';
 import DrawerPositionSheet from '@/components/DrawerPositionSheet/DrawerPositionSheet';
-import ServerSelectionSheet from '@/components/ServerSelectionSheet/ServerSelectionSheet';
 import { router, useFocusEffect } from 'expo-router';
-import { type CustomerConfig, getVersionInternalForAppsettingsScreen } from '@/config';
+import { ConfigCustomerEnum, getCustomerEnumForConfig, type CustomerConfig, getVersionInternalForAppsettingsScreen } from '@/config';
 import { useDispatch, useSelector } from 'react-redux';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useLanguage } from '@/hooks/useLanguage';
-import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_AMOUNT_COLUMNS_FOR_CARDS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE } from '@/redux/Types/types';
+import useCustomerServerUrl from '@/hooks/useCustomerServerUrl';
+import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_AMOUNT_COLUMNS_FOR_CARDS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE } from '@/redux/Types/types';
 import { performLogout } from '@/helper/logoutHelper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
@@ -46,6 +46,8 @@ import { languages } from '@/constants/SettingData';
 import { myContrastColor } from '@/helper/ColorHelper';
 import useConfirmLogoutModal from '@/hooks/useConfirmLogoutModal';
 import useLogoutButtonTranslation from '@/hooks/useLogoutButtonTranslation';
+import useCustomerConfig from '@/hooks/useCustomerConfig';
+import useCustomerConfigModal from '@/hooks/useCustomerConfigModal';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
 
@@ -62,7 +64,6 @@ const Settings = () => {
         const amountColumnSheetRef = useRef<BottomSheet>(null);
         const firstDaySheetRef = useRef<BottomSheet>(null);
         const colorSchemeSheetRef = useRef<BottomSheet>(null);
-        const serverSheetRef = useRef<BottomSheet>(null);
         const foodOffersTimeSheetRef = useRef<BottomSheet>(null);
         const collectibleSettingsModalRef = useRef<() => void>(() => {});
         const isOpeningNestedCollectibleModal = useRef(false);
@@ -73,14 +74,16 @@ const Settings = () => {
         const isRegisteredUser = UserHelper.isRegisteredUser(user);
         const { buttonLabel: logoutButtonLabel } = useLogoutButtonTranslation();
 
-        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, collectibleItemSize, collectibleRandomPosition } = useSelector((state: RootState) => state.settings);
+        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, collectibleItemSize, collectibleRandomPosition, selectedCustomer } = useSelector((state: RootState) => state.settings);
         const currentNickname = useMemo(
                 () => (profile?.id ? profile?.nickname ?? '' : nickNameLocal ?? ''),
                 [nickNameLocal, profile?.id, profile?.nickname]
         );
-	const selectedCanteen = useSelectedCanteen();
-	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
-	const profileHelper = useMemo(() => new ProfileHelper(), []);
+        const selectedCanteen = useSelectedCanteen();
+        const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
+        const profileHelper = useMemo(() => new ProfileHelper(), []);
+        const customerConfig = useCustomerConfig();
+        const { openCustomerConfigModal } = useCustomerConfigModal();
 
         const languageCode = language;
 
@@ -91,7 +94,14 @@ const Settings = () => {
                 [primaryColor, selectedTheme, theme]
         );
 
+        const selectedCustomerDisplayName = useMemo(
+                () => customerConfig.projectName || selectedCustomer || '',
+                [customerConfig.projectName, selectedCustomer]
+        );
+
         const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
+
+        const customerServerUrl = useCustomerServerUrl();
 
         const collectibleSizeOptions = useMemo(
                 () => [
@@ -273,27 +283,35 @@ const Settings = () => {
 	const closeFirstDayModal = () => {
 		firstDaySheetRef?.current?.close();
 	};
-	const openServerSheet = () => {
-		serverSheetRef?.current?.expand();
-	};
+        const openFoodOffersTimeSheet = () => {
+                foodOffersTimeSheetRef?.current?.expand();
+        };
 
-	const closeServerSheet = () => {
-		serverSheetRef?.current?.close();
-	};
+        const closeFoodOffersTimeSheet = () => {
+                foodOffersTimeSheetRef?.current?.close();
+        };
 
-	const openFoodOffersTimeSheet = () => {
-		foodOffersTimeSheetRef?.current?.expand();
-	};
+        const handleSelectServer = useCallback(
+                async (config: CustomerConfig) => {
+                        ServerAPI.updateServerUrl(config.server_url);
+                        await AsyncStorage.setItem('server_url_custom', config.server_url);
+                        const selectedCustomer = getCustomerEnumForConfig(config) ?? ConfigCustomerEnum.TEST;
+                        dispatch({
+                                type: SET_SELECTED_CUSTOMER,
+                                payload: selectedCustomer,
+                        });
+                        await AsyncStorage.setItem('selected_customer_enum', selectedCustomer);
+                        await performLogout(dispatch, router);
+                },
+                [dispatch, router]
+        );
 
-	const closeFoodOffersTimeSheet = () => {
-		foodOffersTimeSheetRef?.current?.close();
-	};
-
-	const handleSelectServer = async (config: CustomerConfig) => {
-		ServerAPI.updateServerUrl(config.server_url);
-		await AsyncStorage.setItem('server_url_custom', config.server_url);
-		await performLogout(dispatch, router);
-	};
+        const openServerSheet = useCallback(() => {
+                openCustomerConfigModal({
+                        selectedServer: customerServerUrl,
+                        onSelect: handleSelectServer,
+                });
+        }, [customerServerUrl, handleSelectServer, openCustomerConfigModal]);
 
         const toggleWebpForAssets = () => {
                 dispatch({
@@ -579,7 +597,7 @@ const Settings = () => {
 					>
 						<Text style={{ ...styles.devModeText, color: theme.screen.text }}>{translate(TranslationKeys.developerModeActive)}</Text>
 						<View style={{ gap: 0 }}>
-							<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="server" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.backend_server)} value={serverInfo?.info?.project?.project_name} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openServerSheet} groupPosition="top" />
+                                                        <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="server" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.backend_server)} value={selectedCustomerDisplayName} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openServerSheet} groupPosition="top" />
 							<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clock-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.foodoffers_next_day_time)} value={(foodOffersNextDayThreshold || '18:00').toString()} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFoodOffersTimeSheet} groupPosition="middle" />
 							<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="image" size={24} color={theme.screen.icon} />} label="Use WebP images" value={useWebpForAssets ? 'WebP' : 'Default'} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={toggleWebpForAssets} groupPosition="middle" />
 							<SettingsList
@@ -709,11 +727,11 @@ const Settings = () => {
 							}}
 						/>
 					</BaseBottomSheet>
-					<BaseBottomSheet
-						ref={foodOffersTimeSheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
+                                        <BaseBottomSheet
+                                                ref={foodOffersTimeSheetRef}
+                                                index={-1}
+                                                backgroundStyle={{
+                                                        ...styles.sheetBackground,
 							backgroundColor: theme.sheet.sheetBg,
 						}}
 						enablePanDownToClose
@@ -723,32 +741,19 @@ const Settings = () => {
 						<FoodOffersNextDayTimeSheet
 							closeSheet={closeFoodOffersTimeSheet}
 							initialValue={foodOffersNextDayThreshold}
-							onSave={value => {
-								dispatch({
-									type: SET_FOODOFFERS_NEXT_DAY_THRESHOLD,
-									payload: value,
-								});
+                                                                onSave={value => {
+                                                                        dispatch({
+                                                                                type: SET_FOODOFFERS_NEXT_DAY_THRESHOLD,
+                                                                                payload: value,
+                                                                        });
 								closeFoodOffersTimeSheet();
-							}}
-						/>
-					</BaseBottomSheet>
-					<BaseBottomSheet
-						ref={serverSheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						enablePanDownToClose
-						handleComponent={null}
-						onClose={closeServerSheet}
-					>
-						<ServerSelectionSheet closeSheet={closeServerSheet} selectedServer={ServerAPI.getServerUrl()} onSelect={handleSelectServer} />
-					</BaseBottomSheet>
-				</>
-			)}
-		</SafeAreaView>
-	);
+                                                        }}
+                                                />
+                                        </BaseBottomSheet>
+                                </>
+                        )}
+                </SafeAreaView>
+        );
 };
 
 export default Settings;

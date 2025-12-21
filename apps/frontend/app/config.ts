@@ -18,13 +18,19 @@ export type CustomerConfig = {
 	baseUrl: string;
 	server_url: string;
 	appleAppId?: string;
-	images: {
-		company_logo_source_path: string;
-		company_logo_source_get_for_react_native: () => ImageSourcePropType;
-		icon_logo_source_path: string;
-		icon_logo_source_get_for_react_native: () => ImageSourcePropType;
-	}
+        images: {
+                company_logo_source_path: string;
+                company_logo_source_get_for_react_native: () => ImageSourcePropType;
+                icon_logo_source_path: string;
+                icon_logo_source_get_for_react_native: () => ImageSourcePropType;
+        }
 };
+
+export enum ConfigCustomerEnum {
+        TEST = 'test',
+        SWOSY = 'swosy',
+        STUDI_FUTTER = 'studi-futter'
+}
 
 // DO NOT CHANGE THE NAME OF THIS FUNCTION: getBuildNumber
 // The workflow action check-build-number will use this function to determine the build number
@@ -103,8 +109,8 @@ export const swosyConfig: CustomerConfig = {
 };
 
 export const studiFutterConfig: CustomerConfig = {
-	projectName: 'Studi|Futter',
-	projectSlug: 'rocket-meals-studi-futter',
+        projectName: 'Studi|Futter',
+        projectSlug: 'rocket-meals-studi-futter',
 	easUpdateId: '461671f9-774f-4bc4-80a8-5601313539b0',
 	easProjectId: '461671f9-774f-4bc4-80a8-5601313539b0',
 	appScheme: 'app-rocket-meals-studi-futter',
@@ -118,12 +124,28 @@ export const studiFutterConfig: CustomerConfig = {
 		company_logo_source_get_for_react_native: () => {return require('@/assets/images/customers/studi-futter/company.png')},
 		icon_logo_source_path: 'assets/images/customers/studi-futter/icon.png',
 		icon_logo_source_get_for_react_native: () => {return require('@/assets/images/customers/studi-futter/icon.png')},
-	}
+        }
 };
 
+export function getCustomerConfigsDict(): Record<ConfigCustomerEnum, CustomerConfig> {
+        return {
+                [ConfigCustomerEnum.TEST]: devConfig,
+                [ConfigCustomerEnum.SWOSY]: swosyConfig,
+                [ConfigCustomerEnum.STUDI_FUTTER]: studiFutterConfig,
+        };
+}
+
+export function getCustomerEnumForConfig(config: CustomerConfig): ConfigCustomerEnum | null {
+        const matchingEntry = Object.entries(getCustomerConfigsDict()).find(([, customerConfig]) =>
+                customerConfig.server_url === config.server_url
+        );
+
+        return matchingEntry ? (matchingEntry[0] as ConfigCustomerEnum) : null;
+}
+
 export const configMuenster: CustomerConfig = {
-	projectName: 'Münster',
-	projectSlug: undefined,
+        projectName: 'Münster',
+        projectSlug: undefined,
 	easUpdateId:  undefined,
 	easProjectId:  undefined,
 	appScheme:  undefined,

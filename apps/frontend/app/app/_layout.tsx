@@ -40,7 +40,8 @@ import {config} from '@gluestack-ui/config';
 import ExpoUpdateLoader from '@/components/ExpoUpdateLoader/ExpoUpdateLoader';
 import ExpoUpdateChecker from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
 import {ModalProvider} from '@/components/GlobalModal/ModalProvider';
-import {getCompanyLogoLocalSaved} from "@/config";
+import { ConfigCustomerEnum, getCompanyLogoLocalSaved, getCustomerConfigsDict } from '@/config';
+import { SET_SELECTED_CUSTOMER } from '@/redux/Types/types';
 
 ServerAPI.createAuthentificationStorage(
 	async () => {
@@ -80,13 +81,30 @@ export default function Layout() {
 		Poppins_900Black_Italic,
 	});
 
-	useEffect(() => {
-		AsyncStorage.getItem('server_url_custom').then(url => {
-			if (url) {
-				ServerAPI.updateServerUrl(url);
-			}
-		});
-	}, []);
+        useEffect(() => {
+                const setServerUrl = async () => {
+                        const customerConfigs = getCustomerConfigsDict();
+                        const storedCustomerEnum = (await AsyncStorage.getItem('selected_customer_enum')) as
+                                | ConfigCustomerEnum
+                                | null;
+
+                        if (storedCustomerEnum && customerConfigs[storedCustomerEnum]) {
+                                configureStore.dispatch({
+                                        type: SET_SELECTED_CUSTOMER,
+                                        payload: storedCustomerEnum,
+                                });
+                                ServerAPI.updateServerUrl(customerConfigs[storedCustomerEnum].server_url);
+                                return;
+                        }
+
+                        const url = await AsyncStorage.getItem('server_url_custom');
+                        if (url) {
+                                ServerAPI.updateServerUrl(url);
+                        }
+                };
+
+                setServerUrl();
+        }, []);
 
 	if (!fontsLoaded) {
 		return (

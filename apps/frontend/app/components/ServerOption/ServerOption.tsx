@@ -8,15 +8,16 @@ import type { RootState } from '@/redux/reducer';
 import type { CustomerConfig } from '@/config';
 
 interface ServerOptionProps {
-	server: CustomerConfig;
-	isSelected: boolean;
-	onPress: () => void;
+        server: CustomerConfig;
+        label: string;
+        isSelected: boolean;
+        onPress: () => void;
 }
 
-const ServerOption: React.FC<ServerOptionProps> = ({ server, isSelected, onPress }) => {
-	const { theme } = useTheme();
-	const { primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
-	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
+const ServerOption: React.FC<ServerOptionProps> = ({ server, label, isSelected, onPress }) => {
+        const { theme } = useTheme();
+        const { primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
+        const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 	return (
 		<TouchableOpacity
 			style={{
@@ -27,14 +28,14 @@ const ServerOption: React.FC<ServerOptionProps> = ({ server, isSelected, onPress
 			onPress={onPress}
 		>
 			<MaterialCommunityIcons name="server" size={24} color={isSelected ? contrastColor : theme.screen.icon} style={styles.icon} />
-			<Text
-				style={{
-					...styles.text,
-					color: isSelected ? contrastColor : theme.header.text,
-				}}
-			>
-				{server.projectName}
-			</Text>
+                        <Text
+                                style={{
+                                        ...styles.text,
+                                        color: isSelected ? contrastColor : theme.header.text,
+                                }}
+                        >
+                                {label}
+                        </Text>
 			<MaterialCommunityIcons name={isSelected ? 'checkbox-marked' : 'checkbox-blank'} size={24} color={isSelected ? contrastColor : theme.screen.icon} style={styles.radioButton} />
 		</TouchableOpacity>
 	);

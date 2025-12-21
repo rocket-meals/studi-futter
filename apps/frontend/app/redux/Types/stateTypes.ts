@@ -1,3 +1,4 @@
+import { ConfigCustomerEnum } from '@/config';
 import { ApartmentSortOption, CampusSortOption, DatabaseTypes, FoodSortOption } from 'repo-depkit-common';
 
 export type AuthState = {
@@ -39,13 +40,14 @@ export type SettingsState = {
 	campusesSortBy: CampusSortOption;
 	apartmentsSortBy: ApartmentSortOption;
 	serverInfo: Record<string, any>;
-	primaryColor: string;
-	appSettings: DatabaseTypes.AppSettings;
-	language: string;
-	firstDayOfTheWeek: { id: string; name: string };
-	drawerPosition: 'left' | 'right' | 'system';
-	wikisPages: any[];
-	wikis: DatabaseTypes.Wikis[];
+        primaryColor: string;
+        appSettings: DatabaseTypes.AppSettings;
+        language: string;
+        firstDayOfTheWeek: { id: string; name: string };
+        drawerPosition: 'left' | 'right' | 'system';
+        selectedCustomer: ConfigCustomerEnum | null;
+        wikisPages: any[];
+        wikis: DatabaseTypes.Wikis[];
         nickNameLocal: string;
         amountColumnsForcard: number;
         useWebpForAssets: boolean;
