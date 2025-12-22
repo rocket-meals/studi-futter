@@ -24,11 +24,11 @@ export const themes = [
 
 // Languages
 export const languages = [
-	{
-		label: 'English',
-		flag: flagUs,
-		value: 'en',
-	},
+        {
+                label: 'English (English)',
+                flag: flagUs,
+                value: 'en',
+        },
 	{
 		label: 'Turkish (Türkçe)',
 		flag: flagTr,
@@ -43,12 +43,12 @@ export const languages = [
 		label: 'French (Français)',
 		flag: flagFr,
 		value: 'fr',
-	},
-	{
-		label: 'German',
-		flag: flagDe,
-		value: 'de',
-	},
+        },
+        {
+                label: 'German (Deutsch)',
+                flag: flagDe,
+                value: 'de',
+        },
 	{
 		label: 'Chinese (中文)',
 		flag: flagCn,

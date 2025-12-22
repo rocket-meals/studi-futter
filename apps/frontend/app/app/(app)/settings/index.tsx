@@ -43,7 +43,6 @@ import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewMo
 import useToast from '@/hooks/useToast';
 import languageStyles from '@/components/LanguageSheet/styles';
 import { languages } from '@/constants/SettingData';
-import { myContrastColor } from '@/helper/ColorHelper';
 import useConfirmLogoutModal from '@/hooks/useConfirmLogoutModal';
 import useLogoutButtonTranslation from '@/hooks/useLogoutButtonTranslation';
 import useCustomerConfig from '@/hooks/useCustomerConfig';
@@ -59,7 +58,6 @@ const Settings = () => {
         const canteenSheetRef = useRef<BottomSheet>(null);
         const [isActive, setIsActive] = useState(false);
         const { translate, setLanguageMode, language } = useLanguage();
-        const [selectedLanguage, setSelectedLanguage] = useState<string>('');
         const drawerSheetRef = useRef<BottomSheet>(null);
         const amountColumnSheetRef = useRef<BottomSheet>(null);
         const firstDaySheetRef = useRef<BottomSheet>(null);
@@ -88,11 +86,6 @@ const Settings = () => {
         const languageCode = language;
 
         const languageName = Languages[languageCode as keyof typeof Languages];
-
-        const contrastColor = useMemo(
-                () => myContrastColor(primaryColor, theme, selectedTheme === 'dark'),
-                [primaryColor, selectedTheme, theme]
-        );
 
         const selectedCustomerDisplayName = useMemo(
                 () => customerConfig.projectName || selectedCustomer || '',
@@ -167,13 +160,8 @@ const Settings = () => {
 		};
 	}, []);
 
-        useEffect(() => {
-                setSelectedLanguage(language);
-        }, [language]);
-
         const changeLanguage = useCallback(
-                (language: { label?: string; flag?: string; value: any }) => {
-                        setSelectedLanguage(language.value);
+                (language: { label?: string; value: any }) => {
                         setLanguageMode(language.value);
                         closeScrollViewModal();
                 },
@@ -196,6 +184,41 @@ const Settings = () => {
                 );
         }, [closeNicknameSheet, currentNickname, saveNickname, showScrollViewModal, translate]);
 
+        const LanguageOption = ({ languageOption, index }: { languageOption: (typeof languages)[number]; index: number }) => {
+                const { language: currentLanguage } = useLanguage();
+                const { theme: currentTheme } = useTheme();
+
+                const isSelected = currentLanguage === languageOption.value;
+                const groupPosition =
+                        languages.length === 1
+                                ? 'single'
+                                : index === 0
+                                        ? 'top'
+                                        : index === languages.length - 1
+                                                ? 'bottom'
+                                                : 'middle';
+
+                return (
+                        <SettingsList
+                                key={`${languageOption.value}-${index}`}
+                                label={languageOption.label}
+                                leftIcon={<View style={[languageStyles.flagIcon, { backgroundColor: 'red' }]} />}
+                                iconBgColor="transparent"
+                                showSeparator={index !== languages.length - 1}
+                                groupPosition={groupPosition}
+                                noIconIndent
+                                rightIcon={
+                                        <MaterialCommunityIcons
+                                                name={isSelected ? 'circle' : 'circle-outline'}
+                                                size={24}
+                                                color={isSelected ? primaryColor : currentTheme.screen.icon}
+                                        />
+                                }
+                                handleFunction={() => changeLanguage(languageOption)}
+                        />
+                );
+        };
+
         const openLanguageModal = useCallback(() => {
                 showScrollViewModal(
                         {
@@ -203,54 +226,18 @@ const Settings = () => {
                                 children: (
                                         <View style={languageStyles.optionsContainer}>
                                                 {languages.map((languageOption, index) => (
-                                                        <TouchableOpacity
+                                                        <LanguageOption
                                                                 key={`${languageOption.value}-${index}`}
-                                                                style={[
-                                                                        languageStyles.languageRow,
-                                                                        {
-                                                                                paddingHorizontal: isWeb ? 20 : 10,
-                                                                                backgroundColor:
-                                                                                        selectedLanguage === languageOption.value
-                                                                                                ? primaryColor
-                                                                                                : theme.screen.iconBg,
-                                                                        },
-                                                                ]}
-                                                                onPress={() => changeLanguage(languageOption)}
-                                                        >
-                                                                <MyImage source={languageOption.flag} style={languageStyles.flagIcon} />
-                                                                <Text
-                                                                        style={{
-                                                                                ...languageStyles.languageText,
-                                                                                color:
-                                                                                        selectedLanguage === languageOption.value
-                                                                                                ? contrastColor
-                                                                                                : theme.screen.text,
-                                                                        }}
-                                                                >
-                                                                        {languageOption.label}
-                                                                </Text>
-                                                                <MaterialCommunityIcons
-                                                                        name={
-                                                                                selectedLanguage === languageOption.value
-                                                                                        ? 'checkbox-marked'
-                                                                                        : 'checkbox-blank'
-                                                                        }
-                                                                        size={24}
-                                                                        color={
-                                                                                selectedLanguage === languageOption.value
-                                                                                        ? contrastColor
-                                                                                        : theme.screen.icon
-                                                                        }
-                                                                        style={languageStyles.radioButton}
-                                                                />
-                                                        </TouchableOpacity>
+                                                                languageOption={languageOption}
+                                                                index={index}
+                                                        />
                                                 ))}
                                         </View>
                                 ),
                         },
                         { backgroundStyle: { backgroundColor: theme.sheet.sheetBg } }
                 );
-        }, [changeLanguage, contrastColor, isWeb, primaryColor, selectedLanguage, showScrollViewModal, theme.screen.icon, theme.screen.iconBg, theme.screen.text, theme.sheet.sheetBg, translate]);
+        }, [changeLanguage, primaryColor, showScrollViewModal, theme.sheet.sheetBg, translate]);
 
 	const openColorSchemeSheet = () => {
 		colorSchemeSheetRef?.current?.expand();

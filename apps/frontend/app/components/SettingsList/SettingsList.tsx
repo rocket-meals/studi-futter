@@ -24,6 +24,11 @@ const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, title, label, val
         const shouldReserveIconSpace = !hasIcon && !noIconIndent;
 
         const containerStyles: ViewStyle[] = [styles.container, { backgroundColor: theme.screen.iconBg } as ViewStyle];
+        const iconWrapperStyles: ViewStyle[] = [styles.iconWrapper, { backgroundColor: iconBg }];
+
+        if (iconBg?.toLowerCase() === 'transparent') {
+                iconWrapperStyles.push(styles.transparentIconWrapper);
+        }
 
 	if (groupPosition === 'top') {
 		containerStyles.push({
@@ -49,7 +54,7 @@ const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, title, label, val
                 <>
                         <Container onPress={pressHandler} style={containerStyles}>
                                 {showIconWrapper ? (
-                                        <View style={[styles.iconWrapper, { backgroundColor: iconBg }]}>{React.isValidElement(leftIcon) ? React.cloneElement(leftIcon, { color: iconColor }) : leftIcon}</View>
+                                        <View style={iconWrapperStyles}>{React.isValidElement(leftIcon) ? React.cloneElement(leftIcon, { color: iconColor }) : leftIcon}</View>
                                 ) : null}
                                 {shouldReserveIconSpace ? <View style={styles.iconPlaceholder} /> : null}
                                 <View style={styles.textWrapper}>
@@ -90,6 +95,13 @@ const styles = StyleSheet.create({
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginRight: 10,
+        },
+        transparentIconWrapper: {
+                width: undefined,
+                height: undefined,
+                marginRight: 12,
+                borderRadius: 0,
+                padding: 0,
         },
         iconPlaceholder: {
                 width: 34,
