@@ -26,4 +26,13 @@ export default StyleSheet.create({
                 width: 32,
                 height: 32,
         },
+        flagWrapper: {
+                width: 34,
+                height: 34,
+                marginRight: 10,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: 'red',
+                borderRadius: 4,
+        },
 });

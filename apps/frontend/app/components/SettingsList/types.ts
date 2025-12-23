@@ -2,11 +2,15 @@ import {PropsWithChildren} from "react";
 
 type SettingsListPropsOwn = {
         leftIcon?: React.ReactNode;
-	/**
-	 * Title text for the row. "label" is kept for backwards
-	 * compatibility with the old `SettingList` component.
-	 */
-	title?: string;
+        /**
+         * Custom component rendered in place of the default left icon wrapper.
+         */
+        leftIconComponent?: React.ReactNode;
+        /**
+         * Title text for the row. "label" is kept for backwards
+         * compatibility with the old `SettingList` component.
+         */
+        title?: string;
 	label?: string;
 	value?: string;
 	/**

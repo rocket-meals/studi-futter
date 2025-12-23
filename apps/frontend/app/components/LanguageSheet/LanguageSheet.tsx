@@ -55,8 +55,11 @@ const LanguageSheet: React.FC<LanguageSheetProps> = ({ closeSheet, selectedLangu
                                                 <SettingsList
                                                         key={language.value}
                                                         label={language.label}
-                                                        iconBgColor="transparent"
-                                                        leftIcon={<MyImage source={language.flag} style={styles.flagIcon} />}
+                                                        leftIconComponent={
+                                                                <View style={styles.flagWrapper}>
+                                                                        <MyImage source={language.flag} style={styles.flagIcon} />
+                                                                </View>
+                                                        }
                                                         groupPosition={groupPosition}
                                                         showSeparator={index !== languages.length - 1}
                                                         rightIcon={

@@ -10,7 +10,7 @@ const padding = 0; // px used for additional padding and border radius
 const borderRadius = 10;
 const basePaddingVertical = 10;
 
-const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, title, label, value, rightElement, rightIcon, onPress, handleFunction, iconBackgroundColor, iconBgColor, showSeparator = true, groupPosition, noIconIndent = false }) => {
+const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, leftIconComponent, title, label, value, rightElement, rightIcon, onPress, handleFunction, iconBackgroundColor, iconBgColor, showSeparator = true, groupPosition, noIconIndent = false }) => {
         const { theme } = useTheme();
         const { primaryColor, selectedTheme } = useSelector((state: RootState) => state.settings);
 
@@ -19,9 +19,15 @@ const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, title, label, val
         const iconBg = iconBackgroundColor || iconBgColor || primaryColor;
         const iconColor = myContrastColor(iconBg, theme, selectedTheme === 'dark');
 
-        const hasIcon = !!leftIcon;
+        const hasIcon = !!leftIconComponent || !!leftIcon;
         const showIconWrapper = hasIcon && !noIconIndent;
         const shouldReserveIconSpace = !hasIcon && !noIconIndent;
+
+        const renderedLeftIcon = React.isValidElement(leftIcon)
+                ? noIconIndent
+                        ? leftIcon
+                        : React.cloneElement(leftIcon, { color: iconColor })
+                : leftIcon;
 
         const containerStyles: ViewStyle[] = [styles.container, { backgroundColor: theme.screen.iconBg } as ViewStyle];
         const iconWrapperStyles: ViewStyle[] = [styles.iconWrapper, { backgroundColor: iconBg }];
@@ -54,7 +60,13 @@ const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, title, label, val
                 <>
                         <Container onPress={pressHandler} style={containerStyles}>
                                 {showIconWrapper ? (
-                                        <View style={iconWrapperStyles}>{React.isValidElement(leftIcon) ? React.cloneElement(leftIcon, { color: iconColor }) : leftIcon}</View>
+                                        leftIconComponent ? (
+                                                leftIconComponent
+                                        ) : (
+                                                <View style={iconWrapperStyles}>{renderedLeftIcon}</View>
+                                        )
+                                ) : hasIcon ? (
+                                        leftIconComponent ? leftIconComponent : renderedLeftIcon
                                 ) : null}
                                 {shouldReserveIconSpace ? <View style={styles.iconPlaceholder} /> : null}
                                 <View style={styles.textWrapper}>
