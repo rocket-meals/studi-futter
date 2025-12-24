@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useLanguage } from '@/hooks/useLanguage';
 import useCustomerServerUrl from '@/hooks/useCustomerServerUrl';
-import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_AMOUNT_COLUMNS_FOR_CARDS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE } from '@/redux/Types/types';
+import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_AMOUNT_COLUMNS_FOR_CARDS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE } from '@/redux/Types/types';
 import { performLogout } from '@/helper/logoutHelper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
@@ -41,12 +41,13 @@ import DebugView from '@/components/DebugView';
 import DropdownInput from '@/components/DropdownInput/DropdownInput';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import useToast from '@/hooks/useToast';
-import languageStyles from '@/components/LanguageSheet/styles';
-import { languages } from '@/constants/SettingData';
+import { useLanguageModal } from '@/hooks/useLanguageModal';
 import useConfirmLogoutModal from '@/hooks/useConfirmLogoutModal';
 import useLogoutButtonTranslation from '@/hooks/useLogoutButtonTranslation';
 import useCustomerConfig from '@/hooks/useCustomerConfig';
 import useCustomerConfigModal from '@/hooks/useCustomerConfigModal';
+import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
+import { FoodSortOption } from 'repo-depkit-common';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
 
@@ -57,7 +58,7 @@ const Settings = () => {
         const toast = useToast();
         const canteenSheetRef = useRef<BottomSheet>(null);
         const [isActive, setIsActive] = useState(false);
-        const { translate, setLanguageMode, language } = useLanguage();
+        const { translate, language } = useLanguage();
         const drawerSheetRef = useRef<BottomSheet>(null);
         const amountColumnSheetRef = useRef<BottomSheet>(null);
         const firstDaySheetRef = useRef<BottomSheet>(null);
@@ -71,8 +72,10 @@ const Settings = () => {
         const { user, profile, termsAndPrivacyConsentAcceptedDate, isManagement, isDevMode } = useSelector((state: RootState) => state.authReducer);
         const isRegisteredUser = UserHelper.isRegisteredUser(user);
         const { buttonLabel: logoutButtonLabel } = useLogoutButtonTranslation();
+        const { openLanguageModal } = useLanguageModal();
+        const { openFoodofferSortingModal } = useFoodofferSortingModal();
 
-        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, collectibleItemSize, collectibleRandomPosition, selectedCustomer } = useSelector((state: RootState) => state.settings);
+        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer, sortBy } = useSelector((state: RootState) => state.settings);
         const currentNickname = useMemo(
                 () => (profile?.id ? profile?.nickname ?? '' : nickNameLocal ?? ''),
                 [nickNameLocal, profile?.id, profile?.nickname]
@@ -108,6 +111,27 @@ const Settings = () => {
         const collectibleSizeLabel = useMemo(
                 () => collectibleSizeOptions.find(option => option.value === collectibleItemSize)?.label || '',
                 [collectibleItemSize, collectibleSizeOptions]
+        );
+
+        const sortingOptionLabels: Partial<Record<FoodSortOption, string>> = useMemo(
+                () => ({
+                        [FoodSortOption.INTELLIGENT]: 'sort_option_intelligent',
+                        [FoodSortOption.FAVORITE]: 'sort_option_favorite',
+                        [FoodSortOption.EATING]: 'eating_habits',
+                        [FoodSortOption.FOOD_CATEGORY]: 'sort_option_food_category',
+                        [FoodSortOption.FOODOFFER_CATEGORY]: 'sort_option_foodoffer_category',
+                        [FoodSortOption.RATING]: 'sort_option_public_rating',
+                        [FoodSortOption.PRICE_ASCENDING]: 'sort_option_price_ascending',
+                        [FoodSortOption.PRICE_DESCENDING]: 'sort_option_price_descending',
+                        [FoodSortOption.ALPHABETICAL]: 'sort_option_alphabetical',
+                        [FoodSortOption.NONE]: 'sort_option_none',
+                }),
+                []
+        );
+
+        const sortingLabel = useMemo(
+                () => translate(sortingOptionLabels[sortBy as FoodSortOption] ?? 'sort_option_none'),
+                [sortBy, sortingOptionLabels, translate]
         );
 
         const closeNicknameSheet = useCallback(() => {
@@ -160,14 +184,6 @@ const Settings = () => {
 		};
 	}, []);
 
-        const changeLanguage = useCallback(
-                (language: { label?: string; value: any }) => {
-                        setLanguageMode(language.value);
-                        closeScrollViewModal();
-                },
-                [closeScrollViewModal, setLanguageMode]
-        );
-
         const openNicknameSheet = useCallback(() => {
                 showScrollViewModal(
                         {
@@ -184,64 +200,9 @@ const Settings = () => {
                 );
         }, [closeNicknameSheet, currentNickname, saveNickname, showScrollViewModal, translate]);
 
-        const LanguageOption = ({ languageOption, index }: { languageOption: (typeof languages)[number]; index: number }) => {
-                const { language: currentLanguage } = useLanguage();
-                const { theme: currentTheme } = useTheme();
-
-                const isSelected = currentLanguage === languageOption.value;
-                const groupPosition =
-                        languages.length === 1
-                                ? 'single'
-                                : index === 0
-                                        ? 'top'
-                                        : index === languages.length - 1
-                                                ? 'bottom'
-                                                : 'middle';
-
-                return (
-                        <SettingsList
-                                key={`${languageOption.value}-${index}`}
-                                label={languageOption.label}
-                                leftIcon={<View style={[languageStyles.flagIcon, { backgroundColor: 'red' }]} />}
-                                iconBgColor="transparent"
-                                showSeparator={index !== languages.length - 1}
-                                groupPosition={groupPosition}
-                                noIconIndent
-                                rightIcon={
-                                        <MaterialCommunityIcons
-                                                name={isSelected ? 'circle' : 'circle-outline'}
-                                                size={24}
-                                                color={isSelected ? primaryColor : currentTheme.screen.icon}
-                                        />
-                                }
-                                handleFunction={() => changeLanguage(languageOption)}
-                        />
-                );
+        const openColorSchemeSheet = () => {
+                colorSchemeSheetRef?.current?.expand();
         };
-
-        const openLanguageModal = useCallback(() => {
-                showScrollViewModal(
-                        {
-                                title: translate(TranslationKeys.language),
-                                children: (
-                                        <View style={languageStyles.optionsContainer}>
-                                                {languages.map((languageOption, index) => (
-                                                        <LanguageOption
-                                                                key={`${languageOption.value}-${index}`}
-                                                                languageOption={languageOption}
-                                                                index={index}
-                                                        />
-                                                ))}
-                                        </View>
-                                ),
-                        },
-                        { backgroundStyle: { backgroundColor: theme.sheet.sheetBg } }
-                );
-        }, [changeLanguage, primaryColor, showScrollViewModal, theme.sheet.sheetBg, translate]);
-
-	const openColorSchemeSheet = () => {
-		colorSchemeSheetRef?.current?.expand();
-	};
 
 	const closeColorSchemeSheet = () => {
 		colorSchemeSheetRef?.current?.close();
@@ -311,6 +272,13 @@ const Settings = () => {
                 dispatch({
                         type: SET_DEBUG_MODE,
                         payload: !debugMode,
+                });
+        };
+
+        const toggleSimulateExpoUpdate = () => {
+                dispatch({
+                        type: SET_SIMULATE_EXPO_UPDATE_AVAILABLE,
+                        payload: !simulateExpoUpdateAvailable,
                 });
         };
 
@@ -517,11 +485,12 @@ const Settings = () => {
 					{/* Canteen */}
 					<View style={{ gap: 0 }}>
 						<SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="restaurant-menu" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.canteen)} value={excerpt(String(selectedCanteen?.alias), 30)} rightIcon={<MaterialCommunityIcons name="pencil" size={20} color={theme.screen.icon} />} handleFunction={openCanteenSheet} groupPosition="top" />
-						<SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="euro" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.price_group)} value={profile?.price_group && priceGroups[profile.price_group as PriceGroupKey] ? priceGroups[profile.price_group as PriceGroupKey].label : ''} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/price-group')} groupPosition="middle" />
-						<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="card" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.accountbalance)} value={profile?.credit_balance ? showFormatedPrice(formatPrice(profile?.credit_balance)) : '€'} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/account-balance')} groupPosition="middle" />
-						<SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="bag-add-sharp" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.eating_habits)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/eating-habits')} groupPosition="middle" />
-						<SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="notifications" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.notification)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/notification')} groupPosition="bottom" />
-					</View>
+                                                <SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="euro" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.price_group)} value={profile?.price_group && priceGroups[profile.price_group as PriceGroupKey] ? priceGroups[profile.price_group as PriceGroupKey].label : ''} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/price-group')} groupPosition="middle" />
+                                                <SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="card" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.accountbalance)} value={profile?.credit_balance ? showFormatedPrice(formatPrice(profile?.credit_balance)) : '€'} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/account-balance')} groupPosition="middle" />
+                                                <SettingsList iconBgColor={foods_area_color} leftIcon={<Ionicons name="bag-add-sharp" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.eating_habits)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/eating-habits')} groupPosition="middle" />
+                                                <SettingsList iconBgColor={foods_area_color} leftIcon={<MaterialIcons name="sort" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.sort)} value={sortingLabel} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFoodofferSortingModal} groupPosition="middle" />
+                                                <SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="notifications" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.notification)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => router.navigate('/notification')} groupPosition="bottom" />
+                                        </View>
 					<SettingsGroupTitle>{translate(TranslationKeys.group_app_settings)}</SettingsGroupTitle>
 					{/* color Scheme */}
 					<View style={{ gap: 0 }}>
@@ -602,6 +571,23 @@ const Settings = () => {
 									/>
 								}
 								handleFunction={toggleDebugMode}
+								groupPosition="middle"
+							/>
+							<SettingsList
+								iconBgColor={primaryColor}
+								leftIcon={<MaterialCommunityIcons name="update" size={24} color={theme.screen.icon} />}
+								label={translate(TranslationKeys.simulate_expo_update_available)}
+								value={simulateExpoUpdateAvailable ? translate(TranslationKeys.checked) : translate(TranslationKeys.unchecked)}
+								rightElement={
+									<Switch
+										value={simulateExpoUpdateAvailable}
+										onValueChange={toggleSimulateExpoUpdate}
+										trackColor={{ false: theme.screen.iconBg, true: primaryColor }}
+										thumbColor={theme.screen.icon}
+										ios_backgroundColor={theme.screen.iconBg}
+									/>
+								}
+								handleFunction={toggleSimulateExpoUpdate}
 								groupPosition="bottom"
 							/>
 						</View>

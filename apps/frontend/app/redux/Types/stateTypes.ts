@@ -53,6 +53,7 @@ export type SettingsState = {
         useWebpForAssets: boolean;
         foodOffersNextDayThreshold: string | null;
         debugMode: boolean;
+        simulateExpoUpdateAvailable: boolean;
         collectibleItemSize: 'small' | 'medium' | 'large';
         collectibleRandomPosition: boolean;
 }

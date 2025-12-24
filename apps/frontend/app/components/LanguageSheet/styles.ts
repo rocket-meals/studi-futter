@@ -22,17 +22,15 @@ export default StyleSheet.create({
                 width: '100%',
                 marginTop: 0,
         },
-        flagIcon: {
-                width: 32,
-                height: 32,
-        },
         flagWrapper: {
-                width: 34,
-                height: 34,
+                minWidth: 34,
+                minHeight: 34,
                 marginRight: 10,
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: 'red',
-                borderRadius: 4,
+                borderRadius: 6,
+        },
+        flagText: {
+                fontSize: 22,
         },
 });

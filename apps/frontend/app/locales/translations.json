@@ -189,6 +189,16 @@
     "tr": "Hata ayıklama modu",
     "zh": "调试模式"
   },
+  "simulate_expo_update_available": {
+    "de": "Expo-Update verfügbar simulieren",
+    "en": "Simulate Expo update available",
+    "ar": "محاكاة توفر تحديث Expo",
+    "es": "Simular actualización de Expo disponible",
+    "fr": "Simuler une mise à jour Expo disponible",
+    "ru": "Сымитировать доступность обновления Expo",
+    "tr": "Expo güncellemesi varmış gibi simüle et",
+    "zh": "模拟 Expo 更新可用"
+  },
   "cached_foodoffers_days": {
     "de": "Im Cache befindliche Foodoffers-Tage",
     "en": "Cached food offers days",

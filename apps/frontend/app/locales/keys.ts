@@ -19,6 +19,7 @@ export enum TranslationKeys {
         developer = 'developer',
         developerModeActive = 'developerModeActive',
         debug_mode = 'debug_mode',
+        simulate_expo_update_available = 'simulate_expo_update_available',
         cached_foodoffers_days = 'cached_foodoffers_days',
         cached_foodoffers_days_empty = 'cached_foodoffers_days_empty',
         foodoffers_next_day_time = 'foodoffers_next_day_time',
