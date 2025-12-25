@@ -38,9 +38,9 @@ const EventsScreen = () => {
 				onClose: () => setSelectedEvent(null),
 				children: <PopupEventSheet closeSheet={handleClose} eventData={event} />,
 			},
-			{ backgroundStyle: { backgroundColor: theme.sheet.sheetBg }, headerBackgroundColor: theme.sheet.sheetBg }
+			{}
 		);
-	}, [handleClose, showScrollViewModal, theme.sheet.sheetBg]);
+	}, [handleClose, showScrollViewModal]);
 
 	const resetSeenEvents = () => {
 		const resetEvents = popupEvents.map((e: any, idx: number) => ({

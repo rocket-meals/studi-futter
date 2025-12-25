@@ -55,7 +55,7 @@ const TestUseModalScreen = () => {
                                         </View>
                                 ),
                         },
-                        { backgroundStyle: { backgroundColor: theme.sheet?.sheetBg } }
+                        {}
                 );
         };
 

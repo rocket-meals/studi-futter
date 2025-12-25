@@ -81,9 +81,9 @@ export const useLanguageModal = () => {
                                         </View>
                                 ),
                         },
-                        { backgroundStyle: { backgroundColor: theme.sheet.sheetBg } }
+                        {}
                 );
-        }, [LanguageOption, showScrollViewModal, theme.sheet.sheetBg, translate]);
+        }, [LanguageOption, showScrollViewModal, translate]);
 
         return { openLanguageModal };
 };

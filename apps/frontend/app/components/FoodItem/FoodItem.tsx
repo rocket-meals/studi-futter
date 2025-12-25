@@ -225,10 +225,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                             title: translate(TranslationKeys.ai_generated_image),
                             children: <AIGeneratedHintSheet />,
                           },
-                          {
-                            backgroundStyle: { backgroundColor: theme.sheet.sheetBg },
-                            headerBackgroundColor: theme.sheet.sheetBg,
-                          }
+                          {}
                         )
                       }
                     >

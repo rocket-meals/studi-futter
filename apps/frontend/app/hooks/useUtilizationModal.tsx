@@ -2,13 +2,11 @@ import React, {useCallback} from 'react';
 import ForecastSheet from '@/components/ForecastSheet/ForecastSheet';
 import {useMyScrollViewModal} from '@/components/GlobalModal/useMyScrollViewModal';
 import {useLanguage} from '@/hooks/useLanguage';
-import {useTheme} from '@/hooks/useTheme';
 import {TranslationKeys} from '@/locales/keys';
 import {DatabaseTypes} from 'repo-depkit-common';
 
 export const useUtilizationModal = () => {
         const {show: showScrollViewModal, close: closeScrollViewModal} = useMyScrollViewModal();
-        const {theme} = useTheme();
         const {translate} = useLanguage();
 
         const openUtilizationModal = useCallback(
@@ -24,9 +22,9 @@ export const useUtilizationModal = () => {
                                                 />
                                         ),
                                 },
-                                {backgroundStyle: {backgroundColor: theme.sheet.sheetBg}, headerBackgroundColor: theme.sheet.sheetBg}
+                                {}
                         ),
-                [closeScrollViewModal, showScrollViewModal, theme.sheet.sheetBg, translate]
+                [closeScrollViewModal, showScrollViewModal, translate]
         );
 
         return {openUtilizationModal};

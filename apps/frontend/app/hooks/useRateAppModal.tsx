@@ -161,7 +161,7 @@ const useRateAppModal = (buttonColorOverride?: string) => {
                                         </View>
                                 ),
                         },
-                        { backgroundStyle: { backgroundColor: theme.sheet?.sheetBg } }
+                        {}
                 );
         }, [
                 appSettings?.app_stores_url_to_apple,
@@ -173,7 +173,6 @@ const useRateAppModal = (buttonColorOverride?: string) => {
                 show,
                 theme.drawerBg,
                 theme.screen.text,
-                theme.sheet?.sheetBg,
                 translate,
         ]);
 

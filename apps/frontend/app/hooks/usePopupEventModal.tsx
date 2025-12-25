@@ -1,7 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import PopupEventSheet from '@/components/PopupEventSheet/PopupEventSheet';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
-import { useTheme } from '@/hooks/useTheme';
 import { PopupEventHelper } from '@/helper/PopupEventHelper';
 import { useDispatch, useSelector } from 'react-redux';
 import { SET_POPUP_EVENTS } from '@/redux/Types/types';
@@ -10,7 +9,6 @@ import { RootState } from '@/redux/reducer';
 
 const usePopupEventModal = () => {
 	const dispatch = useDispatch();
-	const { theme } = useTheme();
 	const kioskMode = useKioskMode();
 	const { popupEvents } = useSelector((state: RootState) => state.food);
 	const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
@@ -75,11 +73,11 @@ const usePopupEventModal = () => {
 					/>
 				),
 			},
-			{ backgroundStyle: { backgroundColor: theme.sheet.sheetBg }, headerBackgroundColor: theme.sheet.sheetBg }
+			{}
 		);
-		}, [closeEventSheet, closeEventSheetForSession, kioskMode, popupEvents, showScrollViewModal, theme.sheet.sheetBg]);
+	}, [closeEventSheet, closeEventSheetForSession, kioskMode, popupEvents, showScrollViewModal]);
 
-		return { openActiveModal, activePopupEvent: currentPopupEvent, popupEvents };
-	};
+	return { openActiveModal, activePopupEvent: currentPopupEvent, popupEvents };
+};
 
 export default usePopupEventModal;

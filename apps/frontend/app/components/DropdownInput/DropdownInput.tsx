@@ -86,7 +86,7 @@ const DropdownInput = ({ id, value, onChange, error, isDisabled, custom_type, op
                                         />
                                 ),
                         },
-                        { backgroundStyle: { backgroundColor: theme.sheet?.sheetBg } }
+                        {}
                 );
         }, [
                 isDisabled,
@@ -101,7 +101,6 @@ const DropdownInput = ({ id, value, onChange, error, isDisabled, custom_type, op
                 prefix,
                 suffix,
                 error,
-                theme.sheet?.sheetBg,
                 translate,
         ]);
 

@@ -17,7 +17,6 @@ import { ApartmentsHelper } from '@/redux/actions/Apartments/Apartments';
 import ApartmentItem from '@/components/ApartmentItem/ApartmentItem';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
-import BuildingSortSheet from '@/components/BuildingSortSheet/BuildingSortSheet';
 import useToast from '@/hooks/useToast';
 import { useLanguage } from '@/hooks/useLanguage';
 import ImageManagementSheet from '@/components/ImageManagementSheet/ImageManagementSheet';
@@ -31,6 +30,7 @@ import CustomMarkdown from '@/components/CustomMarkdown/CustomMarkdown';
 import { RootState } from '@/redux/reducer';
 import { FlashList } from '@shopify/flash-list';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
+import useHousingSortingModal from '@/hooks/useHousingSortingModal';
 
 const MIN_CARD_WIDTH = 280;
 
@@ -45,7 +45,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const [query, setQuery] = useState<string>('');
 	const [loading, setLoading] = useState(true);
 	const [isActive, setIsActive] = useState(false);
-	const sortSheetRef = useRef<BottomSheet>(null);
 	const imageManagementSheetRef = useRef<BottomSheet>(null);
 
 	const [distanceModalVisible, setDistanceModalVisible] = useState(false);
@@ -64,16 +63,9 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const { apartments, apartmentsLocal, unSortedApartments } = useSelector((state: RootState) => state.apartment);
 
 	const housing_area_color = appSettings?.housing_area_color ? appSettings?.housing_area_color : projectColor;
+	const { openHousingSortingModal } = useHousingSortingModal();
 
 	const drawerNavigation = useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
-
-	const openSortSheet = () => {
-		sortSheetRef.current?.expand();
-	};
-
-	const closeSortSheet = () => {
-		sortSheetRef?.current?.close();
-	};
 
 	const openImageManagementSheet = () => {
 		imageManagementSheetRef?.current?.expand();
@@ -486,7 +478,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 							<Tooltip
 								placement="top"
 								trigger={triggerProps => (
-									<TouchableOpacity {...triggerProps} onPress={openSortSheet} style={{ padding: 10 }}>
+									<TouchableOpacity {...triggerProps} onPress={openHousingSortingModal} style={{ padding: 10 }}>
 										<MaterialIcons name="sort" size={24} color={theme.header.text} />
 									</TouchableOpacity>
 								)}
@@ -533,22 +525,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 						/>
 					</View>
 				</View>
-				{isActive && (
-					<BaseBottomSheet
-						ref={sortSheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						enablePanDownToClose
-						handleComponent={null}
-						onClose={closeSortSheet}
-					>
-						<BuildingSortSheet closeSheet={closeSortSheet} freeRooms={true} />
-					</BaseBottomSheet>
-				)}
-
 				{isActive && (
 					<BaseBottomSheet
 						ref={imageManagementSheetRef}

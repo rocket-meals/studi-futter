@@ -150,7 +150,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                                                 onClose: closeScrollViewModal,
                                                 children: <SortSheet closeSheet={closeScrollViewModal} />,
                                         },
-                                        { backgroundStyle: { backgroundColor: theme.sheet.sheetBg }, headerBackgroundColor: theme.sheet.sheetBg }
+                                        {}
                                 );
                                 return;
                         }
@@ -158,7 +158,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                         setSelectedSheet(sheet);
                         setSheetProps(props);
                 },
-                [closeScrollViewModal, showScrollViewModal, theme.sheet.sheetBg, translate]
+                [closeScrollViewModal, showScrollViewModal, translate]
         );
 
 	const openManagementSheet = (id: string) => {

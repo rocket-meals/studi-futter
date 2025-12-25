@@ -205,14 +205,9 @@ const AccountBalanceScreen = () => {
                                         </View>
                                 ),
                         },
-                        {
-                                backgroundStyle: {
-                                        ...styles.sheetBackground,
-                                        backgroundColor: theme.sheet.sheetBg,
-                                },
-                        }
+                        {}
                 );
-        }, [isActive, showModal, theme.screen.text, theme.sheet.sheetBg, translate]);
+        }, [isActive, showModal, theme.screen.text, translate]);
 
         useEffect(() => {
                 closeInstructionRef.current = closeModal;

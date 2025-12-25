@@ -52,10 +52,10 @@ const useConfirmLogoutModal = () => {
                                                 </View>
                                         ),
                                 },
-                                { backgroundStyle: { backgroundColor: theme.sheet.sheetBg }, headerBackgroundColor: theme.sheet.sheetBg }
+                                {}
                         );
                 },
-                [buttonLabel, close, logout, modalDescription, show, theme.screen.text, theme.sheet.sheetBg, translate]
+                [buttonLabel, close, logout, modalDescription, show, theme.screen.text, translate]
         );
 
         return { openConfirmLogoutModal, closeConfirmLogoutModal: close };
