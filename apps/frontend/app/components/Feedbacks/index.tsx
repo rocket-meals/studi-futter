@@ -11,7 +11,6 @@ import { DatabaseTypes, DateHelper } from 'repo-depkit-common';
 import { FoodFeedbackHelper } from '@/redux/actions/FoodFeedbacks/FoodFeedbacks';
 import useToast from '@/hooks/useToast';
 import { DELETE_FOOD_FEEDBACK_LOCAL, UPDATE_FOOD_FEEDBACK_LOCAL } from '@/redux/Types/types';
-import PermissionModal from '../PermissionModal/PermissionModal';
 import { createSelector } from 'reselect';
 import { useLanguage } from '@/hooks/useLanguage';
 import { myContrastColor } from '@/helper/ColorHelper';
@@ -19,6 +18,7 @@ import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { TranslationKeys } from '@/locales/keys';
 import { FeedbacksProps } from './types';
 import { RootState } from '@/redux/reducer';
+import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
 
 const loadingState = {
 	submitLoading: false,
@@ -41,8 +41,8 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 	const { appSettings, primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
 	const [commentType, setCommentType] = useState('');
 	const [loading, setLoading] = useState(loadingState);
-	const [warning, setWarning] = useState(false);
 	const [comment, setComment] = useState('');
+	const { openRatingPermissionModal } = useRatingPermissionModal();
 	const foodFeedbackHelper = useMemo(() => new FoodFeedbackHelper(), []);
 	const { labels, labelEntries, previousFeedback } = useSelector((state: any) => selectFeedbackData(state, foodDetails?.id));
 	const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
@@ -55,7 +55,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 
 	const submitCommentFeedback = async (string: string | null) => {
 		if (!user?.id) {
-			setWarning(true);
+			openRatingPermissionModal();
 			return;
 		}
 
@@ -95,7 +95,7 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 
 	const handleTextChange = (text: string) => {
 		if (!user?.id) {
-			setWarning(true);
+			openRatingPermissionModal();
 			return;
 		}
 
@@ -317,7 +317,6 @@ const Feedbacks: React.FC<FeedbacksProps> = ({ foodDetails, offerId, canteenId }
 				</>
 			)}
 
-			<PermissionModal isVisible={warning} setIsVisible={setWarning} />
 		</View>
 	);
 };

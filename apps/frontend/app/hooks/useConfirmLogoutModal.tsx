@@ -1,26 +1,30 @@
 import React, { useCallback } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
+import { useDispatch } from 'react-redux';
+import { useRouter } from 'expo-router';
+
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import ProjectButton from '@/components/ProjectButton';
+import { performLogout } from '@/helper/logoutHelper';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
-import useLogout from './useLogout';
 import useLogoutButtonTranslation from './useLogoutButtonTranslation';
 
 const useConfirmLogoutModal = () => {
         const { show, close } = useMyScrollViewModal();
-        const logout = useLogout();
+        const dispatch = useDispatch();
+        const router = useRouter();
         const { translate } = useLanguage();
         const { theme } = useTheme();
         const { buttonLabel, modalDescription } = useLogoutButtonTranslation();
 
         const openConfirmLogoutModal = useCallback(
-                (asGuest: boolean = false) => {
+                () => {
                         const handleLogout = async () => {
                                 close();
-                                await logout(asGuest);
+                                await performLogout(dispatch, router);
                         };
 
                         show(
@@ -55,7 +59,7 @@ const useConfirmLogoutModal = () => {
                                 {}
                         );
                 },
-                [buttonLabel, close, logout, modalDescription, show, theme.screen.text, translate]
+                [buttonLabel, close, dispatch, modalDescription, router, show, theme.screen.text, translate]
         );
 
         return { openConfirmLogoutModal, closeConfirmLogoutModal: close };

@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { Linking, Text, TouchableOpacity, View, Image } from 'react-native';
 import MyImage from '@/components/MyImage';
 import styles from './styles';
@@ -11,7 +11,6 @@ import { getTextFromTranslation } from '@/helper/resourceHelper';
 import { DatabaseTypes, RatingHelper } from 'repo-depkit-common';
 import { useDispatch, useSelector } from 'react-redux';
 import { SET_MARKING_DETAILS, SET_SELECTED_FOOD_MARKINGS } from '@/redux/Types/types';
-import PermissionModal from '../PermissionModal/PermissionModal';
 import { router } from 'expo-router';
 import { createSelector } from 'reselect';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
@@ -24,6 +23,7 @@ import CardWithText from '../CardWithText/CardWithText';
 import useFoodCard from '@/hooks/useFoodCard';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import AIGeneratedHintSheet from '../AIGeneratedHintSheet';
+import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
 
 
 const selectFoodState = (state: RootState) => state.food;
@@ -40,12 +40,11 @@ const FoodItem: React.FC<FoodItemProps> = memo(
     const { translate } = useLanguage();
     const { show: showScrollViewModal } = useMyScrollViewModal();
 
-    const [warning, setWarning] = useState(false);
-
     const { food } = item;
     const foodItem = food as DatabaseTypes.Foods;
     const { language, serverInfo, appSettings, primaryColor } = useSelector((state: RootState) => state.settings);
     const { user, profile, isManagement } = useSelector((state: RootState) => state.authReducer);
+    const { openRatingPermissionModal } = useRatingPermissionModal();
 
     const previousFeedback = useSelector(state => selectPreviousFeedback(state as RootState, foodItem.id));
     const markings = useSelector(selectMarkings);
@@ -114,6 +113,10 @@ const FoodItem: React.FC<FoodItemProps> = memo(
 
     const updateRating = useCallback(
       async (rating: number | null) => {
+        if (!user?.id) {
+          openRatingPermissionModal();
+          return;
+        }
         try {
           await handleFoodRating({
             foodId: foodItem?.id,
@@ -123,18 +126,17 @@ const FoodItem: React.FC<FoodItemProps> = memo(
             canteenId: canteen?.id,
             previousFeedback,
             dispatch,
-            setWarning,
           });
         } catch (err) {
           if ((err as any).status === 403) {
-            setWarning(true);
+            openRatingPermissionModal();
           } else {
             console.error('Failed to update rating:', err);
             toast('Could not update rating', 'error');
           }
         }
       },
-      [foodItem?.id, profile?.id, canteen?.id, previousFeedback, dispatch, user.id, toast]
+      [foodItem?.id, profile?.id, canteen?.id, previousFeedback, dispatch, user?.id, toast, openRatingPermissionModal]
     );
 
     const openMarkingLabel = useCallback(
@@ -290,8 +292,6 @@ const FoodItem: React.FC<FoodItemProps> = memo(
             </TooltipText>
           </TooltipContent>
         </Tooltip>
-
-        <PermissionModal isVisible={warning} setIsVisible={setWarning} />
       </>
     );
   },

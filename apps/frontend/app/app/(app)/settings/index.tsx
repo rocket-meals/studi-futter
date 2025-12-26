@@ -10,21 +10,18 @@ import SettingsList from '@/components/SettingsList';
 import { useExpoUpdateChecker } from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import SettingsListNickname from '@/components/SettingsListNickname';
-import DrawerPositionSheet from '@/components/DrawerPositionSheet/DrawerPositionSheet';
 import { router, useFocusEffect } from 'expo-router';
 import { ConfigCustomerEnum, getCustomerEnumForConfig, type CustomerConfig, getVersionInternalForAppsettingsScreen } from '@/config';
 import { useDispatch, useSelector } from 'react-redux';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { useLanguage } from '@/hooks/useLanguage';
 import useCustomerServerUrl from '@/hooks/useCustomerServerUrl';
-import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_AMOUNT_COLUMNS_FOR_CARDS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_DRAWER_POSITION, SET_FIRST_DAY_OF_THE_WEEK, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE } from '@/redux/Types/types';
+import { RESET_ALL_COLLECTIBLE_EVENT_DICTS, SET_COLLECTIBLE_ITEM_SIZE, SET_COLLECTIBLE_RANDOM_POSITION, SET_DEBUG_MODE, SET_FOODOFFERS_NEXT_DAY_THRESHOLD, SET_NICKNAME_LOCAL, SET_SELECTED_CUSTOMER, SET_SIMULATE_EXPO_UPDATE_AVAILABLE, SET_USE_WEBP_FOR_ASSETS, UPDATE_DEVELOPER_MODE, UPDATE_MANAGEMENT, UPDATE_PROFILE } from '@/redux/Types/types';
 import { performLogout } from '@/helper/logoutHelper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
 import CanteenSelectionSheet from '@/components/CanteenSelectionSheet/CanteenSelectionSheet';
-import AmountColumnSheet from '@/components/AmountColumnSheet/AmountColumnSheet';
-import FirstDaySheet from '@/components/FirstDaySheet/FirstDaySheet';
 import FoodOffersNextDayTimeSheet from '@/components/FoodOffersNextDayTimeSheet';
 import { excerpt, formatPrice, getImageUrl, showFormatedPrice } from '@/constants/HelperFunctions';
 import { ProfileHelper } from '@/redux/actions/Profile/Profile';
@@ -47,6 +44,9 @@ import useCustomerConfig from '@/hooks/useCustomerConfig';
 import useCustomerConfigModal from '@/hooks/useCustomerConfigModal';
 import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
 import useThemeSettingsModal from '@/hooks/useThemeSettingsModal';
+import useMenuPositionModal from '@/hooks/useMenuPositionModal';
+import useCardColumnsModal from '@/hooks/useCardColumnsModal';
+import useFirstDayOfWeekModal from '@/hooks/useFirstDayOfWeekModal';
 import { FoodSortOption } from 'repo-depkit-common';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
@@ -59,9 +59,6 @@ const Settings = () => {
         const canteenSheetRef = useRef<BottomSheet>(null);
         const [isActive, setIsActive] = useState(false);
         const { translate, language } = useLanguage();
-        const drawerSheetRef = useRef<BottomSheet>(null);
-        const amountColumnSheetRef = useRef<BottomSheet>(null);
-        const firstDaySheetRef = useRef<BottomSheet>(null);
         const foodOffersTimeSheetRef = useRef<BottomSheet>(null);
         const collectibleSettingsModalRef = useRef<() => void>(() => {});
         const isOpeningNestedCollectibleModal = useRef(false);
@@ -74,6 +71,9 @@ const Settings = () => {
         const { openLanguageModal } = useLanguageModal();
         const { openFoodofferSortingModal } = useFoodofferSortingModal();
         const { openThemeSettingsModal } = useThemeSettingsModal();
+        const { openMenuPositionModal } = useMenuPositionModal();
+        const { openCardColumnsModal } = useCardColumnsModal();
+        const { openFirstDayOfWeekModal } = useFirstDayOfWeekModal();
 
         const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer, sortBy } = useSelector((state: RootState) => state.settings);
         const currentNickname = useMemo(
@@ -206,29 +206,6 @@ const Settings = () => {
                 });
         }, [handleTheme, openThemeSettingsModal, selectedTheme]);
 
-	const openDrawerSheet = () => {
-		drawerSheetRef?.current?.expand();
-	};
-
-	const closeDrawerSheet = () => {
-		drawerSheetRef?.current?.close();
-	};
-
-	const openAmountColumnModal = () => {
-		amountColumnSheetRef?.current?.expand();
-	};
-
-	const closeAmountColumnModal = () => {
-		amountColumnSheetRef?.current?.close();
-	};
-
-	const openFirstDayModal = () => {
-		firstDaySheetRef?.current?.expand();
-	};
-
-	const closeFirstDayModal = () => {
-		firstDaySheetRef?.current?.close();
-	};
         const openFoodOffersTimeSheet = () => {
                 foodOffersTimeSheetRef?.current?.expand();
         };
@@ -307,21 +284,13 @@ const Settings = () => {
                 manualCheck();
         };
 
-	const handleDrawerPosition = (position: string) => {
-		dispatch({
-			type: SET_DRAWER_POSITION,
-			payload: position,
-		});
-		closeDrawerSheet();
-	};
-
 	const handleTheme = (theme: any) => {
 		setThemeMode(theme);
 	};
 
         const handleLogout = useCallback(() => openConfirmLogoutModal(), [openConfirmLogoutModal]);
 
-        const handleLogin = useCallback(() => openConfirmLogoutModal(true), [openConfirmLogoutModal]);
+        const handleLogin = useCallback(() => openConfirmLogoutModal(), [openConfirmLogoutModal]);
 
         const logoutButtonHandler = useMemo(() => (isRegisteredUser ? handleLogout : handleLogin), [handleLogin, handleLogout, isRegisteredUser]);
 
@@ -493,9 +462,9 @@ const Settings = () => {
 					{/* color Scheme */}
 					<View style={{ gap: 0 }}>
                                                 <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="theme-light-dark" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.color_scheme)} value={selectedTheme === 'systematic' ? translate(TranslationKeys.color_scheme_system) : selectedTheme === 'dark' ? translate(TranslationKeys.color_scheme_dark) : translate(TranslationKeys.color_scheme_light)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => openColorSchemeSheet()} groupPosition="top" />
-                                                <SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="menu" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.drawer_config_position)} value={drawerPosition === 'left' ? translate(TranslationKeys.drawer_config_position_left) : drawerPosition === 'right' ? translate(TranslationKeys.drawer_config_position_right) : translate(TranslationKeys.drawer_config_position_system)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => openDrawerSheet()} groupPosition="middle" />
-                                                <SettingsList iconBgColor={primaryColor} leftIcon={<FontAwesome5 name="columns" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.amount_columns_for_cards)} value={amountColumnsForcard === 0 ? translate(TranslationKeys.automatic) : amountColumnsForcard} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => openAmountColumnModal()} groupPosition="middle" />
-                                                <SettingsList iconBgColor={primaryColor} leftIcon={<Feather name="calendar" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.first_day_of_week)} value={translate(firstDayOfTheWeek?.name)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={() => openFirstDayModal()} groupPosition="bottom" />
+                                                <SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="menu" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.drawer_config_position)} value={drawerPosition === 'left' ? translate(TranslationKeys.drawer_config_position_left) : drawerPosition === 'right' ? translate(TranslationKeys.drawer_config_position_right) : translate(TranslationKeys.drawer_config_position_system)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openMenuPositionModal} groupPosition="middle" />
+                                                <SettingsList iconBgColor={primaryColor} leftIcon={<FontAwesome5 name="columns" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.amount_columns_for_cards)} value={amountColumnsForcard === 0 ? translate(TranslationKeys.automatic) : amountColumnsForcard} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openCardColumnsModal} groupPosition="middle" />
+                                                <SettingsList iconBgColor={primaryColor} leftIcon={<Feather name="calendar" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.first_day_of_week)} value={translate(firstDayOfTheWeek?.name)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFirstDayOfWeekModal} groupPosition="bottom" />
                                         </View>
 					<SettingsGroupTitle>{translate(TranslationKeys.group_app_management)}</SettingsGroupTitle>
 					<View style={{ gap: 0 }}>
@@ -616,69 +585,6 @@ const Settings = () => {
                                         >
                                                 <CanteenSelectionSheet closeSheet={closeCanteenSheet} />
                                         </BaseBottomSheet>
-					<BaseBottomSheet
-						ref={amountColumnSheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						enablePanDownToClose
-						handleComponent={null}
-						onClose={closeAmountColumnModal}
-					>
-						<AmountColumnSheet
-							closeSheet={closeAmountColumnModal}
-							selectedAmount={amountColumnsForcard}
-							onSelect={val => {
-								dispatch({
-									type: SET_AMOUNT_COLUMNS_FOR_CARDS,
-									payload: val,
-								});
-							}}
-						/>
-					</BaseBottomSheet>
-					<BaseBottomSheet
-						ref={firstDaySheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						enablePanDownToClose
-						handleComponent={null}
-						onClose={closeFirstDayModal}
-					>
-						<FirstDaySheet
-							closeSheet={closeFirstDayModal}
-							selectedDay={firstDayOfTheWeek?.name}
-							onSelect={day => {
-								dispatch({
-									type: SET_FIRST_DAY_OF_THE_WEEK,
-									payload: day,
-								});
-							}}
-						/>
-					</BaseBottomSheet>
-					<BaseBottomSheet
-						ref={drawerSheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						enablePanDownToClose
-						handleComponent={null}
-						onClose={closeDrawerSheet}
-					>
-						<DrawerPositionSheet
-							closeSheet={closeDrawerSheet}
-							selectedPosition={drawerPosition}
-							onSelect={position => {
-								handleDrawerPosition(position);
-							}}
-						/>
-					</BaseBottomSheet>
                                         <BaseBottomSheet
                                                 ref={foodOffersTimeSheetRef}
                                                 index={-1}

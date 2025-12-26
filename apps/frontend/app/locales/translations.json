@@ -3503,6 +3503,16 @@
     "tr": "Hesap olmadan devam et",
     "zh": "无需账户继续"
   },
+  "continue_without_rating": {
+    "de": "Weiter ohne Bewertung",
+    "en": "Continue without rating",
+    "ar": "المتابعة بدون تقييم",
+    "es": "Continuar sin calificar",
+    "fr": "Continuer sans évaluation",
+    "ru": "Продолжить без оценки",
+    "tr": "Değerlendirme olmadan devam et",
+    "zh": "继续而不评分"
+  },
   "access_limited": {
     "de": "Zugriff eingeschränkt",
     "en": "Access Limited",
@@ -3522,6 +3532,26 @@
     "ru": "Чтобы пользоваться всеми функциями, войдите или создайте аккаунт. Либо продолжайте как гость с ограниченными возможностями.",
     "tr": "Kişiselleştirilmiş bir deneyim için lütfen giriş yapın veya hesap oluşturun. Alternatif olarak sınırlı özelliklerle misafir olarak devam edebilirsiniz.",
     "zh": "要获得个性化体验，请登录或创建帐户。或者，您可以以访客身份继续，但功能受限。"
+  },
+  "rating_requires_account_title": {
+    "de": "Bewerten nur mit Account",
+    "en": "Ratings require an account",
+    "ar": "التقييمات تتطلب حسابًا",
+    "es": "Las valoraciones requieren una cuenta",
+    "fr": "Les évaluations nécessitent un compte",
+    "ru": "Оценки требуют аккаунта",
+    "tr": "Değerlendirmeler için hesap gerekir",
+    "zh": "评分需要账户"
+  },
+  "rating_requires_account_description": {
+    "de": "Bewertungen sind an einen Account gebunden – zum Schutz vor Missbrauch und zur geräteübergreifenden Zuordnung.",
+    "en": "Ratings are linked to an account to prevent misuse and keep them available across devices.",
+    "ar": "التقييمات مرتبطة بحساب لحماية الاستخدام السيئ وللتزامن عبر الأجهزة.",
+    "es": "Las valoraciones están vinculadas a una cuenta para evitar abusos y mantenerlas entre dispositivos.",
+    "fr": "Les évaluations sont liées à un compte pour éviter les abus et les retrouver sur tous vos appareils.",
+    "ru": "Оценки привязаны к аккаунту для защиты от злоупотреблений и синхронизации между устройствами.",
+    "tr": "Değerlendirmeler kötüye kullanımı önlemek ve cihazlar arasında eşlemek için hesaba bağlıdır.",
+    "zh": "评分与账户绑定，用于防止滥用并在设备间同步。"
   },
   "sign_in_with": {
     "de": "Anmelden mit",

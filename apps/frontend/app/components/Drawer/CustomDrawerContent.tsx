@@ -387,7 +387,7 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
 						</TouchableOpacity>
                                                 <TouchableOpacity
                                                         style={getMenuItemStyle('faq-living/index')}
-                                                        onPress={() => openConfirmLogoutModal(!user?.id)}
+                                                        onPress={openConfirmLogoutModal}
                                                 >
                                                         <MaterialCommunityIcons name="logout" size={28} color={theme.inactiveIcon} />
                                                         <Text style={getMenuLabelStyle('faq-living/index')}>{logoutButtonLabel}</Text>

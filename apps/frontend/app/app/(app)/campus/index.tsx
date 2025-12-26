@@ -28,7 +28,6 @@ import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
 import DistanceModal from '@/components/DistanceModal';
 import * as Location from 'expo-location';
-import BuildingSortSheet from '@/components/BuildingSortSheet/BuildingSortSheet';
 import useToast from '@/hooks/useToast';
 import { useLanguage } from '@/hooks/useLanguage';
 import ImageManagementSheet from '@/components/ImageManagementSheet/ImageManagementSheet';
@@ -36,6 +35,7 @@ import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RootState } from '@/redux/reducer';
+import useCampusSortingModal from '@/hooks/useCampusSortingModal';
 
 import IconButton from '@/components/UI/IconButton';
 import Button from '@/components/UI/Button';
@@ -69,12 +69,10 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 	const selectedCanteen = useSelectedCanteen();
 	const drawerNavigation = useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
 
-	const sortSheetRef = useRef<BottomSheet>(null);
 	const imageManagementSheetRef = useRef<BottomSheet>(null);
 	const [distanceModalVisible, setDistanceModalVisible] = useState(false);
+	const { openCampusSortingModal } = useCampusSortingModal();
 
-	const openSortSheet = useCallback(() => sortSheetRef.current?.expand(), []);
-	const closeSortSheet = useCallback(() => sortSheetRef.current?.close(), []);
 	const openImageManagementSheet = useCallback(() => imageManagementSheetRef.current?.expand(), []);
 	const closeImageManagementSheet = useCallback(() => imageManagementSheetRef.current?.close(), []);
 	const openDistanceSheet = useCallback(() => setDistanceModalVisible(true), []);
@@ -374,7 +372,7 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 							<Tooltip
 								placement="top"
 								trigger={triggerProps => (
-									<IconButton {...triggerProps} onPress={openSortSheet} style={{ padding: 10 }}>
+									<IconButton {...triggerProps} onPress={openCampusSortingModal} style={{ padding: 10 }}>
 										<MaterialIcons name="sort" size={24} color={theme.header.text} />
 									</IconButton>
 								)}
@@ -421,11 +419,6 @@ const Index: React.FC<DrawerContentComponentProps> = () => {
 						/>
 					</View>
 				</View>
-
-
-				<BaseBottomSheet ref={sortSheetRef} index={-1} backgroundStyle={{ ...styles.sheetBackground }} enablePanDownToClose handleComponent={null} onClose={closeSortSheet}>
-					<BuildingSortSheet closeSheet={closeSortSheet} freeRooms={false} />
-				</BaseBottomSheet>
 
 				<BaseBottomSheet
 					ref={imageManagementSheetRef}

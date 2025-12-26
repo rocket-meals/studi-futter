@@ -16,7 +16,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import useSelectedCanteen from '@/hooks/useSelectedCanteen';
 import { DELETE_FOOD_FEEDBACK_LOCAL, UPDATE_FOOD_FEEDBACK_LOCAL, UPDATE_PROFILE } from '@/redux/Types/types';
 import MarkingBottomSheet from '@/components/MarkingBottomSheet';
-import PermissionModal from '@/components/PermissionModal/PermissionModal';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
 import NotificationSheet from '@/components/NotificationSheet/NotificationSheet';
@@ -34,6 +33,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { handleFoodRating } from '@/helper/feedback';
 import { RootState } from '@/redux/reducer';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
+import useRatingPermissionModal from '@/hooks/useRatingPermissionModal';
 
 const selectFoodState = (state: RootState) => state.food;
 
@@ -66,10 +66,10 @@ export default function FoodDetailsScreen() {
 	const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
 	const defaultImage = getImageUrl(String(appSettings.foods_placeholder_image)) || appSettings.foods_placeholder_image_remote_url || getImageUrl(serverInfo?.info?.project?.project_logo);
 
-	const [warning, setWarning] = useState(false);
 	const selectedCanteen = useSelectedCanteen();
 	const foodOfferCanteenId = selectedCanteen?.id as string | undefined;
 	const [foodDetails, setFoodDetails] = useState<any>(null);
+        const { openRatingPermissionModal } = useRatingPermissionModal();
 
 	const [activeTab, setActiveTab] = useState('feedbacks');
 	const [isActive, setIsActive] = useState(false);
@@ -217,6 +217,10 @@ export default function FoodDetailsScreen() {
         );
 
 	const rateFood = (rating: number) => {
+                if (!user?.id) {
+                        openRatingPermissionModal();
+                        return;
+                }
 		const newRating = previousFeedback?.rating === rating ? null : rating;
 
 		handleFoodRating({
@@ -227,7 +231,6 @@ export default function FoodDetailsScreen() {
 			canteenId: foodOfferCanteenId,
 			previousFeedback,
 			dispatch,
-			setWarning,
 		});
 	};
 
@@ -384,7 +387,7 @@ export default function FoodDetailsScreen() {
 
 	const updateNotification = async () => {
 		if (!user?.id) {
-			setWarning(true);
+			openRatingPermissionModal();
 			return;
 		}
 		if (isSmartPhone()) {
@@ -763,13 +766,12 @@ export default function FoodDetailsScreen() {
 								paddingHorizontal: isWeb ? (screenWidth > 1000 ? 20 : 0) : 10,
 							}}
 						>
-                                                        {foodDetails?.id && renderContent(foodDetails)}
-                                                </View>
-                                        </View>
-                                        <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_details} />
-                                        <PermissionModal isVisible={warning} setIsVisible={setWarning} />
+                                        {foodDetails?.id && renderContent(foodDetails)}
                                 </View>
-                        </ScrollView>
+                        </View>
+                        <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_foodoffers_details} />
+                </View>
+        </ScrollView>
 			{isActive && (
 				<BaseBottomSheet
 					ref={notificationSheetRef}
