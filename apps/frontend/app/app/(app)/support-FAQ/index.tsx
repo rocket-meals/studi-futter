@@ -126,7 +126,7 @@ const SupportFaq = () => {
 							value="Baumgartner Software UG"
 							rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
 							handleFunction={() => {
-								openInBrowser('https://baumgartner-software.de/homepage/');
+								openInBrowser('https://baumgartner-software.de');
 							}}
 							groupPosition="middle"
 						/>
@@ -137,7 +137,7 @@ const SupportFaq = () => {
                                                         value="Rocket Meals"
 							rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
 							handleFunction={() => {
-								openInBrowser('https://rocket-meals.de/homepage/');
+								openInBrowser('https://rocket-meals.de');
 							}}
                                                         groupPosition="bottom"
                                                 />

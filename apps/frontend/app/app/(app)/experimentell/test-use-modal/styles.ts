@@ -59,6 +59,13 @@ export default StyleSheet.create({
                 borderRadius: 10,
                 gap: 8,
         },
+        section: {
+                gap: 12,
+        },
+        sectionTitle: {
+                fontFamily: 'Poppins_600SemiBold',
+                fontSize: 16,
+        },
         debugTitle: {
                 fontFamily: 'Poppins_700Bold',
                 fontSize: 16,

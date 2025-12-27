@@ -9,4 +9,9 @@ export interface SettingsListInputProps {
         disableSave?: boolean;
         autoFocus?: boolean;
         keyboardType?: KeyboardTypeOptions;
+        multiline?: boolean;
+        numberOfLines?: number;
+        textAlignVertical?: 'auto' | 'top' | 'bottom' | 'center';
+        inputStyle?: object;
+        allowSubmitWhenDisabled?: boolean;
 }

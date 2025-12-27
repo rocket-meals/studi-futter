@@ -3113,6 +3113,36 @@
     "tr": "Close modal",
     "zh": "Close modal"
   },
+  "modal_text_input_label": {
+    "de": "useModalTextInput Test",
+    "en": "useModalTextInput test",
+    "ar": "useModalTextInput test",
+    "es": "useModalTextInput test",
+    "fr": "useModalTextInput test",
+    "ru": "useModalTextInput test",
+    "tr": "useModalTextInput test",
+    "zh": "useModalTextInput test"
+  },
+  "modal_text_input_placeholder": {
+    "de": "Text eingeben",
+    "en": "Enter text",
+    "ar": "Enter text",
+    "es": "Enter text",
+    "fr": "Enter text",
+    "ru": "Enter text",
+    "tr": "Enter text",
+    "zh": "Enter text"
+  },
+  "modal_text_input_empty": {
+    "de": "Kein Wert gesetzt",
+    "en": "No value set",
+    "ar": "No value set",
+    "es": "No value set",
+    "fr": "No value set",
+    "ru": "No value set",
+    "tr": "No value set",
+    "zh": "No value set"
+  },
   "vertical_image_scroll": {
     "de": "Vertikaler Bildlauf",
     "en": "Vertical Image Scroll",

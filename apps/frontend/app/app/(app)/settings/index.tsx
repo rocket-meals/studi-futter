@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, Keyboard, SafeAreaView, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, SafeAreaView, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
 import MyImage from '@/components/MyImage';
 import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
@@ -9,7 +9,7 @@ import { isWeb } from '@/constants/Constants';
 import SettingsList from '@/components/SettingsList';
 import { useExpoUpdateChecker } from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
-import SettingsListNickname from '@/components/SettingsListNickname';
+import useModalTextInput from '@/hooks/useModalTextInput';
 import { router, useFocusEffect } from 'expo-router';
 import { ConfigCustomerEnum, getCustomerEnumForConfig, type CustomerConfig, getVersionInternalForAppsettingsScreen } from '@/config';
 import { useDispatch, useSelector } from 'react-redux';
@@ -85,6 +85,7 @@ const Settings = () => {
         const profileHelper = useMemo(() => new ProfileHelper(), []);
         const customerConfig = useCustomerConfig();
         const { openCustomerConfigModal } = useCustomerConfigModal();
+        const { openModalTextInput } = useModalTextInput();
 
         const languageCode = language;
 
@@ -134,11 +135,6 @@ const Settings = () => {
                 [sortBy, sortingOptionLabels, translate]
         );
 
-        const closeNicknameSheet = useCallback(() => {
-                Keyboard.dismiss();
-                closeScrollViewModal();
-        }, [closeScrollViewModal]);
-
         const saveNickname = useCallback(
                 async (value: string) => {
                         const nextNickname = value?.trim?.() ?? '';
@@ -159,9 +155,8 @@ const Settings = () => {
                                         payload: nextNickname,
                                 });
                         }
-                        closeNicknameSheet();
                 },
-                [closeNicknameSheet, dispatch, isRegisteredUser, profile, profileHelper]
+                [dispatch, isRegisteredUser, profile, profileHelper]
         );
 
 	useFocusEffect(
@@ -185,19 +180,18 @@ const Settings = () => {
 	}, []);
 
         const openNicknameSheet = useCallback(() => {
-                showScrollViewModal(
-                        {
-                                title: translate(TranslationKeys.nickname),
-                                onClose: closeNicknameSheet,
-                                children: (
-                                        <SettingsListNickname
-                                                initialValue={currentNickname}
-                                                onSave={saveNickname}
-                                        />
-                                ),
-                        }
-                );
-        }, [closeNicknameSheet, currentNickname, saveNickname, showScrollViewModal, translate]);
+                openModalTextInput({
+                        title: translate(TranslationKeys.nickname),
+                        placeholder: translate(TranslationKeys.nickname),
+                        initialValue: currentNickname,
+                        saveLabel: translate(TranslationKeys.save),
+                        onSave: saveNickname,
+                        checkTextInput: value => ({
+                                isValid: true,
+                                value: value.trim(),
+                        }),
+                });
+        }, [currentNickname, openModalTextInput, saveNickname, translate]);
 
         const openColorSchemeSheet = useCallback(() => {
                 openThemeSettingsModal({

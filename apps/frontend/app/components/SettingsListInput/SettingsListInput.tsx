@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View, Keyboard } from 'react-native';
 import { useSelector } from 'react-redux';
 
@@ -17,10 +17,21 @@ const SettingsListInput: React.FC<SettingsListInputProps> = ({
         disableSave = false,
         autoFocus = true,
         keyboardType,
+        multiline = false,
+        numberOfLines,
+        textAlignVertical,
+        inputStyle,
+        allowSubmitWhenDisabled = false,
 }) => {
         const { theme } = useTheme();
         const { primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
         const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
+        const handleSubmitEditing = useCallback(() => {
+                if (multiline) return;
+                if (disableSave && !allowSubmitWhenDisabled) return;
+                Keyboard.dismiss();
+                onSave();
+        }, [allowSubmitWhenDisabled, disableSave, multiline, onSave]);
 
         const Content = (
                 <View
@@ -34,6 +45,7 @@ const SettingsListInput: React.FC<SettingsListInputProps> = ({
                                         color: theme.sheet.text,
                                         backgroundColor: theme.sheet.inputBg,
                                         borderColor: theme.sheet.inputBorder,
+                                        ...(inputStyle ?? {}),
                                 }}
                                 autoFocus={autoFocus}
                                 placeholder={placeholder}
@@ -43,6 +55,12 @@ const SettingsListInput: React.FC<SettingsListInputProps> = ({
                                 value={value}
                                 onChangeText={onChangeText}
                                 keyboardType={keyboardType}
+                                multiline={multiline}
+                                numberOfLines={numberOfLines}
+                                textAlignVertical={textAlignVertical}
+                                blurOnSubmit={!multiline}
+                                returnKeyType={multiline ? 'default' : 'done'}
+                                onSubmitEditing={handleSubmitEditing}
                         />
 
                         <View style={styles.buttonContainer}>

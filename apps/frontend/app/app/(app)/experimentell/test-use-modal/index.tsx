@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
+import useModalTextInput from '@/hooks/useModalTextInput';
+import SettingsList from '@/components/SettingsList';
 import styles from './styles';
 
 const TestUseModalScreen = () => {
@@ -12,6 +15,8 @@ const TestUseModalScreen = () => {
         const { theme } = useTheme();
         const { translate } = useLanguage();
         const { show, close, debug } = useMyScrollViewModal();
+        const { openModalTextInput } = useModalTextInput();
+        const [modalTextValue, setModalTextValue] = useState('');
 
         const openExampleModal = () => {
                 show(
@@ -59,6 +64,16 @@ const TestUseModalScreen = () => {
                 );
         };
 
+        const openModalTextInputExample = () => {
+                openModalTextInput({
+                        title: translate(TranslationKeys.modal_text_input_label),
+                        placeholder: translate(TranslationKeys.modal_text_input_placeholder),
+                        initialValue: modalTextValue,
+                        saveLabel: translate(TranslationKeys.save),
+                        onSave: value => setModalTextValue(value),
+                });
+        };
+
         return (
                 <ScrollView
                         style={{ ...styles.container, backgroundColor: theme.screen.background }}
@@ -82,6 +97,34 @@ const TestUseModalScreen = () => {
                                                 {translate(TranslationKeys.open_modal_example)}
                                         </Text>
                                 </TouchableOpacity>
+                                <View style={styles.section}>
+                                        <Text style={[styles.sectionTitle, { color: theme.screen.text }]}>
+                                                {translate(TranslationKeys.modal_text_input_label)}
+                                        </Text>
+                                        <SettingsList
+                                                iconBgColor={theme.screen.iconBg}
+                                                leftIcon={
+                                                        <MaterialCommunityIcons
+                                                                name="form-textbox"
+                                                                size={24}
+                                                                color={theme.screen.icon}
+                                                        />
+                                                }
+                                                label={translate(TranslationKeys.modal_text_input_label)}
+                                                value={
+                                                        modalTextValue || translate(TranslationKeys.modal_text_input_empty)
+                                                }
+                                                rightIcon={
+                                                        <MaterialCommunityIcons
+                                                                name="pencil"
+                                                                size={20}
+                                                                color={theme.screen.icon}
+                                                        />
+                                                }
+                                                handleFunction={openModalTextInputExample}
+                                                groupPosition="single"
+                                        />
+                                </View>
                                 <View style={[styles.debugCard, { backgroundColor: theme.screen.iconBg }]}>
                                         <Text style={[styles.debugTitle, { color: theme.screen.text }]}>useModal debug</Text>
                                         <Text selectable style={[styles.debugText, { color: theme.screen.text }]}>

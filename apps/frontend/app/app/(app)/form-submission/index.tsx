@@ -20,6 +20,7 @@ import IBANInput from '@/components/IBANInput/IBANInput';
 import NumberInput from '@/components/NumberInput/NumberInput';
 import EmailInput from '@/components/EmailInput/EmailInput';
 import { DateInput, DateWithTimeInput, PreciseTimestampInput, TimeInput } from '@/components/DateTimeInputs';
+import DebugView from '@/components/DebugView';
 import TriStateCheckbox from '@/components/TriStateCheckbox/TriStateCheckbox';
 import FileUpload from '@/components/FileUpload/FileUpload';
 import ImageUpload from '@/components/ImageUpload/ImageUpload';
@@ -383,12 +384,12 @@ const Index = () => {
 			let dateObj;
 
 			switch (fieldType) {
-				case FormHelperCommon.FORM_FIELD_TYPE.DATE_DATE_AND_HH_MM: // Convert DD-MM-YYYY HH:MM → ISO
-					dateObj = parse(value, 'dd-MM-yyyy HH:mm', new Date());
+				case FormHelperCommon.FORM_FIELD_TYPE.DATE_DATE_AND_HH_MM: // Convert DD.MM.YYYY HH:MM → ISO
+					dateObj = parse(value, 'dd.MM.yyyy HH:mm', new Date());
 					break;
 
-				case FormHelperCommon.FORM_FIELD_TYPE.DATE: // Convert DD-MM-YYYY → ISO
-					dateObj = parse(value, 'dd-MM-yyyy', new Date());
+				case FormHelperCommon.FORM_FIELD_TYPE.DATE: // Convert DD.MM.YYYY → ISO
+					dateObj = parse(value, 'dd.MM.yyyy', new Date());
 					break;
 
 				case FormHelperCommon.FORM_FIELD_TYPE.DATE_HH_MM: // Convert HH:MM → ISO (Assuming today's date)
@@ -396,8 +397,8 @@ const Index = () => {
 					dateObj = parse(`${today} ${value}`, 'yyyy-MM-dd HH:mm', new Date());
 					break;
 
-				case FormHelperCommon.FORM_FIELD_TYPE.DATE_TIMESTAMP: // Convert DD-MM-YYYY HH:MM:SS → ISO
-					dateObj = parse(value, 'dd-MM-yyyy HH:mm:ss', new Date());
+				case FormHelperCommon.FORM_FIELD_TYPE.DATE_TIMESTAMP: // Convert DD.MM.YYYY HH:MM:SS → ISO
+					dateObj = parse(value, 'dd.MM.yyyy HH:mm:ss', new Date());
 					break;
 
 				default:
@@ -596,7 +597,8 @@ const Index = () => {
 				}
 			} catch (error) {
 				console.error('Error updating form answers:', error);
-				toast('An error occurred while updating form answers', 'error');
+				const errorMessage = error instanceof Error ? error.message : String(error);
+				toast(errorMessage || 'An error occurred while updating form answers', 'error');
 			} finally {
 				setSubmissionLoading(false);
 				setFormData({});
@@ -850,6 +852,9 @@ const Index = () => {
 										</View>
 									);
 								})}
+							<DebugView title="Form Data" isVisible>
+								<Text style={{ ...styles.body, color: theme.screen.text }}>{JSON.stringify(formData, null, 2)}</Text>
+							</DebugView>
 						</View>
 					)}
 				</View>
