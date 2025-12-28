@@ -55,4 +55,21 @@ export default StyleSheet.create({
 		fontSize: 18,
 		fontWeight: 'bold',
 	},
+	manualInputWrapper: {
+		width: '100%',
+		marginTop: 12,
+		marginBottom: 12,
+	},
+	manualInput: {
+		width: '100%',
+		borderRadius: 10,
+		borderWidth: 1,
+		paddingHorizontal: 12,
+		paddingVertical: 10,
+		fontSize: 16,
+	},
+	manualErrorText: {
+		marginTop: 6,
+		fontSize: 12,
+	},
 });

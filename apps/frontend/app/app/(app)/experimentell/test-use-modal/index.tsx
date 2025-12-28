@@ -6,7 +6,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
-import useModalTextInput from '@/hooks/useModalTextInput';
+import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
 import SettingsList from '@/components/SettingsList';
 import styles from './styles';
 
@@ -15,7 +15,7 @@ const TestUseModalScreen = () => {
         const { theme } = useTheme();
         const { translate } = useLanguage();
         const { show, close, debug } = useMyScrollViewModal();
-        const { openModalTextInput } = useModalTextInput();
+        const { openTextInputModal } = useMyScrollviewTextInputModal();
         const [modalTextValue, setModalTextValue] = useState('');
 
         const openExampleModal = () => {
@@ -65,7 +65,7 @@ const TestUseModalScreen = () => {
         };
 
         const openModalTextInputExample = () => {
-                openModalTextInput({
+                openTextInputModal({
                         title: translate(TranslationKeys.modal_text_input_label),
                         placeholder: translate(TranslationKeys.modal_text_input_placeholder),
                         initialValue: modalTextValue,

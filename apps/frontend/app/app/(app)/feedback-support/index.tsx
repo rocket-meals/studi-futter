@@ -19,7 +19,8 @@ import { DatabaseTypes, EmailHelper } from 'repo-depkit-common';
 import { RootState } from '@/redux/reducer';
 import { myContrastColor } from '@/helper/ColorHelper';
 import SettingsList from '@/components/SettingsList';
-import useModalTextInput from '@/hooks/useModalTextInput';
+import SettingsListEditable from '@/components/SettingsListEditable';
+import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
 import { excerpt } from '@/constants/HelperFunctions';
 
 const FeedbackScreen = () => {
@@ -39,7 +40,7 @@ const FeedbackScreen = () => {
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [errorJson, setErrorJson] = useState<string | null>(null);
 	const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
-	const { openModalTextInput } = useModalTextInput();
+	const { openTextInputModal } = useMyScrollviewTextInputModal();
 
 	useFocusEffect(
 		useCallback(() => {
@@ -168,7 +169,7 @@ const FeedbackScreen = () => {
 			keyboardType?: KeyboardTypeOptions;
 		}) => {
 			const isEmailField = key === 'contact_email';
-			openModalTextInput({
+			openTextInputModal({
 				title: translate(title as any),
 				placeholder: translate(title as any),
 				initialValue: String(inputValues[key] ?? ''),
@@ -196,7 +197,7 @@ const FeedbackScreen = () => {
 					: value => ({ isValid: true, value }),
 			});
 		},
-		[inputValues, openModalTextInput, translate]
+		[inputValues, openTextInputModal, translate]
 	);
 
 	const handleCreateAppFeedback = async () => {
@@ -298,13 +299,12 @@ const FeedbackScreen = () => {
 							{translate(TranslationKeys.your_request)}
 						</Text>
 						{feedbackSettingsItems.map((item, index) => (
-							<SettingsList
+							<SettingsListEditable
 								key={item.key}
 								iconBgColor={primaryColor}
 								leftIcon={getFeedbackIcon(item.icon)}
 								label={translate(item.title as any)}
 								value={excerpt(String(inputValues[item.key] ?? ''), windowWidth > 850 ? 50 : 20)}
-								rightIcon={<MaterialCommunityIcons name="pencil" size={24} color={theme.screen.icon} />}
 								handleFunction={() => {
 									openFeedbackSheet({
 										key: item.key,

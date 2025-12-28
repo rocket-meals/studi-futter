@@ -18,7 +18,7 @@ import CardWithText from '../CardWithText/CardWithText';
 import CardDimensionHelper from '@/helper/CardDimensionHelper';
 import AvailableFromModal from '../AvailableFromModal';
 
-const ApartmentItem: React.FC<BuildingItemProps> = ({ apartment, setSelectedApartementId, openImageManagementSheet, openDistanceSheet }) => {
+const ApartmentItem: React.FC<BuildingItemProps> = ({ apartment, onEditImage, openDistanceSheet }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const { primaryColor: projectColor, appSettings, serverInfo, selectedTheme: mode, amountColumnsForcard } = useSelector((state: RootState) => state.settings);
@@ -114,8 +114,7 @@ const ApartmentItem: React.FC<BuildingItemProps> = ({ apartment, setSelectedApar
 													{...triggerProps}
 													style={styles.editImageButton}
 													onPress={() => {
-														setSelectedApartementId(apartment.id);
-														openImageManagementSheet();
+														onEditImage?.(apartment);
 													}}
 												>
 													<MaterialCommunityIcons name="image-edit" size={20} color={'white'} />

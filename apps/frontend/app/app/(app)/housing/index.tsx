@@ -1,6 +1,6 @@
 import { ActivityIndicator, Dimensions, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ApartmentSortOption, CollectibleAt, DatabaseTypes } from 'repo-depkit-common';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { ApartmentSortOption, CollectibleAt, CollectionNames, DatabaseTypes } from 'repo-depkit-common';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
@@ -15,11 +15,8 @@ import { BuildingsHelper } from '@/redux/actions/Buildings/Buildings';
 import { calculateDistanceInMeter } from '@/helper/distanceHelper';
 import { ApartmentsHelper } from '@/redux/actions/Apartments/Apartments';
 import ApartmentItem from '@/components/ApartmentItem/ApartmentItem';
-import BaseBottomSheet from '@/components/BaseBottomSheet';
-import type BottomSheet from '@gorhom/bottom-sheet';
 import useToast from '@/hooks/useToast';
 import { useLanguage } from '@/hooks/useLanguage';
-import ImageManagementSheet from '@/components/ImageManagementSheet/ImageManagementSheet';
 import DistanceModal from '@/components/DistanceModal';
 import * as Location from 'expo-location';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
@@ -31,6 +28,7 @@ import { RootState } from '@/redux/reducer';
 import { FlashList } from '@shopify/flash-list';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import useHousingSortingModal from '@/hooks/useHousingSortingModal';
+import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 
 const MIN_CARD_WIDTH = 280;
 
@@ -45,8 +43,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const [query, setQuery] = useState<string>('');
 	const [loading, setLoading] = useState(true);
 	const [isActive, setIsActive] = useState(false);
-	const imageManagementSheetRef = useRef<BottomSheet>(null);
-
 	const [distanceModalVisible, setDistanceModalVisible] = useState(false);
 	const [apartmentsDispatched, setApartmentsDispatched] = useState(false);
 	const [distanceAdded, setDistanceAdded] = useState(false);
@@ -54,7 +50,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
 	const [refreshing, setRefreshing] = useState(false);
 	const [selectedBuilding, setSelectedBuilding] = useState<DatabaseTypes.Buildings | null>();
-	const [selectedApartmentId, setSelectedApartementId] = useState<string>('');
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const [listWidth, setListWidth] = useState<number | null>(null);
 
@@ -64,16 +59,9 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 
 	const housing_area_color = appSettings?.housing_area_color ? appSettings?.housing_area_color : projectColor;
 	const { openHousingSortingModal } = useHousingSortingModal();
+	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
 
 	const drawerNavigation = useNavigation<DrawerNavigationProp<RootDrawerParamList>>();
-
-	const openImageManagementSheet = () => {
-		imageManagementSheetRef?.current?.expand();
-	};
-
-	const closeImageManagementSheet = () => {
-		imageManagementSheetRef?.current?.close();
-	};
 
 	const openDistanceSheet = () => {
 		setDistanceModalVisible(true);
@@ -225,6 +213,24 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		fetchAllApartments();
 	}, []);
 
+	const openImageManagementModal = useCallback(
+		(apartment: DatabaseTypes.Apartments) => {
+			if (!apartment?.id) return;
+			const buildingId = typeof apartment.building === 'object' ? apartment.building?.id : apartment.building;
+			if (!buildingId) return;
+			openDirectusImageEditModal({
+				itemId: buildingId,
+				field: 'image',
+				collection: CollectionNames.BUILDINGS,
+				onUpdated: () => {
+					setApartmentsDispatched(false);
+					fetchAllApartments();
+				},
+			});
+		},
+		[fetchAllApartments, openDirectusImageEditModal]
+	);
+
 	const sortApartmentsIntelligently = (apartments: any[]) => {
 		if (!apartments) return apartments;
 
@@ -356,15 +362,14 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 					alignItems: 'center',
 				}}
 			>
-				<ApartmentItem
-					apartment={item}
-					setSelectedApartementId={setSelectedApartementId}
-					openImageManagementSheet={openImageManagementSheet}
-					openDistanceSheet={openDistanceSheet}
-				/>
+					<ApartmentItem
+						apartment={item}
+						onEditImage={openImageManagementModal}
+						openDistanceSheet={openDistanceSheet}
+					/>
 			</View>
 		),
-		[openImageManagementSheet, openDistanceSheet]
+		[openImageManagementModal, openDistanceSheet]
 	);
 
 	const keyExtractor = useCallback(
@@ -525,32 +530,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 						/>
 					</View>
 				</View>
-				{isActive && (
-					<BaseBottomSheet
-						ref={imageManagementSheetRef}
-						index={-1}
-						backgroundStyle={{
-							...styles.sheetBackground,
-							backgroundColor: theme.sheet.sheetBg,
-						}}
-						handleComponent={null}
-						enablePanDownToClose
-						enableHandlePanningGesture={false}
-						enableContentPanningGesture={false}
-						onClose={closeImageManagementSheet}
-					>
-						<ImageManagementSheet
-							closeSheet={closeImageManagementSheet}
-							selectedFoodId={selectedApartmentId}
-							handleFetch={() => {
-								setApartmentsDispatched(false);
-								fetchAllApartments();
-							}}
-							fileName="buildings"
-						/>
-					</BaseBottomSheet>
-				)}
-
 				{isActive && <DistanceModal visible={distanceModalVisible} onClose={closeDistanceSheet} onUseCurrentPosition={useCurrentLocationForDistance} />}
 			</View>
 		</SafeAreaView>

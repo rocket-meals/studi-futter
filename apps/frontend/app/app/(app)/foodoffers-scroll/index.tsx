@@ -22,7 +22,6 @@ import HourSheet from '@/components/HoursSheet/HoursSheet';
 import CalendarSheet from '@/components/CalendarSheet/CalendarSheet';
 import { excerpt } from '@/constants/HelperFunctions';
 import { useLanguage } from '@/hooks/useLanguage';
-import ImageManagementSheet from '@/components/ImageManagementSheet/ImageManagementSheet';
 import EatingHabitsSheet from '@/components/EatingHabitsSheet/EatingHabitsSheet';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import * as Notifications from 'expo-notifications';
@@ -48,7 +47,6 @@ export const SHEET_COMPONENTS = {
         sort: SortSheet,
         hours: HourSheet,
         calendar: CalendarSheet,
-        imageManagement: ImageManagementSheet,
         aiGeneratedInfo: AIGeneratedHintSheet,
         eatingHabits: EatingHabitsSheet,
 };
@@ -64,7 +62,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 	const [loading, setLoading] = useState(false);
 	const [isActive, setIsActive] = useState(false);
 	const [refreshing, setRefreshing] = useState(false);
-	const [selectedFoodId, setSelectedFoodId] = useState('');
 	const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const [selectedSheet, setSelectedSheet] = useState<'menu' | keyof typeof SHEET_COMPONENTS | null>(null);
@@ -161,16 +158,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 [closeScrollViewModal, showScrollViewModal, translate]
         );
 
-	const openManagementSheet = (id: string) => {
-		if (id) {
-			openSheet('imageManagement', {
-				selectedFoodId: id,
-				fileName: 'foods',
-				closeSheet: closeSheet,
-				handleFetch: fetchFoods,
-			});
-		}
-	};
 
 	useEffect(() => {
 		openActiveModal();

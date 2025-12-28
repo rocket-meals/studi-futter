@@ -7,9 +7,10 @@ import { Languages, PriceGroupKey } from './types';
 import { AntDesign, Entypo, Feather, FontAwesome5, Ionicons, MaterialCommunityIcons, MaterialIcons, Octicons } from '@expo/vector-icons';
 import { isWeb } from '@/constants/Constants';
 import SettingsList from '@/components/SettingsList';
+import SettingsListEditable from '@/components/SettingsListEditable';
 import { useExpoUpdateChecker } from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
-import useModalTextInput from '@/hooks/useModalTextInput';
+import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
 import { router, useFocusEffect } from 'expo-router';
 import { ConfigCustomerEnum, getCustomerEnumForConfig, type CustomerConfig, getVersionInternalForAppsettingsScreen } from '@/config';
 import { useDispatch, useSelector } from 'react-redux';
@@ -85,7 +86,7 @@ const Settings = () => {
         const profileHelper = useMemo(() => new ProfileHelper(), []);
         const customerConfig = useCustomerConfig();
         const { openCustomerConfigModal } = useCustomerConfigModal();
-        const { openModalTextInput } = useModalTextInput();
+        const { openTextInputModal } = useMyScrollviewTextInputModal();
 
         const languageCode = language;
 
@@ -180,7 +181,7 @@ const Settings = () => {
 	}, []);
 
         const openNicknameSheet = useCallback(() => {
-                openModalTextInput({
+                openTextInputModal({
                         title: translate(TranslationKeys.nickname),
                         placeholder: translate(TranslationKeys.nickname),
                         initialValue: currentNickname,
@@ -191,7 +192,7 @@ const Settings = () => {
                                 value: value.trim(),
                         }),
                 });
-        }, [currentNickname, openModalTextInput, saveNickname, translate]);
+        }, [currentNickname, openTextInputModal, saveNickname, translate]);
 
         const openColorSchemeSheet = useCallback(() => {
                 openThemeSettingsModal({
@@ -425,17 +426,16 @@ const Settings = () => {
 					<View style={{ gap: 0 }}>
 						<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clipboard-account" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.account)} value={isRegisteredUser ? user?.id : translate(TranslationKeys.without_account)} handleFunction={() => {}} groupPosition="top" />
 						{/* NickName */}
-						<SettingsList
+						<SettingsListEditable
 							iconBgColor={primaryColor}
 							leftIcon={<MaterialCommunityIcons name="account" size={24} color={theme.screen.icon} />}
-                                                        label={translate(TranslationKeys.nickname)}
-                                                        value={profile?.id ? profile?.nickname : nickNameLocal}
-                                                        rightIcon={<MaterialCommunityIcons name="pencil" size={24} color={theme.screen.icon} />}
-                                                        handleFunction={() => {
-                                                                openNicknameSheet();
-                                                        }}
-                                                        groupPosition="middle"
-                                                />
+							label={translate(TranslationKeys.nickname)}
+							value={profile?.id ? profile?.nickname : nickNameLocal}
+							handleFunction={() => {
+								openNicknameSheet();
+							}}
+							groupPosition="middle"
+						/>
                                                 <SettingsList iconBgColor={primaryColor} leftIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} label={logoutButtonLabel} rightIcon={<Entypo name="login" size={24} color={theme.screen.icon} />} handleFunction={logoutButtonHandler} groupPosition="middle" />
                                                 {isRegisteredUser ? (
                                                         <SettingsList iconBgColor={primaryColor} leftIcon={<AntDesign name="user-delete" size={22} color={theme.screen.icon} />} label={`${translate(TranslationKeys.account_delete)}`} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleDeleteAccount} groupPosition="middle" />

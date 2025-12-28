@@ -6,7 +6,6 @@ import { excerpt, getImageUrl } from '@/constants/HelperFunctions';
 import { useTheme } from '@/hooks/useTheme';
 import { myContrastColor } from '@/helper/ColorHelper';
 import styles from './styles';
-import { BuildingItemProps } from './types';
 import { router } from 'expo-router';
 import { getDistanceUnit } from '@/helper/distanceHelper';
 import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
@@ -18,8 +17,7 @@ import CardDimensionHelper from '@/helper/CardDimensionHelper';
 
 export interface BuildingItemPropsOptimized {
 	campus: any;
-	setSelectedApartementId: React.Dispatch<React.SetStateAction<string>>;
-	openImageManagementSheet?: () => void;
+	onEditImage?: (campus: any) => void;
 	openDistanceSheet: () => void;
 	settings: {
 		amountColumnsForcard: number;
@@ -32,7 +30,7 @@ export interface BuildingItemPropsOptimized {
 	};
 }
 
-const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ campus, openDistanceSheet, setSelectedApartementId, settings }) => {
+const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ campus, onEditImage, openDistanceSheet, settings }) => {
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
 
@@ -92,8 +90,12 @@ const BuildingItem: React.FC<BuildingItemPropsOptimized> = ({ campus, openDistan
 					imageChildren={
 						<View style={styles.imageActionContainer}>
 							{isManagement ? (
-								<TouchableOpacity style={styles.editImageButton} onPress={() => {
-								}}>
+								<TouchableOpacity
+									style={styles.editImageButton}
+									onPress={() => {
+										onEditImage?.(campus);
+									}}
+								>
 									<View />
 								</TouchableOpacity>
 							) : (

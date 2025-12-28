@@ -1,6 +1,7 @@
+// Hinweis: Wenn neue SettingsList-Komponenten entstehen, bitte auch im Experimental-Screen hinzufügen.
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-import SettingsListInput from '@/components/SettingsListInput';
+import SettingsListTextInput from '@/components/SettingsListTextInput';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKeys } from '@/locales/keys';
 
@@ -23,16 +24,21 @@ const SettingsListNickname: React.FC<SettingsListNicknameProps> = ({ initialValu
 
         const handleSave = useCallback(() => onSave(trimmedValue), [onSave, trimmedValue]);
 
-        return (
-                <SettingsListInput
-                        placeholder={translate(TranslationKeys.nickname)}
-                        value={value}
-                        onChangeText={setValue}
-                        onSave={handleSave}
-                        saveLabel={translate(TranslationKeys.save)}
-                        disableSave={disableSave}
-                />
-        );
+	return (
+		<SettingsListTextInput
+			label={translate(TranslationKeys.nickname)}
+			value={value}
+			placeholder={translate(TranslationKeys.nickname)}
+			saveLabel={translate(TranslationKeys.save)}
+			onSave={handleSave}
+			initialValue={value}
+			checkTextInput={currentValue => ({
+				isValid: true,
+				value: currentValue.trim(),
+			})}
+			groupPosition="single"
+		/>
+	);
 };
 
 export default SettingsListNickname;

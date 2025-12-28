@@ -19,7 +19,8 @@ import MultiLineInput from '@/components/MultiLineInput/MultiLineInput';
 import IBANInput from '@/components/IBANInput/IBANInput';
 import NumberInput from '@/components/NumberInput/NumberInput';
 import EmailInput from '@/components/EmailInput/EmailInput';
-import { DateInput, DateWithTimeInput, PreciseTimestampInput, TimeInput } from '@/components/DateTimeInputs';
+import { DateWithTimeInput, PreciseTimestampInput, TimeInput } from '@/components/DateTimeInputs';
+import SettingsListDate from '@/components/SettingsListDate';
 import DebugView from '@/components/DebugView';
 import TriStateCheckbox from '@/components/TriStateCheckbox/TriStateCheckbox';
 import FileUpload from '@/components/FileUpload/FileUpload';
@@ -831,7 +832,7 @@ const Index = () => {
 											{custom_id === 'number' && showInForm && <NumberInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
 											{custom_id === 'email' && showInForm && <EmailInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
 											{custom_id === 'date_hh_mm' && showInForm && <DateWithTimeInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
-											{custom_id === 'date' && showInForm && <DateInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
+											{custom_id === 'date' && showInForm && <SettingsListDate id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
 											{custom_id === 'hh_mm' && showInForm && <TimeInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
 											{custom_id === 'timestamp' && showInForm && <PreciseTimestampInput id={fieldId} value={formData[fieldId]?.value || ''} onChange={handleChange} onError={handleError} error={formData[fieldId]?.error} isDisabled={isDisabled} custom_type={custom_type} prefix={prefix} suffix={suffix} />}
                                                                                         {custom_id === 'checkbox' &&

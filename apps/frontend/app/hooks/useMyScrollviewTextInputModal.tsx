@@ -1,15 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Keyboard, KeyboardTypeOptions } from 'react-native';
 
-import SettingsListInput from '@/components/SettingsListInput';
+import { SettingsListTextInputSheet } from '@/components/SettingsListTextInput';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
-
-export type CheckTextInputResult = {
-	isValid: boolean;
-	value: string;
-};
-
-export type CheckTextInput = (value: string) => CheckTextInputResult;
+import type { CheckTextInput } from '@/components/SettingsListTextInput';
 
 type ModalTextInputSheetProps = {
 	initialValue?: string;
@@ -41,7 +35,7 @@ const ModalTextInputSheet: React.FC<ModalTextInputSheetProps> = ({
 	numberOfLines,
 	textAlignVertical,
 	inputStyle,
-	autoFocus,
+	autoFocus = true,
 	checkTextInput,
 	allowSubmitWhenDisabled,
 }) => {
@@ -70,7 +64,7 @@ const ModalTextInputSheet: React.FC<ModalTextInputSheetProps> = ({
 	}, [onSave, validationResult.isValid, validationResult.value]);
 
 	return (
-		<SettingsListInput
+		<SettingsListTextInputSheet
 			placeholder={placeholder}
 			value={value}
 			onChangeText={setValue}
@@ -88,7 +82,7 @@ const ModalTextInputSheet: React.FC<ModalTextInputSheetProps> = ({
 	);
 };
 
-type OpenModalTextInputOptions = {
+type OpenTextInputOptions = {
 	title: string;
 	initialValue?: string;
 	placeholder: string;
@@ -104,7 +98,7 @@ type OpenModalTextInputOptions = {
 	allowSubmitWhenDisabled?: boolean;
 };
 
-const useModalTextInput = () => {
+const useMyScrollviewTextInputModal = () => {
 	const { show, close } = useMyScrollViewModal();
 
 	const closeModal = useCallback(() => {
@@ -112,7 +106,7 @@ const useModalTextInput = () => {
 		close();
 	}, [close]);
 
-	const openModalTextInput = useCallback(
+	const openTextInputModal = useCallback(
 		({
 			title,
 			initialValue,
@@ -127,7 +121,7 @@ const useModalTextInput = () => {
 			autoFocus,
 			checkTextInput,
 			allowSubmitWhenDisabled,
-		}: OpenModalTextInputOptions) => {
+		}: OpenTextInputOptions) => {
 			show({
 				title,
 				onClose: closeModal,
@@ -155,7 +149,7 @@ const useModalTextInput = () => {
 		[closeModal, show]
 	);
 
-	return { openModalTextInput, closeModalTextInput: closeModal };
+	return { openTextInputModal, closeTextInputModal: closeModal };
 };
 
-export default useModalTextInput;
+export default useMyScrollviewTextInputModal;

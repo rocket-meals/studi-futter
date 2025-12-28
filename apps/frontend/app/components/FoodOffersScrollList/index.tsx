@@ -5,7 +5,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/reducer';
 import { fetchFoodOffersByCanteen } from '@/redux/actions/FoodOffers/FoodOffers';
-import { DatabaseTypes, FoodSortOption } from 'repo-depkit-common';
+import { CollectionNames, DatabaseTypes, FoodSortOption } from 'repo-depkit-common';
 import FoodItem from '@/components/FoodItem/FoodItem';
 import CanteenFeedbackLabels from '@/components/CanteenFeedbackLabels/CanteenFeedbackLabels';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -16,6 +16,7 @@ import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
 import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import { SHEET_COMPONENTS } from '@/app/(app)/foodoffers';
+import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 
 interface FoodOffersScrollListProps {
 	canteenId: string;
@@ -40,8 +41,8 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
         const [refreshing, setRefreshing] = useState(false);
         const [selectedSheet, setSelectedSheet] = useState<'menu' | keyof typeof SHEET_COMPONENTS | null>(null);
         const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
-        const [selectedFoodId, setSelectedFoodId] = useState('');
         const bottomSheetRef = useRef<BottomSheet>(null);
+	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
         const openSheet = useCallback(
                 (sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
                         setSelectedSheet(sheet);
@@ -58,17 +59,6 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 			setSheetProps({});
 		}, 150);
 	}, []);
-
-	const openManagementSheet = (id: string) => {
-		if (id) {
-			openSheet('imageManagement', {
-				selectedFoodId: id,
-				fileName: 'foods',
-				closeSheet,
-				handleFetch: init,
-			});
-		}
-	};
 
 	useEffect(() => {
 		if (selectedSheet) {
@@ -125,6 +115,19 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		setLoading(false);
 	}, [startDate, loadDay]);
 
+	const openManagementSheet = useCallback(
+		(food: DatabaseTypes.Foods) => {
+			if (!food?.id) return;
+			openDirectusImageEditModal({
+				itemId: food.id,
+				field: 'image',
+				collection: CollectionNames.FOODS,
+				onUpdated: init,
+			});
+		},
+		[init, openDirectusImageEditModal]
+	);
+
 	useEffect(() => {
 		init();
 	}, [init]);
@@ -160,7 +163,7 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 					}}
 				>
 					{item.offers.map(offer => (
-						<FoodItem key={offer.id} item={offer} canteen={selectedCanteen as DatabaseTypes.Canteens} handleMenuSheet={openSheet} handleImageSheet={openManagementSheet} handleEatingHabitsSheet={openSheet} setSelectedFoodId={setSelectedFoodId} />
+						<FoodItem key={offer.id} item={offer} canteen={selectedCanteen as DatabaseTypes.Canteens} handleMenuSheet={openSheet} handleImageSheet={openManagementSheet} handleEatingHabitsSheet={openSheet} />
 					))}
 					{item.offers.length === 0 && <Text style={{ color: theme.screen.text }}>{translate(TranslationKeys.no_foodoffers_found_for_selection)}</Text>}
 				</View>

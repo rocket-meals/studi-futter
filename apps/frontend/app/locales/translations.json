@@ -2309,6 +2309,16 @@
     "tr": "Gönder",
     "zh": "提交"
   },
+  "done": {
+    "de": "Fertig",
+    "en": "Done",
+    "ar": "تم",
+    "es": "Listo",
+    "fr": "Terminé",
+    "ru": "Готово",
+    "tr": "Tamam",
+    "zh": "完成"
+  },
   "warning": {
     "de": "Warnung",
     "en": "Warning",
@@ -3063,16 +3073,6 @@
     "tr": "React Native QRCode SVG",
     "zh": "React Native QRCode SVG"
   },
-  "settings_list_check": {
-    "de": "Settings List Check",
-    "en": "Settings List Check",
-    "ar": "Settings List Check",
-    "es": "Settings List Check",
-    "fr": "Settings List Check",
-    "ru": "Settings List Check",
-    "tr": "Settings List Check",
-    "zh": "Settings List Check"
-  },
   "test_use_modal": {
     "de": "Test useModal",
     "en": "Test useModal",
@@ -3114,14 +3114,14 @@
     "zh": "Close modal"
   },
   "modal_text_input_label": {
-    "de": "useModalTextInput Test",
-    "en": "useModalTextInput test",
-    "ar": "useModalTextInput test",
-    "es": "useModalTextInput test",
-    "fr": "useModalTextInput test",
-    "ru": "useModalTextInput test",
-    "tr": "useModalTextInput test",
-    "zh": "useModalTextInput test"
+    "de": "useMyScrollviewTextInputModal Test",
+    "en": "useMyScrollviewTextInputModal test",
+    "ar": "useMyScrollviewTextInputModal test",
+    "es": "useMyScrollviewTextInputModal test",
+    "fr": "useMyScrollviewTextInputModal test",
+    "ru": "useMyScrollviewTextInputModal test",
+    "tr": "useMyScrollviewTextInputModal test",
+    "zh": "useMyScrollviewTextInputModal test"
   },
   "modal_text_input_placeholder": {
     "de": "Text eingeben",

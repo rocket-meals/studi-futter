@@ -33,7 +33,7 @@ const selectPreviousFeedback = createSelector([selectFoodState, (_: RootState, f
 const selectMarkings = createSelector([selectFoodState], foodState => foodState.markings);
 
 const FoodItem: React.FC<FoodItemProps> = memo(
-  ({ item, canteen, handleMenuSheet, handleImageSheet, setSelectedFoodId, handleEatingHabitsSheet, cardWidth }) => {
+  ({ item, canteen, handleMenuSheet, handleImageSheet, handleEatingHabitsSheet, cardWidth }) => {
     const toast = useToast();
     const dispatch = useDispatch();
     const { theme } = useTheme();
@@ -197,8 +197,7 @@ const FoodItem: React.FC<FoodItemProps> = memo(
                     <TouchableOpacity
                       style={styles.editImageButton}
                       onPress={() => {
-                        setSelectedFoodId(foodItem?.id);
-                        handleImageSheet(foodItem?.id);
+                        handleImageSheet(foodItem);
                       }}
                     >
                       <MaterialCommunityIcons name="image-edit" size={20} color="white" />

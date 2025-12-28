@@ -124,13 +124,13 @@ const Index = () => {
 					</View>
 					<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
 				</TouchableOpacity>
-                                <TouchableOpacity style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }} onPress={() => router.push('/experimentell/settings-list-check')}>
-                                        <View style={styles.col}>
-                                                <MaterialCommunityIcons name="format-list-text" color={theme.screen.icon} size={24} />
-                                                <Text style={{ ...styles.body, color: theme.screen.text }}>{translate(TranslationKeys.settings_list_check)}</Text>
-                                        </View>
-                                        <Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
-                                </TouchableOpacity>
+				<TouchableOpacity style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }} onPress={() => router.push('/experimentell/settings-list-components')}>
+					<View style={styles.col}>
+						<MaterialCommunityIcons name="format-list-bulleted" color={theme.screen.icon} size={24} />
+						<Text style={{ ...styles.body, color: theme.screen.text }}>SettingsList Komponenten</Text>
+					</View>
+					<Entypo name="chevron-small-right" color={theme.screen.icon} size={24} />
+				</TouchableOpacity>
                                 <TouchableOpacity style={{ ...styles.listItem, backgroundColor: theme.screen.iconBg }} onPress={() => router.push('/experimentell/test-use-modal')}>
                                         <View style={styles.col}>
                                                 <MaterialCommunityIcons name="test-tube" color={theme.screen.icon} size={24} />

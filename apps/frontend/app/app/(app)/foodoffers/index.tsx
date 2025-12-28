@@ -10,7 +10,7 @@ import {
 	View,
 } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
-import { CollectibleAt, DatabaseTypes, FoodSortOption, sortBySortField } from 'repo-depkit-common';
+import { CollectibleAt, CollectionNames, DatabaseTypes, FoodSortOption, sortBySortField } from 'repo-depkit-common';
 import styles from './styles';
 import {useTheme} from '@/hooks/useTheme';
 import {DrawerContentComponentProps, DrawerNavigationProp} from '@react-navigation/drawer';
@@ -41,7 +41,6 @@ import HourSheet from '@/components/HoursSheet/HoursSheet';
 import CalendarSheet from '@/components/CalendarSheet/CalendarSheet';
 import {excerpt} from '@/constants/HelperFunctions';
 import {useLanguage} from '@/hooks/useLanguage';
-import ImageManagementSheet from '@/components/ImageManagementSheet/ImageManagementSheet';
 import EatingHabitsSheet from '@/components/EatingHabitsSheet/EatingHabitsSheet';
 import {CanteenFeedbackLabelHelper} from '@/redux/actions/CanteenFeedbacksLabel/CanteenFeedbacksLabel';
 import CanteenFeedbackLabels from '@/components/CanteenFeedbackLabels/CanteenFeedbackLabels';
@@ -72,13 +71,13 @@ import useUtilizationModal from '@/hooks/useUtilizationModal';
 import usePopupEventModal from '@/hooks/usePopupEventModal';
 import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
 import useAppForegroundUpdateCheckModal from '@/hooks/useAppForegroundUpdateCheckModal';
+import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 
 export const SHEET_COMPONENTS = {
         canteen: CanteenSelectionSheet,
         sort: SortSheet,
         hours: HourSheet,
         calendar: CalendarSheet,
-        imageManagement: ImageManagementSheet,
         aiGeneratedInfo: AIGeneratedHintSheet,
         eatingHabits: EatingHabitsSheet,
 };
@@ -103,7 +102,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
         const [refreshing, setRefreshing] = useState(false);
         const [beforeElement, setBeforeElement] = useState<any>(null);
         const [afterElement, setAfterElement] = useState<any>(null);
-        const [selectedFoodId, setSelectedFoodId] = useState('');
         const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
 	const [feedbackLabelsLoading, setFeedbackLabelsLoading] = useState(true);
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
@@ -139,6 +137,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
         const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
         const { openActiveModal, activePopupEvent } = usePopupEventModal();
         const { openFoodofferSortingModal } = useFoodofferSortingModal();
+        const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
         useAppForegroundUpdateCheckModal();
 
 	const MIN_CARD_WIDTH = 280;
@@ -309,17 +308,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
                 setSheetProps(props);
         }, [openFoodofferSortingModal]);
 
-        const openManagementSheet = useCallback((id: string) => {
-                if (id) {
-                        openSheet('imageManagement', {
-				selectedFoodId: id,
-				fileName: 'foods',
-				closeSheet: closeSheet,
-				handleFetch: fetchFoods,
-			});
-		}
-	}, []);
-
 	useEffect(() => {
 		openActiveModal();
 	}, [activePopupEvent, openActiveModal]);
@@ -439,6 +427,19 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		}
 	};
 
+        const openManagementSheet = useCallback(
+		(food: DatabaseTypes.Foods) => {
+			if (!food?.id) return;
+			openDirectusImageEditModal({
+				itemId: food.id,
+				field: 'image',
+				collection: CollectionNames.FOODS,
+				onUpdated: fetchFoods,
+			});
+		},
+		[fetchFoods, openDirectusImageEditModal]
+	);
+
 	const fetchCanteenLabels = async () => {
 		try {
 			setFeedbackLabelsLoading(true);
@@ -518,7 +519,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 							handleMenuSheet={openSheet}
 							handleImageSheet={openManagementSheet}
 							handleEatingHabitsSheet={openSheet}
-							setSelectedFoodId={setSelectedFoodId}
 							cardWidth={cardWidth}
 						/>
 					) : item.foodofferInfoItem ? (
@@ -538,7 +538,6 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 			openManagementSheet,
 			openSheet,
 			selectedCanteen,
-			setSelectedFoodId,
 			getInfoItemContent,
 			itemGap,
 			cardWidth
