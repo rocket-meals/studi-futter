@@ -4,6 +4,7 @@ import { Keyboard, KeyboardTypeOptions } from 'react-native';
 import { SettingsListTextInputSheet } from '@/components/SettingsListTextInput';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import type { CheckTextInput } from '@/components/SettingsListTextInput';
+import { borderRadiusContainer } from '@/constants/Constants';
 
 type ModalTextInputSheetProps = {
 	initialValue?: string;
@@ -138,7 +139,7 @@ const useMyScrollviewTextInputModal = () => {
 						keyboardType={keyboardType}
 						numberOfLines={numberOfLines}
 						textAlignVertical={textAlignVertical}
-						inputStyle={inputStyle}
+						inputStyle={{ ...(inputStyle ?? {}), borderRadius: borderRadiusContainer }}
 						autoFocus={autoFocus}
 						checkTextInput={checkTextInput}
 						allowSubmitWhenDisabled={allowSubmitWhenDisabled ?? true}

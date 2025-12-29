@@ -6,9 +6,9 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/reducer';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { SettingsListProps } from './types';
+import { borderRadiusContainer } from '@/constants/Constants';
 
 const padding = 0; // px used for additional padding and border radius
-const borderRadius = 10;
 const basePaddingVertical = 10;
 
 const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, leftIconComponent, title, label, value, rightElement, rightIcon, onPress, handleFunction, iconBackgroundColor, iconBgColor, showSeparator = true, groupPosition, noIconIndent = false }) => {
@@ -39,19 +39,19 @@ const SettingsList: React.FC<SettingsListProps> = ({ leftIcon, leftIconComponent
 
 	if (groupPosition === 'top') {
 		containerStyles.push({
-			borderTopLeftRadius: borderRadius,
-			borderTopRightRadius: borderRadius,
+			borderTopLeftRadius: borderRadiusContainer,
+			borderTopRightRadius: borderRadiusContainer,
 			paddingTop: basePaddingVertical + padding,
 		});
 	} else if (groupPosition === 'bottom') {
 		containerStyles.push({
-			borderBottomLeftRadius: borderRadius,
-			borderBottomRightRadius: borderRadius,
+			borderBottomLeftRadius: borderRadiusContainer,
+			borderBottomRightRadius: borderRadiusContainer,
 			paddingBottom: basePaddingVertical + padding,
 		});
 	} else if (groupPosition === 'single') {
 		containerStyles.push({
-			borderRadius: borderRadius,
+			borderRadius: borderRadiusContainer,
 			paddingTop: basePaddingVertical + padding,
 			paddingBottom: basePaddingVertical + padding,
 		});

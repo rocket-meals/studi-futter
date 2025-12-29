@@ -1,15 +1,15 @@
 // Hinweis: Wenn neue SettingsList-Komponenten entstehen, bitte auch im Experimental-Screen hinzufügen.
 import React, { useCallback, useMemo } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, TextInput, View } from 'react-native';
 import type { KeyboardTypeOptions } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
 
+import ProjectButton from '@/components/ProjectButton';
 import SettingsList from '@/components/SettingsList';
 import { useTheme } from '@/hooks/useTheme';
 import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
 import { RootState } from '@/redux/reducer';
-import { myContrastColor } from '@/helper/ColorHelper';
 import type { SettingsListProps } from '@/components/SettingsList/types';
 export type CheckTextInputResult = {
 	isValid: boolean;
@@ -66,8 +66,7 @@ export const SettingsListTextInputSheet: React.FC<SettingsListTextInputSheetProp
 	allowSubmitWhenDisabled = false,
 }) => {
 	const { theme } = useTheme();
-	const { primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
-	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
+	const { primaryColor } = useSelector((state: RootState) => state.settings);
 
 	const handleSubmitEditing = useCallback(() => {
 		if (multiline) return;
@@ -75,6 +74,12 @@ export const SettingsListTextInputSheet: React.FC<SettingsListTextInputSheetProp
 		Keyboard.dismiss();
 		onSave();
 	}, [allowSubmitWhenDisabled, disableSave, multiline, onSave]);
+
+	const handlePressSave = useCallback(() => {
+		if (disableSave && !allowSubmitWhenDisabled) return;
+		Keyboard.dismiss();
+		onSave();
+	}, [allowSubmitWhenDisabled, disableSave, onSave]);
 
 	const Content = (
 		<View
@@ -107,20 +112,10 @@ export const SettingsListTextInputSheet: React.FC<SettingsListTextInputSheetProp
 			/>
 
 			<View style={styles.buttonContainer}>
-				<TouchableOpacity
-					onPress={() => {
-						Keyboard.dismiss();
-						onSave();
-					}}
-					disabled={disableSave}
-					style={{
-						...styles.saveButton,
-						backgroundColor: primaryColor,
-						opacity: disableSave ? 0.5 : 1,
-					}}
-				>
-					<Text style={[styles.buttonText, { color: contrastColor }]}>{saveLabel}</Text>
-				</TouchableOpacity>
+				<ProjectButton
+					text={saveLabel}
+					onPress={handlePressSave}
+				/>
 			</View>
 		</View>
 	);
@@ -226,7 +221,6 @@ const styles = StyleSheet.create({
 	sheetView: {
 		width: '100%',
 		padding: 10,
-		paddingBottom: 20,
 		alignItems: 'stretch',
 	},
 	keyboardAvoidingView: {
@@ -251,28 +245,17 @@ const styles = StyleSheet.create({
 	},
 	sheetInput: {
 		width: '100%',
-		height: 60,
+		height: 56,
 		borderRadius: 20,
 		paddingHorizontal: 20,
 		borderWidth: 1,
-		marginTop: 20,
+		marginTop: 12,
 		fontFamily: 'Poppins_400Regular',
-		fontSize: 18,
+		fontSize: 14,
 	},
 	buttonContainer: {
 		width: '100%',
-		marginTop: 30,
+		marginTop: 4,
 		alignItems: 'stretch',
-	},
-	saveButton: {
-		height: 52,
-		justifyContent: 'center',
-		alignItems: 'center',
-		borderRadius: 50,
-		width: '100%',
-	},
-	buttonText: {
-		fontSize: 16,
-		fontFamily: 'Poppins_700Bold',
 	},
 });

@@ -194,6 +194,10 @@ const Settings = () => {
                 });
         }, [currentNickname, openTextInputModal, saveNickname, translate]);
 
+        const handleTheme = (theme: any) => {
+                setThemeMode(theme);
+        };
+
         const openColorSchemeSheet = useCallback(() => {
                 openThemeSettingsModal({
                         selectedTheme,
@@ -278,10 +282,6 @@ const Settings = () => {
         const handleCheckForUpdates = () => {
                 manualCheck();
         };
-
-	const handleTheme = (theme: any) => {
-		setThemeMode(theme);
-	};
 
         const handleLogout = useCallback(() => openConfirmLogoutModal(), [openConfirmLogoutModal]);
 

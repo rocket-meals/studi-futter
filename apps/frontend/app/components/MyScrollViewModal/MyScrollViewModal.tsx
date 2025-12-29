@@ -47,9 +47,9 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
     <>
       {title && (
         <View
-          style={{ backgroundColor: resolvedBackgroundColor, paddingHorizontal: 20, paddingTop: 8, paddingBottom: 8 }}
+          style={{ backgroundColor: resolvedBackgroundColor, paddingHorizontal: 20, paddingTop: 6, paddingBottom: 4 }}
         >
-          <Text style={{ fontSize: 18, fontWeight: '600', color: theme.sheet.text }}>{title}</Text>
+          <Text style={{ fontSize: 16, fontWeight: '600', color: theme.sheet.text }}>{title}</Text>
         </View>
       )}
       {ListHeaderComponent}
@@ -96,4 +96,3 @@ const MyScrollViewModal: React.FC<MyScrollViewModalProps> = ({
 };
 
 export default MyScrollViewModal;
-
