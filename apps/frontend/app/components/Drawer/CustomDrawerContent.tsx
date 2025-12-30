@@ -381,16 +381,20 @@ const CustomDrawerContent: React.FC<DrawerContentComponentProps> = ({ navigation
                                                         </TouchableOpacity>
                                                 ))}
                                                 <View style={styles.divider} />
-                                                <TouchableOpacity style={getMenuItemStyle('settings/index')} onPress={() => navigation.navigate('settings/index')}>
-							<Ionicons name="settings-outline" size={28} color={isActive('settings/index') ? getContrastColor('settings/index') : theme.inactiveIcon} />
+						<TouchableOpacity style={getMenuItemStyle('settings/index')} onPress={() => navigation.navigate('settings/index')}>
+							<View style={styles.menuIconWrapper}>
+								<Ionicons name="settings-outline" size={28} color={isActive('settings/index') ? getContrastColor('settings/index') : theme.inactiveIcon} />
+							</View>
 							<Text style={getMenuLabelStyle('settings/index')}>{translate(TranslationKeys.settings)}</Text>
 						</TouchableOpacity>
                                                 <TouchableOpacity
                                                         style={getMenuItemStyle('faq-living/index')}
                                                         onPress={openConfirmLogoutModal}
                                                 >
-                                                        <MaterialCommunityIcons name="logout" size={28} color={theme.inactiveIcon} />
-                                                        <Text style={getMenuLabelStyle('faq-living/index')}>{logoutButtonLabel}</Text>
+							<View style={styles.menuIconWrapper}>
+								<MaterialCommunityIcons name="logout" size={28} color={theme.inactiveIcon} />
+							</View>
+							<Text style={getMenuLabelStyle('faq-living/index')}>{logoutButtonLabel}</Text>
                                                 </TouchableOpacity>
                                                 <CollectibleSpot collectibleKey={CollectibleAt.collectible_at_drawer} />
                                         </View>

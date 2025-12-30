@@ -48,7 +48,9 @@ import useThemeSettingsModal from '@/hooks/useThemeSettingsModal';
 import useMenuPositionModal from '@/hooks/useMenuPositionModal';
 import useCardColumnsModal from '@/hooks/useCardColumnsModal';
 import useFirstDayOfWeekModal from '@/hooks/useFirstDayOfWeekModal';
-import { FoodSortOption } from 'repo-depkit-common';
+import useHousingSortingModal from '@/hooks/useHousingSortingModal';
+import useCampusSortingModal from '@/hooks/useCampusSortingModal';
+import { ApartmentSortOption, CampusSortOption, FoodSortOption } from 'repo-depkit-common';
 
 type CollectibleItemSize = 'small' | 'medium' | 'large';
 
@@ -75,8 +77,10 @@ const Settings = () => {
         const { openMenuPositionModal } = useMenuPositionModal();
         const { openCardColumnsModal } = useCardColumnsModal();
         const { openFirstDayOfWeekModal } = useFirstDayOfWeekModal();
+        const { openHousingSortingModal } = useHousingSortingModal();
+        const { openCampusSortingModal } = useCampusSortingModal();
 
-        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer, sortBy } = useSelector((state: RootState) => state.settings);
+        const { primaryColor, drawerPosition, selectedTheme, nickNameLocal, firstDayOfTheWeek, amountColumnsForcard, serverInfo, appSettings, useWebpForAssets, foodOffersNextDayThreshold, debugMode, simulateExpoUpdateAvailable, collectibleItemSize, collectibleRandomPosition, selectedCustomer, sortBy, apartmentsSortBy, campusesSortBy } = useSelector((state: RootState) => state.settings);
         const currentNickname = useMemo(
                 () => (profile?.id ? profile?.nickname ?? '' : nickNameLocal ?? ''),
                 [nickNameLocal, profile?.id, profile?.nickname]
@@ -98,6 +102,8 @@ const Settings = () => {
         );
 
         const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
+        const housing_area_color = appSettings?.housing_area_color ? appSettings?.housing_area_color : primaryColor;
+        const campus_area_color = appSettings?.campus_area_color ? appSettings?.campus_area_color : primaryColor;
 
         const customerServerUrl = useCustomerServerUrl();
 
@@ -134,6 +140,37 @@ const Settings = () => {
         const sortingLabel = useMemo(
                 () => translate(sortingOptionLabels[sortBy as FoodSortOption] ?? 'sort_option_none'),
                 [sortBy, sortingOptionLabels, translate]
+        );
+
+        const housingSortingOptionLabels: Partial<Record<ApartmentSortOption, string>> = useMemo(
+                () => ({
+                        [ApartmentSortOption.INTELLIGENT]: 'sort_option_intelligent',
+                        [ApartmentSortOption.FREE_ROOMS]: 'free_rooms',
+                        [ApartmentSortOption.DISTANCE]: 'sort_option_distance',
+                        [ApartmentSortOption.ALPHABETICAL]: 'sort_option_alphabetical',
+                        [ApartmentSortOption.NONE]: 'sort_option_none',
+                }),
+                []
+        );
+
+        const housingSortingLabel = useMemo(
+                () => translate(housingSortingOptionLabels[apartmentsSortBy as ApartmentSortOption] ?? 'sort_option_none'),
+                [apartmentsSortBy, housingSortingOptionLabels, translate]
+        );
+
+        const campusSortingOptionLabels: Partial<Record<CampusSortOption, string>> = useMemo(
+                () => ({
+                        [CampusSortOption.INTELLIGENT]: 'sort_option_intelligent',
+                        [CampusSortOption.DISTANCE]: 'sort_option_distance',
+                        [CampusSortOption.ALPHABETICAL]: 'sort_option_alphabetical',
+                        [CampusSortOption.NONE]: 'sort_option_none',
+                }),
+                []
+        );
+
+        const campusSortingLabel = useMemo(
+                () => translate(campusSortingOptionLabels[campusesSortBy as CampusSortOption] ?? 'sort_option_none'),
+                [campusSortingOptionLabels, campusesSortBy, translate]
         );
 
         const saveNickname = useCallback(
@@ -460,6 +497,38 @@ const Settings = () => {
                                                 <SettingsList iconBgColor={primaryColor} leftIcon={<FontAwesome5 name="columns" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.amount_columns_for_cards)} value={amountColumnsForcard === 0 ? translate(TranslationKeys.automatic) : amountColumnsForcard} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openCardColumnsModal} groupPosition="middle" />
                                                 <SettingsList iconBgColor={primaryColor} leftIcon={<Feather name="calendar" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.first_day_of_week)} value={translate(firstDayOfTheWeek?.name)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFirstDayOfWeekModal} groupPosition="bottom" />
                                         </View>
+                                        {appSettings?.housing_enabled && (
+                                                <>
+                                                        <SettingsGroupTitle>{translate(TranslationKeys.housing)}</SettingsGroupTitle>
+                                                        <View style={{ gap: 0 }}>
+                                                                <SettingsList
+                                                                        iconBgColor={housing_area_color}
+                                                                        leftIcon={<MaterialIcons name="sort" size={24} color={theme.screen.icon} />}
+                                                                        label={translate(TranslationKeys.sort)}
+                                                                        value={housingSortingLabel}
+                                                                        rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+                                                                        handleFunction={openHousingSortingModal}
+                                                                        groupPosition="single"
+                                                                />
+                                                        </View>
+                                                </>
+                                        )}
+                                        {appSettings?.campus_enabled && (
+                                                <>
+                                                        <SettingsGroupTitle>{translate(TranslationKeys.campus)}</SettingsGroupTitle>
+                                                        <View style={{ gap: 0 }}>
+                                                                <SettingsList
+                                                                        iconBgColor={campus_area_color}
+                                                                        leftIcon={<MaterialIcons name="sort" size={24} color={theme.screen.icon} />}
+                                                                        label={translate(TranslationKeys.sort)}
+                                                                        value={campusSortingLabel}
+                                                                        rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />}
+                                                                        handleFunction={openCampusSortingModal}
+                                                                        groupPosition="single"
+                                                                />
+                                                        </View>
+                                                </>
+                                        )}
 					<SettingsGroupTitle>{translate(TranslationKeys.group_app_management)}</SettingsGroupTitle>
 					<View style={{ gap: 0 }}>
                                                 <SettingsList iconBgColor={primaryColor} leftIcon={<Ionicons name="cloud-download-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.CHECK_FOR_APP_UPDATES)} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={handleCheckForUpdates} groupPosition="top" />
