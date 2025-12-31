@@ -1,4 +1,4 @@
-import { Linking, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, Platform, Text, View } from 'react-native';
 import React from 'react';
 import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
@@ -6,13 +6,20 @@ import { useLanguage } from '@/hooks/useLanguage';
 import * as Clipboard from 'expo-clipboard';
 import { Entypo, Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import useToast from '@/hooks/useToast';
-import { Tooltip, TooltipContent, TooltipText } from '@gluestack-ui/themed';
 import { TranslationKeys } from '@/locales/keys';
+import SettingsList from '@/components/SettingsList';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/reducer';
 
 const Information: React.FC<any> = ({ campusDetails }) => {
 	const { theme } = useTheme();
 	const toast = useToast();
 	const { translate } = useLanguage();
+	const { appSettings, primaryColor } = useSelector((state: RootState) => state.settings);
+	const campusAreaColor = appSettings?.campus_area_color ?? primaryColor;
+
+	const coordinates = campusDetails?.coordinates?.coordinates;
+	const coordinatesLabel = coordinates?.length === 2 ? coordinates.join(', ') : undefined;
 
 	const copyCordsToClipboard = async () => {
 		const coordinates = campusDetails.coordinates?.coordinates;
@@ -57,85 +64,64 @@ const Information: React.FC<any> = ({ campusDetails }) => {
 		}
 	};
 
+	const infoItems = [
+		{
+			key: 'navigation',
+			label: translate(TranslationKeys.open_navitation_to_location),
+			leftIcon: <Ionicons name="navigate" size={24} color={theme.screen.icon} />,
+			rightIcon: <Entypo name="chevron-small-right" size={26} color={theme.screen.icon} />,
+			handleFunction: handleOpenNavigation,
+			value: undefined,
+		},
+		{
+			key: 'coordinates',
+			label: translate(TranslationKeys.coordinates),
+			leftIcon: <Ionicons name="location-sharp" size={24} color={theme.screen.icon} />,
+			rightIcon: <MaterialCommunityIcons name="content-copy" size={24} color={theme.screen.icon} />,
+			handleFunction: copyCordsToClipboard,
+			value: coordinatesLabel,
+		},
+		{
+			key: 'construction',
+			label: translate(TranslationKeys.year_of_construction),
+			leftIcon: <MaterialIcons name="construction" size={24} color={theme.screen.icon} />,
+			value: campusDetails?.date_of_construction ? String(campusDetails?.date_of_construction) : undefined,
+		},
+		...(campusDetails?.url
+			? [
+					{
+						key: 'url',
+						label: translate(TranslationKeys.copy_url),
+						leftIcon: <MaterialCommunityIcons name="attachment" size={24} color={theme.screen.icon} />,
+						rightIcon: <MaterialCommunityIcons name="content-copy" size={24} color={theme.screen.icon} />,
+						handleFunction: handleCopyUrlToClipboard,
+						value: undefined,
+					},
+				]
+			: []),
+	];
+
 	return (
 		<View style={styles.container}>
 			<Text style={{ ...styles.heading, color: theme.screen.text }}>{translate(TranslationKeys.information)}</Text>
-			{/* Open Navigation */}
-			<Tooltip
-				placement="top"
-				trigger={triggerProps => (
-					<TouchableOpacity {...triggerProps} style={{ ...styles.row, backgroundColor: theme.screen.iconBg }} onPress={handleOpenNavigation}>
-						<View style={styles.col}>
-							<Ionicons name="navigate" size={24} color={theme.screen.icon} />
-							<Text style={{ ...styles.body, color: theme.screen.text }}>{translate(TranslationKeys.open_navitation_to_location)}</Text>
-						</View>
-						<Entypo name="chevron-small-right" size={26} color={theme.screen.icon} />
-					</TouchableOpacity>
-				)}
-			>
-				<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-					<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-						{`${translate(TranslationKeys.open_navitation_to_location)}`}
-					</TooltipText>
-				</TooltipContent>
-			</Tooltip>
-
-			{/* Copy Coordinates */}
-			<Tooltip
-				placement="top"
-				trigger={triggerProps => (
-					<TouchableOpacity {...triggerProps} style={{ ...styles.row, backgroundColor: theme.screen.iconBg }} onPress={copyCordsToClipboard}>
-						<View style={styles.col}>
-							<Ionicons name="location-sharp" size={24} color={theme.screen.icon} />
-							<Text style={{ ...styles.body, color: theme.screen.text }}>{translate(TranslationKeys.coordinates)}</Text>
-						</View>
-						<View style={styles.col2}>
-							<Text style={{ ...styles.value, color: theme.screen.text }}>52.27780, 8.02325</Text>
-							<MaterialCommunityIcons name="content-copy" size={24} color={theme.screen.icon} />
-						</View>
-					</TouchableOpacity>
-				)}
-			>
-				<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-					<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-						{`${translate(TranslationKeys.coordinates)}`}
-					</TooltipText>
-				</TooltipContent>
-			</Tooltip>
-
-			{/* Year of Construction */}
-			<View style={{ ...styles.row, backgroundColor: theme.screen.iconBg }}>
-				<View style={styles.col}>
-					<MaterialIcons name="construction" size={24} color={theme.screen.icon} />
-					<Text style={{ ...styles.body, color: theme.screen.text }}>{translate(TranslationKeys.year_of_construction)}</Text>
-				</View>
-				<View style={styles.col2}>
-					<Text style={{ ...styles.value, color: theme.screen.text }}>{campusDetails?.date_of_construction}</Text>
-				</View>
+			<View style={{ gap: 0 }}>
+				{infoItems.map((item, index) => {
+					const groupPosition =
+						infoItems.length === 1 ? 'single' : index === 0 ? 'top' : index === infoItems.length - 1 ? 'bottom' : 'middle';
+					return (
+						<SettingsList
+							key={item.key}
+							iconBgColor={campusAreaColor}
+							leftIcon={item.leftIcon}
+							label={item.label}
+							value={item.value}
+							rightIcon={item.rightIcon}
+							handleFunction={item.handleFunction}
+							groupPosition={groupPosition}
+						/>
+					);
+				})}
 			</View>
-			{/* Copy URl */}
-			{campusDetails?.url && (
-				<Tooltip
-					placement="top"
-					trigger={triggerProps => (
-						<TouchableOpacity {...triggerProps} style={{ ...styles.row, backgroundColor: theme.screen.iconBg }} onPress={handleCopyUrlToClipboard}>
-							<View style={styles.col}>
-								<MaterialCommunityIcons name="attachment" size={24} color={theme.screen.icon} />
-								<Text style={{ ...styles.body, color: theme.screen.text }}>{translate(TranslationKeys.copy_url)}</Text>
-							</View>
-							<View style={styles.col2}>
-								<MaterialCommunityIcons name="content-copy" size={24} color={theme.screen.icon} />
-							</View>
-						</TouchableOpacity>
-					)}
-				>
-					<TooltipContent bg={theme.tooltip.background} py="$1" px="$2">
-						<TooltipText fontSize="$sm" color={theme.tooltip.text}>
-							{`${translate(TranslationKeys.copy_url)}`}
-						</TooltipText>
-					</TooltipContent>
-				</Tooltip>
-			)}
 		</View>
 	);
 };

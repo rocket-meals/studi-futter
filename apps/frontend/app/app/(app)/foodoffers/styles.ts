@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { horizontalScreenPadding } from '@/constants/Constants';
 
 export default StyleSheet.create({
 	foodOfferContainer: {
@@ -63,6 +64,7 @@ export default StyleSheet.create({
 	feebackContainer: {
 		width: '100%',
 		marginTop: 20,
+		paddingHorizontal: horizontalScreenPadding,
 	},
 	foodLabels: {
 		fontSize: 24,
@@ -71,6 +73,7 @@ export default StyleSheet.create({
 	elementContainer: {
 		width: '100%',
 		marginTop: 20,
+		paddingHorizontal: horizontalScreenPadding,
 	},
 	noFoodContainer: {
 		width: '100%',

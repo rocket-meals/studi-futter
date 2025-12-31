@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { horizontalScreenPadding } from '@/constants/Constants';
 
 export default StyleSheet.create({
 	container: {
@@ -6,7 +7,7 @@ export default StyleSheet.create({
 	},
 	contentContainer: {
 		width: '100%',
-		paddingHorizontal: 10,
+		paddingHorizontal: horizontalScreenPadding,
 		paddingVertical: 40,
 		alignItems: 'center',
 	},
@@ -57,11 +58,11 @@ export default StyleSheet.create({
 
 	languageContainer: {
 		marginTop: 10,
-		paddingHorizontal: 10,
+		paddingHorizontal: horizontalScreenPadding,
 	},
 	amountOfCardContainer: {
 		marginTop: 10,
-		paddingHorizontal: 10,
+		paddingHorizontal: horizontalScreenPadding,
 		maxHeight: '100%',
 		height: 400,
 	},

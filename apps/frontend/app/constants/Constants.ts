@@ -2,6 +2,7 @@ import { Platform } from 'react-native';
 
 export const isWeb = Platform.OS === 'web';
 export const borderRadiusContainer = 10;
+export const horizontalScreenPadding = 16;
 
 export const links = [
 	{ title: 'about_us', path: '/about-us' },

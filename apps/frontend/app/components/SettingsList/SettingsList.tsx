@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/reducer';
 import { myContrastColor } from '@/helper/ColorHelper';
 import { SettingsListProps } from './types';
-import { borderRadiusContainer } from '@/constants/Constants';
+import { borderRadiusContainer, horizontalScreenPadding } from '@/constants/Constants';
 
 const padding = 0; // px used for additional padding and border radius
 const basePaddingVertical = 10;
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		width: '100%',
 		alignItems: 'center',
-		paddingHorizontal: 16,
+		paddingHorizontal: horizontalScreenPadding,
 		paddingVertical: basePaddingVertical,
 	},
         iconWrapper: {
