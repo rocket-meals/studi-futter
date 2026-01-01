@@ -198,8 +198,8 @@ export default function FoodDetailsScreen() {
                                                         canteenId={foodOfferCanteenId}
                                                 />
                                         );
-                                case 'details':
-                                        return <Details groupedAttributes={groupedAttributes} loading={foodAttributesLoading} />;
+			case 'details':
+				return <Details groupedAttributes={groupedAttributes} loading={foodAttributesLoading} />;
                                 case 'labels':
                                         return (
                                                 <Labels

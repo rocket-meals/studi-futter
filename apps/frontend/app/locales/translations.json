@@ -1359,6 +1359,36 @@
     "tr": "Konuma Navigasyonu Aç",
     "zh": "打开导航到位置"
   },
+  "open_in_google_maps": {
+    "de": "In Google Maps öffnen",
+    "en": "Open in Google Maps",
+    "ar": "افتح في خرائط Google",
+    "es": "Abrir en Google Maps",
+    "fr": "Ouvrir dans Google Maps",
+    "ru": "Открыть в Google Maps",
+    "tr": "Google Haritalar'da aç",
+    "zh": "在谷歌地图中打开"
+  },
+  "open_in_apple_maps": {
+    "de": "In Apple Karten öffnen",
+    "en": "Open in Apple Maps",
+    "ar": "افتح في خرائط Apple",
+    "es": "Abrir en Apple Maps",
+    "fr": "Ouvrir dans Plans Apple",
+    "ru": "Открыть в Apple Maps",
+    "tr": "Apple Haritalar'da aç",
+    "zh": "在 Apple 地图中打开"
+  },
+  "copy_coordinates": {
+    "de": "Koordinaten kopieren",
+    "en": "Copy coordinates",
+    "ar": "انسخ الإحداثيات",
+    "es": "Copiar coordenadas",
+    "fr": "Copier les coordonnées",
+    "ru": "Скопировать координаты",
+    "tr": "Koordinatları kopyala",
+    "zh": "复制坐标"
+  },
   "distance_based_canteen_selection_or_if_asked_on_real_location": {
     "de": "Die Distanz wird basierend auf der Entfernung zu deiner ausgewählten Mensa berechnet oder, wenn du explizit gefragt hast, zu dem Standort deines Geräts.",
     "en": "The distance is calculated based on the distance to your selected canteen or, if you explicitly asked, to your device",
@@ -1398,6 +1428,16 @@
     "ru": "Координаты",
     "tr": "Koordinatlar",
     "zh": "坐标"
+  },
+  "location_information": {
+    "de": "Information zum Standort",
+    "en": "Location information",
+    "ar": "معلومات الموقع",
+    "es": "Información de la ubicación",
+    "fr": "Informations sur le lieu",
+    "ru": "Информация о местоположении",
+    "tr": "Konum bilgisi",
+    "zh": "位置信息"
   },
   "copy_url": {
     "de": "URL kopieren",
@@ -2220,7 +2260,7 @@
     "zh": "删除账户"
   },
   "location": {
-    "de": "Ort",
+    "de": "Standort",
     "en": "Location",
     "ar": "موقع",
     "es": "Ubicación",

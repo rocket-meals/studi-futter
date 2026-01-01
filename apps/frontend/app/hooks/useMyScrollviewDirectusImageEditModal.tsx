@@ -11,7 +11,7 @@ import { ImagePickerMediaTypes } from '@/components/FileUpload/FileUpload';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
-import { isWeb } from '@/constants/Constants';
+import { isWeb, settingsListSectionGap } from '@/constants/Constants';
 import { ServerAPI } from '@/redux/actions';
 import { CollectionHelper } from '@/helper/collectionHelper';
 import { TranslationKeys } from '@/locales/keys';
@@ -303,8 +303,37 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 	}, [buildUpdatePayload, collection, collectionFields, field, itemId, loading, onClose, onUpdated]);
 
 	const actionItems = useMemo(() => {
+		const withGrouping = (items: Array<Record<string, any>>) =>
+			items.map((item, index) => ({
+				...item,
+				groupPosition:
+					items.length === 1
+						? 'single'
+						: index === 0
+							? 'top'
+							: index === items.length - 1
+								? 'bottom'
+								: 'middle',
+				showSeparator: index !== items.length - 1,
+			}));
+
+		const cancelItem = {
+			key: isDelete ? 'delete-cancel' : 'cancel',
+			label: translate(TranslationKeys.cancel),
+			icon: <MaterialCommunityIcons name="close" size={24} />,
+			groupPosition: 'single',
+			showSeparator: false,
+			isCancel: true,
+			onPress: () => {
+				if (isDelete) {
+					setIsDelete(false);
+				}
+				onClose();
+			},
+		};
+
 		if (isDelete) {
-			return [
+			const deleteItems = withGrouping([
 				{
 					key: 'delete-confirm',
 					label: translate(TranslationKeys.delete),
@@ -313,21 +342,14 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 					onPress: handleDeleteImage,
 				},
 				{
-					key: 'delete-cancel',
-					label: translate(TranslationKeys.cancel),
-					icon: <MaterialCommunityIcons name="close" size={24} />,
-					onPress: () => {
-						setIsDelete(false);
-						onClose();
-					},
-				},
-				{
 					key: 'delete-back',
 					label: translate(TranslationKeys.navigate_back),
 					icon: <MaterialCommunityIcons name="keyboard-backspace" size={24} />,
 					onPress: () => setIsDelete(false),
 				},
-			];
+			]);
+
+			return [...deleteItems, cancelItem];
 		}
 
 		const items = [];
@@ -354,38 +376,25 @@ const DirectusImageEditModalContent: React.FC<DirectusImageEditModalContentProps
 			rightIcon: <MaterialCommunityIcons name="arrow-right" size={24} color={theme.screen.icon} />,
 			onPress: () => setIsDelete(true),
 		});
-		items.push({
-			key: 'cancel',
-			label: translate(TranslationKeys.cancel),
-			icon: <MaterialCommunityIcons name="close" size={24} />,
-			onPress: onClose,
-		});
-		return items;
+
+		return [...withGrouping(items), cancelItem];
 	}, [handleDeleteImage, handleImagePick, isDelete, loading, onClose, theme.screen.icon, translate]);
 
 	return (
 		<View style={{ width: '100%' }}>
 			{actionItems.map((item, index) => {
-				const groupPosition =
-					actionItems.length === 1
-						? 'single'
-						: index === 0
-							? 'top'
-							: index === actionItems.length - 1
-								? 'bottom'
-								: 'middle';
-
 				return (
-					<SettingsList
-						key={item.key}
-						label={item.label}
-						leftIcon={item.icon}
-						groupPosition={groupPosition}
-						showSeparator={index !== actionItems.length - 1}
-						rightElement={item.rightElement}
-						rightIcon={item.rightIcon}
-						handleFunction={item.onPress}
-					/>
+					<View key={item.key} style={item.isCancel && index > 0 ? { marginTop: settingsListSectionGap } : undefined}>
+						<SettingsList
+							label={item.label}
+							leftIcon={item.icon}
+							groupPosition={item.groupPosition}
+							showSeparator={item.showSeparator}
+							rightElement={item.rightElement}
+							rightIcon={item.rightIcon}
+							handleFunction={item.onPress}
+						/>
+					</View>
 				);
 			})}
 		</View>

@@ -11,6 +11,7 @@ import SettingsListEditable from '@/components/SettingsListEditable';
 import SettingsListDate from '@/components/SettingsListDate';
 import SettingsListTextInput from '@/components/SettingsListTextInput';
 import SettingsListNickname from '@/components/SettingsListNickname';
+import SettingsListCoordinate from '@/components/SettingsListCoordinate/SettingsListCoordinate';
 import styles from './styles';
 
 const SettingsListComponents = () => {
@@ -89,6 +90,13 @@ const SettingsListComponents = () => {
 
 				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsListNickname</Text>
 				<SettingsListNickname initialValue={nickname} onSave={setNickname} />
+
+				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsListCoordinate</Text>
+				<SettingsListCoordinate
+					iconBgColor={primaryColor}
+					location={{ latitude: 51.4556, longitude: 7.0116 }}
+					groupPosition="single"
+				/>
 			</View>
 		</ScrollView>
 	);
