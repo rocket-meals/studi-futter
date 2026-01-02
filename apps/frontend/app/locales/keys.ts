@@ -135,6 +135,7 @@ export enum TranslationKeys {
 	open_in_apple_maps = 'open_in_apple_maps',
 	copy_coordinates = 'copy_coordinates',
 	distance_based_canteen_selection_or_if_asked_on_real_location = 'distance_based_canteen_selection_or_if_asked_on_real_location',
+	distance_based_on_selected_canteen = 'distance_based_on_selected_canteen',
 	use_current_position_for_distance = 'use_current_position_for_distance',
 	distance = 'distance',
 	coordinates = 'coordinates',

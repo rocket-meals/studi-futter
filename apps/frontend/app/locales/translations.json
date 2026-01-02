@@ -1399,6 +1399,16 @@
     "tr": "Mesafe, seçtiğiniz kantine veya açıkça sorduysanız cihazınızın konumuna olan mesafeye göre hesaplanır.",
     "zh": "距离是根据您选择的食堂的距离或，如果您明确要求，根据您设备的位置计算的。"
   },
+  "distance_based_on_selected_canteen": {
+    "de": "Die Entfernung wird von deiner ausgewählten Mensa aus berechnet.",
+    "en": "The distance is calculated from your selected canteen.",
+    "ar": "يتم حساب المسافة انطلاقًا من المقصف الذي اخترته.",
+    "es": "La distancia se calcula a partir de tu comedor seleccionado.",
+    "fr": "La distance est calculée à partir de votre cantine sélectionnée.",
+    "ru": "Расстояние рассчитывается от выбранной вами столовой.",
+    "tr": "Mesafe, seçtiğiniz kantinden itibaren hesaplanır.",
+    "zh": "距离以你选择的食堂为起点计算。"
+  },
   "use_current_position_for_distance": {
     "de": "Aktuelle Position für Entfernung nutzen",
     "en": "Use current position for distance",
