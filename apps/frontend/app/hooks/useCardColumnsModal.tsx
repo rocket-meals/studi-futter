@@ -1,21 +1,17 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
-import SettingsList from '@/components/SettingsList';
+import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { AmountColumn } from '@/constants/SettingData';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
 import { SET_AMOUNT_COLUMNS_FOR_CARDS } from '@/redux/Types/types';
 import { CollectibleAt } from 'repo-depkit-common';
 
 const CardColumnsSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet }) => {
-	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
 	const { amountColumnsForcard, primaryColor } = useSelector((state: RootState) => state.settings);
@@ -34,36 +30,16 @@ const CardColumnsSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet }) 
 	return (
 		<View style={{ width: '100%', gap: 12 }}>
 			<View style={{ width: '100%', paddingHorizontal: 10, marginTop: 12 }}>
-				{AmountColumn.map((column, index) => {
-					const isSelected = selectedOption === column.id;
-					const groupPosition =
-						AmountColumn.length === 1
-							? 'single'
-							: index === 0
-								? 'top'
-								: index === AmountColumn.length - 1
-									? 'bottom'
-									: 'middle';
-					const label = column.id === 0 ? translate(TranslationKeys.automatic) : column.name;
-
-					return (
-						<SettingsList
-							key={column.id}
-							label={label}
-							noIconIndent
-							groupPosition={groupPosition}
-							showSeparator={index !== AmountColumn.length - 1}
-							rightIcon={
-								<MaterialCommunityIcons
-									name={isSelected ? 'radiobox-marked' : 'radiobox-blank'}
-									size={24}
-									color={isSelected ? primaryColor : theme.screen.icon}
-								/>
-							}
-							handleFunction={() => updateColumns(column.id)}
-						/>
-					);
-				})}
+				<SettingsListSelectOption
+					options={AmountColumn.map((column) => ({
+						id: column.id,
+						label: column.id === 0 ? translate(TranslationKeys.automatic) : column.name,
+					}))}
+					selectedOption={selectedOption}
+					onSelect={(option) => updateColumns(option.id)}
+					selectionColor={primaryColor}
+					noIconIndent
+				/>
 			</View>
 			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_settings_amount_column} />
 		</View>

@@ -17,7 +17,6 @@ import { RootDrawerParamList } from './types';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
 import CanteenSelectionSheet from '@/components/CanteenSelectionSheet/CanteenSelectionSheet';
-import SortSheet from '@/components/SortSheet/SortSheet';
 import HourSheet from '@/components/HoursSheet/HoursSheet';
 import CalendarSheet from '@/components/CalendarSheet/CalendarSheet';
 import { excerpt } from '@/constants/HelperFunctions';
@@ -38,17 +37,16 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RootState } from '@/redux/reducer';
 import MarkingBottomSheet from '@/components/MarkingBottomSheet';
 import AIGeneratedHintSheet from '@/components/AIGeneratedHintSheet';
-import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import usePopupEventModal from '@/hooks/usePopupEventModal';
 import useUtilizationModal from '@/hooks/useUtilizationModal';
+import useFoodofferSortingModal from '@/hooks/useFoodofferSortingModal';
 
 export const SHEET_COMPONENTS = {
-        canteen: CanteenSelectionSheet,
-        sort: SortSheet,
-        hours: HourSheet,
-        calendar: CalendarSheet,
-        aiGeneratedInfo: AIGeneratedHintSheet,
-        eatingHabits: EatingHabitsSheet,
+	canteen: CanteenSelectionSheet,
+	hours: HourSheet,
+	calendar: CalendarSheet,
+	aiGeneratedInfo: AIGeneratedHintSheet,
+	eatingHabits: EatingHabitsSheet,
 };
 
 const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
@@ -77,9 +75,9 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
         const [prefetchedFoodOffers, setPrefetchedFoodOffers] = useState<Record<string, DatabaseTypes.Foodoffers[]>>({});
         const foods_area_color = appSettings?.foods_area_color ? appSettings?.foods_area_color : primaryColor;
         const contrastColor = myContrastColor(foods_area_color, theme, mode === 'dark');
-        const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
-        const { openUtilizationModal } = useUtilizationModal();
-        const { openActiveModal, activePopupEvent } = usePopupEventModal();
+	const { openUtilizationModal } = useUtilizationModal();
+	const { openActiveModal, activePopupEvent } = usePopupEventModal();
+	const { openFoodofferSortingModal } = useFoodofferSortingModal();
 
 	// Set Page Title
 	useSetPageTitle(selectedCanteen?.alias || TranslationKeys.food_offers);
@@ -138,25 +136,18 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		}, [])
 	);
 
-        const openSheet = useCallback(
-                (sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
-                        if (sheet === 'sort') {
-                                showScrollViewModal(
-                                        {
-                                                title: translate(TranslationKeys.sort),
-                                                onClose: closeScrollViewModal,
-                                                children: <SortSheet closeSheet={closeScrollViewModal} />,
-                                        },
-                                        {}
-                                );
-                                return;
-                        }
+	const openSheet = useCallback(
+		(sheet: 'menu' | 'sort' | keyof typeof SHEET_COMPONENTS, props = {}) => {
+			if (sheet === 'sort') {
+				openFoodofferSortingModal();
+				return;
+			}
 
                         setSelectedSheet(sheet);
                         setSheetProps(props);
-                },
-                [closeScrollViewModal, showScrollViewModal, translate]
-        );
+		},
+		[openFoodofferSortingModal]
+	);
 
 
 	useEffect(() => {

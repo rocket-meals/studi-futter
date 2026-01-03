@@ -9,6 +9,7 @@ import useSetPageTitle from '@/hooks/useSetPageTitle';
 import SettingsList from '@/components/SettingsList';
 import SettingsListEditable from '@/components/SettingsListEditable';
 import SettingsListDate from '@/components/SettingsListDate';
+import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBoolean';
 import SettingsListTextInput from '@/components/SettingsListTextInput';
 import SettingsListNickname from '@/components/SettingsListNickname';
 import SettingsListCoordinate from '@/components/SettingsListCoordinate/SettingsListCoordinate';
@@ -22,6 +23,7 @@ const SettingsListComponents = () => {
 	const [dateError, setDateError] = useState('');
 	const [inputValue, setInputValue] = useState('Beispieltext');
 	const [nickname, setNickname] = useState('Tester');
+	const [boolValue, setBoolValue] = useState(true);
 
 	return (
 		<ScrollView
@@ -71,6 +73,16 @@ const SettingsListComponents = () => {
 					label="Datum"
 					iconBgColor={primaryColor}
 					leftIcon={<MaterialCommunityIcons name="calendar" size={24} color={theme.screen.icon} />}
+					groupPosition="single"
+				/>
+
+				<Text style={{ ...styles.sectionTitle, color: theme.screen.text }}>SettingsListBoolean</Text>
+				<SettingsListBoolean
+					iconBgColor={primaryColor}
+					leftIcon={<MaterialCommunityIcons name="toggle-switch-outline" size={24} color={theme.screen.icon} />}
+					label="Boolean Setting"
+					isEnabled={boolValue}
+					onToggle={() => setBoolValue(current => !current)}
 					groupPosition="single"
 				/>
 

@@ -144,8 +144,8 @@ const styles = StyleSheet.create({
 		textAlign: 'right', // Text rechtsbündig
 	},
 	rightWrapper: {
-		width: 34,
-		height: 34,
+		minWidth: 34,
+		minHeight: 34,
 		borderRadius: 8,
 		alignItems: 'center',
 		justifyContent: 'center',

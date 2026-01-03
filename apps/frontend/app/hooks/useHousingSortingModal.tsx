@@ -6,14 +6,12 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useTheme } from '@/hooks/useTheme';
 import { TranslationKeys } from '@/locales/keys';
-import SettingsList from '@/components/SettingsList';
+import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import { RootState } from '@/redux/reducer';
 import { SET_APARTMENTS_SORTING } from '@/redux/Types/types';
 
 const HousingSortSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet }) => {
-	const { theme } = useTheme();
 	const { translate } = useLanguage();
 	const dispatch = useDispatch();
 	const { apartmentsSortBy, primaryColor: projectColor, appSettings } = useSelector((state: RootState) => state.settings);
@@ -61,36 +59,15 @@ const HousingSortSheet: React.FC<{ closeSheet: () => void }> = ({ closeSheet }) 
 	return (
 		<View style={{ width: '100%', gap: 12 }}>
 			<View style={{ width: '100%', paddingHorizontal: 10, marginTop: 12 }}>
-				{sortingOptions.map((option, index) => {
-					const isSelected = selectedOption === option.id;
-					const groupPosition =
-						sortingOptions.length === 1
-							? 'single'
-							: index === 0
-								? 'top'
-								: index === sortingOptions.length - 1
-									? 'bottom'
-									: 'middle';
-
-					return (
-						<SettingsList
-							key={option.id}
-							label={translate(option.label)}
-							leftIcon={option.icon}
-							iconBgColor={housing_area_color}
-							groupPosition={groupPosition}
-							showSeparator={index !== sortingOptions.length - 1}
-							rightIcon={
-								<MaterialCommunityIcons
-									name={isSelected ? 'radiobox-marked' : 'radiobox-blank'}
-									size={24}
-									color={isSelected ? housing_area_color : theme.screen.icon}
-								/>
-							}
-							handleFunction={() => updateSort(option)}
-						/>
-					);
-				})}
+				<SettingsListSelectOption
+					options={sortingOptions.map((option) => ({
+						...option,
+						label: translate(option.label),
+					}))}
+					selectedOption={selectedOption}
+					onSelect={updateSort}
+					iconBgColor={housing_area_color}
+				/>
 			</View>
 		</View>
 	);

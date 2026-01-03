@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
 
@@ -7,10 +7,27 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
 import { useMyScrollViewModal } from '@/components/GlobalModal/useMyScrollViewModal';
 import SettingsList from '@/components/SettingsList';
-import languageStyles from '@/components/LanguageSheet/styles';
 import { languages } from '@/constants/SettingData';
 import { TranslationKeys } from '@/locales/keys';
 import { RootState } from '@/redux/reducer';
+
+const styles = StyleSheet.create({
+        optionsContainer: {
+                width: '100%',
+                marginTop: 0,
+        },
+        flagWrapper: {
+                minWidth: 34,
+                minHeight: 34,
+                marginRight: 10,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 6,
+        },
+        flagText: {
+                fontSize: 22,
+        },
+});
 
 export const useLanguageModal = () => {
         const { show: showScrollViewModal, close: closeScrollViewModal } = useMyScrollViewModal();
@@ -43,8 +60,8 @@ export const useLanguageModal = () => {
                                         key={`${languageOption.value}-${index}`}
                                         label={languageOption.label}
                                         leftIcon={
-                                                <View style={languageStyles.flagWrapper}>
-                                                        <Text style={languageStyles.flagText}>{languageOption.emoji}</Text>
+                                                <View style={styles.flagWrapper}>
+                                                        <Text style={styles.flagText}>{languageOption.emoji}</Text>
                                                 </View>
                                         }
                                         iconBgColor="transparent"
@@ -70,7 +87,7 @@ export const useLanguageModal = () => {
                         {
                                 title: translate(TranslationKeys.language),
                                 children: (
-                                        <View style={languageStyles.optionsContainer}>
+                                        <View style={styles.optionsContainer}>
                                                 {languages.map((languageOption, index) => (
                                                         <LanguageOption
                                                                 key={`${languageOption.value}-${index}`}

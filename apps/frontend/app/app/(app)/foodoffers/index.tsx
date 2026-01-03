@@ -36,7 +36,6 @@ import { RootDrawerParamList } from './types';
 import BaseBottomSheet from '@/components/BaseBottomSheet';
 import type BottomSheet from '@gorhom/bottom-sheet';
 import CanteenSelectionSheet from '@/components/CanteenSelectionSheet/CanteenSelectionSheet';
-import SortSheet from '@/components/SortSheet/SortSheet';
 import HourSheet from '@/components/HoursSheet/HoursSheet';
 import CalendarSheet from '@/components/CalendarSheet/CalendarSheet';
 import {excerpt} from '@/constants/HelperFunctions';
@@ -74,12 +73,11 @@ import useAppForegroundUpdateCheckModal from '@/hooks/useAppForegroundUpdateChec
 import useMyScrollviewDirectusImageEditModal from '@/hooks/useMyScrollviewDirectusImageEditModal';
 
 export const SHEET_COMPONENTS = {
-        canteen: CanteenSelectionSheet,
-        sort: SortSheet,
-        hours: HourSheet,
-        calendar: CalendarSheet,
-        aiGeneratedInfo: AIGeneratedHintSheet,
-        eatingHabits: EatingHabitsSheet,
+	canteen: CanteenSelectionSheet,
+	hours: HourSheet,
+	calendar: CalendarSheet,
+	aiGeneratedInfo: AIGeneratedHintSheet,
+	eatingHabits: EatingHabitsSheet,
 };
 
 interface DayItem {
@@ -298,7 +296,7 @@ const Index: React.FC<DrawerContentComponentProps> = ({ navigation }) => {
 		}, [])
 	);
 
-        const openSheet = useCallback((sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
+        const openSheet = useCallback((sheet: 'menu' | 'sort' | keyof typeof SHEET_COMPONENTS, props = {}) => {
                 if (sheet === 'sort') {
                         openFoodofferSortingModal();
                         return;

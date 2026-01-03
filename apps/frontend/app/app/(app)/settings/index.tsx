@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, SafeAreaView, ScrollView, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import MyImage from '@/components/MyImage';
 import { useTheme } from '@/hooks/useTheme';
 import styles from './styles';
@@ -8,6 +8,7 @@ import { AntDesign, Entypo, Feather, FontAwesome5, Ionicons, MaterialCommunityIc
 import { isWeb } from '@/constants/Constants';
 import SettingsList from '@/components/SettingsList';
 import SettingsListEditable from '@/components/SettingsListEditable';
+import SettingsListBoolean from '@/components/SettingsListBoolean/SettingsListBoolean';
 import { useExpoUpdateChecker } from '@/components/ExpoUpdateChecker/ExpoUpdateChecker';
 import SettingsGroupTitle from '@/components/SettingsGroupTitle';
 import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
@@ -411,25 +412,12 @@ const Settings = () => {
                                                         handleFunction={openCollectibleSizeModal}
                                                         groupPosition="middle"
                                                 />
-                                                <SettingsList
+                                                <SettingsListBoolean
                                                         iconBgColor={primaryColor}
                                                         leftIcon={<MaterialIcons name="my-location" size={24} color={theme.screen.icon} />}
                                                         label={translate(TranslationKeys.collectible_event_random_position)}
-                                                        value={
-                                                                collectibleRandomPosition
-                                                                        ? translate(TranslationKeys.checked)
-                                                                        : translate(TranslationKeys.unchecked)
-                                                        }
-                                                        rightElement={
-                                                                <Switch
-                                                                        value={collectibleRandomPosition}
-                                                                        onValueChange={toggleCollectibleRandomPosition}
-                                                                        trackColor={{ false: theme.screen.iconBg, true: primaryColor }}
-                                                                        thumbColor={theme.screen.icon}
-                                                                        ios_backgroundColor={theme.screen.iconBg}
-                                                                />
-                                                        }
-                                                        handleFunction={toggleCollectibleRandomPosition}
+                                                        isEnabled={collectibleRandomPosition}
+                                                        onToggle={toggleCollectibleRandomPosition}
                                                         groupPosition="bottom"
                                                 />
                                         </View>
@@ -585,39 +573,28 @@ const Settings = () => {
 						<View style={{ gap: 0 }}>
                                                         <SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="server" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.backend_server)} value={selectedCustomerDisplayName} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openServerSheet} groupPosition="top" />
 							<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialCommunityIcons name="clock-outline" size={24} color={theme.screen.icon} />} label={translate(TranslationKeys.foodoffers_next_day_time)} value={(foodOffersNextDayThreshold || '18:00').toString()} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={openFoodOffersTimeSheet} groupPosition="middle" />
-							<SettingsList iconBgColor={primaryColor} leftIcon={<MaterialIcons name="image" size={24} color={theme.screen.icon} />} label="Use WebP images" value={useWebpForAssets ? 'WebP' : 'Default'} rightIcon={<Octicons name="chevron-right" size={24} color={theme.screen.icon} />} handleFunction={toggleWebpForAssets} groupPosition="middle" />
-							<SettingsList
+							<SettingsListBoolean
+								iconBgColor={primaryColor}
+								leftIcon={<MaterialIcons name="image" size={24} color={theme.screen.icon} />}
+								label="Use WebP images"
+								isEnabled={useWebpForAssets}
+								onToggle={toggleWebpForAssets}
+								groupPosition="middle"
+							/>
+							<SettingsListBoolean
 								iconBgColor={primaryColor}
 								leftIcon={<MaterialCommunityIcons name="bank-transfer" size={24} color={theme.screen.icon} />}
 								label={translate(TranslationKeys.debug_mode)}
-								value={debugMode ? translate(TranslationKeys.checked) : translate(TranslationKeys.unchecked)}
-								rightElement={
-									<Switch
-										value={debugMode}
-										onValueChange={toggleDebugMode}
-										trackColor={{ false: theme.screen.iconBg, true: primaryColor }}
-										thumbColor={theme.screen.icon}
-										ios_backgroundColor={theme.screen.iconBg}
-									/>
-								}
-								handleFunction={toggleDebugMode}
+								isEnabled={debugMode}
+								onToggle={toggleDebugMode}
 								groupPosition="middle"
 							/>
-							<SettingsList
+							<SettingsListBoolean
 								iconBgColor={primaryColor}
 								leftIcon={<MaterialCommunityIcons name="update" size={24} color={theme.screen.icon} />}
 								label={translate(TranslationKeys.simulate_expo_update_available)}
-								value={simulateExpoUpdateAvailable ? translate(TranslationKeys.checked) : translate(TranslationKeys.unchecked)}
-								rightElement={
-									<Switch
-										value={simulateExpoUpdateAvailable}
-										onValueChange={toggleSimulateExpoUpdate}
-										trackColor={{ false: theme.screen.iconBg, true: primaryColor }}
-										thumbColor={theme.screen.icon}
-										ios_backgroundColor={theme.screen.iconBg}
-									/>
-								}
-								handleFunction={toggleSimulateExpoUpdate}
+								isEnabled={simulateExpoUpdateAvailable}
+								onToggle={toggleSimulateExpoUpdate}
 								groupPosition="bottom"
 							/>
 						</View>

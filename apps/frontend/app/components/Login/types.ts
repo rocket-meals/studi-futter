@@ -1,13 +1,6 @@
 // define handleLogin type
 type HandleLoginType = (token: string | undefined, email: string, password: string) => void;
 
-export type ManagementModalProps = {
-	isVisible: boolean;
-	setIsVisible: React.Dispatch<React.SetStateAction<boolean>>;
-	handleLogin: HandleLoginType;
-	loading: Boolean;
-}
-
 export type FormProps = {
 	openSheet: () => void;
 	openAttentionSheet: () => void;

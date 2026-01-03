@@ -5,7 +5,7 @@ import { ColorSchemeSheetProps } from './types';
 import { themes } from '@/constants/SettingData';
 import CollectibleSpot from "@/components/CollectibleItem/CollectibleSpot";
 import { CollectibleAt } from 'repo-depkit-common';
-import SettingsList from '@/components/SettingsList';
+import SettingsListSelectOption from '@/components/SettingsListSelectOption/SettingsListSelectOption';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useTheme } from '@/hooks/useTheme';
@@ -22,39 +22,19 @@ const ColorSchemeSheet: React.FC<ColorSchemeSheetProps> = ({ closeSheet, selecte
 	return (
 		<View style={styles.sheetView}>
 			<View style={styles.optionsContainer}>
-				{themes.map((themeOption, index) => {
-					const isSelected = activeSelectedTheme === themeOption.id;
-					const groupPosition =
-						themes.length === 1
-							? 'single'
-							: index === 0
-								? 'top'
-								: index === themes.length - 1
-									? 'bottom'
-									: 'middle';
-
-					return (
-						<SettingsList
-							key={themeOption.id}
-							label={translate(themeOption.name)}
-							leftIcon={<MaterialCommunityIcons name={themeOption.icon as any} size={24} />}
-							iconBgColor={primaryColor}
-							groupPosition={groupPosition}
-							showSeparator={index !== themes.length - 1}
-							rightIcon={
-								<MaterialCommunityIcons
-									name={isSelected ? 'radiobox-marked' : 'radiobox-blank'}
-									size={24}
-									color={isSelected ? primaryColor : theme.screen.icon}
-								/>
-							}
-							handleFunction={() => {
-								onSelect(themeOption.id);
-								closeSheet();
-							}}
-						/>
-					);
-				})}
+				<SettingsListSelectOption
+					options={themes.map((themeOption) => ({
+						id: themeOption.id,
+						label: translate(themeOption.name),
+						icon: <MaterialCommunityIcons name={themeOption.icon as any} size={24} />,
+					}))}
+					selectedOption={activeSelectedTheme}
+					onSelect={(option) => {
+						onSelect(option.id);
+						closeSheet();
+					}}
+					iconBgColor={primaryColor}
+				/>
 			</View>
 			<CollectibleSpot collectibleKey={CollectibleAt.collectible_at_settings_theme} />
 			<DebugView title="Theme" isVisible>
