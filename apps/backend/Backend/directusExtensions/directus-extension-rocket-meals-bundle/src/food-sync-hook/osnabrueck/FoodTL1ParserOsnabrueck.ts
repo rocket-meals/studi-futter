@@ -1,9 +1,12 @@
 import { FoodTL1Parser, RawFoodofferInformationType, RawTL1FoodofferType, TL1AttributeValueType } from '../FoodTL1Parser';
 import { FoodTL1Parser_GetRawReportInterface } from '../FoodTL1Parser_GetRawReportInterface';
-import { FoodParseFoodAttributesType } from '../FoodParserInterface';
+import {FoodoffersTypeForParser, FoodParseFoodAttributesType} from '../FoodParserInterface';
 
 export class FoodTL1ParserOsnabrueck extends FoodTL1Parser {
   static DEFAULT_CO2_RATING_FIELD = 'EXTINFO_CO2_BEWERTUNG';
+
+  static MARKING_EXTERNAL_IDENTIFIER_NIEDERSACHSEN_MENU = "custom_niedersachsen_menu";
+  static FOODOFFER_CATEGORY_NIEDERSACHSEN_MENU = "Niedersachsenmenü"
 
   constructor(rawFoodofferReader: FoodTL1Parser_GetRawReportInterface) {
     super(rawFoodofferReader);
@@ -41,6 +44,13 @@ export class FoodTL1ParserOsnabrueck extends FoodTL1Parser {
       }
     }
 
+    // Niedersachsen Menü
+    let foodofferCategory = this.getFoodofferCategoryFromRawFoodoffer(rawFoodoffer);
+    if (foodofferCategory === FoodTL1ParserOsnabrueck.FOODOFFER_CATEGORY_NIEDERSACHSEN_MENU) {
+      combinedMarkings.push(FoodTL1ParserOsnabrueck.MARKING_EXTERNAL_IDENTIFIER_NIEDERSACHSEN_MENU);
+    }
+
+
     return combinedMarkings;
   }
 
@@ -56,6 +66,13 @@ export class FoodTL1ParserOsnabrueck extends FoodTL1Parser {
 
   static getKlimaTellerMarkingExternalIdentifier() {
     return FoodTL1ParserOsnabrueck.getCO2RatingMarkingExternalIdentifier(FoodTL1ParserOsnabrueck.CO2RATING_A_VALUE);
+  }
+
+
+  override async getFoodoffersForParser(): Promise<FoodoffersTypeForParser[]> {
+    let superPromise = await super.getFoodoffersForParser();
+
+    return superPromise;
   }
 
   override getFoodAttributesFromRawTL1Foodoffer(parsedReportItem: RawTL1FoodofferType): FoodParseFoodAttributesType {

@@ -94,7 +94,7 @@ export class PuppeteerGenerator implements HtmlPdfGeneratorInterface {
             : request.headers();
 
           if (requestOptions.mockImageResolution && request.resourceType() === 'image') {
-            console.log('Mocking image resolution for:', request.url());
+            //console.log('Mocking image resolution for:', request.url());
 
             // Aus URL evtl. Breite/Höhe extrahieren
             const match = request.url().match(/\/(\d+)(?:\/(\d+))?/);
