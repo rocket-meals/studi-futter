@@ -19,6 +19,7 @@ import { myContrastColor } from '@/helper/ColorHelper';
 import { TranslationKeys } from '@/locales/keys';
 import useSetPageTitle from '@/hooks/useSetPageTitle';
 import { RootState } from '@/redux/reducer';
+import { bigScreenDefaultValues } from '../bigScreen';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.food_plan_day);
@@ -95,6 +96,14 @@ const Index = () => {
 		dispatch({
 			type: SET_DAY_PLAN,
 			payload: { isFullScreen: !dayPlan.isFullScreen },
+		});
+	};
+
+	const toggleMarkingsOnCardSwitch = () => {
+		const currentValue = dayPlan?.showMarkingsOnCard ?? bigScreenDefaultValues.showMarkingsOnCard;
+		dispatch({
+			type: SET_DAY_PLAN,
+			payload: { showMarkingsOnCard: !currentValue },
 		});
 	};
 
@@ -185,6 +194,28 @@ const Index = () => {
 						<Switch
 							value={dayPlan.isMenuCategory}
 							onValueChange={toggleMenuSwitch}
+							thumbColor={foods_area_color}
+							trackColor={{
+								false: theme.screen.icon,
+								true: foods_area_color,
+							}}
+						/>
+					</View>
+				</View>
+				<View
+					style={{
+						...styles.list,
+						backgroundColor: theme.screen.iconBg,
+						paddingHorizontal: windowWidth > 600 ? 20 : 10,
+					}}
+				>
+					<View style={styles.col1}>
+						<Text style={{ ...styles.label, color: theme.screen.text }}>Markings auf Bild anzeigen</Text>
+					</View>
+					<View style={styles.col2}>
+						<Switch
+							value={dayPlan?.showMarkingsOnCard ?? bigScreenDefaultValues.showMarkingsOnCard}
+							onValueChange={toggleMarkingsOnCardSwitch}
 							thumbColor={foods_area_color}
 							trackColor={{
 								false: theme.screen.icon,
@@ -306,6 +337,7 @@ const Index = () => {
 									nextFoodIntervalInSeconds: dayPlan?.nextFoodInterval || 0,
 									refreshFoodOffersIntervalInSeconds: dayPlan?.refreshInterval || 0,
 									fullscreen: dayPlan?.isFullScreen || false,
+									showMarkingsOnCard: dayPlan?.showMarkingsOnCard ?? bigScreenDefaultValues.showMarkingsOnCard,
 								},
 							});
 						}

@@ -118,6 +118,7 @@ export type DayPlan = {
 	nextFoodInterval: number;
 	refreshInterval: number;
 	isFullScreen: boolean;
+	showMarkingsOnCard: boolean;
 	foodCategory: { id: string; alias: string };
 	isMenuCategoryName: boolean;
 }
