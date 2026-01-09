@@ -8,9 +8,11 @@ import { useSelector } from 'react-redux';
 import ProjectButton from '@/components/ProjectButton';
 import SettingsList from '@/components/SettingsList';
 import { useTheme } from '@/hooks/useTheme';
+import { useLanguage } from '@/hooks/useLanguage';
 import useMyScrollviewTextInputModal from '@/hooks/useMyScrollviewTextInputModal';
 import { RootState } from '@/redux/reducer';
 import type { SettingsListProps } from '@/components/SettingsList/types';
+import { TranslationKeys } from '@/locales/keys';
 export type CheckTextInputResult = {
 	isValid: boolean;
 	value: string;
@@ -37,7 +39,7 @@ export interface SettingsListTextInputSheetProps {
 export interface SettingsListTextInputProps extends Omit<SettingsListProps, 'onPress' | 'handleFunction'> {
 	modalTitle?: string;
 	placeholder: string;
-	saveLabel: string;
+	saveLabel?: string;
 	onSave: (value: string) => void | Promise<void>;
 	initialValue?: string;
 	multiline?: boolean;
@@ -157,9 +159,11 @@ const SettingsListTextInput: React.FC<SettingsListTextInputProps> = ({
 	...props
 }) => {
 	const { theme } = useTheme();
+	const { translate } = useLanguage();
 	const { openTextInputModal } = useMyScrollviewTextInputModal();
 	const resolvedTitle = useMemo(() => modalTitle ?? title ?? label ?? '', [label, modalTitle, title]);
 	const resolvedInitialValue = initialValue ?? value ?? '';
+	const resolvedSaveLabel = useMemo(() => saveLabel ?? translate(TranslationKeys.save), [saveLabel, translate]);
 
 	const resolvedRightIcon = useMemo(
 		() =>
@@ -184,6 +188,7 @@ const SettingsListTextInput: React.FC<SettingsListTextInputProps> = ({
 			autoFocus,
 			checkTextInput,
 			allowSubmitWhenDisabled,
+			saveLabel: resolvedSaveLabel,
 		});
 	}, [
 		allowSubmitWhenDisabled,
@@ -197,8 +202,8 @@ const SettingsListTextInput: React.FC<SettingsListTextInputProps> = ({
 		openTextInputModal,
 		placeholder,
 		resolvedInitialValue,
+		resolvedSaveLabel,
 		resolvedTitle,
-		saveLabel,
 		textAlignVertical,
 	]);
 
