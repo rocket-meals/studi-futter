@@ -328,4 +328,16 @@ describe('FoodTL1ParserHannover Test', () => {
     let allAttributeFields = FoodTL1ParserHannover.FOOD_ATTRIBUTE_FIELDS;
     //checkForAllAttributesPassed(foodsJson, allAttributeFields);
   });
+
+  // Foodoffer with Niedersachsen Menü should cost NIEDERSACHSEN_MENUE_PRICE
+    it('Foodoffer with Niedersachsen Menü should cost NIEDERSACHSEN_MENUE_PRICE', async () => {
+    let foodoffersJson = await getFoodoffersJson(FoodTL1Parser_RawReportTestReaderHannover.getSavedRawReportWithNiedersachsenMenueMarking());
+    expect(foodoffersJson.length).toBeGreaterThan(0);
+    const firstFoodoffer = foodoffersJson[0];
+    expect(!!firstFoodoffer).toBe(true);
+    if (!firstFoodoffer) {
+      return;
+    }
+    expect(firstFoodoffer.basicFoodofferData.price_student).toEqual(FoodTL1ParserHannover.NIEDERSACHSEN_MENUE_PRICE);
+    });
 });

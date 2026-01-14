@@ -6,7 +6,7 @@ import {
   TL1AttributeValueType
 } from '../FoodTL1Parser';
 import {FoodTL1Parser_GetRawReportInterface} from '../FoodTL1Parser_GetRawReportInterface';
-import {FoodParseFoodAttributesType} from '../FoodParserInterface';
+import {FoodoffersTypeForParser, FoodParseFoodAttributesType} from '../FoodParserInterface';
 
 export class FoodTL1ParserHannover extends FoodTL1Parser {
   static MENUEKENNZEICHEN_FIELD = 'MENUEKENNZEICHEN';
@@ -93,6 +93,7 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
 
   static KLIMA_TELLER_EXTERNAL_IDENTIFIER = 'kt';
   static NIEDERSACHSEN_MENUE_EXTERNAL_IDENTIFIER = 'q';
+  static NIEDERSACHSEN_MENUE_PRICE = 2.50;
   static FOOD_ID_EXCLUDED_MARKINGS = [FoodTL1ParserHannover.NIEDERSACHSEN_MENUE_EXTERNAL_IDENTIFIER];
 
   /**
@@ -238,5 +239,26 @@ export class FoodTL1ParserHannover extends FoodTL1Parser {
   override getFoodAttributesFromRawTL1Foodoffer(parsedReportItem: RawTL1FoodofferType): FoodParseFoodAttributesType {
     let foodAttributes = FoodTL1Parser.getAdditionalFoodAttributesFromRawTL1Foodoffer(parsedReportItem, FoodTL1ParserHannover.FOOD_ATTRIBUTE_FIELDS);
     return foodAttributes;
+  }
+
+  override async getFoodoffersForParser(){
+    let foodoffersTypeForParsers = await super.getFoodoffersForParser();
+    foodoffersTypeForParsers = this.priceNiedersachsenMenuAdaption(foodoffersTypeForParsers);
+
+    return foodoffersTypeForParsers;
+  }
+
+  private priceNiedersachsenMenuAdaption(foodoffers: FoodoffersTypeForParser[]){
+    let foodoffersAdapted: FoodoffersTypeForParser[] = [];
+    for(let foodoffer of foodoffers){
+      let isNiedersachsenMenu = foodoffer.marking_external_identifiers.includes(FoodTL1ParserHannover.NIEDERSACHSEN_MENUE_EXTERNAL_IDENTIFIER);
+        if(isNiedersachsenMenu){
+            // Anpassung des Preises für Niedersachsen Menü
+          foodoffer.basicFoodofferData.price_student = FoodTL1ParserHannover.NIEDERSACHSEN_MENUE_PRICE;
+        }
+      foodoffersAdapted.push(foodoffer);
+    }
+
+    return foodoffersAdapted;
   }
 }
