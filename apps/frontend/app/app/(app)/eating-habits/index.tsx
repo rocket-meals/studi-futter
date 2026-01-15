@@ -4,7 +4,7 @@ import styles from './styles';
 import { useTheme } from '@/hooks/useTheme';
 import { isWeb } from '@/constants/Constants';
 import FoodLabelingInfo from '@/components/FoodLabelingInfo';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import MarkingLabels from '@/components/MarkingLabels/MarkingLabels';
 import { useLanguage } from '@/hooks/useLanguage';
 import { excerpt } from '@/constants/HelperFunctions';
@@ -20,13 +20,21 @@ import type BottomSheet from '@gorhom/bottom-sheet';
 import { RootState } from '@/redux/reducer';
 import CollectibleSpot from '@/components/CollectibleItem/CollectibleSpot';
 import { CollectibleAt } from 'repo-depkit-common';
+import SettingsGroupTitle from '@/components/SettingsGroupTitle';
+import SettingsList from '@/components/SettingsList';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { ProfileHelper } from '@/redux/actions/Profile/Profile';
+import { UPDATE_PROFILE } from '@/redux/Types/types';
+import { UserHelper } from '@/helper/UserHelper';
 
 const Index = () => {
 	useSetPageTitle(TranslationKeys.eating_habits);
 	const { theme } = useTheme();
+	const dispatch = useDispatch();
 	const { translate } = useLanguage();
 	const { markings } = useSelector((state: RootState) => state.food);
 	const { primaryColor, appSettings, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
+	const { user, profile } = useSelector((state: RootState) => state.authReducer);
 	const contrastColor = myContrastColor(primaryColor, theme, mode === 'dark');
 	const [readMore, setReadMore] = useState(false);
 	const [autoPlay, setAutoPlay] = useState(appSettings?.animations_auto_start);
@@ -35,6 +43,8 @@ const Index = () => {
 	const [screenWidth, setScreenWidth] = useState(Dimensions.get('window').width);
 	const menuSheetRef = useRef<BottomSheet>(null);
 	const [isActive, setIsActive] = useState(false);
+	const profileHelper = useMemo(() => new ProfileHelper(), []);
+	const isAnonymousUser = UserHelper.isAnonymousUser(user);
 
 	const openMenuSheet = () => {
 		menuSheetRef?.current?.expand();
@@ -102,6 +112,28 @@ const Index = () => {
 		setReadMore(!readMore);
 	};
 
+	const handleClearMarkings = useCallback(async () => {
+		if (!profile) return;
+
+		const updatedProfile = {
+			...profile,
+			markings: [],
+		};
+
+		dispatch({ type: UPDATE_PROFILE, payload: updatedProfile });
+
+		if (isAnonymousUser) return;
+
+		try {
+			const result = await profileHelper.updateProfile(updatedProfile);
+			if (result) {
+				dispatch({ type: UPDATE_PROFILE, payload: result });
+			}
+		} catch (error) {
+			console.error('Error clearing markings:', error);
+		}
+	}, [dispatch, isAnonymousUser, profile, profileHelper]);
+
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: theme.screen.background }}>
 			<View style={{ flex: 1 }}>
@@ -126,6 +158,14 @@ const Index = () => {
 								<Text style={{ ...styles.readMore, color: contrastColor }}>{readMore ? translate(TranslationKeys.read_less) : translate(TranslationKeys.read_more)}</Text>
 							</TouchableOpacity>
 						</View>
+						<SettingsGroupTitle>{translate(TranslationKeys.settings)}</SettingsGroupTitle>
+						<SettingsList
+							iconBgColor={primaryColor}
+							leftIcon={<MaterialCommunityIcons name="broom" size={22} color={theme.screen.icon} />}
+							label={translate(TranslationKeys.clear_markings_selection)}
+							handleFunction={handleClearMarkings}
+							groupPosition="single"
+						/>
 						<View style={styles.feedbackLabelsContainer}>
                                                 {markings?.map(marking => {
                                                         return <MarkingLabels key={marking?.id} markingId={marking?.id} handleMenuSheet={openMenuSheet} />;

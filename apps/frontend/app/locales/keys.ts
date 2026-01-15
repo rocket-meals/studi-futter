@@ -147,6 +147,7 @@ export enum TranslationKeys {
 	unknown = 'unknown',
 	animation = 'animation',
 	allergene = 'allergene',
+	clear_markings_selection = 'clear_markings_selection',
 	eatinghabits_introduction = 'eatinghabits_introduction',
 	notification = 'notification',
 	notification_index_introduction = 'notification_index_introduction',

@@ -1519,6 +1519,16 @@
     "tr": "Alerjenler",
     "zh": "过敏原"
   },
+  "clear_markings_selection": {
+    "de": "Allergen-Auswahl zurücksetzen",
+    "en": "Clear allergen selection",
+    "ar": "مسح تحديد المواد المسببة للحساسية",
+    "es": "Restablecer la selección de alérgenos",
+    "fr": "Réinitialiser la sélection des allergènes",
+    "ru": "Сбросить выбор аллергенов",
+    "tr": "Alerjen seçimlerini sıfırla",
+    "zh": "清除过敏原选择"
+  },
   "eatinghabits_introduction": {
     "de": "Teile uns mit welche Essgewohnheiten du bevorzugst oder meiden möchtest. Wir sortieren und markieren dann die Mahlzeitenangebote für dich. Wir können diese Informationen nutzen, um unser Angebot zu verbessern. Deine Daten werden nicht an Dritte weitergegeben.",
     "en": "Tell us which eating habits you prefer or want to avoid. We will then sort and mark the meal offers for you. We can use this information to improve our offer. Your data will not be passed on to third parties.",
