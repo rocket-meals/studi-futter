@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, RefreshControl, Text, View } from 'react-native';
 import { addDays, format } from 'date-fns';
 import { useTheme } from '@/hooks/useTheme';
@@ -32,16 +32,17 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
         const { canteenFeedbackLabels, canteens } = useSelector((state: RootState) => state.canteenReducer);
-        const { sortBy, language } = useSelector((state: RootState) => state.settings);
-        const { ownFoodFeedbacks, foodCategories, foodOfferCategories } = useSelector((state: RootState) => state.food);
+	const { sortBy, language, amountColumnsForcard } = useSelector((state: RootState) => state.settings);
+	const { ownFoodFeedbacks, foodCategories, foodOfferCategories } = useSelector((state: RootState) => state.food);
         const { profile } = useSelector((state: RootState) => state.authReducer);
         const selectedCanteen = canteens?.find(c => c.id === canteenId) as DatabaseTypes.Canteens | undefined;
         const [days, setDays] = useState<DayData[]>([]);
         const [loading, setLoading] = useState(false);
         const [refreshing, setRefreshing] = useState(false);
-        const [selectedSheet, setSelectedSheet] = useState<'menu' | keyof typeof SHEET_COMPONENTS | null>(null);
-        const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
-        const bottomSheetRef = useRef<BottomSheet>(null);
+	const [selectedSheet, setSelectedSheet] = useState<'menu' | keyof typeof SHEET_COMPONENTS | null>(null);
+	const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
+	const [listWidth, setListWidth] = useState<number | null>(null);
+	const bottomSheetRef = useRef<BottomSheet>(null);
 	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
         const openSheet = useCallback(
                 (sheet: 'menu' | keyof typeof SHEET_COMPONENTS, props = {}) => {
@@ -69,6 +70,27 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	}, [selectedSheet]);
 
 	const SheetComponent = selectedSheet && selectedSheet !== 'menu' ? SHEET_COMPONENTS[selectedSheet] : null;
+	const MIN_CARD_WIDTH = 280;
+	const numColumns = useMemo(() => {
+		if (amountColumnsForcard && amountColumnsForcard > 0) {
+			return amountColumnsForcard;
+		}
+
+		if (!listWidth) return 2;
+
+		const cols = Math.floor(listWidth / MIN_CARD_WIDTH);
+		return Math.max(2, cols);
+	}, [amountColumnsForcard, listWidth]);
+
+	const cardWidth = useMemo(() => {
+		if (!listWidth || !numColumns) return undefined;
+
+		const horizontalMargin = 10;
+		const totalMargin = horizontalMargin * 2 * numColumns;
+
+		const availableWidth = listWidth - totalMargin;
+		return availableWidth / numColumns;
+	}, [listWidth, numColumns]);
 
 	const sortOffers = useCallback(
 		(foodOffers: DatabaseTypes.Foodoffers[]) =>
@@ -161,9 +183,32 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 						gap: 10,
 						justifyContent: 'center',
 					}}
+					onLayout={event => {
+						const width = event.nativeEvent.layout.width;
+						if (!listWidth || width > listWidth) {
+							setListWidth(width);
+						}
+					}}
 				>
 					{item.offers.map(offer => (
-						<FoodItem key={offer.id} item={offer} canteen={selectedCanteen as DatabaseTypes.Canteens} handleMenuSheet={openSheet} handleImageSheet={openManagementSheet} handleEatingHabitsSheet={openSheet} />
+						<View
+							key={offer.id}
+							style={{
+								width: cardWidth || '100%',
+								marginHorizontal: 10,
+								marginVertical: 10,
+								alignItems: 'center',
+							}}
+						>
+							<FoodItem
+								item={offer}
+								canteen={selectedCanteen as DatabaseTypes.Canteens}
+								handleMenuSheet={openSheet}
+								handleImageSheet={openManagementSheet}
+								handleEatingHabitsSheet={openSheet}
+								cardWidth={cardWidth}
+							/>
+						</View>
 					))}
 					{item.offers.length === 0 && <Text style={{ color: theme.screen.text }}>{translate(TranslationKeys.no_foodoffers_found_for_selection)}</Text>}
 				</View>
