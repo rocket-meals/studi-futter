@@ -42,21 +42,18 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 	const { theme } = useTheme();
 	const { translate } = useLanguage();
         const { canteenFeedbackLabels, canteens } = useSelector((state: RootState) => state.canteenReducer);
-        const { sortBy, language, amountColumnsForcard, appSettings, primaryColor, selectedTheme: mode } = useSelector((state: RootState) => state.settings);
-        const { ownFoodFeedbacks, foodCategories, foodOfferCategories, foodOffersInfoItems } = useSelector((state: RootState) => state.food);
+	const { sortBy, language, amountColumnsForcard } = useSelector((state: RootState) => state.settings);
+	const { ownFoodFeedbacks, foodCategories, foodOfferCategories } = useSelector((state: RootState) => state.food);
         const { profile } = useSelector((state: RootState) => state.authReducer);
 	const { appElements } = useSelector((state: RootState) => state.appElements);
         const selectedCanteen = canteens?.find(c => c.id === canteenId) as DatabaseTypes.Canteens | undefined;
         const [days, setDays] = useState<DayData[]>([]);
         const [loading, setLoading] = useState(false);
         const [refreshing, setRefreshing] = useState(false);
-        const [beforeElement, setBeforeElement] = useState<any>(null);
-        const [afterElement, setAfterElement] = useState<any>(null);
-        const [selectedSheet, setSelectedSheet] = useState<'menu' | keyof typeof SHEET_COMPONENTS | null>(null);
-        const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
-        const bottomSheetRef = useRef<BottomSheet>(null);
-        const [listWidth, setListWidth] = useState<number | null>(null);
-        const MIN_CARD_WIDTH = 280;
+	const [selectedSheet, setSelectedSheet] = useState<'menu' | keyof typeof SHEET_COMPONENTS | null>(null);
+	const [sheetProps, setSheetProps] = useState<Record<string, any>>({});
+	const [listWidth, setListWidth] = useState<number | null>(null);
+	const bottomSheetRef = useRef<BottomSheet>(null);
 	const { openDirectusImageEditModal } = useMyScrollviewDirectusImageEditModal();
         const foods_area_color = appSettings?.foods_area_color || primaryColor;
         const contrastColor = useMyContrastColor(theme.screen.background, theme, mode === 'dark');
@@ -86,38 +83,28 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 		}
 	}, [selectedSheet]);
 
-	useEffect(() => {
-		if (!appElements || !appSettings) return;
-		const getElement = (id: string) => {
-			const element = appElements?.find((el: any) => el.id === id);
-			if (!element || !element.translations) return null;
-			const { content, popup_button_text, popup_content } = getAppElementTranslation(element.translations, language);
-			return { content, popup_button_text, popup_content };
-		};
-		const before = getElement(String(appSettings.foodoffers_list_before_element));
-		const after = getElement(String(appSettings.foodoffers_list_after_element));
-		setBeforeElement(before);
-		setAfterElement(after);
-	}, [appElements, appSettings, language]);
+	const SheetComponent = selectedSheet && selectedSheet !== 'menu' ? SHEET_COMPONENTS[selectedSheet] : null;
+	const MIN_CARD_WIDTH = 280;
+	const numColumns = useMemo(() => {
+		if (amountColumnsForcard && amountColumnsForcard > 0) {
+			return amountColumnsForcard;
+		}
 
-    const SheetComponent = selectedSheet && selectedSheet !== 'menu' ? SHEET_COMPONENTS[selectedSheet] : null;
+		if (!listWidth) return 2;
 
-    const numColumns = useMemo(() => {
-        if (amountColumnsForcard && amountColumnsForcard > 0) {
-            return amountColumnsForcard;
-        }
-        if (!listWidth) return 2;
-        const cols = Math.floor(listWidth / MIN_CARD_WIDTH);
-        return Math.max(2, cols);
-    }, [amountColumnsForcard, listWidth]);
+		const cols = Math.floor(listWidth / MIN_CARD_WIDTH);
+		return Math.max(2, cols);
+	}, [amountColumnsForcard, listWidth]);
 
-    const cardWidth = useMemo(() => {
-        if (!listWidth || !numColumns) return undefined;
-        const horizontalMargin = 10;
-        const totalMargin = horizontalMargin * 2 * numColumns;
-        const availableWidth = listWidth - totalMargin;
-        return availableWidth / numColumns;
-    }, [listWidth, numColumns]);
+	const cardWidth = useMemo(() => {
+		if (!listWidth || !numColumns) return undefined;
+
+		const horizontalMargin = 10;
+		const totalMargin = horizontalMargin * 2 * numColumns;
+
+		const availableWidth = listWidth - totalMargin;
+		return availableWidth / numColumns;
+	}, [listWidth, numColumns]);
 
 	const sortOffers = useCallback(
 		(foodOffers: DatabaseTypes.Foodoffers[]) =>
@@ -271,27 +258,31 @@ const FoodOffersScrollList: React.FC<FoodOffersScrollListProps> = ({ canteenId, 
 						const w = e.nativeEvent.layout.width;
 						if (w && w !== listWidth) setListWidth(w);
 					}}
+					onLayout={event => {
+						const width = event.nativeEvent.layout.width;
+						if (!listWidth || width > listWidth) {
+							setListWidth(width);
+						}
+					}}
 				>
-					{dayItems.map((dayItem, idx) => (
-						<View key={getDayItemKey(dayItem, idx)}
-							style={{ width: cardWidth || '100%', marginHorizontal: 10, marginVertical: 10, alignItems: 'center' }}
+					{item.offers.map(offer => (
+						<View
+							key={offer.id}
+							style={{
+								width: cardWidth || '100%',
+								marginHorizontal: 10,
+								marginVertical: 10,
+								alignItems: 'center',
+							}}
 						>
-							{dayItem.foodoffer ? (
-								<FoodItem
-									item={dayItem.foodoffer}
-									canteen={selectedCanteen as DatabaseTypes.Canteens}
-									handleMenuSheet={openSheet}
-									handleImageSheet={openManagementSheet}
-									handleEatingHabitsSheet={openSheet}
-									cardWidth={cardWidth}
-								/>
-							) : dayItem.foodofferInfoItem ? (
-								<FoodOfferInfoItem
-									item={dayItem.foodofferInfoItem}
-									content={(getInfoItemContent(dayItem.foodofferInfoItem) || {}).content || ''}
-									cardWidth={cardWidth}
-								/>
-							) : null}
+							<FoodItem
+								item={offer}
+								canteen={selectedCanteen as DatabaseTypes.Canteens}
+								handleMenuSheet={openSheet}
+								handleImageSheet={openManagementSheet}
+								handleEatingHabitsSheet={openSheet}
+								cardWidth={cardWidth}
+							/>
 						</View>
 					))}
 					{item.offers.length === 0 && !hasInfoItems && (
