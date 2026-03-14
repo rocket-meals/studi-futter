@@ -73,7 +73,7 @@
   <body>
     <div id="loading">
       <div class="spinner"></div>
-      <span>Loading vector map…</span>
+      <span id="loading-text">Loading vector map…</span>
     </div>
     <div id="error">
       <span>⚠️ Could not load map.</span>
@@ -90,6 +90,7 @@
       var peopleModeActive = false;
       var intelligentMovementActive = false;
       var mapMarkerPositions = [];
+      var carModeActive = false;
 
       function sendToRN(msg) {
         var str = JSON.stringify(msg);
@@ -172,22 +173,12 @@
       var currentPeopleRadiusDeg = PEOPLE_RADIUS_DEG;
 
       // Intelligent movement constants
-      var PEOPLE_HUMAN_SPEED = 0.0000015;       // degrees per frame at 50ms tick (~1.5 m/s at lat 51°)
-      var PEOPLE_LOITER_MIN_FRAMES = 80;         // min frames (~4 s) a particle loiters near a marker
-      var PEOPLE_LOITER_MAX_FRAMES = 200;        // max frames (~10 s) a particle loiters near a marker
-      var PEOPLE_TRAVEL_MIN_FRAMES = 60;         // minimum frames allowed for a travel leg
+      var PEOPLE_HUMAN_SPEED = 0.000000624;      // degrees per frame at 50ms tick (= 5 km/h at lat ~51°)
       var PEOPLE_TRAVEL_TURN_RATE = 0.1;         // fraction of heading-to-target difference applied per frame
       var PEOPLE_TRAVEL_HEADING_NOISE = 0.08;    // random heading perturbation per frame (simulates street curves)
-      var PEOPLE_TRAVEL_TIME_PADDING = 1.2;      // multiply calculated travel time by this to add buffer
       var PEOPLE_SPEED_VARIATION_MIN = 0.7;      // minimum speed multiplier relative to PEOPLE_HUMAN_SPEED
-      var PEOPLE_SPEED_VARIATION_RANGE = 0.6;    // range of speed variation (min to min+range)
-      var INITIAL_LOITER_OFFSET_DEG = 0.0002;    // initial scatter radius around a marker (degrees)
-      var MAX_LOITER_RADIUS_DEG = 0.00025;       // boundary radius while loitering; boundary force applied beyond this
-      var MIN_TARGET_DISTANCE_DEG = 0.0003;      // minimum distance to prefer when picking next target marker
+      var PEOPLE_SPEED_VARIATION_RANGE = 0.3;    // speed range so max multiplier = 1.0 (capped at 5 km/h)
       var ARRIVAL_THRESHOLD_DEG = 0.00008;       // distance at which a particle is considered to have arrived
-      var LOITER_ACCEL_NOISE = 0.000001;         // acceleration noise added each frame while loitering
-      var MAX_LOITER_SPEED = 0.0000008;           // maximum speed while loitering
-      var LOITER_BOUNDARY_FORCE = 0.01;           // restoring acceleration applied when loitering radius exceeded
 
       function computePeopleRadiusDeg() {
         if (!map) return PEOPLE_RADIUS_DEG;
@@ -239,99 +230,303 @@
 
       // ── Intelligent Movement ──────────────────────────────────────────────────
 
-      function initIntelligentParticle(p) {
-        var positions = mapMarkerPositions;
-        if (positions.length > 0) {
-          var idx = Math.floor(Math.random() * positions.length);
-          p.baseLng = positions[idx].lng;
-          p.baseLat = positions[idx].lat;
-          var angle = Math.random() * 2 * Math.PI;
-          var r = Math.random() * INITIAL_LOITER_OFFSET_DEG;
-          p.lng = p.baseLng + r * Math.cos(angle);
-          p.lat = p.baseLat + r * Math.sin(angle);
-        }
-        p.state = 'loitering';
-        p.stateTimer = Math.floor(Math.random() * (PEOPLE_LOITER_MAX_FRAMES - PEOPLE_LOITER_MIN_FRAMES) + PEOPLE_LOITER_MIN_FRAMES);
-        p.heading = Math.random() * 2 * Math.PI;
-        p.vx = 0;
-        p.vy = 0;
-      }
-
-      function pickNewTarget(p) {
+      function pickFromNearest5(p) {
         var positions = mapMarkerPositions;
         if (positions.length === 0) return null;
-        var candidates = [];
+        var withDist = [];
         for (var i = 0; i < positions.length; i++) {
-          var dx = positions[i].lng - p.baseLng;
-          var dy = positions[i].lat - p.baseLat;
-          if (Math.sqrt(dx * dx + dy * dy) > MIN_TARGET_DISTANCE_DEG) candidates.push(positions[i]);
+          var dx = positions[i].lng - p.lng;
+          var dy = positions[i].lat - p.lat;
+          withDist.push({ pos: positions[i], dist: Math.sqrt(dx * dx + dy * dy) });
         }
-        if (candidates.length === 0) candidates = positions;
-        return candidates[Math.floor(Math.random() * candidates.length)];
+        withDist.sort(function(a, b) { return a.dist - b.dist; });
+        var k = Math.min(5, withDist.length);
+        return withDist[Math.floor(Math.random() * k)].pos;
       }
 
       function updateIntelligentParticles() {
         for (var i = 0; i < peopleParticles.length; i++) {
           var p = peopleParticles[i];
-          if (!p.state) { initIntelligentParticle(p); }
-          p.stateTimer--;
-
-          if (p.state === 'loitering') {
-            // Small random movements near base position
-            p.vx += (Math.random() - 0.5) * LOITER_ACCEL_NOISE;
-            p.vy += (Math.random() - 0.5) * LOITER_ACCEL_NOISE;
-            var lSpeed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-            if (lSpeed > MAX_LOITER_SPEED) { p.vx = p.vx / lSpeed * MAX_LOITER_SPEED; p.vy = p.vy / lSpeed * MAX_LOITER_SPEED; }
-            p.lng += p.vx;
-            p.lat += p.vy;
-            var ldx = p.lng - p.baseLng;
-            var ldy = p.lat - p.baseLat;
-            if (Math.sqrt(ldx * ldx + ldy * ldy) > MAX_LOITER_RADIUS_DEG) {
-              p.vx -= ldx * LOITER_BOUNDARY_FORCE;
-              p.vy -= ldy * LOITER_BOUNDARY_FORCE;
-            }
-            if (p.stateTimer <= 0 && mapMarkerPositions.length > 0) {
-              var target = pickNewTarget(p);
-              if (target) {
-                p.targetLng = target.lng;
-                p.targetLat = target.lat;
-                p.state = 'traveling';
-                var tdx = p.targetLng - p.lng;
-                var tdy = p.targetLat - p.lat;
-                var travelDist = Math.sqrt(tdx * tdx + tdy * tdy);
-                p.stateTimer = Math.max(PEOPLE_TRAVEL_MIN_FRAMES, Math.floor(travelDist / PEOPLE_HUMAN_SPEED * PEOPLE_TRAVEL_TIME_PADDING));
-              } else {
-                p.stateTimer = PEOPLE_LOITER_MIN_FRAMES;
+          if (!p.state) {
+            p.state = 'traveling';
+            p.heading = Math.random() * 2 * Math.PI;
+            p.vx = 0;
+            p.vy = 0;
+            p.speedMultiplier = PEOPLE_SPEED_VARIATION_MIN + Math.random() * PEOPLE_SPEED_VARIATION_RANGE;
+            var init = pickFromNearest5(p);
+            if (init) { p.targetLng = init.lng; p.targetLat = init.lat; }
+          }
+          if (p.state === 'traveling') {
+            if (p.targetLng === undefined || p.targetLat === undefined) {
+              var next = pickFromNearest5(p);
+              if (next) {
+                p.targetLng = next.lng;
+                p.targetLat = next.lat;
+                p.speedMultiplier = PEOPLE_SPEED_VARIATION_MIN + Math.random() * PEOPLE_SPEED_VARIATION_RANGE;
               }
             }
-          } else if (p.state === 'traveling') {
-            var dtx = p.targetLng - p.lng;
-            var dty = p.targetLat - p.lat;
-            var distToTarget = Math.sqrt(dtx * dtx + dty * dty);
-            if (distToTarget < ARRIVAL_THRESHOLD_DEG || p.stateTimer <= 0) {
-              p.lng = p.targetLng;
-              p.lat = p.targetLat;
-              p.baseLng = p.targetLng;
-              p.baseLat = p.targetLat;
-              p.state = 'loitering';
-              p.stateTimer = Math.floor(Math.random() * (PEOPLE_LOITER_MAX_FRAMES - PEOPLE_LOITER_MIN_FRAMES) + PEOPLE_LOITER_MIN_FRAMES);
-              p.vx = 0;
-              p.vy = 0;
-            } else {
-              // Turn gradually toward target (simulates following curved paths)
-              var targetHeading = Math.atan2(dtx, dty);
-              var headingDiff = targetHeading - p.heading;
-              while (headingDiff > Math.PI) headingDiff -= 2 * Math.PI;
-              while (headingDiff < -Math.PI) headingDiff += 2 * Math.PI;
-              p.heading += headingDiff * PEOPLE_TRAVEL_TURN_RATE + (Math.random() - 0.5) * PEOPLE_TRAVEL_HEADING_NOISE;
-              var humanSpeed = PEOPLE_HUMAN_SPEED * (PEOPLE_SPEED_VARIATION_MIN + Math.random() * PEOPLE_SPEED_VARIATION_RANGE);
-              p.vx = Math.sin(p.heading) * humanSpeed;
-              p.vy = Math.cos(p.heading) * humanSpeed;
-              p.lng += p.vx;
-              p.lat += p.vy;
+            if (p.targetLng !== undefined && p.targetLat !== undefined) {
+              var dtx = p.targetLng - p.lng;
+              var dty = p.targetLat - p.lat;
+              var distToTarget = Math.sqrt(dtx * dtx + dty * dty);
+              if (distToTarget < ARRIVAL_THRESHOLD_DEG) {
+                p.lng = p.targetLng;
+                p.lat = p.targetLat;
+                p.vx = 0;
+                p.vy = 0;
+                var arrived = pickFromNearest5(p);
+                if (arrived) {
+                  p.targetLng = arrived.lng;
+                  p.targetLat = arrived.lat;
+                  p.speedMultiplier = PEOPLE_SPEED_VARIATION_MIN + Math.random() * PEOPLE_SPEED_VARIATION_RANGE;
+                } else { p.targetLng = undefined; p.targetLat = undefined; }
+              } else {
+                var targetHeading = Math.atan2(dtx, dty);
+                var headingDiff = targetHeading - p.heading;
+                while (headingDiff > Math.PI) headingDiff -= 2 * Math.PI;
+                while (headingDiff < -Math.PI) headingDiff += 2 * Math.PI;
+                p.heading += headingDiff * PEOPLE_TRAVEL_TURN_RATE + (Math.random() - 0.5) * PEOPLE_TRAVEL_HEADING_NOISE;
+                var humanSpeed = PEOPLE_HUMAN_SPEED * p.speedMultiplier;
+                p.vx = Math.sin(p.heading) * humanSpeed;
+                p.vy = Math.cos(p.heading) * humanSpeed;
+                p.lng += p.vx;
+                p.lat += p.vy;
+              }
             }
           }
         }
+      }
+
+      // ── Car Mode (Fiktiver Autofahrer Modus) ─────────────────────────────────
+
+      var CAR_COUNT = 15;
+      var CAR_SPEED_DEG_PER_FRAME = 0.0000062; // ~50 km/h at lat 51°, 50ms tick
+      var CAR_ANIMATION_MS = 50;
+      var CAR_CIRCLE_RADIUS = 5;
+      var VALHALLA_BASE_URL = 'https://valhalla1.openstreetmap.de/route';
+      var carParticles = [];
+      var carAnimationInterval = null;
+
+      function getRandomNearbyPoint(baseLng, baseLat, minDeg, maxDeg) {
+        var angle = Math.random() * 2 * Math.PI;
+        var r = minDeg + Math.random() * (maxDeg - minDeg);
+        return {
+          lng: baseLng + r * Math.cos(angle) / Math.cos(baseLat * DEG_TO_RAD),
+          lat: baseLat + r * Math.sin(angle),
+        };
+      }
+
+      // Decode Valhalla's encoded polyline (precision=6) to [[lng, lat], ...]
+      function decodeValhallaPolyline(encoded) {
+        var coords = [];
+        var index = 0, lat = 0, lng = 0;
+        while (index < encoded.length) {
+          var encodedByte, shift = 0, result = 0;
+          do {
+            encodedByte = encoded.charCodeAt(index++) - 63;
+            result |= (encodedByte & 0x1f) << shift;
+            shift += 5;
+          } while (encodedByte >= 0x20);
+          lat += (result & 1) ? ~(result >> 1) : (result >> 1);
+          shift = 0; result = 0;
+          do {
+            encodedByte = encoded.charCodeAt(index++) - 63;
+            result |= (encodedByte & 0x1f) << shift;
+            shift += 5;
+          } while (encodedByte >= 0x20);
+          lng += (result & 1) ? ~(result >> 1) : (result >> 1);
+          coords.push([lng / 1e6, lat / 1e6]);
+        }
+        return coords;
+      }
+
+      function fetchValhallaRoute(fromLng, fromLat, toLng, toLat, callback) {
+        var params = JSON.stringify({
+          locations: [
+            { lat: fromLat, lon: fromLng },
+            { lat: toLat, lon: toLng },
+          ],
+          costing: 'auto',
+          directions_options: { units: 'kilometers' },
+          directions_type: 'none',
+        });
+        var url = VALHALLA_BASE_URL + '?json=' + encodeURIComponent(params);
+        fetch(url)
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            if (
+              data.trip &&
+              data.trip.legs &&
+              data.trip.legs[0] &&
+              data.trip.legs[0].shape
+            ) {
+              var coords = decodeValhallaPolyline(data.trip.legs[0].shape);
+              if (coords.length >= 2) {
+                callback(null, coords);
+              } else {
+                callback(new Error('no-route'));
+              }
+            } else {
+              callback(new Error('no-route'));
+            }
+          })
+          .catch(function (e) { callback(e); });
+      }
+
+      function fetchCarRoute(car) {
+        if (car.fetching) return;
+        car.fetching = true;
+        var center = map ? map.getCenter() : { lng: 0, lat: 0 };
+        var dest = getRandomNearbyPoint(center.lng, center.lat, 0.002, 0.006);
+        fetchValhallaRoute(car.lng, car.lat, dest.lng, dest.lat, function (err, coords) {
+          car.fetching = false;
+          if (!carModeActive) return;
+          if (err || !coords || coords.length < 2) {
+            // fallback: pick a new destination next tick
+            car.route = null;
+            car.routeSegIdx = 0;
+            car.routeFrac = 0;
+            return;
+          }
+          car.route = coords; // array of [lng, lat]
+          car.routeSegIdx = 0;
+          car.routeFrac = 0;
+          // Snap car to start of route
+          car.lng = coords[0][0];
+          car.lat = coords[0][1];
+        });
+      }
+
+      function generateCarParticles(center, count) {
+        var particles = [];
+        for (var i = 0; i < count; i++) {
+          var pt = getRandomNearbyPoint(center[0], center[1], 0, 0.004);
+          particles.push({
+            lng: pt.lng,
+            lat: pt.lat,
+            route: null,
+            routeSegIdx: 0,
+            routeFrac: 0,
+            fetching: false,
+          });
+        }
+        return particles;
+      }
+
+      function updateCarParticles() {
+        for (var i = 0; i < carParticles.length; i++) {
+          var c = carParticles[i];
+          if (!c.route || c.route.length < 2) {
+            fetchCarRoute(c);
+            continue;
+          }
+          // Move along current segment
+          var segStart = c.route[c.routeSegIdx];
+          var segEnd = c.route[c.routeSegIdx + 1];
+          if (!segEnd) {
+            // Reached end of route — fetch a new one
+            c.route = null;
+            fetchCarRoute(c);
+            continue;
+          }
+          var dx = segEnd[0] - segStart[0];
+          var dy = segEnd[1] - segStart[1];
+          var segLen = Math.sqrt(dx * dx + dy * dy);
+          if (segLen === 0) {
+            c.routeSegIdx++;
+            if (c.routeSegIdx >= c.route.length - 1) {
+              c.route = null;
+              fetchCarRoute(c);
+            }
+            continue;
+          }
+          c.routeFrac += CAR_SPEED_DEG_PER_FRAME / segLen;
+          if (c.routeFrac >= 1) {
+            // Jump to next segment(s), carrying over the overshoot distance
+            while (c.routeFrac >= 1 && c.routeSegIdx < c.route.length - 2) {
+              var prevLen = segLen;
+              c.routeFrac -= 1; // overshoot fraction relative to prevLen
+              c.routeSegIdx++;
+              segStart = c.route[c.routeSegIdx];
+              segEnd = c.route[c.routeSegIdx + 1];
+              if (!segEnd) break;
+              dx = segEnd[0] - segStart[0];
+              dy = segEnd[1] - segStart[1];
+              segLen = Math.sqrt(dx * dx + dy * dy);
+              if (segLen > 0) c.routeFrac = c.routeFrac * prevLen / segLen;
+            }
+            if (c.routeSegIdx >= c.route.length - 1) {
+              c.route = null;
+              fetchCarRoute(c);
+              continue;
+            }
+          }
+          segStart = c.route[c.routeSegIdx];
+          segEnd = c.route[c.routeSegIdx + 1];
+          if (segEnd) {
+            c.lng = segStart[0] + (segEnd[0] - segStart[0]) * c.routeFrac;
+            c.lat = segStart[1] + (segEnd[1] - segStart[1]) * c.routeFrac;
+          }
+        }
+      }
+
+      function carParticlesToGeoJSON() {
+        var features = [];
+        for (var i = 0; i < carParticles.length; i++) {
+          features.push({ type: 'Feature', geometry: { type: 'Point', coordinates: [carParticles[i].lng, carParticles[i].lat] }, properties: {} });
+        }
+        return { type: 'FeatureCollection', features: features };
+      }
+
+      function startCarAnimation() {
+        if (carAnimationInterval) return;
+        carAnimationInterval = setInterval(function () {
+          if (!map || !carModeActive || !map.getSource('car-source')) return;
+          updateCarParticles();
+          map.getSource('car-source').setData(carParticlesToGeoJSON());
+        }, CAR_ANIMATION_MS);
+      }
+
+      function stopCarAnimation() {
+        if (carAnimationInterval) { clearInterval(carAnimationInterval); carAnimationInterval = null; }
+        carParticles = [];
+      }
+
+      function addCarLayer() {
+        if (!map) return;
+        var center = map.getCenter();
+        carParticles = generateCarParticles([center.lng, center.lat], CAR_COUNT);
+        var geojson = carParticlesToGeoJSON();
+        if (map.getSource('car-source')) {
+          map.getSource('car-source').setData(geojson);
+        } else {
+          map.addSource('car-source', { type: 'geojson', data: geojson });
+          var firstFillExtrusion = null;
+          var layers = map.getStyle().layers;
+          for (var i = 0; i < layers.length; i++) {
+            if (layers[i].type === 'fill-extrusion') { firstFillExtrusion = layers[i].id; break; }
+          }
+          map.addLayer({
+            id: 'car-layer',
+            type: 'circle',
+            source: 'car-source',
+            paint: {
+              'circle-radius': CAR_CIRCLE_RADIUS,
+              'circle-color': '#1565c0',
+              'circle-opacity': 0.9,
+              'circle-stroke-width': 0.5,
+              'circle-stroke-color': '#ffffff',
+            },
+          }, firstFillExtrusion || undefined);
+        }
+        startCarAnimation();
+      }
+
+      function removeCarLayer() {
+        if (!map) return;
+        stopCarAnimation();
+        if (map.getLayer('car-layer')) map.removeLayer('car-layer');
+        if (map.getSource('car-source')) map.removeSource('car-source');
       }
 
       // ─────────────────────────────────────────────────────────────────────────
@@ -522,12 +717,32 @@
           }
         }
 
+        if (data.peopleCount !== undefined) {
+          var newCount = Math.max(1, Math.floor(data.peopleCount));
+          if (newCount !== PEOPLE_COUNT) {
+            PEOPLE_COUNT = newCount;
+            if (peopleModeActive) {
+              removePeopleLayer();
+              addPeopleLayer();
+            }
+          }
+        }
+
         if (data.peopleMode !== undefined) {
           peopleModeActive = data.peopleMode;
           if (peopleModeActive) {
             addPeopleLayer();
           } else {
             removePeopleLayer();
+          }
+        }
+
+        if (data.carMode !== undefined) {
+          carModeActive = data.carMode;
+          if (carModeActive) {
+            addCarLayer();
+          } else {
+            removeCarLayer();
           }
         }
       }
@@ -585,9 +800,6 @@
 
         map.on('zoomend', function () {
           sendToRN({ tag: 'onZoomEnd', zoom: map.getZoom() });
-          if (peopleModeActive && !intelligentMovementActive) {
-            currentPeopleRadiusDeg = computePeopleRadiusDeg();
-          }
         });
 
         map.on('pitchend', function () {
@@ -604,12 +816,22 @@
               addPeopleLayer();
             }
           }
+          if (carModeActive) {
+            if (!map.getSource('car-source')) {
+              addCarLayer();
+            }
+          }
         });
       }
 
       (function () {
         try {
           var params = new URLSearchParams(window.location.search);
+          var loadingTextParam = params.get('loadingText');
+          if (loadingTextParam) {
+            var loadingSpan = document.getElementById('loading-text');
+            if (loadingSpan) loadingSpan.textContent = loadingTextParam;
+          }
           var lat = parseFloat(params.get('lat'));
           var lng = parseFloat(params.get('lng'));
           var zoom = parseFloat(params.get('zoom'));
