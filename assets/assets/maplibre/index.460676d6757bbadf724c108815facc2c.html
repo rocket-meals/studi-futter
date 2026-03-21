@@ -100,7 +100,10 @@
       var HIGHLIGHT_BUILDING_LAYER = 'highlight-building-layer';
       var currentHighlightedFeature = null;
       var buildingClickEnabled = false;
+      var poiClickEnabled = false;
       var glbModelMts = {};
+      // Icon overrides sent from React Native: key → emoji string to use, or null to hide that icon type.
+      var customIconOverrides = {};
 
       function sendToRN(msg) {
         var str = JSON.stringify(msg);
@@ -811,6 +814,24 @@
         for (var j = 0; j < models.length; j++) { addGlbModel(models[j]); }
       }
 
+      // Emoji fallback map for icons referenced by the map style but missing from its sprite sheet.
+      // This map starts empty and is populated by an iconEmojiMap message sent from React on mount.
+      // The styleimagemissing event uses this map to render emoji onto a canvas when MapLibre
+      // cannot resolve an icon, so no warning is emitted and features stay visible.
+      var ICON_EMOJI_MAP = {};
+
+      function createEmojiImageData(emoji, size) {
+        var canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        var ctx = canvas.getContext('2d');
+        ctx.font = Math.round(size * 0.75) + 'px serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(emoji, size / 2, size / 2);
+        return ctx.getImageData(0, 0, size, size);
+      }
+
       // Layer-group keyword map for setLayerGroupVisibility.
       // Keys are the group names sent from React Native; values are substring patterns to match layer IDs.
       var LAYER_GROUP_KEYWORDS = {
@@ -818,6 +839,8 @@
         parking:    ['parking'],
         transit:    ['bus', 'transit', 'railway', 'aeroway', 'station'],
         roadLabels: ['road-label', 'road-name', 'road-shield', 'highway-name', 'street-label', 'label-road'],
+        leisure:    ['leisure', 'sport', 'pitch', 'stadium', 'swimming'],
+        barriers:   ['barrier'],
       };
 
       function setLayerGroupVisibility(group, visible) {
@@ -982,8 +1005,55 @@
           buildingClickEnabled = !!data.enableBuildingClick;
         }
 
+        if (data.iconEmojiMap !== undefined && data.iconEmojiMap !== null) {
+          var incoming = data.iconEmojiMap;
+          var ek = Object.keys(incoming);
+          for (var ei = 0; ei < ek.length; ei++) {
+            ICON_EMOJI_MAP[ek[ei]] = incoming[ek[ei]];
+          }
+        }
+
+        if (data.poiClickEnabled !== undefined) {
+          poiClickEnabled = !!data.poiClickEnabled;
+        }
+
         if (data.setLayerGroupVisibility !== undefined) {
           setLayerGroupVisibility(data.setLayerGroupVisibility.group, !!data.setLayerGroupVisibility.visible);
+        }
+
+        if (data.poiIconOverrides !== undefined) {
+          var overrides = data.poiIconOverrides || {};
+          // Remove images for icon keys that are now hidden (null) so MapLibre stops rendering them.
+          // Re-add images for keys that were previously hidden but are now visible again.
+          var keys = Object.keys(overrides);
+          for (var oi = 0; oi < keys.length; oi++) {
+            var iconKey = keys[oi];
+            if (overrides[iconKey] === null) {
+              // Hide: remove existing image if registered.
+              if (map.hasImage(iconKey)) {
+                try { map.removeImage(iconKey); } catch (e2) { /* ignore */ }
+              }
+            } else {
+              // Show: re-register with the provided or fallback emoji if not yet registered.
+              var reEmoji = overrides[iconKey] || ICON_EMOJI_MAP[iconKey];
+              if (reEmoji && !map.hasImage(iconKey)) {
+                try { map.addImage(iconKey, createEmojiImageData(reEmoji, 32)); } catch (e2) { /* ignore */ }
+              }
+            }
+          }
+          // Also re-add any previously-hidden keys that are absent from the new overrides.
+          var prevKeys = Object.keys(customIconOverrides);
+          for (var pi = 0; pi < prevKeys.length; pi++) {
+            var prevKey = prevKeys[pi];
+            if (customIconOverrides[prevKey] === null && !Object.prototype.hasOwnProperty.call(overrides, prevKey)) {
+              // Was hidden, now not listed → restore default emoji if available.
+              var restoreEmoji = ICON_EMOJI_MAP[prevKey];
+              if (restoreEmoji && !map.hasImage(prevKey)) {
+                try { map.addImage(prevKey, createEmojiImageData(restoreEmoji, 32)); } catch (e2) { /* ignore */ }
+              }
+            }
+          }
+          customIconOverrides = overrides;
         }
 
         if (data.minPitch != null) {
@@ -1056,30 +1126,64 @@
 
         map.on('click', function (e) {
           try {
-            if (!buildingClickEnabled) {
+            if (!buildingClickEnabled && !poiClickEnabled) {
               sendToRN({ tag: 'MapTapped' });
               return;
             }
             var allLayers = map.getStyle().layers;
             var extrusionLayerIds = [];
+            var symbolLayerIds = [];
             for (var li = 0; li < allLayers.length; li++) {
               if (allLayers[li].type === 'fill-extrusion' && allLayers[li].id !== HIGHLIGHT_BUILDING_LAYER) {
                 extrusionLayerIds.push(allLayers[li].id);
+              } else if (poiClickEnabled && allLayers[li].type === 'symbol') {
+                symbolLayerIds.push(allLayers[li].id);
               }
             }
-            var features = extrusionLayerIds.length > 0
-              ? map.queryRenderedFeatures(e.point, { layers: extrusionLayerIds })
-              : [];
-            if (features && features.length > 0) {
-              highlightBuilding(features[0]);
-              sendToRN({ tag: 'BuildingClicked', properties: features[0].properties });
-            } else {
-              currentHighlightedFeature = null;
-              clearBuildingHighlight();
-              sendToRN({ tag: 'MapTapped' });
+            // Building click takes priority over POI click
+            if (buildingClickEnabled) {
+              var bFeatures = extrusionLayerIds.length > 0
+                ? map.queryRenderedFeatures(e.point, { layers: extrusionLayerIds })
+                : [];
+              if (bFeatures && bFeatures.length > 0) {
+                highlightBuilding(bFeatures[0]);
+                sendToRN({ tag: 'BuildingClicked', properties: bFeatures[0].properties });
+                return;
+              }
             }
+            // POI / symbol click
+            if (poiClickEnabled && symbolLayerIds.length > 0) {
+              var pFeatures = map.queryRenderedFeatures(e.point, { layers: symbolLayerIds });
+              if (pFeatures && pFeatures.length > 0) {
+                var props = pFeatures[0].properties || {};
+                var iconId = props.icon || props.class || props.subclass || props.type || pFeatures[0].layer.id || '';
+                var emoji = ICON_EMOJI_MAP[iconId] || '';
+                sendToRN({ tag: 'PoiClicked', iconId: iconId, emoji: emoji, properties: props });
+                return;
+              }
+            }
+            currentHighlightedFeature = null;
+            clearBuildingHighlight();
+            sendToRN({ tag: 'MapTapped' });
           } catch (err) {
             sendToRN({ tag: 'MapTapped' });
+          }
+        });
+
+        map.on('styleimagemissing', function (e) {
+          // If explicitly hidden via customIconOverrides (null value), skip – feature becomes invisible.
+          if (Object.prototype.hasOwnProperty.call(customIconOverrides, e.id) && customIconOverrides[e.id] === null) {
+            return;
+          }
+          // Custom override emoji takes precedence over the built-in fallback map.
+          var emoji = (Object.prototype.hasOwnProperty.call(customIconOverrides, e.id) ? customIconOverrides[e.id] : null) || ICON_EMOJI_MAP[e.id];
+          if (emoji) {
+            try {
+              var imgData = createEmojiImageData(emoji, 32);
+              map.addImage(e.id, imgData);
+            } catch (err) { /* ignore */ }
+          } else {
+            console.warn('[map] Missing icon not in ICON_EMOJI_MAP: "' + e.id + '"');
           }
         });
 
