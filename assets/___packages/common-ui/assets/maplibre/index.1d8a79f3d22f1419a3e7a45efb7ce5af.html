@@ -51,6 +51,21 @@
           transform: rotate(360deg);
         }
       }
+      @keyframes pulseUserLocation {
+        0%   { box-shadow: 0 0 0 0 rgba(37,99,235,0.45); }
+        70%  { box-shadow: 0 0 0 14px rgba(37,99,235,0); }
+        100% { box-shadow: 0 0 0 0 rgba(37,99,235,0); }
+      }
+      .user-location-dot {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #2563eb;
+        border: 3px solid #ffffff;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        animation: pulseUserLocation 2s ease-out infinite;
+        pointer-events: none;
+      }
       #error {
         display: none;
         position: absolute;
@@ -863,6 +878,63 @@
         }
       }
 
+      // ─── Extension hooks ──────────────────────────────────────────────────────────
+      // Consumers can set these hooks to extend map behaviour without modifying this
+      // file. The Geonexia hex-tile layer script uses them.
+      //   onMapReady(map)       – called once after MapLibre finishes loading
+      //   onMessage(data)       – called from applyMessage for every incoming message
+      //   onMapClick(e, map)    – called from the click handler; return true to consume
+      window._mapExtensions = {};
+
+      // ─── Route track layer ────────────────────────────────────────────────────────
+      var ROUTE_TRACK_SOURCE = 'route-track-source';
+      var ROUTE_TRACK_LAYER  = 'route-track-layer';
+      var routeTrackCoords   = null; // last received [[lng,lat],...] or null
+
+      function updateRouteTrackLayer(coords) {
+        if (!map) return;
+        routeTrackCoords = (coords && coords.length > 0) ? coords : null;
+        var geojson = {
+          type: 'FeatureCollection',
+          features: (coords && coords.length > 1) ? [{
+            type: 'Feature',
+            geometry: { type: 'LineString', coordinates: coords },
+            properties: {},
+          }] : [],
+        };
+        if (map.getSource(ROUTE_TRACK_SOURCE)) {
+          map.getSource(ROUTE_TRACK_SOURCE).setData(geojson);
+        } else {
+          map.addSource(ROUTE_TRACK_SOURCE, { type: 'geojson', data: geojson });
+          map.addLayer({
+            id: ROUTE_TRACK_LAYER,
+            type: 'line',
+            source: ROUTE_TRACK_SOURCE,
+            layout: { 'line-join': 'round', 'line-cap': 'round' },
+            paint: { 'line-color': '#e53935', 'line-width': 4, 'line-opacity': 0.85 },
+          });
+        }
+      }
+      // ─────────────────────────────────────────────────────────────────────────────
+
+      // ─── User location marker ─────────────────────────────────────────────────────
+      var userLocationMarker = null;
+
+      function updateUserLocationMarker(position) {
+        if (!map || !position || position.lat == null || position.lng == null) return;
+        var lngLat = [position.lng, position.lat];
+        if (userLocationMarker) {
+          userLocationMarker.setLngLat(lngLat);
+        } else {
+          var el = document.createElement('div');
+          el.className = 'user-location-dot';
+          userLocationMarker = new maplibregl.Marker({ element: el, anchor: 'center' })
+            .setLngLat(lngLat)
+            .addTo(map);
+        }
+      }
+      // ─────────────────────────────────────────────────────────────────────────────
+
       function applyMessage(data) {
         if (!map) return;
 
@@ -1063,6 +1135,23 @@
         if (data.maxPitch != null) {
           map.setMaxPitch(data.maxPitch);
         }
+
+        if (data.routeCoordinates !== undefined) {
+          updateRouteTrackLayer(data.routeCoordinates);
+        }
+
+        if (data.userLocation !== undefined) {
+          if (data.userLocation) {
+            updateUserLocationMarker(data.userLocation);
+          } else if (userLocationMarker) {
+            userLocationMarker.remove();
+            userLocationMarker = null;
+          }
+        }
+
+        if (window._mapExtensions.onMessage) {
+          window._mapExtensions.onMessage(data);
+        }
       }
 
       function handleIncomingData(data) {
@@ -1104,6 +1193,9 @@
             applyMessage(pendingMessage);
             pendingMessage = null;
           }
+          if (window._mapExtensions.onMapReady) {
+            window._mapExtensions.onMapReady(map);
+          }
           sendToRN({ tag: 'MapComponentMounted', version: '1.0' });
         });
 
@@ -1126,10 +1218,6 @@
 
         map.on('click', function (e) {
           try {
-            if (!buildingClickEnabled && !poiClickEnabled) {
-              sendToRN({ tag: 'MapTapped' });
-              return;
-            }
             var allLayers = map.getStyle().layers;
             var extrusionLayerIds = [];
             var symbolLayerIds = [];
@@ -1162,6 +1250,11 @@
                 return;
               }
             }
+            // Extension click handlers (e.g. hex tile) – run after buildings and POIs
+            // so that named map features take precedence over grid cells.
+            if (window._mapExtensions.onMapClick) {
+              if (window._mapExtensions.onMapClick(e, map)) return;
+            }
             currentHighlightedFeature = null;
             clearBuildingHighlight();
             sendToRN({ tag: 'MapTapped' });
@@ -1187,6 +1280,12 @@
           }
         });
 
+        map.on('movestart', function (e) {
+          if (e.originalEvent) {
+            sendToRN({ tag: 'MapInteracted' });
+          }
+        });
+
         map.on('styledata', function () {
           if (peopleModeActive) {
             if (!map.getSource('people-source')) {
@@ -1201,8 +1300,13 @@
           if (currentHighlightedFeature && !map.getSource(HIGHLIGHT_BUILDING_SOURCE)) {
             highlightBuilding(currentHighlightedFeature);
           }
+          if (routeTrackCoords && !map.getSource(ROUTE_TRACK_SOURCE)) {
+            updateRouteTrackLayer(routeTrackCoords);
+          }
         });
       }
+
+      // INJECT_SCRIPT_HERE
 
       (function () {
         try {
