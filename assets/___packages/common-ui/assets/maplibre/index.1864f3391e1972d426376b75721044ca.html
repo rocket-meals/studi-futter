@@ -4600,6 +4600,8 @@
       var activeBillboardMarkers = {};
       // Stores sizing data for each active billboard to allow zoom-driven resize.
       var activeBillboardData = [];
+      // Debug: when true, shows a pink dot at the anchor point (bottom-center) of each billboard.
+      var debugShowBillboardAnchors = false;
 
       // SVG templates for built-in billboard types.
       // No width/height attributes – sizes are set dynamically based on zoom.
@@ -4616,12 +4618,19 @@
         },
       };
 
+      // Image-based billboard types registered at runtime via the billboardImages message.
+      // Simple image entry: { url, ratio }  (ratio = height/width)
+      // Sprite-sheet entry: { url, sprites, sheetW, sheetH }
+      //   sprites = array of { x, y, w, h } bounding boxes in SVG coordinate space.
+      //   Individual sprite N is rendered via CSS background-image clipping.
+      var BILLBOARD_IMAGES = {};
+
       // Compute metres represented by one CSS pixel at a given zoom and latitude.
       function billboardMetersPerPixel(zoom, lat) {
         return 40075016.686 * Math.cos(lat * Math.PI / 180) / (256 * Math.pow(2, zoom));
       }
 
-      // Resize all active billboard SVG elements to match the current map zoom.
+      // Resize all active billboard elements to match the current map zoom.
       function refreshBillboardSizes() {
         if (!map || activeBillboardData.length === 0) return;
         var zoom = map.getZoom();
@@ -4629,8 +4638,22 @@
           var d = activeBillboardData[i];
           var mpp = billboardMetersPerPixel(zoom, d.lat);
           var px = d.sizem / mpp;
-          d.svgEl.setAttribute('width', px + 'px');
-          d.svgEl.setAttribute('height', (px * d.ratio) + 'px');
+          d.sizeEl.style.width = px + 'px';
+          d.sizeEl.style.height = (px * d.ratio) + 'px';
+          // Update transparent bottom spacer so the logical anchor point aligns with
+          // the MapLibre marker bottom (anchorY fraction from top of visual).
+          if (d.spacerEl) {
+            var spacerH = (1 - d.anchorY) * px * d.ratio;
+            d.spacerEl.style.height = spacerH + 'px';
+            d.spacerEl.style.width = px + 'px';
+          }
+          // For sprite-sheet billboards: update CSS background-position and background-size
+          // so only the selected sprite region is visible at the correct zoom scale.
+          if (d.sprite) {
+            var scale = px / d.sprite.w;
+            d.sizeEl.style.backgroundSize = (d.sheetW * scale) + 'px ' + (d.sheetH * scale) + 'px';
+            d.sizeEl.style.backgroundPosition = (-d.sprite.x * scale) + 'px ' + (-d.sprite.y * scale) + 'px';
+          }
         }
       }
 
@@ -4645,21 +4668,104 @@
         if (!billboards || !Array.isArray(billboards)) return;
         for (var j = 0; j < billboards.length; j++) {
           var bb = billboards[j];
-          var def = BILLBOARD_SVG[bb.type] !== undefined ? BILLBOARD_SVG[bb.type] : BILLBOARD_SVG.tree;
           var el = document.createElement('div');
           el.style.pointerEvents = 'none';
-          el.innerHTML = def.svg;
-          var svgEl = el.querySelector('svg');
-          var marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
+          var sizeEl;
+          var ratio;
+          var sprite = null;
+          var sheetW = 0;
+          var sheetH = 0;
+
+          // Resolve base type and optional sprite index (format: 'baseType:index')
+          var colonIdx = bb.type.indexOf(':');
+          var baseType = colonIdx >= 0 ? bb.type.slice(0, colonIdx) : bb.type;
+          var spriteIdxStr = colonIdx >= 0 ? bb.type.slice(colonIdx + 1) : null;
+
+          if (BILLBOARD_SVG[bb.type] !== undefined) {
+            var def = BILLBOARD_SVG[bb.type];
+            el.innerHTML = def.svg;
+            sizeEl = el.querySelector('svg');
+            ratio = def.ratio;
+          } else if (spriteIdxStr !== null && BILLBOARD_IMAGES[baseType] !== undefined && BILLBOARD_IMAGES[baseType].sprites) {
+            // Sprite-sheet billboard: render only the selected sprite using CSS background clipping.
+            var imgDef = BILLBOARD_IMAGES[baseType];
+            var spriteIdx = parseInt(spriteIdxStr, 10);
+            sprite = (!isNaN(spriteIdx) && spriteIdx >= 0) ? imgDef.sprites[spriteIdx] : undefined;
+            if (sprite) {
+              sheetW = imgDef.sheetW;
+              sheetH = imgDef.sheetH;
+              el.style.overflow = 'hidden';
+              el.style.backgroundImage = 'url(' + imgDef.url + ')';
+              el.style.backgroundRepeat = 'no-repeat';
+              sizeEl = el;
+              ratio = sprite.h / sprite.w;
+            } else {
+              sprite = null;
+              var fallbackSpr = BILLBOARD_SVG.tree;
+              el.innerHTML = fallbackSpr.svg;
+              sizeEl = el.querySelector('svg');
+              ratio = fallbackSpr.ratio;
+            }
+          } else if (BILLBOARD_IMAGES[bb.type] !== undefined) {
+            var imgDef = BILLBOARD_IMAGES[bb.type];
+            var img = document.createElement('img');
+            img.src = imgDef.url;
+            img.style.display = 'block';
+            el.appendChild(img);
+            sizeEl = img;
+            ratio = imgDef.ratio;
+          } else {
+            var fallback = BILLBOARD_SVG.tree;
+            el.innerHTML = fallback.svg;
+            sizeEl = el.querySelector('svg');
+            ratio = fallback.ratio;
+          }
+          el.style.display = 'block';
+          // Per-sprite anchor: wrap the visual element in a container with a transparent spacer
+          // below it so the bottom of the wrapper (= MapLibre anchor) aligns with the logical
+          // ground position of the sprite (anchorY fraction from top of visual).
+          var anchorY = (typeof bb.anchorY === 'number') ? bb.anchorY : 1.0;
+          var spacerEl = document.createElement('div');
+          spacerEl.style.pointerEvents = 'none';
+          spacerEl.style.display = 'block';
+          spacerEl.style.height = '0px';
+          var wrapperEl = document.createElement('div');
+          wrapperEl.style.pointerEvents = 'none';
+          wrapperEl.style.position = 'relative';
+          wrapperEl.style.display = 'inline-block';
+          wrapperEl.appendChild(el);
+          wrapperEl.appendChild(spacerEl);
+          // Debug anchor dot: pink circle at the bottom-center of the wrapper (the anchor point).
+          var anchorDot = document.createElement('div');
+          anchorDot.style.position = 'absolute';
+          anchorDot.style.bottom = '0';
+          anchorDot.style.left = '50%';
+          anchorDot.style.transform = 'translateX(-50%)';
+          anchorDot.style.width = '10px';
+          anchorDot.style.height = '10px';
+          anchorDot.style.borderRadius = '50%';
+          anchorDot.style.background = '#ff69b4';
+          anchorDot.style.pointerEvents = 'none';
+          anchorDot.style.zIndex = '9999';
+          anchorDot.style.marginBottom = '-5px';
+          anchorDot.style.display = debugShowBillboardAnchors ? 'block' : 'none';
+          wrapperEl.appendChild(anchorDot);
+          var marker = new maplibregl.Marker({ element: wrapperEl, anchor: 'bottom' })
             .setLngLat([bb.position.lng, bb.position.lat])
             .addTo(map);
           activeBillboardMarkers[bb.id] = marker;
           activeBillboardData.push({
             id: bb.id,
-            svgEl: svgEl,
+            sizeEl: sizeEl,
+            spacerEl: spacerEl,
+            anchorY: anchorY,
+            anchorDot: anchorDot,
             lat: bb.position.lat,
             sizem: bb.sizem || 72,
-            ratio: def.ratio,
+            ratio: ratio,
+            sprite: sprite,
+            sheetW: sheetW,
+            sheetH: sheetH,
           });
         }
         // Apply correct size at the current zoom immediately after placing markers.
@@ -5017,8 +5123,23 @@
           updateGlbModels(data.glbModels);
         }
 
+        if (data.billboardImages !== undefined && data.billboardImages !== null) {
+          var imgs = data.billboardImages;
+          var imgKeys = Object.keys(imgs);
+          for (var bi = 0; bi < imgKeys.length; bi++) {
+            BILLBOARD_IMAGES[imgKeys[bi]] = imgs[imgKeys[bi]];
+          }
+        }
+
         if (data.billboards !== undefined) {
           updateBillboards(data.billboards);
+        }
+
+        if (data.billboardDebugAnchors !== undefined) {
+          debugShowBillboardAnchors = !!data.billboardDebugAnchors;
+          for (var bda = 0; bda < activeBillboardData.length; bda++) {
+            activeBillboardData[bda].anchorDot.style.display = debugShowBillboardAnchors ? 'block' : 'none';
+          }
         }
 
         if (data.updateGlbModelScale !== undefined) {
