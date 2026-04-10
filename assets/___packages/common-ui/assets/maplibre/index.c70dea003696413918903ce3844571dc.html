@@ -3746,6 +3746,7 @@
         padding: 24px;
         text-align: center;
       }
+      /* INJECT_STYLE_HERE */
     </style>
   </head>
   <body>
@@ -3762,6 +3763,7 @@
       var map = null;
       var mapReady = false;
       var pendingMessage = null;
+      var currentColorMap = null;
       var activeMarkers = {};
       var DEFAULT_REFERENCE_ZOOM = 14;
       var MIN_MARKER_SCALE = 0.05;
@@ -4430,26 +4432,47 @@
                   ctx.closePath();
                   ctx.clip();
 
-                  // Rotate the texture to align with the H3 hex orientation.
-                  // ov.rotation is the geographic bearing (radians from North, CW) from the
-                  // hex centre to its first vertex – this is the "phase" of the H3 cell.
-                  // We rotate the canvas by the same angle so the texture top aligns with
-                  // the direction of vertex 0 of the H3 cell.
-                  var rot = ov.rotation || 0;
-                  var cx = size / 2, cy = size / 2;
-                  ctx.translate(cx, cy);
-                  ctx.rotate(rot);
-                  ctx.translate(-cx, -cy);
-
-                  // Scale the image up to ensure full coverage after rotation.
-                  // A rotation of up to 45° (π/4) requires a scale of 1/cos(45°) ≈ 1.414.
-                  // We use the bounding half-angle of each 60° hex sector (max offset = π/6)
-                  // so 1/cos(π/6) ≈ 1.155, but we add a small margin → clamp at 1.5 max.
-                  var absRot = Math.abs(rot % (Math.PI / 2));
-                  if (absRot > Math.PI / 4) absRot = Math.PI / 2 - absRot;
-                  var scaleFactor = rot !== 0 ? Math.min(1 / (Math.cos(absRot) || 1) * 1.05, 1.5) : 1.0;
-                  var offset = (scaleFactor - 1) * size / 2;
-                  ctx.drawImage(img, -offset, -offset, size * scaleFactor, size * scaleFactor);
+                  // Draw the texture with optional rotation and compensate for the
+                  // geographic aspect ratio of the bounding box so the texture appears
+                  // undistorted on the map.
+                  //
+                  // The canvas (size × size pixels) will be stretched by MapLibre to cover
+                  // the bounding box [lngRange × latRange] in degrees. Because 1° longitude
+                  // covers less physical distance than 1° latitude at higher latitudes
+                  // (by a factor of cos(lat)), a naive square draw distorts the image.
+                  //
+                  // We compensate by computing the physical W/H ratio of the bbox and
+                  // drawing the image with the inverse ratio in canvas space, so that
+                  // MapLibre's stretch cancels the distortion out.
+                  var cosLat = Math.cos(((maxLat + minLat) / 2) * Math.PI / 180);
+                  // physAspect: physical width / physical height of the bounding box.
+                  var physAspect = (lngRange * cosLat) / (latRange || 1e-9);
+                  // Natural image aspect ratio; fall back to 1 for SVGs that return 0.
+                  var naturalW = img.naturalWidth || img.width || 1;
+                  var naturalH = img.naturalHeight || img.height || 1;
+                  var imgAspect = naturalW / naturalH;
+                  // Target canvas W/H so the image appears at its natural proportions:
+                  //   physW/physH = (drawW/drawH) * physAspect = imgAspect
+                  //   → drawW/drawH = imgAspect / physAspect
+                  var targetCanvasRatio = imgAspect / physAspect;
+                  // Use contain semantics: scale until the image fits within the canvas without cropping.
+                  // This ensures tall (portrait) textures are never clipped at the top or bottom.
+                  var drawW, drawH;
+                  if (targetCanvasRatio >= 1) {
+                    // Image is relatively wider: constrain width to canvas, derive height from aspect ratio.
+                    drawW = size;
+                    drawH = size / targetCanvasRatio;
+                  } else {
+                    // Image is relatively taller: constrain height to canvas, derive width from aspect ratio.
+                    drawH = size;
+                    drawW = size * targetCanvasRatio;
+                  }
+                  // Apply rotation around the canvas centre so the texture top aligns
+                  // with the northernmost vertex of the hex cell.  ov.rotation is the
+                  // bearing in degrees clockwise from north (0 = no rotation).
+                  ctx.translate(size / 2, size / 2);
+                  ctx.rotate((ov.rotation || 0) * Math.PI / 180);
+                  ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
 
                   var clippedUrl = canvas.toDataURL('image/png');
                   if (map.getSource(srcId) || map.getLayer(layId)) {
@@ -4784,6 +4807,9 @@
             var iconSizeAtRefZoom = feature.properties.iconSizeAtRefZoom;
             var anchorX = feature.properties.anchorX !== undefined ? feature.properties.anchorX : 0.5;
             var anchorY = feature.properties.anchorY !== undefined ? feature.properties.anchorY : 1.0;
+            var featureFlat = feature.properties.flat === true;
+            var featureOpacity = feature.properties.opacity != null ? feature.properties.opacity : 1.0;
+            var featureTextureRotation = feature.properties.textureRotation != null ? feature.properties.textureRotation : 0;
 
             var texture = billboardTextureCache[iconKey];
             if (!texture) continue;
@@ -4799,6 +4825,7 @@
             var material = new THREE.MeshBasicMaterial({
               map: texture,
               transparent: true,
+              opacity: featureOpacity,
               side: THREE.DoubleSide,
               depthTest: false,
               depthWrite: false,
@@ -4813,6 +4840,16 @@
             var dy = (billboardCenter.y - merc.y) / billboardMPU;
             mesh.position.set(dx, dy, 0);
             mesh.scale.set(sizeMeters, sizeMeters, sizeMeters);
+            // Store per-billboard flat flag and texture rotation so the render loop can apply per-mesh rotation.
+            mesh.userData.flat = featureFlat;
+            mesh.userData.textureRotation = featureTextureRotation;
+            // Flat adaptations (stonePath etc.) must always render below face-camera objects
+            // (Castle, trees etc.).  THREE.js sorts transparent objects by camera distance
+            // which can place a ground-flat mesh on top of a tilted object mesh at certain
+            // pitch angles.  Explicit renderOrder overrides that sorting:
+            //   0 → hex texture adaptations (flat, ground layer)
+            //   1 → hex objects (face-camera, always on top)
+            mesh.renderOrder = featureFlat ? 0 : 1;
 
             meshes.push(mesh);
 
@@ -4831,7 +4868,7 @@
             var anchorMesh = new THREE.Mesh(anchorGeo, anchorMat);
             anchorMesh.position.set(dx, dy, 0);
             anchorMesh.scale.set(sizeMeters, sizeMeters, sizeMeters);
-            anchorMesh.renderOrder = 1;
+            anchorMesh.renderOrder = 2; // above flat (0) and object (1) billboard meshes
             // Tag so we can identify anchor meshes later
             anchorMesh.userData.isAnchorPoint = true;
             anchorMesh.visible = billboardShowAnchors;
@@ -4925,33 +4962,40 @@
               .makeTranslation(billboardCenter.x, billboardCenter.y, billboardCenter.z)
               .scale(new THREE.Vector3(billboardMPU, -billboardMPU, billboardMPU));
 
-            // For 'viewport' mode, tilt each billboard to face the camera
-            // (follows both bearing and pitch). For 'map' mode, leave flat on
-            // the ground.
-            if (billboardPitchAlignment === 'viewport') {
-              var pitchRad = map.getPitch() * Math.PI / 180;
-              var bearingRad = map.getBearing() * Math.PI / 180;
-              for (var vi = 0; vi < billboardScene.children.length; vi++) {
-                var child = billboardScene.children[vi];
+            // Apply per-mesh rotation based on global billboardPitchAlignment and
+            // per-mesh flat flag.  A mesh with userData.flat === true is always
+            // rendered flat on the ground regardless of the global setting; all
+            // other meshes follow the global billboardPitchAlignment.
+            var pitchRad = map.getPitch() * Math.PI / 180;
+            var bearingRad = map.getBearing() * Math.PI / 180;
+            var viewportMode = billboardPitchAlignment === 'viewport';
+            for (var vi = 0; vi < billboardScene.children.length; vi++) {
+              var child = billboardScene.children[vi];
+              var isFlat = child.userData && child.userData.flat === true;
+              if (!isFlat && viewportMode) {
+                // 'viewport' mode: tilt to face the camera (follows bearing + pitch).
                 // pitchRad tilts the billboard up from the ground by the camera
                 // pitch angle; -bearingRad rotates it around Z to face the
                 // camera direction. The negative sign on bearingRad compensates
                 // for the Y-flip (-billboardMPU) in the local→mercator scale
                 // matrix, which mirrors the Z-rotation direction.
                 child.rotation.set(pitchRad, 0, -bearingRad, 'ZXY');
-              }
-            } else {
-              for (var fi = 0; fi < billboardScene.children.length; fi++) {
-                billboardScene.children[fi].rotation.set(0, 0, 0);
+              } else {
+                // 'map' mode or per-mesh flat: lie flat on the map surface.
+                // Apply the position angle as a Z rotation so the texture is oriented
+                // toward its anchor direction (e.g. outer_30 → rotated 30° clockwise).
+                var flatRotRad = (child.userData.textureRotation || 0) * Math.PI / 180;
+                child.rotation.set(0, 0, flatRotRad);
               }
             }
 
             billboardCamera.projectionMatrix = m.multiply(l);
             billboardRenderer.resetState();
             billboardRenderer.render(billboardScene, billboardCamera);
-            // In viewport mode, billboard rotations change with camera bearing,
-            // so request continuous repaints. In map mode the scene is static.
-            if (billboardPitchAlignment === 'viewport') {
+            // In viewport mode (for any non-flat billboard), rotations change
+            // with camera bearing/pitch, so request continuous repaints.
+            // In map mode all billboards are static; skip the repaint request.
+            if (viewportMode) {
               map.triggerRepaint();
             }
           },
@@ -5010,6 +5054,57 @@
         }
       }
 
+      // ─── Color map ───────────────────────────────────────────────────────────────
+      // Keyword lists for each MapColorKey category.  A layer whose id contains any
+      // of the listed substrings is treated as part of that category.
+      var COLOR_MAP_LAYER_KEYWORDS = {
+        background: ['background'],
+        grass:      ['grass', 'park', 'wood', 'forest', 'scrub', 'farmland', 'orchard', 'meadow', 'garden', 'vegetation', 'landuse-green', 'landuse_green', 'landcover-grass', 'landcover_grass'],
+        water:      ['water', 'lake', 'ocean', 'river', 'canal', 'wetland', 'waterway', 'reservoir'],
+        road:       ['road', 'motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'track', 'bridge', 'tunnel', 'path', 'highway'],
+        building:   ['building'],
+      };
+
+      // Paint-property name per layer type used when overriding colors.
+      var COLOR_MAP_PAINT_PROP = {
+        'fill':           'fill-color',
+        'fill-extrusion': 'fill-extrusion-color',
+        'line':           'line-color',
+        'background':     'background-color',
+      };
+
+      /**
+       * Apply a color map to the currently loaded map style.
+       * @param {Object} colorMap  Partial record of MapColorKey → CSS color string.
+       */
+      function applyColorMap(colorMap) {
+        if (!colorMap || !map) return;
+        var style = map.getStyle();
+        if (!style || !style.layers) return;
+        var colorKeys = Object.keys(colorMap);
+        for (var i = 0; i < style.layers.length; i++) {
+          var layer = style.layers[i];
+          var layerId = layer.id.toLowerCase();
+          var paintProp = COLOR_MAP_PAINT_PROP[layer.type];
+          if (!paintProp) continue;
+          for (var ci = 0; ci < colorKeys.length; ci++) {
+            var colorKey = colorKeys[ci];
+            var color = colorMap[colorKey];
+            if (!color) continue;
+            var keywords = COLOR_MAP_LAYER_KEYWORDS[colorKey];
+            if (!keywords) continue;
+            var matched = false;
+            for (var k = 0; k < keywords.length; k++) {
+              if (layerId.indexOf(keywords[k]) !== -1) { matched = true; break; }
+            }
+            if (matched) {
+              try { map.setPaintProperty(layer.id, paintProp, color); } catch (e) { /* skip unsupported layers */ }
+              break;
+            }
+          }
+        }
+      }
+
       // ─── Extension hooks ──────────────────────────────────────────────────────────
       // Consumers can set these hooks to extend map behaviour without modifying this
       // file. The Geonexia hex-tile layer script uses them.
@@ -5018,48 +5113,101 @@
       //   onMapClick(e, map)    – called from the click handler; return true to consume
       window._mapExtensions = {};
 
-      // ─── Route track layer ────────────────────────────────────────────────────────
-      // Zoom-based line width expression: thicker at higher zoom levels so the
-      // route remains visible regardless of zoom. Values are 2× the original
-      // width (was 4) to match the "2× thicker" requirement.
-      var ROUTE_LINE_WIDTH_EXPR = ['interpolate', ['linear'], ['zoom'], 8, 4, 13, 8, 18, 14];
+      // ─── Route track canvas overlay ───────────────────────────────────────────
+      // The live GPS route is drawn on an HTML <canvas> overlay rather than a
+      // MapLibre GL line layer.  This ensures the red route line is ALWAYS
+      // visible above 3D fill-extrusion buildings regardless of map pitch,
+      // because HTML canvas elements are composited by the browser above all
+      // WebGL content.  MapLibre GL JS 4.x does not support line-z-offset, so a
+      // WebGL line layer at ground-level is depth-occluded by building walls
+      // when the map is pitched to 60°.
+      //
+      // The zoom-interpolation expressions below are still used by the
+      // speed-coloured route-segments layer (activity detail view).
+      var ROUTE_LINE_WIDTH_EXPR        = ['interpolate', ['linear'], ['zoom'], 8, 4, 13, 8, 18, 14];
       var ROUTE_LINE_BORDER_WIDTH_EXPR = ['interpolate', ['linear'], ['zoom'], 8, 7, 13, 12, 18, 19];
+      var routeTrackCoords    = null; // last received [[lng,lat],...] or null
+      var routeTrackCanvas    = null; // <canvas> DOM element
+      var routeTrackCtx       = null; // CanvasRenderingContext2D
+      var routeTrackCanvasDpr = 1;    // device pixel ratio at last resize
 
-      var ROUTE_TRACK_SOURCE = 'route-track-source';
-      var ROUTE_TRACK_LAYER  = 'route-track-layer';
-      var routeTrackCoords   = null; // last received [[lng,lat],...] or null
+      // Returns the desired main-line width in CSS pixels for the current zoom,
+      // matching the zoom-interpolation that the former WebGL layer used.
+      function routeTrackLineWidth(zoom) {
+        if (zoom <= 8)  return 4;
+        if (zoom <= 13) return 4  + (8  - 4)  * (zoom - 8)  / (13 - 8);
+        if (zoom <= 18) return 8  + (14 - 8)  * (zoom - 13) / (18 - 13);
+        return 14;
+      }
+
+      function syncRouteTrackCanvasSize() {
+        if (!routeTrackCanvas) return;
+        var dpr = window.devicePixelRatio || 1;
+        var w   = window.innerWidth;
+        var h   = window.innerHeight;
+        routeTrackCanvas.width  = Math.round(w * dpr);
+        routeTrackCanvas.height = Math.round(h * dpr);
+        routeTrackCanvasDpr     = dpr;
+        routeTrackCtx = routeTrackCanvas.getContext('2d');
+      }
+
+      function drawRouteTrackCanvas() {
+        if (!routeTrackCtx || !routeTrackCanvas) return;
+        var dpr = routeTrackCanvasDpr;
+        routeTrackCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        routeTrackCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        if (!routeTrackCoords || routeTrackCoords.length < 2 || !map) return;
+        var zoom = map.getZoom();
+        var mainW   = routeTrackLineWidth(zoom);
+        var borderW = mainW * 1.55; // matches the ~1.55× border-to-main ratio from the former WebGL layers
+
+        // Project all coordinates to screen pixels once.
+        var pts = [];
+        for (var i = 0; i < routeTrackCoords.length; i++) {
+          var pt = map.project({ lng: routeTrackCoords[i][0], lat: routeTrackCoords[i][1] });
+          pts.push(pt);
+        }
+
+        // Gray border pass (drawn wider, underneath the red line).
+        routeTrackCtx.beginPath();
+        routeTrackCtx.strokeStyle = 'rgba(156, 163, 175, 0.7)';
+        routeTrackCtx.lineWidth   = borderW;
+        routeTrackCtx.lineCap     = 'round';
+        routeTrackCtx.lineJoin    = 'round';
+        routeTrackCtx.moveTo(pts[0].x, pts[0].y);
+        for (var j = 1; j < pts.length; j++) routeTrackCtx.lineTo(pts[j].x, pts[j].y);
+        routeTrackCtx.stroke();
+
+        // Red line pass.
+        routeTrackCtx.beginPath();
+        routeTrackCtx.strokeStyle = 'rgba(220, 38, 38, 0.85)';
+        routeTrackCtx.lineWidth   = mainW;
+        routeTrackCtx.lineCap     = 'round';
+        routeTrackCtx.lineJoin    = 'round';
+        routeTrackCtx.moveTo(pts[0].x, pts[0].y);
+        for (var k = 1; k < pts.length; k++) routeTrackCtx.lineTo(pts[k].x, pts[k].y);
+        routeTrackCtx.stroke();
+      }
+
+      function initRouteTrackCanvas() {
+        // Create a transparent canvas and append it inside the map container so
+        // it is positioned above the WebGL canvas but MapLibre HTML markers
+        // (appended after it) appear on top of the route line.
+        var container = map.getContainer();
+        routeTrackCanvas = document.createElement('canvas');
+        routeTrackCanvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;';
+        container.appendChild(routeTrackCanvas);
+        syncRouteTrackCanvasSize();
+        window.addEventListener('resize', function () {
+          syncRouteTrackCanvasSize();
+          drawRouteTrackCanvas();
+        });
+        map.on('render', drawRouteTrackCanvas);
+      }
 
       function updateRouteTrackLayer(coords) {
-        if (!map) return;
         routeTrackCoords = (coords && coords.length > 0) ? coords : null;
-        var geojson = {
-          type: 'FeatureCollection',
-          features: (coords && coords.length > 1) ? [{
-            type: 'Feature',
-            geometry: { type: 'LineString', coordinates: coords },
-            properties: {},
-          }] : [],
-        };
-        if (map.getSource(ROUTE_TRACK_SOURCE)) {
-          map.getSource(ROUTE_TRACK_SOURCE).setData(geojson);
-        } else {
-          map.addSource(ROUTE_TRACK_SOURCE, { type: 'geojson', data: geojson });
-          // Gray border layer drawn first (wider), then the colored line on top
-          map.addLayer({
-            id: ROUTE_TRACK_LAYER + '-border',
-            type: 'line',
-            source: ROUTE_TRACK_SOURCE,
-            layout: { 'line-join': 'round', 'line-cap': 'round' },
-            paint: { 'line-color': '#9ca3af', 'line-width': ROUTE_LINE_BORDER_WIDTH_EXPR, 'line-opacity': 0.7 },
-          });
-          map.addLayer({
-            id: ROUTE_TRACK_LAYER,
-            type: 'line',
-            source: ROUTE_TRACK_SOURCE,
-            layout: { 'line-join': 'round', 'line-cap': 'round' },
-            paint: { 'line-color': '#e53935', 'line-width': ROUTE_LINE_WIDTH_EXPR, 'line-opacity': 0.9 },
-          });
-        }
+        drawRouteTrackCanvas();
       }
 
       // ─── Speed-colored route segments (activity detail view) ──────────────────
@@ -5176,6 +5324,47 @@
       function updateRouteStartPoint(coord) {
         routeStartCoord = coord || null;
         updateRoutePointLayer(ROUTE_START_SOURCE, ROUTE_START_LAYER, '#22c55e', routeStartCoord);
+      }
+      // ─────────────────────────────────────────────────────────────────────────────
+
+      // ─── Debug GPS measurement points layer ──────────────────────────────────────
+      // Rendered on top of the route line in debug mode; small black circles at each
+      // raw GPS coordinate so the measurement density is visible.
+      var DEBUG_GPS_POINTS_SOURCE = 'debug-gps-points-source';
+      var DEBUG_GPS_POINTS_LAYER  = 'debug-gps-points-layer';
+      // Radius is intentionally smaller than the route line width at every zoom level
+      // so the points sit visually "inside" the line rather than obscuring it.
+      var DEBUG_GPS_POINT_RADIUS_EXPR = ['interpolate', ['linear'], ['zoom'], 8, 1.5, 13, 3, 18, 5];
+
+      function updateDebugGpsPointsLayer(coords) {
+        if (!map) return;
+        var features = [];
+        if (coords && coords.length > 0) {
+          for (var i = 0; i < coords.length; i++) {
+            features.push({
+              type: 'Feature',
+              geometry: { type: 'Point', coordinates: coords[i] },
+              properties: {},
+            });
+          }
+        }
+        var geojson = { type: 'FeatureCollection', features: features };
+        if (map.getSource(DEBUG_GPS_POINTS_SOURCE)) {
+          map.getSource(DEBUG_GPS_POINTS_SOURCE).setData(geojson);
+        } else {
+          map.addSource(DEBUG_GPS_POINTS_SOURCE, { type: 'geojson', data: geojson });
+          map.addLayer({
+            id: DEBUG_GPS_POINTS_LAYER,
+            type: 'circle',
+            source: DEBUG_GPS_POINTS_SOURCE,
+            paint: {
+              'circle-radius': DEBUG_GPS_POINT_RADIUS_EXPR,
+              'circle-color': '#000000',
+              'circle-opacity': 0.85,
+              'circle-stroke-width': 0,
+            },
+          });
+        }
       }
       // ─────────────────────────────────────────────────────────────────────────────
 
@@ -5310,6 +5499,11 @@
           map.setStyle(data.mapStyle);
         }
 
+        if (data.colorMap !== undefined) {
+          currentColorMap = data.colorMap;
+          applyColorMap(data.colorMap);
+        }
+
         if (data.fitBounds) {
           var fbOpts = {
             padding: data.fitBoundsPadding != null ? data.fitBoundsPadding : 50,
@@ -5424,6 +5618,9 @@
             removeCarLayer();
           }
         }
+
+        // replayAnimation is handled by the injected hexTileScript
+        // (see hexTileScript.ts → startReplayAnimation / stopReplayAnimation).
 
         if (data.imageOverlays !== undefined) {
           updateImageOverlays(data.imageOverlays);
@@ -5556,6 +5753,10 @@
           updateRouteStartPoint(data.routeStartPoint);
         }
 
+        if (data.debugGpsPoints !== undefined) {
+          updateDebugGpsPointsLayer(data.debugGpsPoints);
+        }
+
         if (data.userLocation !== undefined) {
           if (data.userLocation) {
             updateUserLocationMarker(data.userLocation);
@@ -5597,10 +5798,10 @@
         parseAndHandle(e.data);
       });
 
-      function initMap(initialCenter, initialZoom, initialPitch) {
+      function initMap(initialCenter, initialZoom, initialPitch, styleUrl) {
         map = new maplibregl.Map({
           container: 'map',
-          style: 'https://tiles.openfreemap.org/styles/liberty',
+          style: styleUrl || 'https://tiles.openfreemap.org/styles/liberty',
           center: initialCenter || [10.0, 51.3],
           zoom: initialZoom != null ? initialZoom : 16,
           pitch: initialPitch != null ? initialPitch : 20,
@@ -5609,6 +5810,7 @@
 
         map.on('load', function () {
           document.getElementById('loading').style.display = 'none';
+          initRouteTrackCanvas();
           mapReady = true;
           if (pendingMessage) {
             applyMessage(pendingMessage);
@@ -5733,6 +5935,9 @@
         map.on('rotate', updateConeRotation);
 
         map.on('styledata', function () {
+          if (currentColorMap) {
+            applyColorMap(currentColorMap);
+          }
           if (peopleModeActive) {
             if (!map.getSource('people-source')) {
               addPeopleLayer();
@@ -5746,8 +5951,8 @@
           if (currentHighlightedFeature && !map.getSource(HIGHLIGHT_BUILDING_SOURCE)) {
             highlightBuilding(currentHighlightedFeature);
           }
-          if (routeTrackCoords && !map.getSource(ROUTE_TRACK_SOURCE)) {
-            updateRouteTrackLayer(routeTrackCoords);
+          if (routeTrackCoords) {
+            drawRouteTrackCanvas();
           }
           if (routeSegmentsData && !map.getSource(ROUTE_SEG_SOURCE)) {
             updateRouteSegmentsLayer(routeSegmentsData);
@@ -5768,11 +5973,20 @@
             var loadingSpan = document.getElementById('loading-text');
             if (loadingSpan) loadingSpan.textContent = loadingTextParam;
           }
+          var styleParam = params.get('style') || null;
+          if (params.get('hideLegal') === '1') {
+            var hideLegalStyle = document.createElement('style');
+            hideLegalStyle.textContent = '.maplibregl-ctrl-attrib { display: none !important; }';
+            document.head.appendChild(hideLegalStyle);
+          }
           var lat = parseFloat(params.get('lat'));
           var lng = parseFloat(params.get('lng'));
           var zoom = parseFloat(params.get('zoom'));
           if (!isNaN(lat) && !isNaN(lng)) {
-            initMap([lng, lat], !isNaN(zoom) ? zoom : null);
+            initMap([lng, lat], !isNaN(zoom) ? zoom : null, null, styleParam);
+            return;
+          } else {
+            initMap(null, null, null, styleParam);
             return;
           }
         } catch (e) {}
